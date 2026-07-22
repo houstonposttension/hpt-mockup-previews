@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Variant C — Loader: in-progress · punch-list · close-out gate</title>
-<!-- Loader mockup rev 7 (2026-07-21). Variant C.
-     Six items: category filter wraps, upstream lifecycle state per row, per-tag photo,
-     multi-delivery switcher, multi-loader sync, mobile-first preview page.
+<title>Variant C — Loader: in-progress · punch-list · loading sign-off</title>
+<!-- Loader mockup rev 8 (2026-07-21). Variant C.
+     Eight items: category filter wraps, upstream lifecycle state per row, per-tag photo,
+     multi-delivery switcher, multi-loader sync, mobile-first preview page,
+     status shown once (group header only where grouped by status),
+     loader completes the LOADING (not the delivery).
      Full design note lives in the private repo houstonposttension/wip-processor at
      docs/spec/loader-category-status-design-2026-07-21.md. This is a preview host, not source. -->
 <style>
@@ -270,7 +272,7 @@
 </style>
 </head>
 <body>
-  <h1>Loader — in-progress · punch-list · close-out gate <span style="color:var(--faint);font-weight:400">(Variant C)</span></h1>
+  <h1>Loader — in-progress · punch-list · loading sign-off <span style="color:var(--faint);font-weight:400">(Variant C)</span></h1>
   <p class="meta">Three-part loader UI. Category is metadata + a filter dimension, never a nesting level — hierarchy depth stays at three.</p>
   <p class="goal"><b>Product goal — eliminate secondary delivery runs.</b> Today loaders don't verify against paper, so missed tags send a truck back. This design's job is to create <b>friction at the departure moment</b>.</p>
   <p class="hier"><b>Hierarchy:</b> Delivery run = bin <code>X8</code> → Order = <code>bin.suffix</code> (<code>X8.1</code>, <code>X8.2</code>, <code>X8.3</code>) → status-grouped tags. Category rides along as the "where do I walk" dimension.</p>
@@ -294,7 +296,7 @@
   <nav class="ftabs">
     <a href="#f1">1 · In progress</a>
     <a href="#f2">2 · Punch list</a>
-    <a href="#f3a">3a · Close-out</a>
+    <a href="#f3a">3a · Loading done</a>
     <a href="#f3b">3b · Blocked</a>
     <a href="#f4">4 · Wrong bin</a>
     <a href="#f5">5 · Combined</a>
@@ -305,7 +307,7 @@
 
     <div class="col" id="f1">
       <div class="frameLbl">1 · In-progress view (default)</div>
-      <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom. Header carries the load switcher, who else is loading, and how fresh the data is.</div>
+      <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom. Status is on the group header only — the rows don't repeat it.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
           <div class="binrow">
@@ -345,18 +347,18 @@
         <div class="tag"><span class="dot d-notscan"></span><span class="num">L-02</span><span class="mid"><span class="spec">4x4 blocking · 48"</span></span><span class="catchip">Lumber</span><span class="state notprinted">Not printed</span></div>
 
         <div class="secthdr short">⚠ Short — tell your lead<span class="n">1</span></div>
-        <div class="tag"><span class="dot d-short"></span><span class="num">#42</span><span class="mid"><span class="spec">8B03 · 30-04 · <b style="color:var(--bad)">2 of 12 missing</b></span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="state machine">At Shear</span><span class="st short">Short</span></div>
+        <div class="tag"><span class="dot d-short"></span><span class="num">#42</span><span class="mid"><span class="spec">8B03 · 30-04 · <b style="color:var(--bad)">2 of 12 missing</b></span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="state machine">At Shear</span></div>
 
         <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
-        <div class="tag eligible"><span class="dot d-scan"></span><span class="num">T-03</span><span class="mid"><span class="spec">0.5" strand · 51'</span></span><span class="cam">📷 tap</span><span class="catchip">Tendon</span><span class="st scan">Scanned</span></div>
+        <div class="tag eligible"><span class="dot d-scan"></span><span class="num">T-03</span><span class="mid"><span class="spec">0.5" strand · 51'</span></span><span class="cam">📷 tap</span><span class="catchip">Tendon</span></div>
 
         <div class="secthdr pendh">☁ Pending — backfill<span class="n">1</span></div>
-        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-88</span><span class="mid"><span class="spec">HPT Cloud · GUID f3a1… · category TBD</span></span><span class="state unknown">State ?</span><span class="st pend">Pending</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-88</span><span class="mid"><span class="spec">HPT Cloud · GUID f3a1… · category TBD</span></span><span class="state unknown">State ?</span></div>
 
         <div class="secthdr load">✓ Loaded<span class="n">2</span></div>
-        <div class="tag doneRow justupd"><span class="dot d-load"></span><span class="num">#39</span><span class="mid"><span class="spec">8B01 · 30-04 · qty 12</span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="load"></span><span class="updbadge">just now</span><span class="st load">Loaded</span>
+        <div class="tag doneRow justupd"><span class="dot d-load"></span><span class="num">#39</span><span class="mid"><span class="spec">8B01 · 30-04 · qty 12</span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="load"></span><span class="updbadge">just now</span>
           <span class="attrib">Loaded by <b>Jose</b> · 4s ago</span></div>
-        <div class="tag doneRow"><span class="dot d-load"></span><span class="num">#40</span><span class="mid"><span class="spec">8B02 · 28-00 · qty 6</span></span><span class="shape" data-asa="17" data-dims='{"A":"1-04","B":"26-08"}' data-st="load"></span><span class="st load">Loaded</span>
+        <div class="tag doneRow"><span class="dot d-load"></span><span class="num">#40</span><span class="mid"><span class="spec">8B02 · 28-00 · qty 6</span></span><span class="shape" data-asa="17" data-dims='{"A":"1-04","B":"26-08"}' data-st="load"></span>
           <span class="attrib">Loaded by <b>you</b> · 6m ago · 📷 photo on file</span></div>
 
         <div class="conflict">⚠ Already loaded by Jose at 2:14 PM
@@ -366,7 +368,7 @@
 
     <div class="col" id="f2">
       <div class="frameLbl">2 · Punch-list view (toggle)</div>
-      <div class="frameSub">Bin → Category → what's still missing, with "walk to" hints. A walking route, not a report. Attribution stops you re-walking for something a colleague already has.</div>
+      <div class="frameSub">Bin → Category → what's still missing, with "walk to" hints. Grouped by category, so rows keep their status — here it's information, not repetition.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
           <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span>
@@ -427,13 +429,13 @@
             <div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="ord">X8.3</span><span class="state unknown">State ?</span></div>
           </div>
         </div>
-        <button class="closebtn blocked">Complete delivery run</button>
+        <button class="closebtn blocked">Complete loading</button>
       </div></div>
     </div>
 
     <div class="col" id="f3a">
-      <div class="frameLbl">3a · Close-out — all loaded</div>
-      <div class="frameSub">22 of 22. Tapping clears the driver to depart.</div>
+      <div class="frameLbl">3a · Loading complete — all loaded</div>
+      <div class="frameSub">22 of 22. The loader's job ends here; tapping hands off to the driver.</div>
       <div class="phone">
         <div class="gate green">
           <div class="gbig">✓</div>
@@ -446,13 +448,13 @@
     </div>
 
     <div class="col" id="f3b">
-      <div class="frameLbl">3b · Close-out — blocked + override</div>
-      <div class="frameSub">20 of 22. Close-out is refused; override needs a note AND a photo.</div>
+      <div class="frameLbl">3b · Loading blocked + override</div>
+      <div class="frameSub">20 of 22. Loading can't be signed off; override needs a note AND a photo.</div>
       <div class="phone"><div class="scr blockscr">
         <div class="blockhdr">
           <div class="bi">🛑</div>
-          <h2>CAN'T CLOSE OUT</h2>
-          <div class="bs"><b>2 tags are not on the truck.</b><br>Leaving now means a second run.</div>
+          <h2>LOADING NOT COMPLETE</h2>
+          <div class="bs"><b>2 tags are not on the truck.</b><br>Sending the driver now means a second run.</div>
         </div>
         <div class="plhdr" style="color:var(--bad)">Missing<span class="tot">2 tags · 2 areas</span></div>
         <div class="pcat hot">
@@ -465,18 +467,18 @@
         </div>
         <div class="acts">
           <button class="act-find">← Go find them</button>
-          <button class="act-over">Override — ship short anyway</button>
+          <button class="act-over">Override — finish loading short</button>
         </div>
         <div class="modal">
-          <h3>⚠ Override — ship short</h3>
+          <h3>⚠ Override — finish loading short</h3>
           <div class="msub">Recorded against run <b>X8</b> and your name. Both fields required.</div>
-          <div class="req"><span class="dot"></span>1 · Why are you shipping short?</div>
+          <div class="req"><span class="dot"></span>1 · Why are you finishing without them?</div>
           <textarea class="ta filled">Customer approved short ship — L-02 and C-90 will follow up Friday. Confirmed w/ Jose.</textarea>
           <div class="charc">92 / 300</div>
           <div class="req"><span class="dot"></span>2 · Photo of the loaded truck</div>
           <button class="photobtn done">✓ Photo captured — tap to retake</button>
           <div class="mirror">Same capture flow as a per-tag photo — camera → confirm.</div>
-          <button class="confirm armed">Confirm override &amp; close out</button>
+          <button class="confirm armed">Confirm override &amp; finish loading</button>
         </div>
       </div></div>
     </div>
@@ -507,7 +509,7 @@
 
     <div class="col" id="f5">
       <div class="frameLbl">5 · Combined bins</div>
-      <div class="frameSub">X4 and X8 share one delivery run: one close-out, one punch list across both.</div>
+      <div class="frameSub">X4 and X8 share one delivery run: one loading sign-off, one punch list across both.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar combined">
           <div class="binrow"><span class="binlbl">Run</span><span class="binval" style="font-size:24px">X4 + X8</span>
@@ -575,8 +577,8 @@
             <div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="binchip">X8.3</span><span class="state unknown">State ?</span></div>
           </div>
         </div>
-        <button class="closebtn blocked">Complete delivery run · X4 + X8</button>
-        <div class="mexist">One close-out covers both bins. All 31 must be loaded — or overridden — before the driver is cleared.</div>
+        <button class="closebtn blocked">Complete loading · X4 + X8</button>
+        <div class="mexist">One sign-off covers both bins. All 31 must be loaded — or overridden — before the driver is cleared.</div>
       </div></div>
     </div>
 
@@ -616,7 +618,7 @@
 
   <div class="ann">
     <b>How the three parts work together.</b> The in-progress view is where the loader lives; the punch
-    list is the same data pivoted into a walking route; the close-out gate is the only new hard stop.
+    list is the same data pivoted into a walking route; the sign-off is the only new hard stop.
     <br><br>
     <b>Per-tag photo</b> — <span class="cam">📷 tap</span> marks rows where tapping opens the camera,
     asks you to confirm you loaded it, and files the photo against that tag. It is the
@@ -632,6 +634,17 @@
     <br><br>
     <b>Mobile</b> — on a phone this page drops the simulated phone frame and fills the screen; the tabs
     at the top jump between frames. On desktop the side-by-side frames are unchanged.
+    <br><br>
+    <b>The loader completes the LOADING, not the delivery.</b> Their job ends when the truck is loaded;
+    the driver owns transit and drop-off. So the button is <b>"Complete loading"</b>, the blocked state
+    reads <b>"LOADING NOT COMPLETE"</b>, and the override is <b>"finish loading short"</b>. The green
+    gate keeps "Ready to depart" / "Clear driver to depart" — those are correct, because there the
+    loader is handing off <i>to</i> the driver.
+    <br><br>
+    <b>Status appears once, not twice.</b> Where rows are grouped by status (frame 1), the group header
+    carries it and the per-row chip is gone. The punch-list views (frames 2 and 5) group by
+    <i>category</i> and deliberately mix statuses inside each group, so those rows keep their status —
+    there it's information, not repetition.
   </div>
 
 <script>
