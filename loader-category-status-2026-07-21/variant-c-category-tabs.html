@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Variant C — Loader: in-progress · punch-list · loading sign-off</title>
-<!-- Loader mockup rev 9 (2026-07-22). Variant C.
-     Nine items: category filter wraps, upstream lifecycle state per row, per-tag photo,
-     multi-delivery switcher, multi-loader sync, mobile-first preview page,
-     status shown once, loader completes the LOADING (not the delivery),
-     stronger frame separation (numbered N/7 label + accent divider + gap).
+<!-- Loader mockup rev 10 (2026-07-22). Variant C.
+     Ten items: category filter wraps, upstream lifecycle state per row, per-tag photo,
+     multi-delivery switcher, multi-loader sync, mobile-first preview page, status shown once,
+     loader completes the LOADING (not the delivery), stronger frame separation,
+     all three sub-orders shown as sections in the in-progress view.
      Full design note lives in the private repo houstonposttension/wip-processor at
      docs/spec/loader-category-status-design-2026-07-21.md. This is a preview host, not source. -->
 <style>
@@ -166,6 +166,9 @@
   .conflict{ background:#2a1414; border:1px solid #5e2a2a; border-radius:11px; padding:10px 12px;
     margin:8px 0; font-size:11.5px; color:#ff9b94; font-weight:700; line-height:1.45; }
   .conflict small{ display:block; color:#c98b86; font-weight:600; margin-top:3px; }
+  /* compact loaded-summary line — keeps a per-order Loaded section short so all orders stay scannable */
+  .loadmini{ font-size:10px; color:#5f6a76; padding:5px 2px 3px 17px; letter-spacing:.2px; font-family:ui-monospace,Menlo,Consolas,monospace; }
+  .loadmini b{ color:#8697a8; font-family:-apple-system,system-ui,sans-serif; }
 
   .tag .st{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
   .st.notscan{ color:var(--dim); } .st.short{ color:var(--bad); }
@@ -317,7 +320,7 @@
     <!-- ── FRAME 1 ── -->
     <div class="col" id="f1">
       <div class="frameLbl"><span class="fcount">1 / 7</span>In-progress view (default)</div>
-      <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom. Header carries the load switcher, who else is loading, and how fresh the data is.</div>
+      <div class="frameSub">Bin → Order → status-grouped tags. All three sub-orders (X8.1 · X8.2 · X8.3) show as their own sections; Loaded sinks to the bottom of each. Header carries the load switcher, who else is loading, and how fresh the data is.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
           <div class="binrow">
@@ -347,6 +350,16 @@
           <div class="ctab pend"><span class="nm">Pending</span><span class="n">3</span></div>
         </div>
 
+        <div class="ordh"><span class="oid">X8.1</span><span class="odesc">Wall panel</span><span class="oct">3 of 6 loaded</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
+        <div class="readysub">▸ Ready to grab</div>
+        <div class="tag eligible"><span class="dot d-notscan"></span><span class="num">H-02</span><span class="mid"><span class="spec">pocket formers · qty 40</span></span><span class="cam">📷 tap</span><span class="catchip">Hardware</span><span class="state staged">Staged</span></div>
+        <div class="tag eligible"><span class="dot d-notscan"></span><span class="num">L-01</span><span class="mid"><span class="spec">2x4 forming · 96"</span></span><span class="cam">📷 tap</span><span class="catchip">Lumber</span><span class="state staged">Staged</span></div>
+        <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
+        <div class="tag eligible"><span class="dot d-scan"></span><span class="num">#1</span><span class="mid"><span class="spec">STR · 11-08</span></span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="cam">📷 tap</span><span class="catchip">Rebar</span></div>
+        <div class="secthdr load">✓ Loaded<span class="n">3</span></div>
+        <div class="loadmini">#4 · #5 · T-01 — <b>loaded by you, Jose, Mike</b></div>
+
         <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">2 of 8 loaded</span></div>
 
         <div class="secthdr notscan">○ Not scanned<span class="n">3</span></div>
@@ -373,6 +386,19 @@
 
         <div class="conflict">⚠ Already loaded by Jose at 2:14 PM
           <small>You scanned #39 a moment after Jose did — the server kept his. Nothing for you to do.</small></div>
+
+        <div class="ordh"><span class="oid">X8.3</span><span class="odesc">Podium deck</span><span class="oct">3 of 8 loaded</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
+        <div class="readysub">▸ Not ready — don't walk for these yet</div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">T-05</span><span class="mid"><span class="spec">anchor set · —</span></span><span class="catchip">Tendon</span><span class="state machine">At Hayes</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">H-04</span><span class="mid"><span class="spec">chairs · bundle</span></span><span class="catchip">Hardware</span><span class="state office">In office</span></div>
+        <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
+        <div class="tag eligible"><span class="dot d-scan"></span><span class="num">#41</span><span class="mid"><span class="spec">3C15 · 6-06</span></span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="cam">📷 tap</span><span class="catchip">Rebar</span></div>
+        <div class="secthdr pendh">☁ Pending — backfill<span class="n">2</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-89</span><span class="mid"><span class="spec">HPT Cloud · 7b02… · category TBD</span></span><span class="state unknown">State ?</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-90</span><span class="mid"><span class="spec">HPT Cloud · 1c9d… · category TBD</span></span><span class="state unknown">State ?</span></div>
+        <div class="secthdr load">✓ Loaded<span class="n">3</span></div>
+        <div class="loadmini">#9 · H-01 · T-02 — <b>loaded by Jose, you, Ana</b></div>
       </div></div>
     </div>
 
