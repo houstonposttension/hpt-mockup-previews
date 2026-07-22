@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Variant C — Loader: in-progress · punch-list · loading sign-off</title>
-<!-- Loader mockup rev 8 (2026-07-21). Variant C.
-     Eight items: category filter wraps, upstream lifecycle state per row, per-tag photo,
+<!-- Loader mockup rev 9 (2026-07-22). Variant C.
+     Nine items: category filter wraps, upstream lifecycle state per row, per-tag photo,
      multi-delivery switcher, multi-loader sync, mobile-first preview page,
-     status shown once (group header only where grouped by status),
-     loader completes the LOADING (not the delivery).
+     status shown once, loader completes the LOADING (not the delivery),
+     stronger frame separation (numbered N/7 label + accent divider + gap).
      Full design note lives in the private repo houstonposttension/wip-processor at
      docs/spec/loader-category-status-design-2026-07-21.md. This is a preview host, not source. -->
 <style>
@@ -47,9 +47,16 @@
     padding:7px 12px; white-space:nowrap; }
   .ftabs a:active{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
 
-  .screens{ display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start; }
+  /* frame separation — bigger row gap on desktop */
+  .screens{ display:flex; gap:44px 26px; flex-wrap:wrap; align-items:flex-start; }
   .col{ scroll-margin-top:56px; }
-  .frameLbl{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin:0 0 4px; }
+  /* prominent frame label with a counter badge + accent bar */
+  .frameLbl{ display:flex; align-items:center; gap:9px; font-size:13px; font-weight:900;
+    text-transform:uppercase; letter-spacing:.5px; color:#e6edf3; margin:0 0 6px;
+    padding:8px 12px; background:#161a1f; border:1px solid var(--line);
+    border-left:4px solid var(--blue-soft); border-radius:9px; }
+  .frameLbl .fcount{ flex:0 0 auto; font-size:11px; font-weight:900; letter-spacing:.5px;
+    color:#0b0d10; background:var(--blue-soft); border-radius:20px; padding:2px 9px; }
   .frameSub{ font-size:11px; color:var(--faint); margin:0 0 10px; max-width:370px; line-height:1.5; }
   .phone{ width:370px; border-radius:22px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); position:relative; }
   .scr{ padding:12px; }
@@ -57,12 +64,14 @@
   /* mobile-first — drop the fake phone chrome, fill the viewport */
   @media (max-width:500px){
     body{ padding:14px 10px 60px; }
-    .screens{ gap:26px; display:block; }
-    .col{ margin-bottom:26px; }
+    .screens{ display:block; }
+    /* strong frame separation on mobile — big gap + full-width accent divider */
+    .col{ margin-bottom:0; padding-top:40px; margin-top:44px; border-top:3px solid var(--blue-soft); }
+    .col:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
     .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
     .scr{ padding:10px 8px; }
-    .frameLbl,.frameSub{ padding:0 4px; }
-    .frameSub{ max-width:none; }
+    .frameLbl{ font-size:14px; padding:10px 12px; }
+    .frameSub{ padding:0 4px; max-width:none; }
     h1{ font-size:17px; } .meta,.goal,.hier{ font-size:12.5px; }
     .gate,.misscan{ min-height:78vh; }
   }
@@ -141,7 +150,7 @@
   .state.notprinted{ background:#0e1217; color:var(--faint); border:1px solid var(--line); }
   .state.unknown{ background:rgba(255,176,32,.08); color:#b9903f; border:1px dashed rgba(255,176,32,.4); }
 
-  /* per-tag photo affordance — the ROW is the tap target */
+  /* per-tag photo affordance — the ROW is the tap target (as in prod) */
   .cam{ font-size:11px; color:#6f8296; border:1px dashed #3a4753; border-radius:6px; padding:1px 6px;
     flex:0 0 auto; letter-spacing:.3px; }
   .tag.eligible{ border-color:#2c3d4e; }
@@ -296,18 +305,19 @@
   <nav class="ftabs">
     <a href="#f1">1 · In progress</a>
     <a href="#f2">2 · Punch list</a>
-    <a href="#f3a">3a · Loading done</a>
-    <a href="#f3b">3b · Blocked</a>
-    <a href="#f4">4 · Wrong bin</a>
-    <a href="#f5">5 · Combined</a>
-    <a href="#f6">6 · My loads</a>
+    <a href="#f3a">3 · Loading done</a>
+    <a href="#f3b">4 · Blocked</a>
+    <a href="#f4">5 · Wrong bin</a>
+    <a href="#f5">6 · Combined</a>
+    <a href="#f6">7 · My loads</a>
   </nav>
 
   <div class="screens">
 
+    <!-- ── FRAME 1 ── -->
     <div class="col" id="f1">
-      <div class="frameLbl">1 · In-progress view (default)</div>
-      <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom. Status is on the group header only — the rows don't repeat it.</div>
+      <div class="frameLbl"><span class="fcount">1 / 7</span>In-progress view (default)</div>
+      <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom. Header carries the load switcher, who else is loading, and how fresh the data is.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
           <div class="binrow">
@@ -366,9 +376,10 @@
       </div></div>
     </div>
 
+    <!-- ── FRAME 2 ── -->
     <div class="col" id="f2">
-      <div class="frameLbl">2 · Punch-list view (toggle)</div>
-      <div class="frameSub">Bin → Category → what's still missing, with "walk to" hints. Grouped by category, so rows keep their status — here it's information, not repetition.</div>
+      <div class="frameLbl"><span class="fcount">2 / 7</span>Punch-list view (toggle)</div>
+      <div class="frameSub">Bin → Category → what's still missing, with "walk to" hints. A walking route, not a report. Attribution stops you re-walking for something a colleague already has.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
           <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span>
@@ -433,8 +444,9 @@
       </div></div>
     </div>
 
+    <!-- ── FRAME 3a ── -->
     <div class="col" id="f3a">
-      <div class="frameLbl">3a · Loading complete — all loaded</div>
+      <div class="frameLbl"><span class="fcount">3 / 7</span>Loading complete — all loaded</div>
       <div class="frameSub">22 of 22. The loader's job ends here; tapping hands off to the driver.</div>
       <div class="phone">
         <div class="gate green">
@@ -447,8 +459,9 @@
       </div>
     </div>
 
+    <!-- ── FRAME 3b ── -->
     <div class="col" id="f3b">
-      <div class="frameLbl">3b · Loading blocked + override</div>
+      <div class="frameLbl"><span class="fcount">4 / 7</span>Loading blocked + override</div>
       <div class="frameSub">20 of 22. Loading can't be signed off; override needs a note AND a photo.</div>
       <div class="phone"><div class="scr blockscr">
         <div class="blockhdr">
@@ -483,8 +496,9 @@
       </div></div>
     </div>
 
+    <!-- ── FRAME 4 ── -->
     <div class="col" id="f4">
-      <div class="frameLbl">4 · Wrong-bin scan</div>
+      <div class="frameLbl"><span class="fcount">5 / 7</span>Wrong-bin scan</div>
       <div class="frameSub">Loader is on X4 and scans a tag belonging to X8. Both bins side by side. "Combine" is the new option.</div>
       <div class="phone"><div class="misscan">
         <div class="mtitle">⚠ DIFFERENT BIN</div>
@@ -507,8 +521,9 @@
       </div></div>
     </div>
 
+    <!-- ── FRAME 5 ── -->
     <div class="col" id="f5">
-      <div class="frameLbl">5 · Combined bins</div>
+      <div class="frameLbl"><span class="fcount">6 / 7</span>Combined bins</div>
       <div class="frameSub">X4 and X8 share one delivery run: one loading sign-off, one punch list across both.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar combined">
@@ -582,8 +597,9 @@
       </div></div>
     </div>
 
+    <!-- ── FRAME 6 ── -->
     <div class="col" id="f6">
-      <div class="frameLbl">6 · My loads (switcher)</div>
+      <div class="frameLbl"><span class="fcount">7 / 7</span>My loads (switcher)</div>
       <div class="frameSub">Opened by the ⇄ button next to the run number. Emulates the picker that already exists in prod — recent runs with progress; tap to switch.</div>
       <div class="phone"><div class="picker">
         <h2>Switch run</h2>
@@ -618,7 +634,7 @@
 
   <div class="ann">
     <b>How the three parts work together.</b> The in-progress view is where the loader lives; the punch
-    list is the same data pivoted into a walking route; the sign-off is the only new hard stop.
+    list is the same data pivoted into a walking route; the loading sign-off is the only new hard stop.
     <br><br>
     <b>Per-tag photo</b> — <span class="cam">📷 tap</span> marks rows where tapping opens the camera,
     asks you to confirm you loaded it, and files the photo against that tag. It is the
@@ -630,10 +646,13 @@
     briefly. If two people scan the same tag, the second gets told who got there first rather than a
     silent no-op.
     <br><br>
-    <b>Switching runs</b> — the ⇄ button beside the run number opens the picker (frame 6).
+    <b>Switching runs</b> — the ⇄ button beside the run number opens the picker (frame 7).
     <br><br>
     <b>Mobile</b> — on a phone this page drops the simulated phone frame and fills the screen; the tabs
-    at the top jump between frames. On desktop the side-by-side frames are unchanged.
+    at the top jump between frames. On desktop the side-by-side frames are unchanged. Each frame carries
+    a numbered <b>"N / 7"</b> badge and, on mobile, a full-width accent divider + large gap so it's
+    obvious where one frame ends and the next begins. (There are <b>7</b> frames — close-out is two:
+    complete and blocked.)
     <br><br>
     <b>The loader completes the LOADING, not the delivery.</b> Their job ends when the truck is loaded;
     the driver owns transit and drop-off. So the button is <b>"Complete loading"</b>, the blocked state
@@ -642,7 +661,7 @@
     loader is handing off <i>to</i> the driver.
     <br><br>
     <b>Status appears once, not twice.</b> Where rows are grouped by status (frame 1), the group header
-    carries it and the per-row chip is gone. The punch-list views (frames 2 and 5) group by
+    carries it and the per-row chip is gone. The punch-list views (frames 2 and 6) group by
     <i>category</i> and deliberately mix statuses inside each group, so those rows keep their status —
     there it's information, not repetition.
   </div>
