@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Variant C — Loader: in-progress · punch-list · loading sign-off</title>
-<!-- Loader mockup rev 10 (2026-07-22). Variant C.
-     Ten items: category filter wraps, upstream lifecycle state per row, per-tag photo,
+<!-- Loader mockup rev 11 (2026-07-22). Variant C.
+     Eleven items: category filter wraps, upstream lifecycle state per row, per-tag photo,
      multi-delivery switcher, multi-loader sync, mobile-first preview page, status shown once,
      loader completes the LOADING (not the delivery), stronger frame separation,
-     all three sub-orders shown as sections in the in-progress view.
+     all three sub-orders shown as sections, plain (non-editorial) status group names.
      Full design note lives in the private repo houstonposttension/wip-processor at
      docs/spec/loader-category-status-design-2026-07-21.md. This is a preview host, not source. -->
 <style>
@@ -128,7 +128,6 @@
   .secthdr.notscan{ color:#cfe0f5; } .secthdr.short{ color:var(--bad); }
   .secthdr.scan{ color:var(--blue-soft); } .secthdr.load{ color:var(--dim); }
   .secthdr.pendh{ color:var(--warn); }
-  .readysub{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:#4a545f; margin:8px 2px 3px; }
 
   .tag{ display:flex; align-items:center; gap:9px; padding:9px; border:1px solid #223; border-radius:10px; margin:5px 0; background:#111722; flex-wrap:wrap; }
   .tag.doneRow{ opacity:.55; }
@@ -352,10 +351,9 @@
 
         <div class="ordh"><span class="oid">X8.1</span><span class="odesc">Wall panel</span><span class="oct">3 of 6 loaded</span></div>
         <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
-        <div class="readysub">▸ Ready to grab</div>
         <div class="tag eligible"><span class="dot d-notscan"></span><span class="num">H-02</span><span class="mid"><span class="spec">pocket formers · qty 40</span></span><span class="cam">📷 tap</span><span class="catchip">Hardware</span><span class="state staged">Staged</span></div>
         <div class="tag eligible"><span class="dot d-notscan"></span><span class="num">L-01</span><span class="mid"><span class="spec">2x4 forming · 96"</span></span><span class="cam">📷 tap</span><span class="catchip">Lumber</span><span class="state staged">Staged</span></div>
-        <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
+        <div class="secthdr scan">◐ Scanned<span class="n">1</span></div>
         <div class="tag eligible"><span class="dot d-scan"></span><span class="num">#1</span><span class="mid"><span class="spec">STR · 11-08</span></span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="cam">📷 tap</span><span class="catchip">Rebar</span></div>
         <div class="secthdr load">✓ Loaded<span class="n">3</span></div>
         <div class="loadmini">#4 · #5 · T-01 — <b>loaded by you, Jose, Mike</b></div>
@@ -363,16 +361,14 @@
         <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">2 of 8 loaded</span></div>
 
         <div class="secthdr notscan">○ Not scanned<span class="n">3</span></div>
-        <div class="readysub">▸ Ready to grab</div>
         <div class="tag eligible"><span class="dot d-notscan"></span><span class="num">H-03</span><span class="mid"><span class="spec">wedges · box</span></span><span class="cam">📷 tap</span><span class="catchip">Hardware</span><span class="state staged">Staged</span></div>
-        <div class="readysub">▸ Not ready — don't walk for these yet</div>
         <div class="tag"><span class="dot d-notscan"></span><span class="num">T-04</span><span class="mid"><span class="spec">0.6" strand · 44'</span></span><span class="catchip">Tendon</span><span class="state machine">At PT Atlas</span></div>
         <div class="tag"><span class="dot d-notscan"></span><span class="num">L-02</span><span class="mid"><span class="spec">4x4 blocking · 48"</span></span><span class="catchip">Lumber</span><span class="state notprinted">Not printed</span></div>
 
-        <div class="secthdr short">⚠ Short — tell your lead<span class="n">1</span></div>
+        <div class="secthdr short">⚠ Short<span class="n">1</span></div>
         <div class="tag"><span class="dot d-short"></span><span class="num">#42</span><span class="mid"><span class="spec">8B03 · 30-04 · <b style="color:var(--bad)">2 of 12 missing</b></span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="state machine">At Shear</span></div>
 
-        <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
+        <div class="secthdr scan">◐ Scanned<span class="n">1</span></div>
         <div class="tag eligible"><span class="dot d-scan"></span><span class="num">T-03</span><span class="mid"><span class="spec">0.5" strand · 51'</span></span><span class="cam">📷 tap</span><span class="catchip">Tendon</span></div>
 
         <div class="secthdr pendh">☁ Pending — backfill<span class="n">1</span></div>
@@ -389,10 +385,9 @@
 
         <div class="ordh"><span class="oid">X8.3</span><span class="odesc">Podium deck</span><span class="oct">3 of 8 loaded</span></div>
         <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
-        <div class="readysub">▸ Not ready — don't walk for these yet</div>
         <div class="tag"><span class="dot d-notscan"></span><span class="num">T-05</span><span class="mid"><span class="spec">anchor set · —</span></span><span class="catchip">Tendon</span><span class="state machine">At Hayes</span></div>
         <div class="tag"><span class="dot d-notscan"></span><span class="num">H-04</span><span class="mid"><span class="spec">chairs · bundle</span></span><span class="catchip">Hardware</span><span class="state office">In office</span></div>
-        <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
+        <div class="secthdr scan">◐ Scanned<span class="n">1</span></div>
         <div class="tag eligible"><span class="dot d-scan"></span><span class="num">#41</span><span class="mid"><span class="spec">3C15 · 6-06</span></span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="cam">📷 tap</span><span class="catchip">Rebar</span></div>
         <div class="secthdr pendh">☁ Pending — backfill<span class="n">2</span></div>
         <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-89</span><span class="mid"><span class="spec">HPT Cloud · 7b02… · category TBD</span></span><span class="state unknown">State ?</span></div>
@@ -690,6 +685,10 @@
     carries it and the per-row chip is gone. The punch-list views (frames 2 and 6) group by
     <i>category</i> and deliberately mix statuses inside each group, so those rows keep their status —
     there it's information, not repetition.
+    <br><br>
+    <b>Group names are plain status names</b> — the editorial subheads ("ready to grab" / "don't walk
+    for these yet") and flourishes ("tell your lead", "not on truck yet") are gone. Sections are now
+    just <b>Not scanned · Short · Scanned · Pending — backfill · Loaded</b>.
   </div>
 
 <script>
