@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Variant C (LOCKED) — Loader: in-progress · punch-list · close-out gate</title>
+<!-- GA-WIP-193 rev 3 (2026-07-21). Variant C locked; A/B dropped.
+     See private repo houstonposttension/wip-processor docs/spec/loader-category-status-design-2026-07-21.md
+     for the full design note + open questions. This is a preview host, not source. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --ok:#16c060; --ok-ink:#04150a; --bad:#ff3b30; --warn:#ffb020;
+    --blue:#3b82f6; --blue-soft:#7da2c9;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:26px 22px 80px; }
+  h1{ font-size:20px; font-weight:800; margin:0 0 6px; }
+  .meta{ font-size:13px; color:var(--dim); margin:0 0 5px; line-height:1.6; max-width:860px; }
+  .meta b{ color:#cfe0f5; }
+  .goal{ border-left:3px solid var(--ok); padding:8px 0 8px 13px; margin:14px 0 6px; max-width:860px; font-size:13px; color:#bfe6cd; line-height:1.6; }
+  .goal b{ color:var(--ok); }
+  .hier{ font-size:12px; color:var(--faint); margin:10px 0 4px; max-width:860px; line-height:1.7; }
+  .hier code{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
+  .legend{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 26px; max-width:860px; }
+  .legend .pill{ font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); }
+  .pill.notscan{ background:#0e1217; color:var(--dim); }
+  .pill.short{ background:rgba(255,59,48,.13); color:var(--bad); border-color:rgba(255,59,48,.4); }
+  .pill.scan{ background:rgba(59,130,246,.14); color:var(--blue-soft); border-color:rgba(59,130,246,.35); }
+  .pill.load{ background:rgba(22,192,96,.12); color:var(--ok); border-color:rgba(22,192,96,.35); }
+  .pill.pend{ background:rgba(255,176,32,.12); color:var(--warn); border-color:rgba(255,176,32,.35); }
+  .screens{ display:flex; gap:26px; flex-wrap:wrap; align-items:flex-start; }
+  .frameLbl{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--dim); margin:0 0 4px; }
+  .frameSub{ font-size:11px; color:var(--faint); margin:0 0 10px; max-width:370px; line-height:1.5; }
+  .phone{ width:370px; border-radius:22px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); position:relative; }
+  .scr{ padding:12px; }
+  .loadbar{ background:var(--panel); border:.5px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:9px; }
+  .loadbar .binrow{ display:flex; align-items:baseline; gap:10px; }
+  .loadbar .binlbl{ font-size:12px; color:var(--dim); }
+  .loadbar .binval{ font-size:27px; font-weight:800; letter-spacing:1px; }
+  .loadbar .runtag{ margin-left:auto; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--faint); border:1px solid var(--line); border-radius:5px; padding:2px 7px; }
+  .loadbar .cust{ font-size:15px; font-weight:700; color:#cfe0f5; margin-top:2px; }
+  .loadbar .sub{ font-size:11.5px; color:var(--dim); margin-top:2px; }
+  .loadbar .orders{ font-size:11px; color:#9ccbff; margin-top:5px; font-family:ui-monospace,Menlo,Consolas,monospace; }
+  .viewtog{ display:flex; gap:6px; margin-bottom:9px; }
+  .vt{ flex:1; text-align:center; border:1px solid var(--line); border-radius:11px; padding:9px 6px; background:#0e1217; font-size:12.5px; font-weight:800; color:var(--dim); display:flex; align-items:center; justify-content:center; gap:6px; }
+  .vt.on{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+  .vt .cnt{ font-size:10.5px; font-weight:800; border-radius:20px; padding:1px 7px; }
+  .cnt.grey{ background:#242b34; color:var(--dim); }
+  .cnt.amber{ background:rgba(255,176,32,.2); color:var(--warn); }
+  .cnt.red{ background:rgba(255,59,48,.22); color:var(--bad); }
+  .prog{ background:var(--panel); border:.5px solid var(--line); border-radius:14px; padding:10px 14px; margin-bottom:9px; }
+  .prog .row{ display:flex; justify-content:space-between; align-items:baseline; }
+  .prog .big{ font-size:19px; font-weight:800; } .prog .small{ font-size:12.5px; color:var(--dim); font-weight:600; }
+  .bar{ height:8px; background:#0b0d10; border-radius:999px; margin-top:8px; overflow:hidden; }
+  .bar > i{ display:block; height:100%; background:var(--ok); }
+  .rowlbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#4a545f; margin:0 2px 5px; }
+  .catbar{ display:flex; gap:6px; overflow-x:auto; padding:2px 2px 9px; border-bottom:1px solid var(--line); margin-bottom:9px; }
+  .ctab{ flex:0 0 auto; border:1px solid var(--line); border-radius:20px; padding:6px 11px; background:#0e1217; display:flex; align-items:center; gap:6px; }
+  .ctab .nm{ font-size:12px; font-weight:700; color:var(--dim); }
+  .ctab .n{ font-size:10.5px; font-weight:800; color:var(--faint); background:#1a2027; border-radius:20px; padding:1px 6px; }
+  .ctab.active{ background:rgba(59,130,246,.14); border-color:rgba(59,130,246,.5); }
+  .ctab.active .nm{ color:#cfe0f5; } .ctab.active .n{ color:var(--blue-soft); background:rgba(59,130,246,.2); }
+  .ctab.pend .nm{ color:#b9903f; }
+  .ordh{ display:flex; align-items:center; gap:9px; margin:13px 2px 6px; }
+  .ordh .oid{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:14px; font-weight:800; color:#9ccbff; }
+  .ordh .odesc{ font-size:11px; color:var(--dim); }
+  .ordh .oct{ margin-left:auto; font-size:10.5px; font-weight:700; color:var(--faint); }
+  .secthdr{ font-size:10.5px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; margin:11px 2px 5px; display:flex; align-items:center; gap:7px; }
+  .secthdr .n{ margin-left:auto; font-weight:700; color:var(--faint); font-size:10px; }
+  .secthdr.notscan{ color:#cfe0f5; } .secthdr.short{ color:var(--bad); }
+  .secthdr.scan{ color:var(--blue-soft); } .secthdr.load{ color:var(--dim); }
+  .secthdr.pendh{ color:var(--warn); }
+  .tag{ display:flex; align-items:center; gap:9px; padding:9px; border:1px solid #223; border-radius:10px; margin:5px 0; background:#111722; }
+  .tag.doneRow{ opacity:.5; }
+  .tag .dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+  .d-notscan{ background:#4a545f; } .d-short{ background:var(--bad); }
+  .d-scan{ background:var(--blue-soft); } .d-load{ background:var(--ok); } .d-pend{ background:var(--warn); }
+  .tag .num{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:14px; min-width:42px; }
+  .tag.doneRow .num{ color:#5f6e7a; text-decoration:line-through; }
+  .tag .mid{ flex:1; min-width:0; }
+  .tag .spec{ font-size:10.5px; color:var(--dim); }
+  .catchip{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#8fa4bb; border:1px solid #2b3947; border-radius:4px; padding:1px 5px; }
+  .shape{ width:46px; height:28px; background:#0e1217; border:.5px solid var(--line); border-radius:7px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .tag .st{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
+  .st.notscan{ color:var(--dim); } .st.short{ color:var(--bad); }
+  .st.scan{ color:var(--blue-soft); } .st.load{ color:var(--faint); } .st.pend{ color:var(--warn); }
+  .tag.pend{ border-color:rgba(255,176,32,.4); background:rgba(255,176,32,.05); }
+  .plhdr{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.9px; color:var(--warn); margin:2px 2px 9px; display:flex; align-items:center; }
+  .plhdr .tot{ margin-left:auto; color:var(--dim); }
+  .pcat{ border:1px solid var(--line); border-radius:12px; margin-bottom:9px; overflow:hidden; background:var(--panel); }
+  .pcat.hot{ border-color:rgba(255,59,48,.45); }
+  .pchead{ display:flex; align-items:center; gap:10px; padding:10px 12px; background:#12181f; }
+  .pchead .ic{ font-size:16px; }
+  .pchead .nmwrap{ flex:1; min-width:0; }
+  .pchead .nm{ font-size:13.5px; font-weight:800; }
+  .pchead .walk{ font-size:10.5px; color:#8fb4d8; margin-top:2px; display:flex; align-items:center; gap:4px; }
+  .pchead .walk .tbd{ color:var(--warn); font-weight:700; border:1px solid rgba(255,176,32,.4); border-radius:4px; padding:0 4px; font-size:8.5px; text-transform:uppercase; letter-spacing:.4px; }
+  .badge{ font-size:12px; font-weight:800; border-radius:20px; padding:3px 10px; }
+  .badge.grey{ background:#242b34; color:var(--dim); }
+  .badge.amber{ background:rgba(255,176,32,.2); color:var(--warn); }
+  .badge.red{ background:rgba(255,59,48,.22); color:var(--bad); }
+  .pcbody{ padding:5px 8px 8px; }
+  .pl{ display:flex; align-items:center; gap:9px; padding:7px 5px; border-bottom:.5px solid #21272e; }
+  .pl:last-child{ border-bottom:none; }
+  .pl .num{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:13px; min-width:42px; }
+  .pl .spec{ font-size:10.5px; color:var(--dim); flex:1; }
+  .pl .ord{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:#7d9bbd; font-weight:700; }
+  .pl .st{ font-size:9px; font-weight:800; text-transform:uppercase; }
+  .closebtn{ width:100%; margin-top:14px; padding:16px; border:none; border-radius:14px; font-size:17px; font-weight:800; }
+  .closebtn.blocked{ background:#2a1414; color:#ff9b94; border:1px solid #5e2a2a; }
+  .gate{ min-height:660px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px 22px; }
+  .gate.green{ background:var(--ok); color:var(--ok-ink); }
+  .gate .gbig{ font-size:96px; line-height:1; font-weight:900; }
+  .gate .gmain{ font-size:28px; font-weight:900; margin-top:6px; line-height:1.15; }
+  .gate .gsub{ font-size:17px; font-weight:700; margin-top:12px; opacity:.9; line-height:1.35; }
+  .gate .gmeta{ margin-top:20px; font-size:13px; font-weight:700; background:rgba(4,21,10,.15); border-radius:10px; padding:9px 14px; line-height:1.6; }
+  .gate .gbtn{ width:100%; margin-top:26px; padding:15px; border:none; border-radius:13px; background:#04150a; color:#7ef0a8; font-size:16px; font-weight:800; }
+  .blockscr{ padding:14px 12px; }
+  .blockhdr{ background:#2a1414; border:1px solid #5e2a2a; border-radius:14px; padding:14px; text-align:center; margin-bottom:12px; }
+  .blockhdr .bi{ font-size:44px; line-height:1; }
+  .blockhdr h2{ font-size:21px; font-weight:900; color:#ff9b94; margin:7px 0 5px; letter-spacing:.5px; }
+  .blockhdr .bs{ font-size:13px; color:#e5b9b5; line-height:1.5; }
+  .acts{ display:flex; flex-direction:column; gap:9px; margin-top:13px; }
+  .acts button{ width:100%; border-radius:13px; padding:14px; font-size:15px; font-weight:800; border:none; }
+  .act-find{ background:var(--ok); color:var(--ok-ink); }
+  .act-over{ background:#33383f; color:#cfd6de; border:1px solid #4a525c !important; }
+  .modal{ background:var(--panel2); border:1px solid #4a3a1a; border-radius:16px; padding:15px; margin-top:12px; }
+  .modal h3{ font-size:15px; font-weight:800; color:var(--warn); margin:0 0 4px; }
+  .modal .msub{ font-size:11.5px; color:var(--dim); line-height:1.55; margin-bottom:12px; }
+  .req{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--warn); display:flex; align-items:center; gap:5px; margin:11px 0 5px; }
+  .req .dot{ width:5px; height:5px; border-radius:50%; background:var(--warn); }
+  .ta{ width:100%; min-height:62px; background:#0e1217; border:1px solid var(--line); border-radius:10px; padding:10px; color:var(--txt); font-size:12.5px; font-family:inherit; line-height:1.5; }
+  .ta.filled{ border-color:rgba(22,192,96,.4); }
+  .charc{ font-size:9.5px; color:var(--faint); text-align:right; margin-top:3px; }
+  .photobtn{ width:100%; padding:13px; border:1px dashed #4a525c; border-radius:11px; background:#0e1217; color:#cfe0f5; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .photobtn.done{ border-style:solid; border-color:#1f6b40; background:#0b1f14; color:#46d684; }
+  .mirror{ font-size:10px; color:var(--faint); margin-top:7px; line-height:1.5; font-style:italic; }
+  .mirror code{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#8fa4bb; font-style:normal; }
+  .confirm{ width:100%; margin-top:14px; padding:14px; border:none; border-radius:13px; background:#4a3a1a; color:#c9a95f; font-size:15px; font-weight:800; }
+  .confirm.armed{ background:var(--warn); color:#2a1c00; }
+  .misscan{ min-height:660px; display:flex; flex-direction:column; justify-content:center; padding:20px 16px; background:#0e1a2a; }
+  .misscan .mtitle{ font-size:22px; font-weight:900; color:var(--warn); text-align:center; letter-spacing:.5px; }
+  .misscan .msub{ font-size:12.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.5; }
+  .scanned{ background:#12202f; border:1px solid #2f4a63; border-radius:12px; padding:10px 12px; margin:14px 0 12px; }
+  .scanned .sl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:#6b8ba8; }
+  .scanned .srow{ display:flex; align-items:center; gap:9px; margin-top:6px; }
+  .scanned .snum{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:16px; font-weight:800; color:#cfe0f5; }
+  .scanned .sspec{ font-size:11px; color:var(--dim); flex:1; }
+  .binpair{ display:flex; gap:9px; align-items:stretch; }
+  .bincard{ flex:1; border-radius:12px; padding:11px 11px 12px; border:1px solid var(--line); background:#111722; min-width:0; }
+  .bincard.cur{ border-color:#2f4a63; background:#131c26; }
+  .bincard.other{ border-color:rgba(255,176,32,.45); background:rgba(255,176,32,.06); }
+  .bincard .bl{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:var(--faint); }
+  .bincard.cur .bl{ color:#6b8ba8; } .bincard.other .bl{ color:#b9903f; }
+  .bincard .bn{ font-size:26px; font-weight:900; letter-spacing:1px; margin-top:3px; }
+  .bincard.other .bn{ color:var(--warn); }
+  .bincard .bc{ font-size:11px; color:#cfe0f5; font-weight:700; margin-top:2px; line-height:1.35; }
+  .bincard .bm{ font-size:10.5px; color:var(--dim); margin-top:6px; }
+  .bincard .bbar{ height:5px; background:#0b0d10; border-radius:999px; overflow:hidden; margin-top:5px; }
+  .bincard .bbar > i{ display:block; height:100%; background:var(--ok); }
+  .vs{ align-self:center; font-size:10px; font-weight:800; color:var(--faint); }
+  .macts{ display:flex; flex-direction:column; gap:9px; margin-top:16px; }
+  .macts button{ width:100%; border-radius:13px; padding:14px; font-size:15px; font-weight:800; border:none; }
+  .m-comb{ background:var(--warn); color:#2a1c00; }
+  .m-cancel{ background:#33383f; color:var(--txt); }
+  .msecond{ display:flex; gap:8px; margin-top:4px; }
+  .msecond button{ flex:1; border-radius:11px; padding:11px 8px; font-size:12.5px; font-weight:700; background:transparent; color:var(--dim); border:1px solid var(--line); }
+  .mexist{ font-size:10px; color:var(--faint); text-align:center; margin-top:10px; line-height:1.5; font-style:italic; }
+  .combined{ background:linear-gradient(180deg,#1a2230,#161a1f); border:1px solid #3a5572; }
+  .combtag{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; background:rgba(255,176,32,.18); color:var(--warn); border:1px solid rgba(255,176,32,.45); border-radius:5px; padding:2px 7px; }
+  .binchip{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:9.5px; font-weight:800; color:#9ccbff; background:#17222e; border:1px solid #2f4a63; border-radius:4px; padding:1px 5px; }
+  .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:24px 0 0; max-width:860px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
+  .ann b{ color:#fff; } .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; color:#9ccbff; }
+</style>
+</head>
+<body>
+  <h1>Loader — in-progress · punch-list · close-out gate <span style="color:var(--faint);font-weight:400">(Variant C, locked)</span></h1>
+  <p class="meta">Three-part loader UI. Category is metadata + a filter dimension, never a nesting level — hierarchy depth stays at three.</p>
+  <p class="goal"><b>Product goal — eliminate secondary delivery runs.</b> Today loaders don't verify against paper, so missed tags send a truck back. This design's job is to create <b>friction at the departure moment</b>.</p>
+  <p class="hier"><b>Hierarchy:</b> Delivery run = bin <code>X8</code> → Order = <code>bin.suffix</code> (<code>X8.1</code>, <code>X8.2</code>, <code>X8.3</code>) → status-grouped tags. Category rides along as the "where do I walk" dimension.</p>
+  <div class="legend">
+    <span class="pill notscan">Not scanned</span>
+    <span class="pill short">Short</span>
+    <span class="pill scan">Scanned</span>
+    <span class="pill load">Loaded</span>
+    <span class="pill pend">Pending — backfill</span>
+  </div>
+  <div class="screens">
+    <div class="col">
+      <div class="frameLbl">1 · In-progress view (default)</div>
+      <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom.</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar">
+          <div class="binrow"><span class="binlbl">Delivery run</span><span class="binval">X8</span><span class="runtag">3 orders</span></div>
+          <div class="cust">Aldine Westfield Ph2</div>
+          <div class="sub">ships 06/12/26 · 22 tags</div>
+          <div class="orders">X8.1 · X8.2 · X8.3</div>
+        </div>
+        <div class="viewtog"><div class="vt on">In progress</div><div class="vt">Punch list <span class="cnt grey">14</span></div></div>
+        <div class="prog"><div class="row"><span class="big">8 <span class="small">of 22 loaded</span></span><span class="small">14 left</span></div><div class="bar"><i style="width:36%"></i></div></div>
+        <div class="rowlbl">Filter by category</div>
+        <div class="catbar">
+          <div class="ctab active"><span class="nm">All</span><span class="n">22</span></div>
+          <div class="ctab"><span class="nm">Rebar</span><span class="n">8</span></div>
+          <div class="ctab"><span class="nm">Tendon</span><span class="n">5</span></div>
+          <div class="ctab"><span class="nm">Hardware</span><span class="n">4</span></div>
+          <div class="ctab"><span class="nm">Lumber</span><span class="n">2</span></div>
+          <div class="ctab pend"><span class="nm">Pending</span><span class="n">3</span></div>
+        </div>
+        <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">2 of 8 loaded</span></div>
+        <div class="secthdr notscan">○ Not scanned — grab these<span class="n">3</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">T-04</span><span class="mid"><span class="spec">0.6" strand · 44'</span></span><span class="catchip">Tendon</span><span class="st notscan">Not scan</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">H-03</span><span class="mid"><span class="spec">wedges · box</span></span><span class="catchip">Hardware</span><span class="st notscan">Not scan</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">L-02</span><span class="mid"><span class="spec">4x4 blocking · 48"</span></span><span class="catchip">Lumber</span><span class="st notscan">Not scan</span></div>
+        <div class="secthdr short">⚠ Short — tell your lead<span class="n">1</span></div>
+        <div class="tag"><span class="dot d-short"></span><span class="num">#42</span><span class="mid"><span class="spec">8B03 · 30-04 · <b style="color:var(--bad)">2 of 12 missing</b></span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="catchip">Rebar</span><span class="st short">Short</span></div>
+        <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
+        <div class="tag"><span class="dot d-scan"></span><span class="num">T-03</span><span class="mid"><span class="spec">0.5" strand · 51'</span></span><span class="catchip">Tendon</span><span class="st scan">Scanned</span></div>
+        <div class="secthdr pendh">☁ Pending — backfill<span class="n">1</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-88</span><span class="mid"><span class="spec">HPT Cloud · GUID f3a1… · category TBD</span></span><span class="st pend">Pending</span></div>
+        <div class="secthdr load">✓ Loaded<span class="n">2</span></div>
+        <div class="tag doneRow"><span class="dot d-load"></span><span class="num">#39</span><span class="mid"><span class="spec">8B01 · 30-04 · qty 12</span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="load"></span><span class="catchip">Rebar</span><span class="st load">Loaded</span></div>
+        <div class="tag doneRow"><span class="dot d-load"></span><span class="num">#40</span><span class="mid"><span class="spec">8B02 · 28-00 · qty 6</span></span><span class="shape" data-asa="17" data-dims='{"A":"1-04","B":"26-08"}' data-st="load"></span><span class="catchip">Rebar</span><span class="st load">Loaded</span></div>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="frameLbl">2 · Punch-list view (toggle)</div>
+      <div class="frameSub">Bin → Category → missing tags with "walk to" hints.</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar">
+          <div class="binrow"><span class="binlbl">Delivery run</span><span class="binval">X8</span><span class="runtag">3 orders</span></div>
+          <div class="cust">Aldine Westfield Ph2</div><div class="sub">ships 06/12/26 · 22 tags</div>
+        </div>
+        <div class="viewtog"><div class="vt">In progress</div><div class="vt on">Punch list <span class="cnt grey">14</span></div></div>
+        <div class="prog"><div class="row"><span class="big">8 <span class="small">of 22 loaded</span></span><span class="small">36%</span></div><div class="bar"><i style="width:36%"></i></div></div>
+        <div class="plhdr">Still to load<span class="tot">14 tags · 5 areas</span></div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">▭</span><span class="nmwrap"><span class="nm">Rebar</span><span class="walk">→ cutting area / 20 Station</span></span><span class="badge grey">3</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">#42</span><span class="spec">8B03 · 2 of 12 missing</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="ord">X8.2</span><span class="st short" style="color:var(--bad)">Short</span></div>
+            <div class="pl"><span class="num">#1</span><span class="spec">STR · 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="ord">X8.1</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">#41</span><span class="spec">3C15 · 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="ord">X8.3</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">〰</span><span class="nmwrap"><span class="nm">Tendon</span><span class="walk">→ PT Atlas / Hayes</span></span><span class="badge grey">3</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">T-04</span><span class="spec">0.6" strand · 44'</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">T-05</span><span class="spec">anchor set</span><span class="ord">X8.3</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">T-03</span><span class="spec">0.5" strand · 51'</span><span class="ord">X8.2</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">⬡</span><span class="nmwrap"><span class="nm">Hardware</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge grey">3</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">H-02</span><span class="spec">pocket formers · qty 40</span><span class="ord">X8.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">H-03</span><span class="spec">wedges · box</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">H-04</span><span class="spec">chairs · bundle</span><span class="ord">X8.3</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">▬</span><span class="nmwrap"><span class="nm">Lumber</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge grey">2</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">L-01</span><span class="spec">2x4 forming · 96"</span><span class="ord">X8.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">L-02</span><span class="spec">4x4 blocking · 48"</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">☁</span><span class="nmwrap"><span class="nm" style="color:var(--warn)">Pending — backfill</span><span class="walk" style="color:#b9903f">→ area unknown until category resolves</span></span><span class="badge amber">3</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">C-88</span><span class="spec">HPT Cloud · f3a1…</span><span class="ord">X8.2</span><span class="st pend" style="color:var(--warn)">Pending</span></div>
+            <div class="pl"><span class="num">C-89</span><span class="spec">HPT Cloud · 7b02…</span><span class="ord">X8.3</span><span class="st pend" style="color:var(--warn)">Pending</span></div>
+            <div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="ord">X8.3</span><span class="st pend" style="color:var(--warn)">Pending</span></div>
+          </div>
+        </div>
+        <button class="closebtn blocked">Complete delivery run</button>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="frameLbl">3a · Close-out — all loaded</div>
+      <div class="frameSub">22 of 22. Tapping clears the driver to depart.</div>
+      <div class="phone">
+        <div class="gate green">
+          <div class="gbig">✓</div>
+          <div class="gmain">READY TO DEPART</div>
+          <div class="gsub">All 22 tags loaded<br>across X8.1 · X8.2 · X8.3</div>
+          <div class="gmeta">Run X8 · Aldine Westfield Ph2<br>Rebar 8 · Tendon 5 · Hardware 4 · Lumber 2 · Cloud 3</div>
+          <button class="gbtn">Clear driver to depart</button>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="frameLbl">3b · Close-out — blocked + override</div>
+      <div class="frameSub">20 of 22. Override needs a note AND a photo.</div>
+      <div class="phone"><div class="scr blockscr">
+        <div class="blockhdr">
+          <div class="bi">🛑</div>
+          <h2>CAN'T CLOSE OUT</h2>
+          <div class="bs"><b>2 tags are not on the truck.</b><br>Leaving now means a second run.</div>
+        </div>
+        <div class="plhdr" style="color:var(--bad)">Missing<span class="tot">2 tags · 2 areas</span></div>
+        <div class="pcat hot">
+          <div class="pchead"><span class="ic">▬</span><span class="nmwrap"><span class="nm">Lumber</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge red">1</span></div>
+          <div class="pcbody"><div class="pl"><span class="num">L-02</span><span class="spec">4x4 blocking · 48"</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div></div>
+        </div>
+        <div class="pcat hot">
+          <div class="pchead"><span class="ic">☁</span><span class="nmwrap"><span class="nm" style="color:var(--warn)">Pending — backfill</span><span class="walk" style="color:#b9903f">→ area unknown</span></span><span class="badge red">1</span></div>
+          <div class="pcbody"><div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="ord">X8.3</span><span class="st pend" style="color:var(--warn)">Pending</span></div></div>
+        </div>
+        <div class="acts">
+          <button class="act-find">← Go find them</button>
+          <button class="act-over">Override — ship short anyway</button>
+        </div>
+        <div class="modal">
+          <h3>⚠ Override — ship short</h3>
+          <div class="msub">Recorded against run <b>X8</b> and your name. Both fields required.</div>
+          <div class="req"><span class="dot"></span>1 · Why are you shipping short?</div>
+          <textarea class="ta filled">Customer approved short ship — L-02 and C-90 will follow up Friday. Confirmed w/ Jose.</textarea>
+          <div class="charc">92 / 300</div>
+          <div class="req"><span class="dot"></span>2 · Photo of the loaded truck</div>
+          <button class="photobtn done">✓ Photo captured — tap to retake</button>
+          <div class="mirror">Same capture flow as an unscannable rebar tag. Uploads via <code>/api/photo-upload</code> as <code>kind:"closeout-override"</code>.</div>
+          <button class="confirm armed">Confirm override &amp; close out</button>
+        </div>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="frameLbl">4 · Wrong-bin scan (extends existing modal)</div>
+      <div class="frameSub">Loader is on X4 and scans a tag belonging to X8. Combine is the new option.</div>
+      <div class="phone"><div class="misscan">
+        <div class="mtitle">⚠ DIFFERENT BIN</div>
+        <div class="msub">This tag isn't part of the run you're loading.</div>
+        <div class="scanned">
+          <div class="sl">Tag you just scanned</div>
+          <div class="srow"><span class="snum">#41</span><span class="sspec">3C15 · 6-06 · qty 24 · Rebar</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span></div>
+        </div>
+        <div class="binpair">
+          <div class="bincard cur"><div class="bl">You're loading</div><div class="bn">X4</div><div class="bc">Systel Addition</div><div class="bm">3 of 9 loaded · 2 orders</div><div class="bbar"><i style="width:33%"></i></div></div>
+          <div class="vs">vs</div>
+          <div class="bincard other"><div class="bl">Tag belongs to</div><div class="bn">X8</div><div class="bc">Aldine Westfield Ph2</div><div class="bm">8 of 22 loaded · 3 orders</div><div class="bbar"><i style="width:36%"></i></div></div>
+        </div>
+        <div class="macts">
+          <button class="m-comb">🔗 Combine — one truck, both bins</button>
+          <button class="m-cancel">✕ Cancel scan — stay on X4</button>
+          <div class="msecond"><button>Switch to X8</button><button>Stop bin</button></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="col">
+      <div class="frameLbl">5 · Combined bins</div>
+      <div class="frameSub">X4 and X8 share one delivery run. One close-out, one punch list.</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar combined">
+          <div class="binrow"><span class="binlbl">Delivery run</span><span class="binval" style="font-size:24px">X4 + X8</span><span class="combtag">🔗 Combined</span></div>
+          <div class="cust">Systel Addition + Aldine Westfield Ph2</div>
+          <div class="sub">31 tags · 5 orders · one truck</div>
+          <div class="orders">X4.1 · X4.2 · X8.1 · X8.2 · X8.3</div>
+        </div>
+        <div class="viewtog"><div class="vt">In progress</div><div class="vt on">Punch list <span class="cnt grey">20</span></div></div>
+        <div class="prog"><div class="row"><span class="big">11 <span class="small">of 31 loaded</span></span><span class="small">35%</span></div><div class="bar"><i style="width:35%"></i></div></div>
+        <div class="plhdr">Still to load<span class="tot">20 tags · both bins</span></div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">▭</span><span class="nmwrap"><span class="nm">Rebar</span><span class="walk">→ cutting area / 20 Station</span></span><span class="badge grey">6</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">#42</span><span class="spec">8B03 · 2 of 12 missing</span><span class="binchip">X8.2</span><span class="st short" style="color:var(--bad)">Short</span></div>
+            <div class="pl"><span class="num">#2</span><span class="spec">STR · 20-00</span><span class="binchip">X4.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">#7</span><span class="spec">6N05 · 12-04</span><span class="binchip">X4.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">#12</span><span class="spec">5N01 · 8-06</span><span class="binchip">X4.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">#1</span><span class="spec">STR · 11-08</span><span class="binchip">X8.1</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">#41</span><span class="spec">3C15 · 6-06</span><span class="binchip">X8.3</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+          </div>
+        </div>
+        <button class="closebtn blocked">Complete delivery run · X4 + X8</button>
+      </div></div>
+    </div>
+  </div>
+  <div class="ann">
+    <b>How the three parts work together.</b> The in-progress view is where the loader lives; the punch list is the same data pivoted into a walking route; the close-out gate is the only new hard stop.
+    <br><br>
+    <b>Rebar shape thumbnails</b> — restored via the existing <code>shapeSVG()</code> function from <code>load_app.html</code>. Reuse, don't fork.
+    <br><br>
+    <b>Wrong-bin scan</b> — not silent-fail today. Existing modal (<code>showBinSwitch</code>) already offers Switch/Stay/Stop. This adds Combine as a fourth path and shows both bin summaries side by side.
+    <br><br>
+    <b>Full design note + open questions</b> live in the private wip-processor repo at <code>docs/spec/loader-category-status-design-2026-07-21.md</code>.
+  </div>
+  <script>
+  const ASA=["A","B","C","D","E","F","G","H","J","K","O","R"];
+  function dimInches(v){ const m=String(v||"").match(/^(\d+)-(\d+)/); if(!m){ const n=parseFloat(v); return isNaN(n)?12:n; } return (+m[1])*12+(+m[2]); }
+  function legsFrom(dims){ const o=[]; if(dims) for(const L of ASA){ const v=dims[L]; if(v!==undefined&&v!==null&&String(v).toUpperCase()!=="NULL"&&String(v)!=="") o.push(dimInches(v)); } return o; }
+  function shapeSVG(asa,dims,stroke,big){
+    const n=legsFrom(dims).length, closed=/^T/i.test(asa||"")||n>=5;
+    const W=big?120:42,H=big?80:24,sw=big?4:2,pad=big?12:5,col=stroke||"#cfe0f5";
+    const head='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round">';
+    if((asa||"").toUpperCase()==="STR"||n<=1) return head+'<line x1="'+pad+'" y1="'+(H/2)+'" x2="'+(W-pad)+'" y2="'+(H/2)+'"/></svg>';
+    const x0=pad,x1=W-pad,y0=pad,y1=H-pad;
+    if(closed) return head+'<path d="M'+(x0+(big?14:6))+' '+y0+' H'+x1+' V'+y1+' H'+x0+' V'+(y0+(big?10:4))+'"/></svg>';
+    if(n===2) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+'"/></svg>';
+    if(n===3) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+' V'+y0+'"/></svg>';
+    return head+'<path d="M'+x0+' '+(y0+(big?12:5))+' V'+y1+' H'+x1+' V'+y0+' H'+(x0+(big?40:18))+'"/></svg>';
+  }
+  const STROKE={ load:"#46d684", short:"#ff3b30", scan:"#7da2c9", notscan:"#8a94a0" };
+  document.querySelectorAll(".shape[data-asa]").forEach(function(el){
+    let dims={}; try{ dims=JSON.parse(el.getAttribute("data-dims")||"{}"); }catch(e){}
+    el.innerHTML=shapeSVG(el.getAttribute("data-asa"), dims, STROKE[el.getAttribute("data-st")]||"#cfe0f5", false);
+  });
+  </script>
+</body>
+</html>
