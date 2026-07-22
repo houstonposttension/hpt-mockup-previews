@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Variant C (LOCKED) — Loader: in-progress · punch-list · close-out gate</title>
-<!-- GA-WIP-193 rev 3 (2026-07-21). Variant C locked; A/B dropped.
-     See private repo houstonposttension/wip-processor docs/spec/loader-category-status-design-2026-07-21.md
-     for the full design note + open questions. This is a preview host, not source. -->
+<title>Variant C — Loader: in-progress · punch-list · close-out gate</title>
+<!-- Loader mockup rev 6 (2026-07-21). Variant C locked.
+     See the private repo houstonposttension/wip-processor
+     docs/spec/loader-category-status-design-2026-07-21.md for the full design note,
+     data-model notes and open questions. This is a preview host, not source. -->
 <style>
   :root{
     --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
@@ -23,9 +24,9 @@
   .meta b{ color:#cfe0f5; }
   .goal{ border-left:3px solid var(--ok); padding:8px 0 8px 13px; margin:14px 0 6px; max-width:860px; font-size:13px; color:#bfe6cd; line-height:1.6; }
   .goal b{ color:var(--ok); }
-  .hier{ font-size:12px; color:var(--faint); margin:10px 0 4px; max-width:860px; line-height:1.7; }
+  .hier{ font-size:12px; color:var(--faint); margin:10px 0 4px; max-width:860px; line-height:1.9; }
   .hier code{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
-  .legend{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 26px; max-width:860px; }
+  .legend{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 10px; max-width:860px; }
   .legend .pill{ font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); }
   .pill.notscan{ background:#0e1217; color:var(--dim); }
   .pill.short{ background:rgba(255,59,48,.13); color:var(--bad); border-color:rgba(255,59,48,.4); }
@@ -58,8 +59,9 @@
   .bar{ height:8px; background:#0b0d10; border-radius:999px; margin-top:8px; overflow:hidden; }
   .bar > i{ display:block; height:100%; background:var(--ok); }
   .rowlbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#4a545f; margin:0 2px 5px; }
-  .catbar{ display:flex; gap:6px; overflow-x:auto; padding:2px 2px 9px; border-bottom:1px solid var(--line); margin-bottom:9px; }
-  .ctab{ flex:0 0 auto; border:1px solid var(--line); border-radius:20px; padding:6px 11px; background:#0e1217; display:flex; align-items:center; gap:6px; }
+  /* Category filter WRAPS onto 2 rows — no horizontal scroll (rev 6). */
+  .catbar{ display:flex; flex-wrap:wrap; gap:6px; padding:2px 2px 10px; border-bottom:1px solid var(--line); margin-bottom:9px; }
+  .ctab{ flex:0 0 auto; border:1px solid var(--line); border-radius:20px; padding:6px 10px; background:#0e1217; display:flex; align-items:center; gap:5px; }
   .ctab .nm{ font-size:12px; font-weight:700; color:var(--dim); }
   .ctab .n{ font-size:10.5px; font-weight:800; color:var(--faint); background:#1a2027; border-radius:20px; padding:1px 6px; }
   .ctab.active{ background:rgba(59,130,246,.14); border-color:rgba(59,130,246,.5); }
@@ -74,6 +76,7 @@
   .secthdr.notscan{ color:#cfe0f5; } .secthdr.short{ color:var(--bad); }
   .secthdr.scan{ color:var(--blue-soft); } .secthdr.load{ color:var(--dim); }
   .secthdr.pendh{ color:var(--warn); }
+  .readysub{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:#4a545f; margin:8px 2px 3px; }
   .tag{ display:flex; align-items:center; gap:9px; padding:9px; border:1px solid #223; border-radius:10px; margin:5px 0; background:#111722; }
   .tag.doneRow{ opacity:.5; }
   .tag .dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
@@ -85,6 +88,13 @@
   .tag .spec{ font-size:10.5px; color:var(--dim); }
   .catchip{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#8fa4bb; border:1px solid #2b3947; border-radius:4px; padding:1px 5px; }
   .shape{ width:46px; height:28px; background:#0e1217; border:.5px solid var(--line); border-radius:7px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  /* Upstream lifecycle state chip (rev 6) */
+  .state{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.35px; padding:2px 6px; border-radius:5px; white-space:nowrap; flex:0 0 auto; }
+  .state.staged{ background:rgba(22,192,96,.14); color:#46d684; border:1px solid rgba(22,192,96,.38); }
+  .state.machine{ background:rgba(255,176,32,.13); color:var(--warn); border:1px solid rgba(255,176,32,.38); }
+  .state.office{ background:rgba(59,130,246,.13); color:var(--blue-soft); border:1px solid rgba(59,130,246,.32); }
+  .state.notprinted{ background:#0e1217; color:var(--faint); border:1px solid var(--line); }
+  .state.unknown{ background:rgba(255,176,32,.08); color:#b9903f; border:1px dashed rgba(255,176,32,.4); }
   .tag .st{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
   .st.notscan{ color:var(--dim); } .st.short{ color:var(--bad); }
   .st.scan{ color:var(--blue-soft); } .st.load{ color:var(--faint); } .st.pend{ color:var(--warn); }
@@ -139,7 +149,6 @@
   .photobtn{ width:100%; padding:13px; border:1px dashed #4a525c; border-radius:11px; background:#0e1217; color:#cfe0f5; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; }
   .photobtn.done{ border-style:solid; border-color:#1f6b40; background:#0b1f14; color:#46d684; }
   .mirror{ font-size:10px; color:var(--faint); margin-top:7px; line-height:1.5; font-style:italic; }
-  .mirror code{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#8fa4bb; font-style:normal; }
   .confirm{ width:100%; margin-top:14px; padding:14px; border:none; border-radius:13px; background:#4a3a1a; color:#c9a95f; font-size:15px; font-weight:800; }
   .confirm.armed{ background:var(--warn); color:#2a1c00; }
   .misscan{ min-height:660px; display:flex; flex-direction:column; justify-content:center; padding:20px 16px; background:#0e1a2a; }
@@ -178,7 +187,7 @@
 </style>
 </head>
 <body>
-  <h1>Loader — in-progress · punch-list · close-out gate <span style="color:var(--faint);font-weight:400">(Variant C, locked)</span></h1>
+  <h1>Loader — in-progress · punch-list · close-out gate <span style="color:var(--faint);font-weight:400">(Variant C)</span></h1>
   <p class="meta">Three-part loader UI. Category is metadata + a filter dimension, never a nesting level — hierarchy depth stays at three.</p>
   <p class="goal"><b>Product goal — eliminate secondary delivery runs.</b> Today loaders don't verify against paper, so missed tags send a truck back. This design's job is to create <b>friction at the departure moment</b>.</p>
   <p class="hier"><b>Hierarchy:</b> Delivery run = bin <code>X8</code> → Order = <code>bin.suffix</code> (<code>X8.1</code>, <code>X8.2</code>, <code>X8.3</code>) → status-grouped tags. Category rides along as the "where do I walk" dimension.</p>
@@ -189,7 +198,16 @@
     <span class="pill load">Loaded</span>
     <span class="pill pend">Pending — backfill</span>
   </div>
+  <p class="hier"><b>Upstream state</b> — where the tag actually is right now:
+    <span class="state notprinted">Not printed</span>
+    <span class="state office">In office</span>
+    <span class="state machine">At &lt;machine&gt;</span>
+    <span class="state staged">Staged</span>
+    <span class="state unknown">State ?</span>
+    — this replaces the generic "Not scanned" label on each row, so you can tell what's ready to grab
+    from what's still being made.</p>
   <div class="screens">
+
     <div class="col">
       <div class="frameLbl">1 · In-progress view (default)</div>
       <div class="frameSub">Bin → Order → status-grouped tags. Loaded sinks to the bottom.</div>
@@ -212,24 +230,27 @@
           <div class="ctab pend"><span class="nm">Pending</span><span class="n">3</span></div>
         </div>
         <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">2 of 8 loaded</span></div>
-        <div class="secthdr notscan">○ Not scanned — grab these<span class="n">3</span></div>
-        <div class="tag"><span class="dot d-notscan"></span><span class="num">T-04</span><span class="mid"><span class="spec">0.6" strand · 44'</span></span><span class="catchip">Tendon</span><span class="st notscan">Not scan</span></div>
-        <div class="tag"><span class="dot d-notscan"></span><span class="num">H-03</span><span class="mid"><span class="spec">wedges · box</span></span><span class="catchip">Hardware</span><span class="st notscan">Not scan</span></div>
-        <div class="tag"><span class="dot d-notscan"></span><span class="num">L-02</span><span class="mid"><span class="spec">4x4 blocking · 48"</span></span><span class="catchip">Lumber</span><span class="st notscan">Not scan</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">3</span></div>
+        <div class="readysub">▸ Ready to grab</div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">H-03</span><span class="mid"><span class="spec">wedges · box</span></span><span class="catchip">Hardware</span><span class="state staged">Staged</span></div>
+        <div class="readysub">▸ Not ready — don't walk for these yet</div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">T-04</span><span class="mid"><span class="spec">0.6" strand · 44'</span></span><span class="catchip">Tendon</span><span class="state machine">At PT Atlas</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">L-02</span><span class="mid"><span class="spec">4x4 blocking · 48"</span></span><span class="catchip">Lumber</span><span class="state notprinted">Not printed</span></div>
         <div class="secthdr short">⚠ Short — tell your lead<span class="n">1</span></div>
-        <div class="tag"><span class="dot d-short"></span><span class="num">#42</span><span class="mid"><span class="spec">8B03 · 30-04 · <b style="color:var(--bad)">2 of 12 missing</b></span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="catchip">Rebar</span><span class="st short">Short</span></div>
+        <div class="tag"><span class="dot d-short"></span><span class="num">#42</span><span class="mid"><span class="spec">8B03 · 30-04 · <b style="color:var(--bad)">2 of 12 missing</b></span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="state machine">At Shear</span><span class="st short">Short</span></div>
         <div class="secthdr scan">◐ Scanned — not on truck yet<span class="n">1</span></div>
         <div class="tag"><span class="dot d-scan"></span><span class="num">T-03</span><span class="mid"><span class="spec">0.5" strand · 51'</span></span><span class="catchip">Tendon</span><span class="st scan">Scanned</span></div>
         <div class="secthdr pendh">☁ Pending — backfill<span class="n">1</span></div>
-        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-88</span><span class="mid"><span class="spec">HPT Cloud · GUID f3a1… · category TBD</span></span><span class="st pend">Pending</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-88</span><span class="mid"><span class="spec">HPT Cloud · GUID f3a1… · category TBD</span></span><span class="state unknown">State ?</span><span class="st pend">Pending</span></div>
         <div class="secthdr load">✓ Loaded<span class="n">2</span></div>
         <div class="tag doneRow"><span class="dot d-load"></span><span class="num">#39</span><span class="mid"><span class="spec">8B01 · 30-04 · qty 12</span></span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="load"></span><span class="catchip">Rebar</span><span class="st load">Loaded</span></div>
         <div class="tag doneRow"><span class="dot d-load"></span><span class="num">#40</span><span class="mid"><span class="spec">8B02 · 28-00 · qty 6</span></span><span class="shape" data-asa="17" data-dims='{"A":"1-04","B":"26-08"}' data-st="load"></span><span class="catchip">Rebar</span><span class="st load">Loaded</span></div>
       </div></div>
     </div>
+
     <div class="col">
       <div class="frameLbl">2 · Punch-list view (toggle)</div>
-      <div class="frameSub">Bin → Category → missing tags with "walk to" hints.</div>
+      <div class="frameSub">Bin → Category → what's still missing, with "walk to" hints. A walking route, not a report.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
           <div class="binrow"><span class="binlbl">Delivery run</span><span class="binval">X8</span><span class="runtag">3 orders</span></div>
@@ -241,45 +262,46 @@
         <div class="pcat">
           <div class="pchead"><span class="ic">▭</span><span class="nmwrap"><span class="nm">Rebar</span><span class="walk">→ cutting area / 20 Station</span></span><span class="badge grey">3</span></div>
           <div class="pcbody">
-            <div class="pl"><span class="num">#42</span><span class="spec">8B03 · 2 of 12 missing</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="ord">X8.2</span><span class="st short" style="color:var(--bad)">Short</span></div>
             <div class="pl"><span class="num">#1</span><span class="spec">STR · 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="ord">X8.1</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
             <div class="pl"><span class="num">#41</span><span class="spec">3C15 · 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="ord">X8.3</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">#42</span><span class="spec">8B03 · 2 of 12 missing</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="ord">X8.2</span><span class="state machine">At Shear</span></div>
           </div>
         </div>
         <div class="pcat">
           <div class="pchead"><span class="ic">〰</span><span class="nmwrap"><span class="nm">Tendon</span><span class="walk">→ PT Atlas / Hayes</span></span><span class="badge grey">3</span></div>
           <div class="pcbody">
-            <div class="pl"><span class="num">T-04</span><span class="spec">0.6" strand · 44'</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">T-05</span><span class="spec">anchor set</span><span class="ord">X8.3</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
             <div class="pl"><span class="num">T-03</span><span class="spec">0.5" strand · 51'</span><span class="ord">X8.2</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">T-04</span><span class="spec">0.6" strand · 44'</span><span class="ord">X8.2</span><span class="state machine">At PT Atlas</span></div>
+            <div class="pl"><span class="num">T-05</span><span class="spec">anchor set</span><span class="ord">X8.3</span><span class="state machine">At Hayes</span></div>
           </div>
         </div>
         <div class="pcat">
           <div class="pchead"><span class="ic">⬡</span><span class="nmwrap"><span class="nm">Hardware</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge grey">3</span></div>
           <div class="pcbody">
-            <div class="pl"><span class="num">H-02</span><span class="spec">pocket formers · qty 40</span><span class="ord">X8.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">H-03</span><span class="spec">wedges · box</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">H-04</span><span class="spec">chairs · bundle</span><span class="ord">X8.3</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">H-02</span><span class="spec">pocket formers · qty 40</span><span class="ord">X8.1</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">H-03</span><span class="spec">wedges · box</span><span class="ord">X8.2</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">H-04</span><span class="spec">chairs · bundle</span><span class="ord">X8.3</span><span class="state office">In office</span></div>
           </div>
         </div>
         <div class="pcat">
           <div class="pchead"><span class="ic">▬</span><span class="nmwrap"><span class="nm">Lumber</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge grey">2</span></div>
           <div class="pcbody">
-            <div class="pl"><span class="num">L-01</span><span class="spec">2x4 forming · 96"</span><span class="ord">X8.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">L-02</span><span class="spec">4x4 blocking · 48"</span><span class="ord">X8.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
+            <div class="pl"><span class="num">L-01</span><span class="spec">2x4 forming · 96"</span><span class="ord">X8.1</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">L-02</span><span class="spec">4x4 blocking · 48"</span><span class="ord">X8.2</span><span class="state notprinted">Not printed</span></div>
           </div>
         </div>
         <div class="pcat">
           <div class="pchead"><span class="ic">☁</span><span class="nmwrap"><span class="nm" style="color:var(--warn)">Pending — backfill</span><span class="walk" style="color:#b9903f">→ area unknown until category resolves</span></span><span class="badge amber">3</span></div>
           <div class="pcbody">
-            <div class="pl"><span class="num">C-88</span><span class="spec">HPT Cloud · f3a1…</span><span class="ord">X8.2</span><span class="st pend" style="color:var(--warn)">Pending</span></div>
-            <div class="pl"><span class="num">C-89</span><span class="spec">HPT Cloud · 7b02…</span><span class="ord">X8.3</span><span class="st pend" style="color:var(--warn)">Pending</span></div>
-            <div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="ord">X8.3</span><span class="st pend" style="color:var(--warn)">Pending</span></div>
+            <div class="pl"><span class="num">C-88</span><span class="spec">HPT Cloud · f3a1…</span><span class="ord">X8.2</span><span class="state unknown">State ?</span></div>
+            <div class="pl"><span class="num">C-89</span><span class="spec">HPT Cloud · 7b02…</span><span class="ord">X8.3</span><span class="state unknown">State ?</span></div>
+            <div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="ord">X8.3</span><span class="state unknown">State ?</span></div>
           </div>
         </div>
         <button class="closebtn blocked">Complete delivery run</button>
       </div></div>
     </div>
+
     <div class="col">
       <div class="frameLbl">3a · Close-out — all loaded</div>
       <div class="frameSub">22 of 22. Tapping clears the driver to depart.</div>
@@ -293,9 +315,10 @@
         </div>
       </div>
     </div>
+
     <div class="col">
       <div class="frameLbl">3b · Close-out — blocked + override</div>
-      <div class="frameSub">20 of 22. Override needs a note AND a photo.</div>
+      <div class="frameSub">20 of 22. Close-out is refused; override needs a note AND a photo.</div>
       <div class="phone"><div class="scr blockscr">
         <div class="blockhdr">
           <div class="bi">🛑</div>
@@ -323,14 +346,15 @@
           <div class="charc">92 / 300</div>
           <div class="req"><span class="dot"></span>2 · Photo of the loaded truck</div>
           <button class="photobtn done">✓ Photo captured — tap to retake</button>
-          <div class="mirror">Same capture flow as an unscannable rebar tag. Uploads via <code>/api/photo-upload</code> as <code>kind:"closeout-override"</code>.</div>
+          <div class="mirror">Same capture flow as an unscannable rebar tag — prompt → camera → "Use this photo".</div>
           <button class="confirm armed">Confirm override &amp; close out</button>
         </div>
       </div></div>
     </div>
+
     <div class="col">
-      <div class="frameLbl">4 · Wrong-bin scan (extends existing modal)</div>
-      <div class="frameSub">Loader is on X4 and scans a tag belonging to X8. Combine is the new option.</div>
+      <div class="frameLbl">4 · Wrong-bin scan</div>
+      <div class="frameSub">Loader is on X4 and scans a tag belonging to X8. Both bins shown side by side. "Combine" is the new option.</div>
       <div class="phone"><div class="misscan">
         <div class="mtitle">⚠ DIFFERENT BIN</div>
         <div class="msub">This tag isn't part of the run you're loading.</div>
@@ -348,11 +372,13 @@
           <button class="m-cancel">✕ Cancel scan — stay on X4</button>
           <div class="msecond"><button>Switch to X8</button><button>Stop bin</button></div>
         </div>
+        <div class="mexist">"Switch" and "Stop" already exist today; only "Combine" is new.</div>
       </div></div>
     </div>
+
     <div class="col">
       <div class="frameLbl">5 · Combined bins</div>
-      <div class="frameSub">X4 and X8 share one delivery run. One close-out, one punch list.</div>
+      <div class="frameSub">X4 and X8 share one delivery run: one close-out, one punch list across both.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar combined">
           <div class="binrow"><span class="binlbl">Delivery run</span><span class="binval" style="font-size:24px">X4 + X8</span><span class="combtag">🔗 Combined</span></div>
@@ -366,47 +392,103 @@
         <div class="pcat">
           <div class="pchead"><span class="ic">▭</span><span class="nmwrap"><span class="nm">Rebar</span><span class="walk">→ cutting area / 20 Station</span></span><span class="badge grey">6</span></div>
           <div class="pcbody">
-            <div class="pl"><span class="num">#42</span><span class="spec">8B03 · 2 of 12 missing</span><span class="binchip">X8.2</span><span class="st short" style="color:var(--bad)">Short</span></div>
-            <div class="pl"><span class="num">#2</span><span class="spec">STR · 20-00</span><span class="binchip">X4.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">#7</span><span class="spec">6N05 · 12-04</span><span class="binchip">X4.1</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">#12</span><span class="spec">5N01 · 8-06</span><span class="binchip">X4.2</span><span class="st notscan" style="color:var(--dim)">Not scan</span></div>
-            <div class="pl"><span class="num">#1</span><span class="spec">STR · 11-08</span><span class="binchip">X8.1</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
-            <div class="pl"><span class="num">#41</span><span class="spec">3C15 · 6-06</span><span class="binchip">X8.3</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">#1</span><span class="spec">STR · 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="binchip">X8.1</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">#41</span><span class="spec">3C15 · 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="binchip">X8.3</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">#2</span><span class="spec">STR · 20-00</span><span class="shape" data-asa="STR" data-dims='{}' data-st="notscan"></span><span class="binchip">X4.1</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">#7</span><span class="spec">6N05 · 12-04</span><span class="shape" data-asa="17" data-dims='{"B":"2-10","C":"3-00","D":"2-10"}' data-st="notscan"></span><span class="binchip">X4.1</span><span class="state machine">At Bender</span></div>
+            <div class="pl"><span class="num">#42</span><span class="spec">8B03 · 2 of 12 missing</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="binchip">X8.2</span><span class="state machine">At Shear</span></div>
+            <div class="pl"><span class="num">#12</span><span class="spec">5N01 · 8-06</span><span class="shape" data-asa="17" data-dims='{"A":"2-00","B":"6-06"}' data-st="notscan"></span><span class="binchip">X4.2</span><span class="state notprinted">Not printed</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">〰</span><span class="nmwrap"><span class="nm">Tendon</span><span class="walk">→ PT Atlas / Hayes</span></span><span class="badge grey">5</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">T-03</span><span class="spec">0.5" strand · 51'</span><span class="binchip">X8.2</span><span class="st scan" style="color:var(--blue-soft)">Scanned</span></div>
+            <div class="pl"><span class="num">T-06</span><span class="spec">0.6" strand · 36'</span><span class="binchip">X4.1</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">T-04</span><span class="spec">0.6" strand · 44'</span><span class="binchip">X8.2</span><span class="state machine">At PT Atlas</span></div>
+            <div class="pl"><span class="num">T-05</span><span class="spec">anchor set</span><span class="binchip">X8.3</span><span class="state machine">At Hayes</span></div>
+            <div class="pl"><span class="num">T-07</span><span class="spec">0.5" strand · 40'</span><span class="binchip">X4.2</span><span class="state office">In office</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">⬡</span><span class="nmwrap"><span class="nm">Hardware</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge grey">4</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">H-02</span><span class="spec">pocket formers · qty 40</span><span class="binchip">X8.1</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">H-03</span><span class="spec">wedges · box</span><span class="binchip">X8.2</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">H-05</span><span class="spec">bearing plates · qty 24</span><span class="binchip">X4.2</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">H-04</span><span class="spec">chairs · bundle</span><span class="binchip">X8.3</span><span class="state office">In office</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">▬</span><span class="nmwrap"><span class="nm">Lumber</span><span class="walk">→ location <span class="tbd">TBD</span></span></span><span class="badge grey">2</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">L-01</span><span class="spec">2x4 forming · 96"</span><span class="binchip">X8.1</span><span class="state staged">Staged</span></div>
+            <div class="pl"><span class="num">L-02</span><span class="spec">4x4 blocking · 48"</span><span class="binchip">X8.2</span><span class="state notprinted">Not printed</span></div>
+          </div>
+        </div>
+        <div class="pcat">
+          <div class="pchead"><span class="ic">☁</span><span class="nmwrap"><span class="nm" style="color:var(--warn)">Pending — backfill</span><span class="walk" style="color:#b9903f">→ area unknown</span></span><span class="badge amber">3</span></div>
+          <div class="pcbody">
+            <div class="pl"><span class="num">C-88</span><span class="spec">HPT Cloud · f3a1…</span><span class="binchip">X8.2</span><span class="state unknown">State ?</span></div>
+            <div class="pl"><span class="num">C-89</span><span class="spec">HPT Cloud · 7b02…</span><span class="binchip">X8.3</span><span class="state unknown">State ?</span></div>
+            <div class="pl"><span class="num">C-90</span><span class="spec">HPT Cloud · 1c9d…</span><span class="binchip">X8.3</span><span class="state unknown">State ?</span></div>
           </div>
         </div>
         <button class="closebtn blocked">Complete delivery run · X4 + X8</button>
+        <div class="mexist">One close-out covers both bins. All 31 must be loaded — or overridden — before the driver is cleared.</div>
       </div></div>
     </div>
+
   </div>
+
   <div class="ann">
-    <b>How the three parts work together.</b> The in-progress view is where the loader lives; the punch list is the same data pivoted into a walking route; the close-out gate is the only new hard stop.
+    <b>How the three parts work together.</b> The in-progress view is where the loader lives; the punch
+    list is the same data pivoted into a walking route; the close-out gate is the only new hard stop.
+    The first two views exist mainly to make that gate cheap to satisfy.
     <br><br>
-    <b>Rebar shape thumbnails</b> — restored via the existing <code>shapeSVG()</code> function from <code>load_app.html</code>. Reuse, don't fork.
+    <b>New in rev 6 — upstream state.</b> Rows now show <i>where the tag actually is</i>
+    (<span class="state staged">Staged</span> / <span class="state machine">At Shear</span> /
+    <span class="state office">In office</span> / <span class="state notprinted">Not printed</span>)
+    instead of a flat "Not scanned". Inside the Not-scanned group, rows are ordered by readiness —
+    what you can grab now comes first, so you don't walk to the cutter for a bar that's still being cut.
     <br><br>
-    <b>Wrong-bin scan</b> — not silent-fail today. Existing modal (<code>showBinSwitch</code>) already offers Switch/Stay/Stop. This adds Combine as a fourth path and shows both bin summaries side by side.
+    <b>Also new — the category filter wraps onto two rows</b> instead of scrolling sideways, so nothing
+    is clipped and it works one-handed on a phone.
     <br><br>
-    <b>Full design note + open questions</b> live in the private wip-processor repo at <code>docs/spec/loader-category-status-design-2026-07-21.md</code>.
+    <b>Rebar shape thumbnails</b> show the bend pattern so a piece can be matched by eye, not by reading
+    a spec string. Shapes are schematic — enough to say "yes, that's the right piece".
+    <br><br>
+    <b>Wrong-bin scan</b> isn't a dead end today — the existing prompt already offers Switch / Stay /
+    Stop. This adds <b>Combine</b> as a fourth path and shows both bin summaries side by side.
+    <br><br>
+    <b>Open items still being confirmed:</b> "walk to" locations for Hardware and Lumber; whether
+    combining bins can be undone mid-run; and whether states like <i>waiting on material</i>,
+    <i>QC hold</i> or <i>rework</i> need to show here too.
+    <br><br>
+    Full design note lives in the private <code>wip-processor</code> repo at
+    <code>docs/spec/loader-category-status-design-2026-07-21.md</code>.
   </div>
-  <script>
-  const ASA=["A","B","C","D","E","F","G","H","J","K","O","R"];
-  function dimInches(v){ const m=String(v||"").match(/^(\d+)-(\d+)/); if(!m){ const n=parseFloat(v); return isNaN(n)?12:n; } return (+m[1])*12+(+m[2]); }
-  function legsFrom(dims){ const o=[]; if(dims) for(const L of ASA){ const v=dims[L]; if(v!==undefined&&v!==null&&String(v).toUpperCase()!=="NULL"&&String(v)!=="") o.push(dimInches(v)); } return o; }
-  function shapeSVG(asa,dims,stroke,big){
-    const n=legsFrom(dims).length, closed=/^T/i.test(asa||"")||n>=5;
-    const W=big?120:42,H=big?80:24,sw=big?4:2,pad=big?12:5,col=stroke||"#cfe0f5";
-    const head='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round">';
-    if((asa||"").toUpperCase()==="STR"||n<=1) return head+'<line x1="'+pad+'" y1="'+(H/2)+'" x2="'+(W-pad)+'" y2="'+(H/2)+'"/></svg>';
-    const x0=pad,x1=W-pad,y0=pad,y1=H-pad;
-    if(closed) return head+'<path d="M'+(x0+(big?14:6))+' '+y0+' H'+x1+' V'+y1+' H'+x0+' V'+(y0+(big?10:4))+'"/></svg>';
-    if(n===2) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+'"/></svg>';
-    if(n===3) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+' V'+y0+'"/></svg>';
-    return head+'<path d="M'+x0+' '+(y0+(big?12:5))+' V'+y1+' H'+x1+' V'+y0+' H'+(x0+(big?40:18))+'"/></svg>';
-  }
-  const STROKE={ load:"#46d684", short:"#ff3b30", scan:"#7da2c9", notscan:"#8a94a0" };
-  document.querySelectorAll(".shape[data-asa]").forEach(function(el){
-    let dims={}; try{ dims=JSON.parse(el.getAttribute("data-dims")||"{}"); }catch(e){}
-    el.innerHTML=shapeSVG(el.getAttribute("data-asa"), dims, STROKE[el.getAttribute("data-st")]||"#cfe0f5", false);
-  });
-  </script>
+
+<script>
+const ASA=["A","B","C","D","E","F","G","H","J","K","O","R"];
+function dimInches(v){ const m=String(v||"").match(/^(\d+)-(\d+)/); if(!m){ const n=parseFloat(v); return isNaN(n)?12:n; } return (+m[1])*12+(+m[2]); }
+function legsFrom(dims){ const o=[]; if(dims) for(const L of ASA){ const v=dims[L]; if(v!==undefined&&v!==null&&String(v).toUpperCase()!=="NULL"&&String(v)!=="") o.push(dimInches(v)); } return o; }
+function shapeSVG(asa,dims,stroke,big){
+  const n=legsFrom(dims).length, closed=/^T/i.test(asa||"")||n>=5;
+  const W=big?120:42,H=big?80:24,sw=big?4:2,pad=big?12:5,col=stroke||"#cfe0f5";
+  const head='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round">';
+  if((asa||"").toUpperCase()==="STR"||n<=1) return head+'<line x1="'+pad+'" y1="'+(H/2)+'" x2="'+(W-pad)+'" y2="'+(H/2)+'"/></svg>';
+  const x0=pad,x1=W-pad,y0=pad,y1=H-pad;
+  if(closed) return head+'<path d="M'+(x0+(big?14:6))+' '+y0+' H'+x1+' V'+y1+' H'+x0+' V'+(y0+(big?10:4))+'"/></svg>';
+  if(n===2) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+'"/></svg>';
+  if(n===3) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+' V'+y0+'"/></svg>';
+  return head+'<path d="M'+x0+' '+(y0+(big?12:5))+' V'+y1+' H'+x1+' V'+y0+' H'+(x0+(big?40:18))+'"/></svg>';
+}
+const STROKE={ load:"#46d684", short:"#ff3b30", scan:"#7da2c9", notscan:"#8a94a0" };
+document.querySelectorAll(".shape[data-asa]").forEach(function(el){
+  let dims={}; try{ dims=JSON.parse(el.getAttribute("data-dims")||"{}"); }catch(e){}
+  el.innerHTML=shapeSVG(el.getAttribute("data-asa"), dims, STROKE[el.getAttribute("data-st")]||"#cfe0f5", false);
+});
+</script>
 </body>
 </html>
