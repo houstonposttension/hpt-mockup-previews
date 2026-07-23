@@ -4,11 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Variant C — Loader: in-progress · punch-list · loading sign-off</title>
-<!-- Loader mockup rev 11 (2026-07-22). Variant C.
-     Eleven items: category filter wraps, upstream lifecycle state per row, per-tag photo,
-     multi-delivery switcher, multi-loader sync, mobile-first preview page, status shown once,
-     loader completes the LOADING (not the delivery), stronger frame separation,
-     all three sub-orders shown as sections, plain (non-editorial) status group names.
+<!-- Loader mockup rev 12 (2026-07-23). Variant C.
+     Adds frames 8-9: partial close-out + carry-forward (split delivery v1) — supervisor ratifies
+     an early close-out with a typed reason; unscanned tags carry to the next run untouched.
      Full design note lives in the private repo houstonposttension/wip-processor at
      docs/spec/loader-category-status-design-2026-07-21.md. This is a preview host, not source. -->
 <style>
@@ -227,6 +225,26 @@
   .mirror{ font-size:10px; color:var(--faint); margin-top:7px; line-height:1.5; font-style:italic; }
   .confirm{ width:100%; margin-top:14px; padding:14px; border:none; border-radius:13px; background:#4a3a1a; color:#c9a95f; font-size:15px; font-weight:800; }
   .confirm.armed{ background:var(--warn); color:#2a1c00; }
+  /* reason picker (frame 8) — extends the override with a typed reason */
+  .reasons{ display:flex; flex-wrap:wrap; gap:6px; margin:5px 0 6px; }
+  .rchip{ font-size:11px; font-weight:700; padding:7px 11px; border-radius:18px; border:1px solid var(--line);
+    background:#0e1217; color:var(--dim); }
+  .rchip.on{ background:rgba(255,176,32,.16); border-color:rgba(255,176,32,.55); color:var(--warn); }
+  .rnew{ font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#0b0d10;
+    background:var(--warn); border-radius:8px; padding:1px 5px; margin-left:5px; }
+  .splitwrap{ background:#161a1f; border:1px solid var(--line); border-radius:11px; padding:10px 12px; margin:8px 0; }
+  .splitwrap .sh{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--faint); margin-bottom:7px; display:flex; }
+  .splitwrap .sh .c{ margin-left:auto; color:#cfe0f5; }
+  .splitrow{ display:flex; align-items:center; gap:8px; font-size:11px; padding:3px 0; color:#c3ccd6; }
+  .splitrow .n{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; min-width:40px; color:#e6edf3; }
+  .splitrow .s{ margin-left:auto; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
+  /* carry-over marker (frame 9) */
+  .carrybar{ background:#17222e; border:1px solid #2f4a63; border-radius:11px; padding:9px 12px; margin:8px 0 10px;
+    font-size:11px; color:#9ccbff; line-height:1.5; }
+  .carrybar b{ color:#cfe0f5; }
+  .carrybar .stale{ color:var(--warn); }
+  .carry{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#9ccbff;
+    background:#17222e; border:1px solid #2f4a63; border-radius:5px; padding:1px 6px; white-space:nowrap; flex:0 0 auto; }
   .misscan{ min-height:660px; display:flex; flex-direction:column; justify-content:center; padding:20px 16px; background:#0e1a2a; }
   .misscan .mtitle{ font-size:22px; font-weight:900; color:var(--warn); text-align:center; letter-spacing:.5px; }
   .misscan .msub{ font-size:12.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.5; }
@@ -312,13 +330,15 @@
     <a href="#f4">5 · Wrong bin</a>
     <a href="#f5">6 · Combined</a>
     <a href="#f6">7 · My loads</a>
+    <a href="#f8">8 · Early close-out</a>
+    <a href="#f9">9 · Carry-over</a>
   </nav>
 
   <div class="screens">
 
     <!-- ── FRAME 1 ── -->
     <div class="col" id="f1">
-      <div class="frameLbl"><span class="fcount">1 / 7</span>In-progress view (default)</div>
+      <div class="frameLbl"><span class="fcount">1 / 9</span>In-progress view (default)</div>
       <div class="frameSub">Bin → Order → status-grouped tags. All three sub-orders (X8.1 · X8.2 · X8.3) show as their own sections; Loaded sinks to the bottom of each. Header carries the load switcher, who else is loading, and how fresh the data is.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
@@ -399,7 +419,7 @@
 
     <!-- ── FRAME 2 ── -->
     <div class="col" id="f2">
-      <div class="frameLbl"><span class="fcount">2 / 7</span>Punch-list view (toggle)</div>
+      <div class="frameLbl"><span class="fcount">2 / 9</span>Punch-list view (toggle)</div>
       <div class="frameSub">Bin → Category → what's still missing, with "walk to" hints. A walking route, not a report. Attribution stops you re-walking for something a colleague already has.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar">
@@ -467,7 +487,7 @@
 
     <!-- ── FRAME 3a ── -->
     <div class="col" id="f3a">
-      <div class="frameLbl"><span class="fcount">3 / 7</span>Loading complete — all loaded</div>
+      <div class="frameLbl"><span class="fcount">3 / 9</span>Loading complete — all loaded</div>
       <div class="frameSub">22 of 22. The loader's job ends here; tapping hands off to the driver.</div>
       <div class="phone">
         <div class="gate green">
@@ -482,7 +502,7 @@
 
     <!-- ── FRAME 3b ── -->
     <div class="col" id="f3b">
-      <div class="frameLbl"><span class="fcount">4 / 7</span>Loading blocked + override</div>
+      <div class="frameLbl"><span class="fcount">4 / 9</span>Loading blocked + override</div>
       <div class="frameSub">20 of 22. Loading can't be signed off; override needs a note AND a photo.</div>
       <div class="phone"><div class="scr blockscr">
         <div class="blockhdr">
@@ -519,7 +539,7 @@
 
     <!-- ── FRAME 4 ── -->
     <div class="col" id="f4">
-      <div class="frameLbl"><span class="fcount">5 / 7</span>Wrong-bin scan</div>
+      <div class="frameLbl"><span class="fcount">5 / 9</span>Wrong-bin scan</div>
       <div class="frameSub">Loader is on X4 and scans a tag belonging to X8. Both bins side by side. "Combine" is the new option.</div>
       <div class="phone"><div class="misscan">
         <div class="mtitle">⚠ DIFFERENT BIN</div>
@@ -544,7 +564,7 @@
 
     <!-- ── FRAME 5 ── -->
     <div class="col" id="f5">
-      <div class="frameLbl"><span class="fcount">6 / 7</span>Combined bins</div>
+      <div class="frameLbl"><span class="fcount">6 / 9</span>Combined bins</div>
       <div class="frameSub">X4 and X8 share one delivery run: one loading sign-off, one punch list across both.</div>
       <div class="phone"><div class="scr">
         <div class="loadbar combined">
@@ -620,7 +640,7 @@
 
     <!-- ── FRAME 6 ── -->
     <div class="col" id="f6">
-      <div class="frameLbl"><span class="fcount">7 / 7</span>My loads (switcher)</div>
+      <div class="frameLbl"><span class="fcount">7 / 9</span>My loads (switcher)</div>
       <div class="frameSub">Opened by the ⇄ button next to the run number. Emulates the picker that already exists in prod — recent runs with progress; tap to switch.</div>
       <div class="phone"><div class="picker">
         <h2>Switch run</h2>
@@ -651,6 +671,80 @@
       </div></div>
     </div>
 
+    <!-- ── FRAME 8 — SUPERVISOR EARLY CLOSE-OUT (split / carry-forward) ── -->
+    <div class="col" id="f8">
+      <div class="frameLbl"><span class="fcount">8 / 9</span>Early close-out — split / carry-forward</div>
+      <div class="frameSub">Later in the same run: 15 of 22 loaded, supervisor decides the truck ships now. Same close-out override you signed off — plus a reason picker. "Split — carry forward" ships what's on the truck; the rest stay in the bin for the next truck. Note + photo still required.</div>
+      <div class="phone"><div class="scr blockscr">
+        <div class="blockhdr" style="background:#2a2013; border-color:#5e4a1a">
+          <div class="bi">🚚</div>
+          <h2 style="color:var(--warn)">SHIP WHAT'S ON THE TRUCK?</h2>
+          <div class="bs" style="color:#e5d3b5"><b>15 of 22 loaded.</b><br>The 7 not on the truck will carry to the next run.</div>
+        </div>
+        <div class="req"><span class="dot"></span>1 · Reason</div>
+        <div class="reasons">
+          <span class="rchip">Customer short ship</span>
+          <span class="rchip on">Split — carry forward<span class="rnew">new</span></span>
+          <span class="rchip">QC hold</span>
+        </div>
+        <div class="splitwrap">
+          <div class="sh">Carrying to the next truck<span class="c">7 tags</span></div>
+          <div class="splitrow"><span class="n">T-04</span>0.6" strand · 44'<span class="s" style="color:var(--warn)">At PT Atlas</span></div>
+          <div class="splitrow"><span class="n">L-02</span>4x4 blocking · 48"<span class="s" style="color:var(--faint)">Not printed</span></div>
+          <div class="splitrow"><span class="n">T-05</span>anchor set<span class="s" style="color:var(--warn)">At Hayes</span></div>
+          <div class="splitrow"><span class="n">H-04</span>chairs · bundle<span class="s" style="color:var(--blue-soft)">In office</span></div>
+          <div class="splitrow" style="color:var(--faint)">…C-88 · C-89 · C-90 (3 pending)</div>
+        </div>
+        <div class="modal">
+          <h3>⚠ Split — ship 15, carry 7</h3>
+          <div class="msub">Recorded against run <b>X8</b> and your name. Both fields required.</div>
+          <div class="req"><span class="dot"></span>2 · Why is this shipping without them?</div>
+          <textarea class="ta filled">Truck full — shipping the 15 that fit. Remaining 7 (2 still at machines, 3 cloud-pending) go on tomorrow's run, same bin.</textarea>
+          <div class="charc">118 / 300</div>
+          <div class="req"><span class="dot"></span>3 · Photo of the loaded truck</div>
+          <button class="photobtn done">✓ Photo captured — tap to retake</button>
+          <div class="mirror">Same capture flow as a per-tag photo — camera → confirm. Files a <code>CLOSEOUT_OVERRIDDEN</code> event with <code>reason: split_carry_forward</code>.</div>
+          <button class="confirm armed">Confirm &amp; ship 15 · carry 7</button>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 9 — NEXT TRUCK: CARRY-OVER TAGS ── -->
+    <div class="col" id="f9">
+      <div class="frameLbl"><span class="fcount">9 / 9</span>Next truck — carry-over tags</div>
+      <div class="frameSub">Nothing new for the loader to do. Scanning a leftover reopens the <i>original</i> run at 15 of 22 — the 7 remaining carry a "from previous truck" marker. This is a byproduct of the normal scan flow, not a new mode.</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar">
+          <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span><span class="runtag">reopened</span></div>
+          <div class="cust">Aldine Westfield Ph2</div>
+          <div class="sub">ships 06/12/26 · 22 tags</div>
+          <div class="orders">X8.1 · X8.2 · X8.3</div>
+        </div>
+        <div class="carrybar">↩ <b>Carried over from truck 1</b> · closed out 2:14 PM by Jose · <code style="color:#9ccbff">CO-8b4587a</code><br>
+          <span class="stale">⚠ Ship date 06/12/26 is from the original run — confirm before this truck departs.</span></div>
+        <div class="viewtog"><div class="vt on">In progress</div><div class="vt">Punch list <span class="cnt grey">7</span></div></div>
+        <div class="prog"><div class="row"><span class="big">15 <span class="small">of 22 loaded</span></span><span class="small">7 carry-over</span></div><div class="bar"><i style="width:68%"></i></div></div>
+
+        <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">carry-over</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">T-04</span><span class="mid"><span class="spec">0.6" strand · 44'</span></span><span class="carry">↩ carry-over</span><span class="catchip">Tendon</span><span class="state machine">At PT Atlas</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">L-02</span><span class="mid"><span class="spec">4x4 blocking · 48"</span></span><span class="carry">↩ carry-over</span><span class="catchip">Lumber</span><span class="state notprinted">Not printed</span></div>
+        <div class="secthdr pendh">☁ Pending — backfill<span class="n">1</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-88</span><span class="mid"><span class="spec">HPT Cloud · f3a1… · category TBD</span></span><span class="carry">↩ carry-over</span><span class="state unknown">State ?</span></div>
+
+        <div class="ordh"><span class="oid">X8.3</span><span class="odesc">Podium deck</span><span class="oct">carry-over</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">T-05</span><span class="mid"><span class="spec">anchor set · —</span></span><span class="carry">↩ carry-over</span><span class="catchip">Tendon</span><span class="state machine">At Hayes</span></div>
+        <div class="tag"><span class="dot d-notscan"></span><span class="num">H-04</span><span class="mid"><span class="spec">chairs · bundle</span></span><span class="carry">↩ carry-over</span><span class="catchip">Hardware</span><span class="state office">In office</span></div>
+        <div class="secthdr pendh">☁ Pending — backfill<span class="n">2</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-89</span><span class="mid"><span class="spec">HPT Cloud · 7b02… · category TBD</span></span><span class="carry">↩ carry-over</span><span class="state unknown">State ?</span></div>
+        <div class="tag pend"><span class="dot d-pend"></span><span class="num">C-90</span><span class="mid"><span class="spec">HPT Cloud · 1c9d… · category TBD</span></span><span class="carry">↩ carry-over</span><span class="state unknown">State ?</span></div>
+
+        <div class="secthdr load">✓ Loaded<span class="n">15</span></div>
+        <div class="loadmini">15 shipped on truck 1 — <b>closed out &amp; gone</b></div>
+      </div></div>
+    </div>
+
   </div>
 
   <div class="ann">
@@ -671,9 +765,9 @@
     <br><br>
     <b>Mobile</b> — on a phone this page drops the simulated phone frame and fills the screen; the tabs
     at the top jump between frames. On desktop the side-by-side frames are unchanged. Each frame carries
-    a numbered <b>"N / 7"</b> badge and, on mobile, a full-width accent divider + large gap so it's
-    obvious where one frame ends and the next begins. (There are <b>7</b> frames — close-out is two:
-    complete and blocked.)
+    a numbered <b>"N / 9"</b> badge and, on mobile, a full-width accent divider + large gap so it's
+    obvious where one frame ends and the next begins. (There are <b>9</b> frames — close-out is two
+    (complete + blocked), and frames 8–9 cover the partial close-out + carry-forward flow.)
     <br><br>
     <b>The loader completes the LOADING, not the delivery.</b> Their job ends when the truck is loaded;
     the driver owns transit and drop-off. So the button is <b>"Complete loading"</b>, the blocked state
