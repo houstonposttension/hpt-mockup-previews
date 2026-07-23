@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Variant C (LEAN) — de-noised loader for A/B review</title>
+<!-- Loader mockup — LEAN variant (2026-07-22). A/B alternative to variant-c-category-tabs.html.
+     Same content, frames, labels, terminology and multi-sub-order treatment as the dense version;
+     only the row density differs. Full design note is in the private repo
+     houstonposttension/wip-processor at docs/spec/loader-category-status-design-2026-07-21.md.
+     This is a preview host, not source. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --ok:#16c060; --ok-ink:#04150a; --bad:#ff3b30; --warn:#ffb020;
+    --blue:#3b82f6; --blue-soft:#7da2c9;
+    /* category edge colours */
+    --rebar:#3b82f6; --tendon:#a78bfa; --hardware:#fb923c; --lumber:#4ade80; --cloud:#ffb020;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; scroll-behavior:smooth; }
+  body{ padding:20px 18px 80px; }
+  h1{ font-size:20px; font-weight:800; margin:0 0 6px; }
+  .lead{ font-size:13px; color:var(--dim); margin:0 0 5px; line-height:1.6; max-width:860px; }
+  .lead b{ color:#cfe0f5; }
+  .ab{ border-left:3px solid var(--blue-soft); padding:9px 0 9px 13px; margin:12px 0 4px; max-width:860px;
+    font-size:12.5px; color:#c9d6e5; line-height:1.6; }
+  .ab b{ color:#9ccbff; }
+  .ab a{ color:#9ccbff; }
+  .catkey{ display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 8px; max-width:860px; font-size:11px; color:var(--dim); }
+  .catkey span{ display:inline-flex; align-items:center; gap:6px; }
+  .catkey i{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .statekey{ display:flex; flex-wrap:wrap; gap:12px; margin:6px 0 6px; max-width:860px; font-size:11px; color:var(--dim); }
+  .statekey span{ display:inline-flex; align-items:center; gap:6px; }
+  .statekey i{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .st-staged{ background:#46d684; } .st-machine{ background:var(--warn); } .st-office{ background:var(--blue-soft); }
+  .st-notprinted{ background:#5a636d; } .st-unknown{ background:#b9903f; }
+
+  /* sticky frame tabs — identical nav to dense */
+  .ftabs{ position:sticky; top:0; z-index:60; display:flex; gap:5px; overflow-x:auto; padding:9px 0;
+    margin:14px 0 18px; background:#14171c; border-bottom:1px solid var(--line);
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .ftabs::-webkit-scrollbar{ display:none; }
+  .ftabs a{ flex:0 0 auto; font-size:11.5px; font-weight:800; text-decoration:none;
+    color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:18px;
+    padding:7px 12px; white-space:nowrap; }
+  .ftabs a:active{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+
+  .screens{ display:flex; gap:44px 26px; flex-wrap:wrap; align-items:flex-start; }
+  .col{ scroll-margin-top:56px; }
+  .frameLbl{ display:flex; align-items:center; gap:9px; font-size:13px; font-weight:900;
+    text-transform:uppercase; letter-spacing:.5px; color:#e6edf3; margin:0 0 6px;
+    padding:8px 12px; background:#161a1f; border:1px solid var(--line);
+    border-left:4px solid var(--blue-soft); border-radius:9px; }
+  .frameLbl .fcount{ flex:0 0 auto; font-size:11px; font-weight:900; letter-spacing:.5px;
+    color:#0b0d10; background:var(--blue-soft); border-radius:20px; padding:2px 9px; }
+  .frameSub{ font-size:11px; color:var(--faint); margin:0 0 10px; max-width:370px; line-height:1.5; }
+  .phone{ width:370px; border-radius:22px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); position:relative; }
+  .scr{ padding:12px; }
+
+  @media (max-width:500px){
+    body{ padding:14px 10px 60px; }
+    .screens{ display:block; }
+    .col{ margin-bottom:0; padding-top:40px; margin-top:44px; border-top:3px solid var(--blue-soft); }
+    .col:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
+    .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .scr{ padding:10px 8px; }
+    .frameLbl{ font-size:14px; padding:10px 12px; }
+    .frameSub{ padding:0 4px; max-width:none; }
+    h1{ font-size:17px; } .lead,.ab{ font-size:12.5px; }
+    .gate,.misscan{ min-height:78vh; }
+  }
+
+  .loadbar{ background:var(--panel); border:.5px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:9px; }
+  .loadbar .binrow{ display:flex; align-items:center; gap:9px; }
+  .loadbar .binlbl{ font-size:12px; color:var(--dim); }
+  .loadbar .binval{ font-size:27px; font-weight:800; letter-spacing:1px; }
+  .swbtn{ background:none; border:1px solid var(--line); border-radius:8px; color:var(--blue-soft);
+    font-size:15px; font-weight:700; padding:4px 9px; display:inline-flex; align-items:center; gap:5px; }
+  .swbtn .k{ font-size:10px; font-weight:800; color:var(--dim); }
+  .loadbar .runtag{ margin-left:auto; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--faint); border:1px solid var(--line); border-radius:5px; padding:2px 7px; }
+  .loadbar .cust{ font-size:15px; font-weight:700; color:#cfe0f5; margin-top:3px; }
+  .loadbar .sub{ font-size:11.5px; color:var(--dim); margin-top:2px; }
+  .loadbar .orders{ font-size:11px; color:#9ccbff; margin-top:5px; font-family:ui-monospace,Menlo,Consolas,monospace; }
+  /* lean: presence + freshness collapse to one quiet line */
+  .syncline{ font-size:10px; color:var(--faint); margin-top:6px; }
+  .syncline b{ color:#8fb4d8; font-weight:700; }
+
+  .viewtog{ display:flex; gap:6px; margin-bottom:9px; }
+  .vt{ flex:1; text-align:center; border:1px solid var(--line); border-radius:11px; padding:9px 6px; background:#0e1217; font-size:12.5px; font-weight:800; color:var(--dim); display:flex; align-items:center; justify-content:center; gap:6px; }
+  .vt.on{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+  .vt .cnt{ font-size:10.5px; font-weight:800; border-radius:20px; padding:1px 7px; background:#242b34; color:var(--dim); }
+  .prog{ background:var(--panel); border:.5px solid var(--line); border-radius:14px; padding:10px 14px; margin-bottom:9px; }
+  .prog .row{ display:flex; justify-content:space-between; align-items:baseline; }
+  .prog .big{ font-size:19px; font-weight:800; } .prog .small{ font-size:12.5px; color:var(--dim); font-weight:600; }
+  .bar{ height:8px; background:#0b0d10; border-radius:999px; margin-top:8px; overflow:hidden; }
+  .bar > i{ display:block; height:100%; background:var(--ok); }
+  .rowlbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#4a545f; margin:0 2px 5px; }
+
+  /* category filter — same wrap as dense */
+  .catbar{ display:flex; flex-wrap:wrap; gap:6px; padding:2px 2px 10px; border-bottom:1px solid var(--line); margin-bottom:9px; }
+  .ctab{ flex:0 0 auto; border:1px solid var(--line); border-radius:20px; padding:6px 10px; background:#0e1217; display:flex; align-items:center; gap:5px; }
+  .ctab .nm{ font-size:12px; font-weight:700; color:var(--dim); }
+  .ctab .n{ font-size:10.5px; font-weight:800; color:var(--faint); background:#1a2027; border-radius:20px; padding:1px 6px; }
+  .ctab.active{ background:rgba(59,130,246,.14); border-color:rgba(59,130,246,.5); }
+  .ctab.active .nm{ color:#cfe0f5; } .ctab.active .n{ color:var(--blue-soft); background:rgba(59,130,246,.2); }
+
+  .ordh{ display:flex; align-items:center; gap:9px; margin:13px 2px 6px; }
+  .ordh .oid{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:14px; font-weight:800; color:#9ccbff; }
+  .ordh .odesc{ font-size:11px; color:var(--dim); }
+  .ordh .oct{ margin-left:auto; font-size:10.5px; font-weight:700; color:var(--faint); }
+  .secthdr{ font-size:10.5px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; margin:11px 2px 5px; display:flex; align-items:center; gap:7px; }
+  .secthdr .n{ margin-left:auto; font-weight:700; color:var(--faint); font-size:10px; }
+  .secthdr.notscan{ color:#cfe0f5; } .secthdr.short{ color:var(--bad); }
+  .secthdr.scan{ color:var(--blue-soft); } .secthdr.pendh{ color:var(--warn); }
+
+  /* ── the lean row ── */
+  .lrow{ position:relative; display:flex; align-items:center; gap:9px; padding:9px 10px 9px 12px;
+    margin:4px 0; background:#111722; border:1px solid #223; border-left:4px solid var(--line);
+    border-radius:9px; cursor:pointer; flex-wrap:wrap; }
+  .lrow.cat-rebar{ border-left-color:var(--rebar); }
+  .lrow.cat-tendon{ border-left-color:var(--tendon); }
+  .lrow.cat-hardware{ border-left-color:var(--hardware); }
+  .lrow.cat-lumber{ border-left-color:var(--lumber); }
+  .lrow.cat-cloud{ border-left-color:var(--cloud); }
+  .lrow .lnum{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:14px; min-width:40px; color:#e6edf3; }
+  .lrow .lspec{ font-size:11px; color:var(--dim); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lrow .shape{ width:40px; height:24px; background:#0e1217; border:.5px solid var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .lrow .lbin{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:#7d9bbd; font-weight:700; flex:0 0 auto; }
+  .lrow .ldot{ position:absolute; top:8px; right:9px; width:8px; height:8px; border-radius:50%; }
+  .lrow.doneRow{ opacity:.6; }
+  .lrow.doneRow .lnum{ color:#5f6e7a; text-decoration:line-through; }
+  .lrow:active{ background:#141b24; }
+  .lrow.open{ background:#141b24; border-color:#2f4a63; }
+  .lrow .caret{ position:absolute; bottom:7px; right:9px; font-size:9px; color:#4a545f; }
+  .lrow.open .ldot{ display:none; }
+
+  /* the drawer (progressive disclosure) */
+  .ldrawer{ display:none; flex-basis:100%; margin-top:8px; padding-top:9px; border-top:1px solid #2a3746; }
+  .lrow.open .ldrawer{ display:block; }
+  .drow{ display:flex; gap:8px; font-size:11px; margin:4px 0; align-items:flex-start; }
+  .drow .dk{ color:var(--faint); width:74px; flex:0 0 auto; text-transform:uppercase; font-size:9px; font-weight:800; letter-spacing:.4px; padding-top:2px; }
+  .drow .dv{ color:#c3ccd6; }
+  .dv .catpill{ color:#8fa4bb; font-weight:700; }
+  .dbig{ background:#0e1217; border:.5px solid var(--line); border-radius:8px; width:96px; height:56px; display:flex; align-items:center; justify-content:center; }
+  .dcam{ display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#cfe0f5;
+    border:1px dashed #4a525c; border-radius:9px; padding:8px 12px; margin-top:8px; }
+  .dattrib{ font-size:10px; color:#8697a8; }
+
+  /* loaded collapse */
+  .lcollapse{ margin:5px 0; }
+  .lloaded{ font-size:11px; font-weight:800; color:var(--dim); background:#12181f; border:1px solid #223;
+    border-radius:9px; padding:10px 12px; cursor:pointer; display:flex; align-items:center; gap:8px; }
+  .lloaded .arrow{ margin-left:auto; color:#4a545f; }
+  .lcollapse.open .lloaded .arrow{ transform:rotate(180deg); }
+  .lloaded-body{ display:none; padding:2px 0 0; }
+  .lcollapse.open .lloaded-body{ display:block; }
+
+  .conflict{ background:#2a1414; border:1px solid #5e2a2a; border-radius:10px; padding:8px 11px;
+    margin:7px 0; font-size:10.5px; color:#ff9b94; font-weight:700; line-height:1.4; }
+
+  /* punch-list category header (walk-to hint stays at group level) */
+  .plhdr{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.9px; color:var(--warn); margin:2px 2px 9px; display:flex; align-items:center; }
+  .plhdr .tot{ margin-left:auto; color:var(--dim); }
+  .pcat{ margin-bottom:10px; }
+  .pchead{ display:flex; align-items:baseline; gap:9px; margin:10px 2px 5px; }
+  .pchead .nm{ font-size:12.5px; font-weight:800; }
+  .pchead .walk{ font-size:10px; color:#8fb4d8; }
+  .pchead .walk .tbd{ color:var(--warn); font-weight:700; border:1px solid rgba(255,176,32,.4); border-radius:4px; padding:0 4px; font-size:8px; text-transform:uppercase; letter-spacing:.4px; }
+  .pchead .badge{ margin-left:auto; font-size:11px; font-weight:800; border-radius:20px; padding:2px 9px; background:#242b34; color:var(--dim); }
+  .pchead .badge.amber{ background:rgba(255,176,32,.2); color:var(--warn); }
+  .pchead .badge.red{ background:rgba(255,59,48,.22); color:var(--bad); }
+
+  .closebtn{ width:100%; margin-top:14px; padding:16px; border:none; border-radius:14px; font-size:17px; font-weight:800; background:#2a1414; color:#ff9b94; border:1px solid #5e2a2a; }
+  .mexist{ font-size:10px; color:var(--faint); text-align:center; margin-top:10px; line-height:1.5; font-style:italic; }
+
+  /* gates / modal / wrong-bin / picker — IDENTICAL to dense (no tag rows, so density n/a) */
+  .gate{ min-height:660px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px 22px; background:var(--ok); color:var(--ok-ink); }
+  .gate .gbig{ font-size:96px; line-height:1; font-weight:900; }
+  .gate .gmain{ font-size:28px; font-weight:900; margin-top:6px; line-height:1.15; }
+  .gate .gsub{ font-size:17px; font-weight:700; margin-top:12px; opacity:.9; line-height:1.35; }
+  .gate .gmeta{ margin-top:20px; font-size:13px; font-weight:700; background:rgba(4,21,10,.15); border-radius:10px; padding:9px 14px; line-height:1.6; }
+  .gate .gbtn{ width:100%; margin-top:26px; padding:15px; border:none; border-radius:13px; background:#04150a; color:#7ef0a8; font-size:16px; font-weight:800; }
+  .blockscr{ padding:14px 12px; }
+  .blockhdr{ background:#2a1414; border:1px solid #5e2a2a; border-radius:14px; padding:14px; text-align:center; margin-bottom:12px; }
+  .blockhdr .bi{ font-size:44px; line-height:1; }
+  .blockhdr h2{ font-size:21px; font-weight:900; color:#ff9b94; margin:7px 0 5px; letter-spacing:.5px; }
+  .blockhdr .bs{ font-size:13px; color:#e5b9b5; line-height:1.5; }
+  .acts{ display:flex; flex-direction:column; gap:9px; margin-top:13px; }
+  .acts button{ width:100%; border-radius:13px; padding:14px; font-size:15px; font-weight:800; border:none; }
+  .act-find{ background:var(--ok); color:var(--ok-ink); }
+  .act-over{ background:#33383f; color:#cfd6de; border:1px solid #4a525c; }
+  .modal{ background:var(--panel2); border:1px solid #4a3a1a; border-radius:16px; padding:15px; margin-top:12px; }
+  .modal h3{ font-size:15px; font-weight:800; color:var(--warn); margin:0 0 4px; }
+  .modal .msub{ font-size:11.5px; color:var(--dim); line-height:1.55; margin-bottom:12px; }
+  .req{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--warn); display:flex; align-items:center; gap:5px; margin:11px 0 5px; }
+  .req .dot{ width:5px; height:5px; border-radius:50%; background:var(--warn); }
+  .ta{ width:100%; min-height:62px; background:#0e1217; border:1px solid rgba(22,192,96,.4); border-radius:10px; padding:10px; color:var(--txt); font-size:12.5px; font-family:inherit; line-height:1.5; }
+  .charc{ font-size:9.5px; color:var(--faint); text-align:right; margin-top:3px; }
+  .photobtn{ width:100%; padding:13px; border:1px solid #1f6b40; border-radius:11px; background:#0b1f14; color:#46d684; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .confirm{ width:100%; margin-top:14px; padding:14px; border:none; border-radius:13px; background:var(--warn); color:#2a1c00; font-size:15px; font-weight:800; }
+  .misscan{ min-height:660px; display:flex; flex-direction:column; justify-content:center; padding:20px 16px; background:#0e1a2a; }
+  .misscan .mtitle{ font-size:22px; font-weight:900; color:var(--warn); text-align:center; letter-spacing:.5px; }
+  .misscan .msub{ font-size:12.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.5; }
+  .scanned{ background:#12202f; border:1px solid #2f4a63; border-radius:12px; padding:10px 12px; margin:14px 0 12px; }
+  .scanned .sl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:#6b8ba8; }
+  .scanned .srow{ display:flex; align-items:center; gap:9px; margin-top:6px; }
+  .scanned .snum{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:16px; font-weight:800; color:#cfe0f5; }
+  .scanned .sspec{ font-size:11px; color:var(--dim); flex:1; }
+  .binpair{ display:flex; gap:9px; align-items:stretch; }
+  .bincard{ flex:1; border-radius:12px; padding:11px 11px 12px; border:1px solid var(--line); background:#111722; min-width:0; }
+  .bincard.cur{ border-color:#2f4a63; background:#131c26; }
+  .bincard.other{ border-color:rgba(255,176,32,.45); background:rgba(255,176,32,.06); }
+  .bincard .bl{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:var(--faint); }
+  .bincard .bn{ font-size:26px; font-weight:900; letter-spacing:1px; margin-top:3px; }
+  .bincard.other .bn{ color:var(--warn); }
+  .bincard .bc{ font-size:11px; color:#cfe0f5; font-weight:700; margin-top:2px; line-height:1.35; }
+  .bincard .bm{ font-size:10.5px; color:var(--dim); margin-top:6px; }
+  .bincard .bbar{ height:5px; background:#0b0d10; border-radius:999px; overflow:hidden; margin-top:5px; }
+  .bincard .bbar > i{ display:block; height:100%; background:var(--ok); }
+  .vs{ align-self:center; font-size:10px; font-weight:800; color:var(--faint); }
+  .macts{ display:flex; flex-direction:column; gap:9px; margin-top:16px; }
+  .macts button{ width:100%; border-radius:13px; padding:14px; font-size:15px; font-weight:800; border:none; }
+  .m-comb{ background:var(--warn); color:#2a1c00; }
+  .m-cancel{ background:#33383f; color:var(--txt); }
+  .msecond{ display:flex; gap:8px; margin-top:4px; }
+  .msecond button{ flex:1; border-radius:11px; padding:11px 8px; font-size:12.5px; font-weight:700; background:transparent; color:var(--dim); border:1px solid var(--line); }
+  .combined{ background:linear-gradient(180deg,#1a2230,#161a1f); border:1px solid #3a5572; }
+  .combtag{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; background:rgba(255,176,32,.18); color:var(--warn); border:1px solid rgba(255,176,32,.45); border-radius:5px; padding:2px 7px; }
+  .picker{ min-height:660px; padding:20px 16px; background:#0b0d10; }
+  .picker h2{ font-size:22px; font-weight:900; margin:0 0 4px; }
+  .picker .psub{ font-size:11.5px; color:var(--dim); margin-bottom:16px; line-height:1.5; }
+  .bpcard{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:13px; margin-bottom:11px; }
+  .bpcard.cur{ border-color:#2f4a63; background:#131c26; }
+  .bpcard .bprow{ display:flex; align-items:center; gap:9px; }
+  .bpcard .bpbin{ font-size:23px; font-weight:800; letter-spacing:1px; }
+  .bpcard.cur .bpbin{ color:#9ccbff; }
+  .bpcard .curtag{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; background:#17222e; color:#9ccbff; border:1px solid #2f4a63; border-radius:5px; padding:2px 7px; }
+  .bpcard .bpcust{ font-size:13px; color:#cfe0f5; margin-top:3px; }
+  .bpcard .bpmeta{ font-size:11px; color:var(--dim); margin-top:6px; display:flex; align-items:center; gap:8px; }
+  .bpcard .bpbar{ height:5px; flex:1; background:#0b0d10; border-radius:999px; overflow:hidden; }
+  .bpcard .bpbar > i{ display:block; height:100%; background:var(--ok); }
+  .bpcard .bpwarn{ font-size:10px; color:var(--warn); margin-top:6px; }
+  .pclose{ width:100%; margin-top:12px; padding:14px; font-size:15px; font-weight:800; border:none; border-radius:13px; background:#33383f; color:var(--txt); }
+  .plimit{ font-size:10px; color:var(--faint); text-align:center; margin-top:12px; line-height:1.5; font-style:italic; }
+
+  .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:24px 0 0; max-width:860px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
+  .ann b{ color:#fff; }
+</style>
+</head>
+<body>
+  <h1>Loader — LEAN variant <span style="color:var(--faint);font-weight:400">(Variant C · de-noised A/B)</span></h1>
+  <p class="lead"><b>Variant C (LEAN) — de-noised alternative for A/B loader review.</b> Same content, same
+    seven frames, same labels, same "Complete loading" copy and same three sub-orders as the dense
+    version — <b>only the rows are lighter</b>.</p>
+  <p class="ab"><b>What changed vs. the dense version:</b> each row collapses to just <b>tag # + short
+    spec</b> (+ the rebar shape). Category shows as the <b>left-edge colour</b>, upstream state as the
+    <b>corner dot</b>, and load status stays on the section header — so no per-row chips. <b>Tap any row</b>
+    to open a drawer with the full detail (category, state, big shape, attribution, photo). Finished work
+    collapses to a single <b>"✓ N loaded"</b> summary. Compare against
+    <a href="variant-c-category-tabs.html">the dense version →</a></p>
+  <div class="catkey">
+    <b style="color:var(--faint)">Left edge = category:</b>
+    <span><i style="background:var(--rebar)"></i>Rebar</span>
+    <span><i style="background:var(--tendon)"></i>Tendon</span>
+    <span><i style="background:var(--hardware)"></i>Hardware</span>
+    <span><i style="background:var(--lumber)"></i>Lumber</span>
+    <span><i style="background:var(--cloud)"></i>Pending (cloud)</span>
+  </div>
+  <div class="statekey">
+    <b style="color:var(--faint)">Corner dot = where it is:</b>
+    <span><i class="st-staged"></i>Staged</span>
+    <span><i class="st-machine"></i>At machine</span>
+    <span><i class="st-office"></i>In office</span>
+    <span><i class="st-notprinted"></i>Not printed</span>
+    <span><i class="st-unknown"></i>State ?</span>
+  </div>
+
+  <nav class="ftabs">
+    <a href="#f1">1 · In progress</a>
+    <a href="#f2">2 · Punch list</a>
+    <a href="#f3a">3 · Loading done</a>
+    <a href="#f3b">4 · Blocked</a>
+    <a href="#f4">5 · Wrong bin</a>
+    <a href="#f5">6 · Combined</a>
+    <a href="#f6">7 · My loads</a>
+  </nav>
+
+  <div class="screens">
+
+    <!-- ── FRAME 1 — IN PROGRESS ── -->
+    <div class="col" id="f1">
+      <div class="frameLbl"><span class="fcount">1 / 7</span>In-progress view (default)</div>
+      <div class="frameSub">Same Bin → Order → status grouping. Rows are collapsed; tap to open a drawer. One row (#42) and one Loaded group are shown open so you can see what a tap reveals.</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar">
+          <div class="binrow">
+            <span class="binlbl">Run</span><span class="binval">X8</span>
+            <button class="swbtn">⇄ <span class="k">3 loads</span></button>
+            <span class="runtag">3 orders</span>
+          </div>
+          <div class="cust">Aldine Westfield Ph2</div>
+          <div class="sub">ships 06/12/26 · 22 tags</div>
+          <div class="orders">X8.1 · X8.2 · X8.3</div>
+          <div class="syncline">👤 <b>Jose · Mike</b> also loading · updated 3s ago</div>
+        </div>
+
+        <div class="viewtog"><div class="vt on">In progress</div><div class="vt">Punch list <span class="cnt">14</span></div></div>
+        <div class="prog"><div class="row"><span class="big">8 <span class="small">of 22 loaded</span></span><span class="small">14 left</span></div><div class="bar"><i style="width:36%"></i></div></div>
+
+        <div class="rowlbl">Filter by category</div>
+        <div class="catbar">
+          <div class="ctab active"><span class="nm">All</span><span class="n">22</span></div>
+          <div class="ctab"><span class="nm">Rebar</span><span class="n">8</span></div>
+          <div class="ctab"><span class="nm">Tendon</span><span class="n">5</span></div>
+          <div class="ctab"><span class="nm">Hardware</span><span class="n">4</span></div>
+          <div class="ctab"><span class="nm">Lumber</span><span class="n">2</span></div>
+          <div class="ctab"><span class="nm">Pending</span><span class="n">3</span></div>
+        </div>
+
+        <!-- X8.1 -->
+        <div class="ordh"><span class="oid">X8.1</span><span class="odesc">Wall panel</span><span class="oct">3 of 6 loaded</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
+        <div class="lrow cat-hardware"><span class="lnum">H-02</span><span class="lspec">pocket formers</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+        <div class="lrow cat-lumber"><span class="lnum">L-01</span><span class="lspec">2x4 forming</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+        <div class="secthdr scan">◐ Scanned<span class="n">1</span></div>
+        <div class="lrow cat-rebar"><span class="lnum">#1</span><span class="lspec">STR · 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+        <div class="lcollapse"><div class="lloaded" onclick="this.parentNode.classList.toggle('open')">✓ 3 loaded<span class="arrow">↕</span></div>
+          <div class="lloaded-body">
+            <div class="lrow cat-rebar doneRow"><span class="lnum">#4</span><span class="lspec">4N01 · qty 8</span><span class="caret">tap ⌄</span></div>
+            <div class="lrow cat-rebar doneRow"><span class="lnum">#5</span><span class="lspec">4N02 · qty 16</span><span class="caret">tap ⌄</span></div>
+            <div class="lrow cat-tendon doneRow"><span class="lnum">T-01</span><span class="lspec">0.6" · 42'</span><span class="caret">tap ⌄</span></div>
+          </div>
+        </div>
+
+        <!-- X8.2 (has the open-drawer + expanded-loaded demos) -->
+        <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">2 of 8 loaded</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">3</span></div>
+        <div class="lrow cat-hardware"><span class="lnum">H-03</span><span class="lspec">wedges · box</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+        <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6" · 44'</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+        <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 · 48"</span><span class="ldot st-notprinted"></span><span class="caret">tap ⌄</span></div>
+        <div class="secthdr short">⚠ Short<span class="n">1</span></div>
+        <!-- OPEN drawer demo -->
+        <div class="lrow cat-rebar open"><span class="lnum">#42</span><span class="lspec">8B03 · 30-04</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span>
+          <div class="ldrawer">
+            <div class="drow"><span class="dk">Category</span><span class="dv"><span class="catpill">Rebar</span></span></div>
+            <div class="drow"><span class="dk">Where</span><span class="dv">At Shear · <b style="color:var(--bad)">2 of 12 missing</b></span></div>
+            <div class="drow"><span class="dk">Full spec</span><span class="dv">8B03 · #8 · 30-04 · qty 12</span></div>
+            <div class="drow"><span class="dk">Shape</span><span class="dv"><span class="dbig shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span></span></div>
+            <button class="dcam">📷 Can't scan? Photo + hand-load</button>
+          </div>
+        </div>
+        <div class="secthdr scan">◐ Scanned<span class="n">1</span></div>
+        <div class="lrow cat-tendon"><span class="lnum">T-03</span><span class="lspec">0.5" · 51'</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+        <div class="secthdr pendh">☁ Pending — backfill<span class="n">1</span></div>
+        <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud · f3a1…</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+        <!-- EXPANDED loaded demo, with one drawer open showing attribution + photo -->
+        <div class="lcollapse open"><div class="lloaded" onclick="this.parentNode.classList.toggle('open')">✓ 2 loaded<span class="arrow">↕</span></div>
+          <div class="lloaded-body">
+            <div class="lrow cat-rebar doneRow open"><span class="lnum">#39</span><span class="lspec">8B01 · qty 12</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="load"></span>
+              <div class="ldrawer">
+                <div class="drow"><span class="dk">Category</span><span class="dv"><span class="catpill">Rebar</span></span></div>
+                <div class="drow"><span class="dk">Loaded by</span><span class="dv"><b>Jose</b> · 4s ago <span class="dattrib">(you scanned a moment later — server kept his)</span></span></div>
+                <div class="drow"><span class="dk">Full spec</span><span class="dv">8B01 · #8 · 30-04 · qty 12</span></div>
+              </div>
+            </div>
+            <div class="lrow cat-rebar doneRow"><span class="lnum">#40</span><span class="lspec">8B02 · qty 6 · 📷</span><span class="caret">tap ⌄</span></div>
+          </div>
+        </div>
+
+        <!-- X8.3 -->
+        <div class="ordh"><span class="oid">X8.3</span><span class="odesc">Podium deck</span><span class="oct">3 of 8 loaded</span></div>
+        <div class="secthdr notscan">○ Not scanned<span class="n">2</span></div>
+        <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+        <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs · bundle</span><span class="ldot st-office"></span><span class="caret">tap ⌄</span></div>
+        <div class="secthdr scan">◐ Scanned<span class="n">1</span></div>
+        <div class="lrow cat-rebar"><span class="lnum">#41</span><span class="lspec">3C15 · 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+        <div class="secthdr pendh">☁ Pending — backfill<span class="n">2</span></div>
+        <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud · 7b02…</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+        <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud · 1c9d…</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+        <div class="lcollapse"><div class="lloaded" onclick="this.parentNode.classList.toggle('open')">✓ 3 loaded<span class="arrow">↕</span></div>
+          <div class="lloaded-body">
+            <div class="lrow cat-rebar doneRow"><span class="lnum">#9</span><span class="lspec">4N09 · qty 4</span><span class="caret">tap ⌄</span></div>
+            <div class="lrow cat-hardware doneRow"><span class="lnum">H-01</span><span class="lspec">bearing plates</span><span class="caret">tap ⌄</span></div>
+            <div class="lrow cat-tendon doneRow"><span class="lnum">T-02</span><span class="lspec">0.6" · 38'</span><span class="caret">tap ⌄</span></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 2 — PUNCH LIST ── -->
+    <div class="col" id="f2">
+      <div class="frameLbl"><span class="fcount">2 / 7</span>Punch-list view (toggle)</div>
+      <div class="frameSub">Same Bin → Category → missing tags, same "walk to" hints. Rows are lean; the corner dot tells you grab-now (green) vs still-being-made (amber/grey).</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar">
+          <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span>
+            <button class="swbtn">⇄ <span class="k">3 loads</span></button>
+            <span class="runtag">3 orders</span></div>
+          <div class="cust">Aldine Westfield Ph2</div><div class="sub">ships 06/12/26 · 22 tags</div>
+          <div class="syncline">👤 <b>Jose · Mike</b> also loading · updated 1s ago</div>
+        </div>
+        <div class="viewtog"><div class="vt">In progress</div><div class="vt on">Punch list <span class="cnt">14</span></div></div>
+        <div class="prog"><div class="row"><span class="big">8 <span class="small">of 22 loaded</span></span><span class="small">36%</span></div><div class="bar"><i style="width:36%"></i></div></div>
+        <div class="plhdr">Still to load<span class="tot">14 tags · 5 areas</span></div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Rebar</span><span class="walk">→ cutting area / 20 Station</span><span class="badge">3</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#1</span><span class="lspec">STR · 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="lbin">X8.1</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#41</span><span class="lspec">3C15 · 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="lbin">X8.3</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#42</span><span class="lspec">8B03 · short</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="lbin">X8.2</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Tendon</span><span class="walk">→ PT Atlas / Hayes</span><span class="badge">3</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-03</span><span class="lspec">0.5" · 51'</span><span class="lbin">X8.2</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6" · 44'</span><span class="lbin">X8.2</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="lbin">X8.3</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Hardware</span><span class="walk">→ location <span class="tbd">TBD</span></span><span class="badge">3</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-02</span><span class="lspec">pocket formers</span><span class="lbin">X8.1</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-03</span><span class="lspec">wedges · box</span><span class="lbin">X8.2</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs · bundle</span><span class="lbin">X8.3</span><span class="ldot st-office"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Lumber</span><span class="walk">→ location <span class="tbd">TBD</span></span><span class="badge">2</span></div>
+          <div class="lrow cat-lumber"><span class="lnum">L-01</span><span class="lspec">2x4 forming</span><span class="lbin">X8.1</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 · 48"</span><span class="lbin">X8.2</span><span class="ldot st-notprinted"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm" style="color:var(--warn)">Pending — backfill</span><span class="walk" style="color:#b9903f">→ area unknown</span><span class="badge amber">3</span></div>
+          <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud · f3a1…</span><span class="lbin">X8.2</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud · 7b02…</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud · 1c9d…</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+        </div>
+        <button class="closebtn">Complete loading</button>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 3a — CLOSE-OUT GREEN (identical to dense) ── -->
+    <div class="col" id="f3a">
+      <div class="frameLbl"><span class="fcount">3 / 7</span>Loading complete — all loaded</div>
+      <div class="frameSub">Identical to dense — a gate, no tag rows.</div>
+      <div class="phone">
+        <div class="gate">
+          <div class="gbig">✓</div>
+          <div class="gmain">READY TO DEPART</div>
+          <div class="gsub">All 22 tags loaded<br>across X8.1 · X8.2 · X8.3</div>
+          <div class="gmeta">Run X8 · Aldine Westfield Ph2<br>Rebar 8 · Tendon 5 · Hardware 4 · Lumber 2 · Cloud 3<br>Loaded by you, Jose, Mike</div>
+          <button class="gbtn">Clear driver to depart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FRAME 3b — BLOCKED (lean punch rows) ── -->
+    <div class="col" id="f3b">
+      <div class="frameLbl"><span class="fcount">4 / 7</span>Loading blocked + override</div>
+      <div class="frameSub">Same gate + override as dense; the 2 missing tags render as lean rows.</div>
+      <div class="phone"><div class="scr blockscr">
+        <div class="blockhdr">
+          <div class="bi">🛑</div>
+          <h2>LOADING NOT COMPLETE</h2>
+          <div class="bs"><b>2 tags are not on the truck.</b><br>Sending the driver now means a second run.</div>
+        </div>
+        <div class="plhdr" style="color:var(--bad)">Missing<span class="tot">2 tags · 2 areas</span></div>
+        <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 · 48"</span><span class="lbin">X8.2</span><span class="ldot st-notprinted"></span><span class="caret">tap ⌄</span></div>
+        <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud · 1c9d…</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+        <div class="acts">
+          <button class="act-find">← Go find them</button>
+          <button class="act-over">Override — finish loading short</button>
+        </div>
+        <div class="modal">
+          <h3>⚠ Override — finish loading short</h3>
+          <div class="msub">Recorded against run <b>X8</b> and your name. Both fields required.</div>
+          <div class="req"><span class="dot"></span>1 · Why are you finishing without them?</div>
+          <textarea class="ta">Customer approved short ship — L-02 and C-90 will follow up Friday. Confirmed w/ Jose.</textarea>
+          <div class="charc">92 / 300</div>
+          <div class="req"><span class="dot"></span>2 · Photo of the loaded truck</div>
+          <button class="photobtn">✓ Photo captured — tap to retake</button>
+          <button class="confirm">Confirm override &amp; finish loading</button>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 4 — WRONG BIN (identical to dense) ── -->
+    <div class="col" id="f4">
+      <div class="frameLbl"><span class="fcount">5 / 7</span>Wrong-bin scan</div>
+      <div class="frameSub">Identical to dense — a prompt, no tag list.</div>
+      <div class="phone"><div class="misscan">
+        <div class="mtitle">⚠ DIFFERENT BIN</div>
+        <div class="msub">This tag isn't part of the run you're loading.</div>
+        <div class="scanned">
+          <div class="sl">Tag you just scanned</div>
+          <div class="srow"><span class="snum">#41</span><span class="sspec">3C15 · 6-06 · qty 24 · Rebar</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span></div>
+        </div>
+        <div class="binpair">
+          <div class="bincard cur"><div class="bl">You're loading</div><div class="bn">X4</div><div class="bc">Systel Addition</div><div class="bm">3 of 9 loaded · 2 orders</div><div class="bbar"><i style="width:33%"></i></div></div>
+          <div class="vs">vs</div>
+          <div class="bincard other"><div class="bl">Tag belongs to</div><div class="bn">X8</div><div class="bc">Aldine Westfield Ph2</div><div class="bm">8 of 22 loaded · 3 orders</div><div class="bbar"><i style="width:36%"></i></div></div>
+        </div>
+        <div class="macts">
+          <button class="m-comb">🔗 Combine — one truck, both bins</button>
+          <button class="m-cancel">✕ Cancel scan — stay on X4</button>
+          <div class="msecond"><button>Switch to X8</button><button>Stop bin</button></div>
+        </div>
+        <div class="mexist">"Switch" and "Stop" already exist today; only "Combine" is new.</div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 5 — COMBINED (lean punch rows across bins) ── -->
+    <div class="col" id="f5">
+      <div class="frameLbl"><span class="fcount">6 / 7</span>Combined bins</div>
+      <div class="frameSub">X4 + X8, one sign-off, one punch list. Lean rows; each carries its bin so you don't lose which order.</div>
+      <div class="phone"><div class="scr">
+        <div class="loadbar combined">
+          <div class="binrow"><span class="binlbl">Run</span><span class="binval" style="font-size:24px">X4 + X8</span>
+            <button class="swbtn">⇄ <span class="k">2 loads</span></button>
+            <span class="combtag">🔗 Combined</span></div>
+          <div class="cust">Systel Addition + Aldine Westfield Ph2</div>
+          <div class="sub">31 tags · 5 orders · one truck</div>
+          <div class="orders">X4.1 · X4.2 · X8.1 · X8.2 · X8.3</div>
+          <div class="syncline">👤 <b>Jose · Mike · Ana</b> also loading · updated 2s ago</div>
+        </div>
+        <div class="viewtog"><div class="vt">In progress</div><div class="vt on">Punch list <span class="cnt">20</span></div></div>
+        <div class="prog"><div class="row"><span class="big">11 <span class="small">of 31 loaded</span></span><span class="small">35%</span></div><div class="bar"><i style="width:35%"></i></div></div>
+        <div class="plhdr">Still to load<span class="tot">20 tags · both bins</span></div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Rebar</span><span class="walk">→ cutting area / 20 Station</span><span class="badge">6</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#1</span><span class="lspec">STR · 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="lbin">X8.1</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#41</span><span class="lspec">3C15 · 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="lbin">X8.3</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#2</span><span class="lspec">STR · 20-00</span><span class="shape" data-asa="STR" data-dims='{}' data-st="notscan"></span><span class="lbin">X4.1</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#7</span><span class="lspec">6N05 · 12-04</span><span class="shape" data-asa="17" data-dims='{"B":"2-10","C":"3-00","D":"2-10"}' data-st="notscan"></span><span class="lbin">X4.1</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#42</span><span class="lspec">8B03 · short</span><span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span><span class="lbin">X8.2</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-rebar"><span class="lnum">#12</span><span class="lspec">5N01 · 8-06</span><span class="shape" data-asa="17" data-dims='{"A":"2-00","B":"6-06"}' data-st="notscan"></span><span class="lbin">X4.2</span><span class="ldot st-notprinted"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Tendon</span><span class="walk">→ PT Atlas / Hayes</span><span class="badge">5</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-03</span><span class="lspec">0.5" · 51'</span><span class="lbin">X8.2</span><span class="ldot st-machine" style="display:none"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-06</span><span class="lspec">0.6" · 36'</span><span class="lbin">X4.1</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6" · 44'</span><span class="lbin">X8.2</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="lbin">X8.3</span><span class="ldot st-machine"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-tendon"><span class="lnum">T-07</span><span class="lspec">0.5" · 40'</span><span class="lbin">X4.2</span><span class="ldot st-office"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Hardware</span><span class="walk">→ location <span class="tbd">TBD</span></span><span class="badge">4</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-02</span><span class="lspec">pocket formers</span><span class="lbin">X8.1</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-03</span><span class="lspec">wedges · box</span><span class="lbin">X8.2</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-05</span><span class="lspec">bearing plates</span><span class="lbin">X4.2</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs · bundle</span><span class="lbin">X8.3</span><span class="ldot st-office"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm">Lumber</span><span class="walk">→ location <span class="tbd">TBD</span></span><span class="badge">2</span></div>
+          <div class="lrow cat-lumber"><span class="lnum">L-01</span><span class="lspec">2x4 forming</span><span class="lbin">X8.1</span><span class="ldot st-staged"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 · 48"</span><span class="lbin">X8.2</span><span class="ldot st-notprinted"></span><span class="caret">tap ⌄</span></div>
+        </div>
+
+        <div class="pcat">
+          <div class="pchead"><span class="nm" style="color:var(--warn)">Pending — backfill</span><span class="walk" style="color:#b9903f">→ area unknown</span><span class="badge amber">3</span></div>
+          <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud · f3a1…</span><span class="lbin">X8.2</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud · 7b02…</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+          <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud · 1c9d…</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap ⌄</span></div>
+        </div>
+        <button class="closebtn">Complete loading · X4 + X8</button>
+        <div class="mexist">One sign-off covers both bins. All 31 must be loaded — or overridden — before the driver is cleared.</div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 6 — MY LOADS (identical to dense) ── -->
+    <div class="col" id="f6">
+      <div class="frameLbl"><span class="fcount">7 / 7</span>My loads (switcher)</div>
+      <div class="frameSub">Identical to dense — run picker, no tag rows.</div>
+      <div class="phone"><div class="picker">
+        <h2>Switch run</h2>
+        <div class="psub">Runs you've worked on this device. Tap one to switch — your current run is saved.</div>
+        <div class="bpcard cur">
+          <div class="bprow"><span class="bpbin">X8</span><span class="curtag">On this now</span></div>
+          <div class="bpcust">Aldine Westfield Ph2</div>
+          <div class="bpmeta"><span>8/22</span><span class="bpbar"><i style="width:36%"></i></span><span>now</span></div>
+        </div>
+        <div class="bpcard">
+          <div class="bprow"><span class="bpbin">X4</span></div>
+          <div class="bpcust">Systel Addition</div>
+          <div class="bpmeta"><span>3/9</span><span class="bpbar"><i style="width:33%"></i></span><span>18 min ago</span></div>
+        </div>
+        <div class="bpcard">
+          <div class="bprow"><span class="bpbin">16</span></div>
+          <div class="bpcust">PC Panel P26–P38</div>
+          <div class="bpmeta"><span>0/12</span><span class="bpbar"><i style="width:0%"></i></span><span>2 hr ago</span></div>
+          <div class="bpwarn">⚠ No tag remembered — you'll need to scan the first tag of this run.</div>
+        </div>
+        <button class="pclose">Close</button>
+        <div class="plimit">Today this list holds the last <b>3</b> runs and is stored on this phone only —
+          it's "runs I touched here", not "runs assigned to me". A fresh phone starts empty.</div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="ann">
+    <b>Lean vs. dense — same everything except row density.</b> Frames, order, labels, terminology,
+    "Complete loading" copy, the three sub-orders and the close-out gate are all identical to the dense
+    variant — this is a fair A/B where the only variable is how loud each row is. In lean, a row is
+    <b>tag # + short spec</b>; category is the coloured left edge, upstream state is the corner dot,
+    load status is the section header, and everything else (full spec, big shape, attribution, photo,
+    per-tag actions) lives one tap away in the drawer. Finished work collapses to a
+    <b>"✓ N loaded"</b> line. Tap the open rows (#42, #39) to see what a drawer contains.
+  </div>
+
+<script>
+// Row tap → open/close the drawer (progressive disclosure).
+document.querySelectorAll('.lrow').forEach(function(r){
+  r.addEventListener('click', function(e){
+    if(e.target.closest('.lloaded')) return;
+    if(r.querySelector('.ldrawer')) r.classList.toggle('open');
+  });
+});
+// Bend-shape generator — same routine the loader app already uses for rebar rows.
+const ASA=["A","B","C","D","E","F","G","H","J","K","O","R"];
+function dimInches(v){ const m=String(v||"").match(/^(\d+)-(\d+)/); if(!m){ const n=parseFloat(v); return isNaN(n)?12:n; } return (+m[1])*12+(+m[2]); }
+function legsFrom(dims){ const o=[]; if(dims) for(const L of ASA){ const v=dims[L]; if(v!==undefined&&v!==null&&String(v).toUpperCase()!=="NULL"&&String(v)!=="") o.push(dimInches(v)); } return o; }
+function shapeSVG(asa,dims,stroke,big){
+  const n=legsFrom(dims).length, closed=/^T/i.test(asa||"")||n>=5;
+  const W=big?96:40,H=big?52:22,sw=big?4:2,pad=big?10:5,col=stroke||"#cfe0f5";
+  const head='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round">';
+  if((asa||"").toUpperCase()==="STR"||n<=1) return head+'<line x1="'+pad+'" y1="'+(H/2)+'" x2="'+(W-pad)+'" y2="'+(H/2)+'"/></svg>';
+  const x0=pad,x1=W-pad,y0=pad,y1=H-pad;
+  if(closed) return head+'<path d="M'+(x0+(big?12:6))+' '+y0+' H'+x1+' V'+y1+' H'+x0+' V'+(y0+(big?9:4))+'"/></svg>';
+  if(n===2) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+'"/></svg>';
+  if(n===3) return head+'<path d="M'+x0+' '+y0+' V'+y1+' H'+x1+' V'+y0+'"/></svg>';
+  return head+'<path d="M'+x0+' '+(y0+(big?10:5))+' V'+y1+' H'+x1+' V'+y0+' H'+(x0+(big?34:18))+'"/></svg>';
+}
+const STROKE={ load:"#46d684", short:"#ff3b30", scan:"#7da2c9", notscan:"#8a94a0" };
+document.querySelectorAll(".shape[data-asa]").forEach(function(el){
+  let dims={}; try{ dims=JSON.parse(el.getAttribute("data-dims")||"{}"); }catch(e){}
+  const big=el.classList.contains("dbig");
+  el.innerHTML=shapeSVG(el.getAttribute("data-asa"), dims, STROKE[el.getAttribute("data-st")]||"#cfe0f5", big);
+});
+</script>
+</body>
+</html>
