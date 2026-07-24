@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bins — compact redesign · unified active + historical · GA-WIP-217</title>
+<!-- Supervisor Bins page — COMPACT redesign mockup, 2026-07-23. LEAN DNA (dark tokens,
+     370px phone primary, sticky chip nav, colour-coded left edge, drawer disclosure) carried
+     over from the loader LEAN variant that won the 2026-07-23 A/B review.
+     FIVE frames: (1) compact list mobile, (2) compact list desktop, (3) expanded bin detail,
+     (4) filter/search behaviour, (5) unified active+historical view.
+     Draws the TARGET state (unified list + multi-field search across active AND shipped bins).
+     The backend to serve it does not fully exist yet — see the API-GAP callout below and the
+     design note docs/spec/bins-page-compact-2026-07-23.md. This is a preview host, not source. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --ok:#16c060; --ok-ink:#04150a; --bad:#ff3b30; --warn:#ffb020;
+    --blue:#3b82f6; --blue-soft:#7da2c9;
+    /* lifecycle-stage edge colours — palette invented here; order mirrors _LC_STAGES */
+    --s-notprinted:#5a636d; --s-office:#7da2c9; --s-machine:#ffb020;
+    --s-staging:#a78bfa; --s-truck:#3b82f6; --s-delivered:#16c060;
+    --mixed:#7da2c9;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; scroll-behavior:smooth; }
+  body{ padding:20px 18px 80px; }
+  h1{ font-size:20px; font-weight:800; margin:0 0 6px; }
+  .lead{ font-size:13px; color:var(--dim); margin:0 0 5px; line-height:1.6; max-width:900px; }
+  .lead b{ color:#cfe0f5; }
+  .ab{ border-left:3px solid var(--blue-soft); padding:9px 0 9px 13px; margin:12px 0 4px; max-width:900px;
+    font-size:12.5px; color:#c9d6e5; line-height:1.6; }
+  .ab b{ color:#9ccbff; } .ab a{ color:#9ccbff; }
+  .gap{ border-left:3px solid var(--warn); background:rgba(255,176,32,.06); padding:10px 14px; margin:14px 0 4px;
+    max-width:900px; font-size:12.5px; color:#e8d3ac; line-height:1.6; border-radius:0 8px 8px 0; }
+  .gap b{ color:var(--warn); }
+  .keyrow{ display:flex; flex-wrap:wrap; gap:12px; margin:12px 0 6px; max-width:900px; font-size:11px; color:var(--dim); }
+  .keyrow span{ display:inline-flex; align-items:center; gap:6px; }
+  .keyrow i{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .keyrow i.dot{ width:8px; height:8px; border-radius:50%; }
+
+  /* sticky frame tabs */
+  .ftabs{ position:sticky; top:0; z-index:60; display:flex; gap:5px; overflow-x:auto; padding:9px 0;
+    margin:14px 0 18px; background:#14171c; border-bottom:1px solid var(--line);
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .ftabs::-webkit-scrollbar{ display:none; }
+  .ftabs a{ flex:0 0 auto; font-size:11.5px; font-weight:800; text-decoration:none;
+    color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:18px;
+    padding:7px 12px; white-space:nowrap; }
+  .ftabs a:active{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+
+  .screens{ display:flex; gap:44px 26px; flex-wrap:wrap; align-items:flex-start; }
+  .col{ scroll-margin-top:56px; }
+  .frameLbl{ display:flex; align-items:center; gap:9px; font-size:13px; font-weight:900;
+    text-transform:uppercase; letter-spacing:.5px; color:#e6edf3; margin:0 0 6px;
+    padding:8px 12px; background:#161a1f; border:1px solid var(--line);
+    border-left:4px solid var(--blue-soft); border-radius:9px; }
+  .frameLbl .fcount{ flex:0 0 auto; font-size:11px; font-weight:900; letter-spacing:.5px;
+    color:#0b0d10; background:var(--blue-soft); border-radius:20px; padding:2px 9px; }
+  .frameSub{ font-size:11px; color:var(--faint); margin:0 0 10px; max-width:370px; line-height:1.5; }
+  .phone{ width:370px; border-radius:22px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); position:relative; }
+  .desk{ width:760px; max-width:100%; border-radius:14px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); }
+  .scr{ padding:12px; }
+
+  @media (max-width:800px){
+    .desk{ width:100%; }
+  }
+  @media (max-width:500px){
+    body{ padding:14px 10px 60px; }
+    .screens{ display:block; }
+    .col{ margin-bottom:0; padding-top:40px; margin-top:44px; border-top:3px solid var(--blue-soft); }
+    .col:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
+    .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .desk{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .scr{ padding:10px 8px; }
+    .frameLbl{ font-size:14px; padding:10px 12px; }
+    .frameSub{ padding:0 4px; max-width:none; }
+    h1{ font-size:17px; } .lead,.ab,.gap{ font-size:12.5px; }
+  }
+
+  /* ── sticky control bar (search + state + stage) ── */
+  .ctrl{ position:sticky; top:0; z-index:20; background:var(--bg); padding-bottom:8px; margin-bottom:4px; border-bottom:1px solid var(--line); }
+  .searchbox{ display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line);
+    border-radius:11px; padding:9px 12px; margin-bottom:8px; }
+  .searchbox .mag{ color:var(--faint); font-size:14px; flex:0 0 auto; }
+  .searchbox input{ flex:1; min-width:0; background:none; border:none; color:var(--txt); font-size:13px; font-family:inherit; }
+  .searchbox input::placeholder{ color:var(--faint); }
+  .searchbox .clr{ color:var(--faint); font-size:14px; }
+  .searchbox.focus{ border-color:#2f4a63; }
+  .states{ display:flex; gap:6px; margin-bottom:7px; }
+  .stbtn{ flex:1; text-align:center; border:1px solid var(--line); border-radius:11px; padding:8px 6px;
+    background:#0e1217; font-size:12.5px; font-weight:800; color:var(--dim); display:flex; align-items:center; justify-content:center; gap:6px; }
+  .stbtn.on{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+  .stbtn .cnt{ font-size:10.5px; font-weight:800; border-radius:20px; padding:1px 7px; background:#242b34; color:var(--dim); }
+  .stbtn.on .cnt{ background:rgba(59,130,246,.2); color:var(--blue-soft); }
+  .stagebar{ display:flex; flex-wrap:wrap; gap:6px; }
+  .sgchip{ flex:0 0 auto; border:1px solid var(--line); border-radius:18px; padding:5px 10px; background:#0e1217;
+    display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:var(--dim); }
+  .sgchip i{ width:7px; height:7px; border-radius:50%; }
+  .sgchip.on{ background:rgba(59,130,246,.14); border-color:rgba(59,130,246,.5); color:#cfe0f5; }
+  .sortline{ display:flex; align-items:center; gap:6px; font-size:10.5px; color:var(--faint); margin-top:8px; padding:0 2px; }
+  .sortline b{ color:#8fb4d8; font-weight:700; }
+  .sortline .r{ margin-left:auto; }
+
+  /* ── ship-date group header ── */
+  .grouph{ display:flex; align-items:baseline; gap:8px; margin:14px 2px 6px; font-size:11px;
+    font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:#8fb4d8; }
+  .grouph .today{ font-size:8.5px; font-weight:800; color:#0b0d10; background:var(--warn); border-radius:5px; padding:1px 6px; letter-spacing:.4px; }
+  .grouph .gc{ margin-left:auto; color:var(--faint); font-weight:700; }
+
+  /* ── the compact bin row ── */
+  .brow{ position:relative; display:flex; align-items:center; gap:10px; padding:10px 11px 10px 13px;
+    margin:5px 0; background:#111722; border:1px solid #223; border-left:4px solid var(--line);
+    border-radius:10px; cursor:pointer; }
+  .brow.s-notprinted{ border-left-color:var(--s-notprinted); }
+  .brow.s-office{ border-left-color:var(--s-office); }
+  .brow.s-machine{ border-left-color:var(--s-machine); }
+  .brow.s-staging{ border-left-color:var(--s-staging); }
+  .brow.s-truck{ border-left-color:var(--s-truck); }
+  .brow.s-delivered{ border-left-color:var(--s-delivered); }
+  .brow.mixed{ border-left-color:var(--mixed); }
+  .brow:active{ background:#141b24; }
+  .brow.open{ background:#141b24; border-color:#2f4a63; }
+  .brow .bin{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:19px; letter-spacing:.5px; color:#e6edf3; min-width:48px; }
+  .brow .mid{ flex:1; min-width:0; }
+  .brow .midtop{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .brow .badge{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; border-radius:5px; padding:2px 7px; white-space:nowrap; }
+  .b-notprinted{ background:#242b34; color:#b6c0cc; }
+  .b-office{ background:rgba(125,162,201,.18); color:var(--s-office); }
+  .b-machine{ background:rgba(255,176,32,.2); color:var(--warn); }
+  .b-staging{ background:rgba(167,139,250,.2); color:var(--s-staging); }
+  .b-truck{ background:rgba(59,130,246,.2); color:#7fb0ff; }
+  .b-delivered{ background:rgba(22,192,96,.18); color:#46d684; }
+  .b-mixed{ background:#242b34; color:#9ccbff; }
+  .brow .meta{ font-size:11px; color:var(--dim); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .brow .meta b{ color:#c3ccd6; font-weight:700; }
+  .brow .rt{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 0 auto; }
+  .brow .pct{ font-size:12px; font-weight:800; color:#cfe0f5; }
+  .minibar{ width:52px; height:6px; background:#0b0d10; border-radius:999px; overflow:hidden; }
+  .minibar > i{ display:block; height:100%; background:var(--ok); }
+  .brow .caret{ font-size:10px; color:#4a545f; margin-left:2px; }
+  .brow .flag{ position:absolute; top:-6px; right:9px; font-size:8px; font-weight:800; text-transform:uppercase;
+    letter-spacing:.4px; border-radius:5px; padding:1px 6px; }
+  .flag.short{ background:rgba(255,59,48,.22); color:#ff9b94; border:1px solid #5e2a2a; }
+  .flag.stale{ background:rgba(255,176,32,.18); color:var(--warn); border:1px solid rgba(255,176,32,.4); }
+  .brow.shipped{ opacity:.62; }
+  .brow.shipped .bin{ color:#6f7d8a; }
+
+  /* ── expanded bin drawer (frame 3) ── */
+  .bwrap{ margin:5px 0; }
+  .bhead{ display:flex; align-items:center; gap:10px; padding:12px 12px 12px 13px; background:#141b24;
+    border:1px solid #2f4a63; border-left:4px solid var(--s-machine); border-radius:10px 10px 0 0; }
+  .bhead .bin{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:22px; letter-spacing:1px; }
+  .bhead .hx{ margin-left:auto; font-size:11px; color:var(--dim); text-align:right; line-height:1.5; }
+  .bhead .hx b{ color:#cfe0f5; }
+  .bbody{ border:1px solid #2f4a63; border-top:none; border-radius:0 0 10px 10px; padding:11px 11px 13px; background:#0f141b; }
+  .binfo{ display:flex; flex-wrap:wrap; gap:7px 14px; font-size:11px; color:var(--dim); padding:2px 2px 10px; border-bottom:1px solid var(--line); margin-bottom:10px; }
+  .binfo b{ color:#cfe0f5; font-weight:700; }
+  .subh{ display:flex; align-items:center; gap:8px; margin:11px 2px 4px; }
+  .subh .sb{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; font-weight:800; color:#9ccbff; }
+  .subh .ord{ font-size:10.5px; color:var(--dim); }
+  .subh .sc{ margin-left:auto; font-size:10px; color:var(--faint); font-weight:700; }
+  .stageh{ display:flex; align-items:center; gap:7px; margin:9px 2px 3px; font-size:10px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.5px; }
+  .stageh i{ width:8px; height:8px; border-radius:50%; }
+  .stageh .n{ margin-left:auto; font-weight:700; color:var(--faint); }
+  .sg-notprinted{ color:#b6c0cc; } .sg-office{ color:var(--s-office); } .sg-machine{ color:var(--warn); }
+  .sg-staging{ color:var(--s-staging); } .sg-truck{ color:#7fb0ff; } .sg-delivered{ color:#46d684; }
+  .trow{ display:flex; align-items:center; gap:9px; padding:7px 9px; margin:3px 0; background:#111722;
+    border:.5px solid #223; border-radius:8px; }
+  .trow .tn{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; font-weight:700; color:#e6edf3; min-width:64px; }
+  .trow .tw{ font-size:11px; color:var(--dim); flex:1; }
+  .trow .tw b{ color:#c3ccd6; }
+  .trow .tst{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; border-radius:5px; padding:2px 7px; }
+  .trow .tcaret{ font-size:9px; color:#4a545f; }
+  .tdeep{ font-size:10px; color:#8697a8; padding:4px 9px 2px; line-height:1.5; }
+  .tdeep b{ color:#c3ccd6; font-weight:700; }
+
+  /* ── tag-history result card (frame 5) ── */
+  .thcard{ background:linear-gradient(180deg,#141b24,#0f141b); border:1px solid #2f4a63; border-radius:12px; padding:13px; margin:6px 0 10px; }
+  .thcard .thtop{ display:flex; align-items:center; gap:9px; }
+  .thcard .thn{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:16px; font-weight:800; color:#cfe0f5; }
+  .thcard .thpill{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; background:#17222e; color:#9ccbff; border:1px solid #2f4a63; border-radius:5px; padding:2px 7px; }
+  .thcard .thpill.done{ background:rgba(22,192,96,.15); color:#46d684; border-color:#1f6b40; }
+  .thgrid{ display:flex; flex-wrap:wrap; gap:6px 16px; margin:10px 0; font-size:11px; color:var(--dim); }
+  .thgrid b{ color:#cfe0f5; font-weight:700; }
+  .thtl{ border-left:2px solid #2a3746; margin:6px 0 2px 4px; padding-left:12px; }
+  .thtl .ev{ position:relative; font-size:10.5px; color:#c3ccd6; margin:6px 0; }
+  .thtl .ev::before{ content:""; position:absolute; left:-17px; top:4px; width:7px; height:7px; border-radius:50%; background:var(--s-machine); border:2px solid #0f141b; }
+  .thtl .ev.done::before{ background:var(--ok); }
+  .thtl .ev .t{ color:var(--faint); }
+  .thmore{ font-size:10.5px; color:#8fb4d8; margin-top:6px; }
+  .miss{ background:#1a1410; border:1px solid #4a3a1a; border-radius:10px; padding:11px 13px; margin:6px 0; font-size:11.5px; color:#e8d3ac; line-height:1.5; }
+
+  .empty{ text-align:center; color:var(--faint); font-size:12px; padding:26px 10px; font-style:italic; }
+  .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:24px 0 0; max-width:900px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
+  .ann b{ color:#fff; }
+  .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; background:#0e1217; border:1px solid var(--line); border-radius:4px; padding:1px 5px; color:#9ccbff; }
+</style>
+</head>
+<body>
+  <h1>Bins — compact redesign <span style="color:var(--faint);font-weight:400">· supervisor portal · unified active + historical</span></h1>
+  <p class="lead"><b>Problem:</b> today the Bins tab renders every active bin as a two-line card that
+    pre-builds its full drill-down into the DOM, with a ship-date <code>&lt;h3&gt;</code> between every cluster,
+    a 7-column tag table that can't fit 375px, and <b>no search, no filter, no cap</b>. ~20 bins on a busy day
+    scrolls forever. <b>This redesign</b> collapses each bin to <b>one dense row</b>, moves all detail behind a
+    <b>tap-to-open drawer</b>, adds a <b>sticky search + state/stage filter</b>, and folds the (still-unmerged)
+    tag-search feature into the <b>same</b> interface via an <b>Active / Shipped / All</b> state switch.</p>
+  <p class="ab"><b>How a compact row works:</b> the row shows only <b>bin # · top stage badge · weight/tags ·
+    ship · % complete</b>. The <b>left edge colour</b> is the bin's least-advanced active lifecycle stage (or
+    blue for <b>MIXED</b>); an <b>attention flag</b> (SHORT / STALE) floats at the corner only when something
+    needs the supervisor. <b>Tap the row</b> to open the drawer: sub-bin → order → the six lifecycle stages →
+    tag rows (tag # · weight · status), each tag itself tap-expandable for shape / scanned-by / when / machine.</p>
+
+  <div class="gap"><b>⚠ API GAP — costed, not hidden.</b> This mockup draws the <b>target</b> state James
+    approved. Two pieces do not exist in production yet: (1) <code>/api/portal-bins-expanded</code> is
+    <b>active-only</b> — there is <b>no shipped/historical bins query</b>, so the <b>Shipped</b> and <b>All</b>
+    states need new backend work; (2) multi-field search (bin / order # / ticket / tag ID / customer) has
+    <b>no endpoint</b> — the only tag lookup is <b>GA-WIP-108 / PR #54</b>, which is <b>unmerged</b>, flag-gated,
+    and <b>exact-tag-ID-only</b>. The design note breaks this into phases so it's scoped before any build.</div>
+
+  <div class="keyrow">
+    <b style="color:var(--faint)">Left edge = least-advanced active stage:</b>
+    <span><i style="background:var(--s-notprinted)"></i>Not printed</span>
+    <span><i style="background:var(--s-office)"></i>In office</span>
+    <span><i style="background:var(--s-machine)"></i>At machine</span>
+    <span><i style="background:var(--s-staging)"></i>In staging</span>
+    <span><i style="background:var(--s-truck)"></i>On truck</span>
+    <span><i style="background:var(--s-delivered)"></i>Delivered</span>
+    <span><i style="background:var(--mixed)"></i>Mixed</span>
+  </div>
+
+  <nav class="ftabs">
+    <a href="#f1">1 · Compact list (mobile)</a>
+    <a href="#f2">2 · Compact list (desktop)</a>
+    <a href="#f3">3 · Expanded bin</a>
+    <a href="#f4">4 · Search + filter</a>
+    <a href="#f5">5 · Unified historical</a>
+  </nav>
+
+  <div class="screens">
+
+    <!-- ══════════ FRAME 1 — COMPACT LIST (MOBILE 375) ══════════ -->
+    <div class="col" id="f1">
+      <div class="frameLbl">1 · Compact list <span class="fcount">MOBILE 375</span></div>
+      <p class="frameSub">Default state = <b>Active</b>. One row per bin, grouped by ship date. ~20 bins fit
+        in ~2 thumb-scrolls instead of ~10. Nothing is expanded; no tag detail is in the DOM until tapped.</p>
+      <div class="phone"><div class="scr">
+
+        <div class="ctrl">
+          <div class="searchbox">
+            <span class="mag">&#128269;</span>
+            <input placeholder="Bin, order #, ticket, tag, customer…" readonly>
+          </div>
+          <div class="states">
+            <div class="stbtn on">Active <span class="cnt">18</span></div>
+            <div class="stbtn">Shipped <span class="cnt">64</span></div>
+            <div class="stbtn">All <span class="cnt">82</span></div>
+          </div>
+          <div class="sortline"><span>Sort: <b>Ship date &#8593;</b></span><span class="r">18 bins · 41,120 lbs</span></div>
+        </div>
+
+        <div class="grouph">Ships Fri 07/25 <span class="today">TODAY</span><span class="gc">5 bins</span></div>
+
+        <div class="brow s-truck">
+          <span class="bin">X12</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-truck">On truck</span></div>
+            <div class="meta"><b>18</b> tags · <b>9,240</b> lbs · Gulf Coast PT</div>
+          </div>
+          <div class="rt"><span class="pct">94%</span><span class="minibar"><i style="width:94%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow mixed">
+          <span class="flag short">Short 2</span>
+          <span class="bin">X14</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-mixed">Mixed · 3</span></div>
+            <div class="meta"><b>21</b> tags · <b>7,110</b> lbs · Bayou Rebar</div>
+          </div>
+          <div class="rt"><span class="pct">71%</span><span class="minibar"><i style="width:71%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-machine">
+          <span class="bin">7</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-machine">At machine</span></div>
+            <div class="meta"><b>12</b> tags · <b>5,880</b> lbs · Gulf Coast PT</div>
+          </div>
+          <div class="rt"><span class="pct">48%</span><span class="minibar"><i style="width:48%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-staging">
+          <span class="bin">X3</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-staging">In staging</span></div>
+            <div class="meta"><b>8</b> tags · <b>3,200</b> lbs · Vela Concrete</div>
+          </div>
+          <div class="rt"><span class="pct">62%</span><span class="minibar"><i style="width:62%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-notprinted">
+          <span class="bin">22</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-notprinted">Not printed</span></div>
+            <div class="meta"><b>6</b> tags · <b>2,010</b> lbs · Bayou Rebar</div>
+          </div>
+          <div class="rt"><span class="pct">0%</span><span class="minibar"><i style="width:2%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="grouph">Ships Mon 07/28 <span class="gc">7 bins</span></div>
+
+        <div class="brow s-office">
+          <span class="bin">X25</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-office">In office</span></div>
+            <div class="meta"><b>21</b> tags · <b>14,873</b> lbs · Gulf Coast PT</div>
+          </div>
+          <div class="rt"><span class="pct">14%</span><span class="minibar"><i style="width:14%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-machine">
+          <span class="flag stale">Stale 3d</span>
+          <span class="bin">9</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-machine">At machine</span></div>
+            <div class="meta"><b>14</b> tags · <b>6,020</b> lbs · Vela Concrete</div>
+          </div>
+          <div class="rt"><span class="pct">36%</span><span class="minibar"><i style="width:36%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-notprinted">
+          <span class="bin">X31</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-notprinted">Not printed</span></div>
+            <div class="meta"><b>9</b> tags · <b>2,780</b> lbs · Bayou Rebar</div>
+          </div>
+          <div class="rt"><span class="pct">0%</span><span class="minibar"><i style="width:2%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="empty">…10 more bins &#8595;</div>
+
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 2 — COMPACT LIST (DESKTOP) ══════════ -->
+    <div class="col" id="f2">
+      <div class="frameLbl">2 · Compact list <span class="fcount">DESKTOP</span></div>
+      <p class="frameSub">Same data, secondary form factor. A supervisor at a desk gets a wider row so
+        customer + order numbers sit inline — but it is the <b>same one-row-per-bin</b> model, not a
+        different page. Left edge, badge, flag, and % carry over unchanged.</p>
+      <div class="desk"><div class="scr">
+
+        <div class="ctrl">
+          <div class="searchbox" style="max-width:420px">
+            <span class="mag">&#128269;</span>
+            <input placeholder="Bin, order #, ticket, tag, customer…" readonly>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div class="states" style="max-width:320px; margin:0">
+              <div class="stbtn on">Active <span class="cnt">18</span></div>
+              <div class="stbtn">Shipped <span class="cnt">64</span></div>
+              <div class="stbtn">All <span class="cnt">82</span></div>
+            </div>
+            <div class="sortline" style="margin:0"><span>Sort <b>Ship &#8593;</b></span></div>
+          </div>
+        </div>
+
+        <div class="grouph" style="margin-top:12px">Ships Fri 07/25 <span class="today">TODAY</span><span class="gc">5 bins · 27,440 lbs</span></div>
+
+        <div class="brow s-truck">
+          <span class="bin">X12</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-truck">On truck</span>
+              <span style="font-size:11px;color:#cfe0f5;font-weight:600">Gulf Coast PT</span>
+              <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT042512 · FT042519</span></div>
+            <div class="meta"><b>18</b> tags · <b>9,240</b> lbs · 2 sub-bins (X12.1, X12.2) · site: Katy</div>
+          </div>
+          <div class="rt"><span class="pct">94%</span><span class="minibar"><i style="width:94%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow mixed">
+          <span class="flag short">Short 2</span>
+          <span class="bin">X14</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-mixed">Mixed · 3</span>
+              <span style="font-size:11px;color:#cfe0f5;font-weight:600">Bayou Rebar</span>
+              <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT041188</span></div>
+            <div class="meta"><b>21</b> tags · <b>7,110</b> lbs · 2 shy of loaded · site: Cypress</div>
+          </div>
+          <div class="rt"><span class="pct">71%</span><span class="minibar"><i style="width:71%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-machine">
+          <span class="bin">7</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-machine">At machine</span>
+              <span style="font-size:11px;color:#cfe0f5;font-weight:600">Gulf Coast PT</span>
+              <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT042077</span></div>
+            <div class="meta"><b>12</b> tags · <b>5,880</b> lbs · Bender 2 · site: Katy</div>
+          </div>
+          <div class="rt"><span class="pct">48%</span><span class="minibar"><i style="width:48%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="brow s-notprinted">
+          <span class="bin">22</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-notprinted">Not printed</span>
+              <span style="font-size:11px;color:#cfe0f5;font-weight:600">Bayou Rebar</span>
+              <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT041190</span></div>
+            <div class="meta"><b>6</b> tags · <b>2,010</b> lbs · awaiting print · site: Cypress</div>
+          </div>
+          <div class="rt"><span class="pct">0%</span><span class="minibar"><i style="width:2%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 3 — EXPANDED BIN ══════════ -->
+    <div class="col" id="f3">
+      <div class="frameLbl">3 · Expanded bin <span class="fcount">DRAWER</span></div>
+      <p class="frameSub">Tapping <b>X25</b> opens it in place. Depth = sub-bin → order → the six
+        lifecycle-v2 stages → tag rows. Only <b>tag # · weight · status</b> ride the tag row; tapping a
+        tag reveals shape / scanned-by / when / machine (shown open on the first tag here).</p>
+      <div class="phone"><div class="scr">
+
+        <div class="bwrap">
+          <div class="bhead" style="border-left-color:var(--s-office)">
+            <span class="bin">X25</span>
+            <div class="hx"><b>21</b> tags · <b>14,873</b> lbs<br>Ships Mon 07/28 · 3 sub-bins</div>
+          </div>
+          <div class="bbody">
+            <div class="binfo">
+              <span>Customer <b>Gulf Coast PT</b></span>
+              <span>Site <b>Katy</b></span>
+              <span>Complete <b>14%</b></span>
+              <span>Priority <b>Normal</b></span>
+            </div>
+
+            <!-- sub-bin X25.1 -->
+            <div class="subh"><span class="sb">X25.1</span><span class="ord">Order FT042526</span><span class="sc">6 tags · 4,120 lbs</span></div>
+
+            <div class="stageh sg-office"><i style="background:var(--s-office)"></i>In office<span class="n">4 tags · 2,700 lbs</span></div>
+            <div class="trow">
+              <span class="tn">FT042526#1</span>
+              <span class="tw"><b>720</b> lbs</span>
+              <span class="tst b-office">In office</span>
+              <span class="tcaret">&#9662;</span>
+            </div>
+            <div class="tdeep">Shape <b>T2 (stirrup)</b> · Last scan <b>—</b> not yet scanned · Machine <b>—</b></div>
+            <div class="trow">
+              <span class="tn">FT042526#2</span>
+              <span class="tw"><b>680</b> lbs</span>
+              <span class="tst b-office">In office</span>
+              <span class="tcaret">&#9656;</span>
+            </div>
+
+            <div class="stageh sg-machine"><i style="background:var(--s-machine)"></i>At machine<span class="n">2 tags · 1,420 lbs</span></div>
+            <div class="trow">
+              <span class="tn">FT042526#5</span>
+              <span class="tw"><b>710</b> lbs</span>
+              <span class="tst b-machine">At machine</span>
+              <span class="tcaret">&#9656;</span>
+            </div>
+
+            <!-- sub-bin X25.2 -->
+            <div class="subh" style="margin-top:14px"><span class="sb">X25.2</span><span class="ord">Order FT042526</span><span class="sc">9 tags · 6,240 lbs</span></div>
+            <div class="stageh sg-staging"><i style="background:var(--s-staging)"></i>In staging<span class="n">9 tags · 6,240 lbs</span></div>
+            <div class="trow">
+              <span class="tn">FT042526#11</span>
+              <span class="tw"><b>690</b> lbs</span>
+              <span class="tst b-staging">In staging</span>
+              <span class="tcaret">&#9656;</span>
+            </div>
+            <div style="text-align:center;font-size:10.5px;color:#8fb4d8;padding:6px 0 2px">…8 more staged tags</div>
+
+            <!-- delivered collapse -->
+            <div class="stageh sg-delivered"><i style="background:var(--s-delivered)"></i>Delivered<span class="n">6 tags · 4,513 lbs &#9662;</span></div>
+
+          </div>
+        </div>
+
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 4 — SEARCH + FILTER ══════════ -->
+    <div class="col" id="f4">
+      <div class="frameLbl">4 · Search + filter <span class="fcount">BEHAVIOUR</span></div>
+      <p class="frameSub">Typing filters the list live across <b>bin / order # / ticket / tag ID / customer</b>.
+        Stage chips narrow further. Here: query <b>"gulf"</b> + stage chip <b>At machine</b> active — the list
+        collapses to matching bins and the sort line shows the active filter.</p>
+      <div class="phone"><div class="scr">
+
+        <div class="ctrl">
+          <div class="searchbox focus">
+            <span class="mag">&#128269;</span>
+            <input value="gulf" readonly>
+            <span class="clr">&#10005;</span>
+          </div>
+          <div class="states">
+            <div class="stbtn on">Active <span class="cnt">7</span></div>
+            <div class="stbtn">Shipped <span class="cnt">22</span></div>
+            <div class="stbtn">All <span class="cnt">29</span></div>
+          </div>
+          <div class="stagebar">
+            <div class="sgchip"><i style="background:var(--s-notprinted)"></i>Not printed</div>
+            <div class="sgchip on"><i style="background:var(--s-machine)"></i>At machine</div>
+            <div class="sgchip"><i style="background:var(--s-staging)"></i>Staging</div>
+            <div class="sgchip"><i style="background:var(--s-truck)"></i>On truck</div>
+          </div>
+          <div class="sortline"><span>Filter: <b>"gulf"</b> · <b>At machine</b></span><span class="r">2 of 18</span></div>
+        </div>
+
+        <div class="grouph">Ships Fri 07/25 <span class="today">TODAY</span><span class="gc">1 bin</span></div>
+        <div class="brow s-machine">
+          <span class="bin">7</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-machine">At machine</span></div>
+            <div class="meta"><b>12</b> tags · <b>5,880</b> lbs · Gulf Coast PT</div>
+          </div>
+          <div class="rt"><span class="pct">48%</span><span class="minibar"><i style="width:48%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="grouph">Ships Mon 07/28 <span class="gc">1 bin</span></div>
+        <div class="brow s-machine">
+          <span class="bin">X25</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-machine">At machine</span></div>
+            <div class="meta"><b>2</b> of 21 tags at machine · Gulf Coast PT</div>
+          </div>
+          <div class="rt"><span class="pct">14%</span><span class="minibar"><i style="width:14%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="empty">No other active bins match "gulf" + At machine.<br>Switch to <b>All</b> to include shipped bins.</div>
+
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 5 — UNIFIED HISTORICAL ══════════ -->
+    <div class="col" id="f5">
+      <div class="frameLbl">5 · Unified historical <span class="fcount">ONE UI</span></div>
+      <p class="frameSub">Same page, <b>Shipped</b> state active — the list now shows delivered bins (dimmed,
+        no attention flags). When a query resolves to a single <b>tag ID</b>, its history card appears inline
+        <b>above</b> the list — this is where GA-WIP-108 / PR #54 folds in instead of living on a separate page.</p>
+      <div class="phone"><div class="scr">
+
+        <div class="ctrl">
+          <div class="searchbox focus">
+            <span class="mag">&#128269;</span>
+            <input value="FT041188#7" readonly>
+            <span class="clr">&#10005;</span>
+          </div>
+          <div class="states">
+            <div class="stbtn">Active <span class="cnt">18</span></div>
+            <div class="stbtn on">Shipped <span class="cnt">64</span></div>
+            <div class="stbtn">All <span class="cnt">82</span></div>
+          </div>
+          <div class="sortline"><span>Exact tag match &#8595;</span><span class="r">1 tag · 3 bins</span></div>
+        </div>
+
+        <!-- tag-history result folded in -->
+        <div class="thcard">
+          <div class="thtop">
+            <span class="thn">FT041188#7</span>
+            <span class="thpill done">Delivered</span>
+            <span style="margin-left:auto;font-size:10px;color:var(--faint)">bin X14.1</span>
+          </div>
+          <div class="thgrid">
+            <span>Weight <b>690 lbs</b></span>
+            <span>Bar <b>#5</b></span>
+            <span>Shape <b>Straight</b></span>
+            <span>Order <b>FT041188</b></span>
+            <span>Customer <b>Bayou Rebar</b></span>
+          </div>
+          <div class="thtl">
+            <div class="ev"><span class="t">07/22 08:14</span> — Sheared · Shear 1 · <b>M. Alvarez</b></div>
+            <div class="ev"><span class="t">07/22 11:02</span> — Staged · <b>J. Reyes</b></div>
+            <div class="ev done"><span class="t">07/24 06:40</span> — Loaded → Delivered · Katy</div>
+          </div>
+          <div class="thmore">View full audit trail &#8594;</div>
+        </div>
+
+        <div class="grouph">Shipped Thu 07/24 <span class="gc">recent</span></div>
+        <div class="brow shipped s-delivered">
+          <span class="bin">X14</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-delivered">Delivered</span></div>
+            <div class="meta"><b>21</b> tags · <b>7,110</b> lbs · Bayou Rebar</div>
+          </div>
+          <div class="rt"><span class="pct">100%</span><span class="minibar"><i style="width:100%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+        <div class="brow shipped s-delivered">
+          <span class="bin">X8</span>
+          <div class="mid">
+            <div class="midtop"><span class="badge b-delivered">Delivered</span></div>
+            <div class="meta"><b>15</b> tags · <b>6,430</b> lbs · Gulf Coast PT</div>
+          </div>
+          <div class="rt"><span class="pct">100%</span><span class="minibar"><i style="width:100%"></i></span></div>
+          <span class="caret">&#9656;</span>
+        </div>
+
+        <div class="miss"><b>If the tag isn't found:</b> the card shows a "known but never scanned" empty
+          shell (PR #54's <code>scanned:false</code> state), not a dead end.</div>
+
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="ann">
+    <b>Design intent (read with the spec).</b> The compaction levers, in order of impact:
+    <b>(1)</b> one-row-per-bin instead of two-line cards — ~2&times; density before anything opens;
+    <b>(2)</b> drawer disclosure — tag detail is <b>not</b> in the DOM until tapped, unlike today's pre-built
+    <code>.be-exp</code>; <b>(3)</b> the 7-column tag table is retired for a 3-field tag row + tap-deeper;
+    <b>(4)</b> sticky search + Active/Shipped/All state + stage chips replace scrolling; <b>(5)</b> lifecycle-v2
+    is the taxonomy (six stages), legacy phase names survive only as badge fallback. <b>The unified list is the
+    target James approved</b> — the <span style="color:var(--warn)">amber callout</span> above is the honest
+    backend cost: Shipped/All and multi-field search are new endpoints, and tag-history (PR #54) is still
+    unmerged. Frames are static; taps/typing are illustrative, not wired. GA-WIP-217.
+  </div>
+
+</body>
+</html>
