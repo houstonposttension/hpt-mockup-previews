@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Driver Summary — pre-departure readiness (GA-WIP-217)</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --ok:#16c060; --bad:#ff3b30; --warn:#ffb020; --blue-soft:#7da2c9;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:34px 26px 80px; max-width:1000px; margin:0 auto; }
+  h1{ font-size:24px; font-weight:800; margin:0 0 6px; }
+  .sub{ font-size:14px; color:var(--dim); margin:0 0 4px; line-height:1.6; }
+  .sub b{ color:#cfe0f5; }
+  .tagrow{ display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 26px; }
+  .tag{ font-size:11px; font-weight:700; padding:4px 11px; border-radius:20px; border:1px solid var(--line); color:var(--dim); }
+  .tag.ok{ color:var(--ok); border-color:rgba(22,192,96,.4); background:rgba(22,192,96,.08); }
+  .tag.warn{ color:var(--warn); border-color:rgba(255,176,32,.4); background:rgba(255,176,32,.08); }
+  .tag code, .desc code, .q code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; color:#cfe0f5; }
+
+  .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
+  .card .top{ padding:16px 18px 14px; border-bottom:1px solid var(--line); }
+  .card .kick{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--blue-soft); }
+  .card h2{ font-size:17px; font-weight:800; margin:6px 0 8px; }
+  .card .desc{ font-size:13px; color:var(--dim); line-height:1.55; }
+  .card .body{ padding:14px 18px 18px; flex:1; display:flex; flex-direction:column; }
+  .row{ display:flex; gap:8px; margin:5px 0; font-size:12.5px; line-height:1.5; }
+  .row .k{ flex:0 0 46px; font-weight:800; font-size:10px; text-transform:uppercase; letter-spacing:.5px; padding-top:2px; }
+  .row.pro .k{ color:var(--ok); } .row.win .k{ color:var(--warn); }
+  .row .v{ color:#c3ccd6; }
+  .card .open{ margin-top:14px; display:block; text-align:center; text-decoration:none;
+    background:#17222e; border:1px solid #2f4a63; color:#9ccbff; font-weight:700; font-size:14px; padding:11px; border-radius:11px; }
+  .card .open:hover{ background:#1c2a38; }
+
+  .note{ background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-top:26px; }
+  .note h3{ font-size:14px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.8px; color:var(--dim); }
+  .note p{ font-size:13px; color:#c3ccd6; line-height:1.65; margin:0 0 10px; }
+  .note .q{ border-left:3px solid var(--warn); padding-left:12px; color:#e8d9b8; }
+  .note code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; background:#0e1217; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#cfe0f5; }
+</style>
+</head>
+<body>
+  <h1>Driver summary — pre-departure readiness</h1>
+  <p class="sub">A new phone-first surface for the <b>Driver</b> role. One question: <b>"is my load actually
+    finished loading?"</b> — answered in the yard, before the driver leaves.</p>
+  <p class="sub">Prepared 2026-07-23 · <b>GA-WIP-217 (PROPOSED)</b> · LEAN visual DNA, ported from the
+    canonical loader (<code>variant-c-lean-2026-07-22.html</code>). <b>Read-only</b>; no new event types.</p>
+  <div class="tagrow">
+    <span class="tag ok">Scope: pre-departure readiness ONLY — OptimoRoute owns route / nav / POD</span>
+    <span class="tag">Home = per-load detail · multi-bin trip = swipeable tabs</span>
+    <span class="tag warn">Assignment pulled from OptimoRoute (after route optimization) — see open item O1</span>
+  </div>
+
+  <div class="cards">
+    <div class="card" style="border-color:#2f4a63">
+      <div class="top">
+        <div class="kick" style="color:#9ccbff">The mockup</div>
+        <h2>Driver summary — 4 frames</h2>
+        <div class="desc">Ready-load detail (home) · still-loading detail · not-started detail ·
+          trip-ready hand-off. One phone screen per load, swipeable tabs across a multi-bin trip.</div>
+      </div>
+      <div class="body">
+        <div class="row pro"><span class="k">Frame 1</span><span class="v"><b>Ready (home):</b> "X8 · 22 of 22 · ready to depart" + customer / site / ship. Green gate; hand off to OptimoRoute.</span></div>
+        <div class="row pro"><span class="k">Frame 2</span><span class="v"><b>Still loading:</b> "15 of 22" + what's not on the truck by where it is + "last tag 2 min ago". No fake ETA.</span></div>
+        <div class="row pro"><span class="k">Frame 3</span><span class="v"><b>Not started:</b> nothing on the truck yet — waiting on the loader.</span></div>
+        <div class="row pro"><span class="k">Frame 4</span><span class="v"><b>Trip ready:</b> whole-trip summary + a read-only acknowledgment that writes nothing.</span></div>
+        <a class="open" href="driver-summary.html">Open the driver mockup →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h3>Scope &amp; open items</h3>
+    <p><b style="color:var(--ok)">Hard boundary.</b> Drivers already use the <b>OptimoRoute</b> driver app for
+      route, turn-by-turn navigation and proof-of-delivery. This surface answers <b>"is it ready?"</b> and hands
+      off to OptimoRoute the instant the wheels roll. Our system owns up to <code>ON_TRUCK</code>;
+      <code>DELIVERED</code> is OptimoRoute's — the same loader/driver seam already written into the loader spec.</p>
+    <p class="q"><b>Open — O1 (assignment timing).</b> OptimoRoute exposes which driver an order is assigned to
+      only <b>after the route is optimized</b> (via <code>search_orders · includeScheduleInformation</code>). For a
+      pre-departure "my loads" query to be non-empty, HPT must either pin loads via <code>assignedTo</code> up
+      front <b>or</b> optimize the route before drivers reach the yard. If neither, v1 ships as
+      <b>driver self-select</b> over <code>/api/loadlist.json</code> — the same tab strip, different source.</p>
+    <p class="q"><b>Open — Q10 confirmed.</b> Home screen = <b>per-load detail</b> (not a list), swipeable tabs for
+      multi-bin trips, first bin is home. Locked with James 2026-07-24.</p>
+    <p><b>Display-only gaps (documented, not built):</b> <b>G1</b> — the "last tag scanned" freshness line needs the
+      <code>LOADED</code> event timestamp surfaced into <code>/api/load-status</code>. <b>G2</b> — the loader's name
+      is deliberately not shown (worker names are tenant-only, GA-WIP-015). No synthetic ETA is ever rendered.</p>
+  </div>
+</body>
+</html>

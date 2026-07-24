@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Driver Summary — pre-departure readiness (GA-WIP-217)</title>
+<!-- Driver summary mockup (2026-07-23). Pre-departure readiness ONLY — "is my load ready?".
+     Drivers already use the OptimoRoute app for route / nav / proof-of-delivery; this view hands
+     off to OptimoRoute the moment the wheels roll (see design note §2). LEAN visual DNA, ported
+     from the canonical loader variant (variant-c-lean-2026-07-22.html). Read-only, no new events.
+     Full design note in the private repo houstonposttension/wip-processor at
+     docs/spec/driver-summary-design-2026-07-23.md. This is a preview host, not source. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --ok:#16c060; --ok-ink:#04150a; --bad:#ff3b30; --warn:#ffb020;
+    --blue:#3b82f6; --blue-soft:#7da2c9;
+    /* driver state edge colours */
+    --s-ready:#16c060; --s-loading:#ffb020; --s-wait:#5a636d;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; scroll-behavior:smooth; }
+  body{ padding:20px 18px 80px; }
+  h1{ font-size:20px; font-weight:800; margin:0 0 6px; }
+  .lead{ font-size:13px; color:var(--dim); margin:0 0 5px; line-height:1.6; max-width:860px; }
+  .lead b{ color:#cfe0f5; }
+  .ab{ border-left:3px solid var(--blue-soft); padding:9px 0 9px 13px; margin:12px 0 4px; max-width:860px;
+    font-size:12.5px; color:#c9d6e5; line-height:1.6; }
+  .ab b{ color:#9ccbff; } .ab a{ color:#9ccbff; }
+  .statekey{ display:flex; flex-wrap:wrap; gap:14px; margin:12px 0 6px; max-width:860px; font-size:11px; color:var(--dim); }
+  .statekey span{ display:inline-flex; align-items:center; gap:6px; }
+  .statekey i{ width:11px; height:11px; border-radius:3px; display:inline-block; }
+
+  /* sticky frame tabs — same nav pattern as the loader mockup */
+  .ftabs{ position:sticky; top:0; z-index:60; display:flex; gap:5px; overflow-x:auto; padding:9px 0;
+    margin:14px 0 18px; background:#14171c; border-bottom:1px solid var(--line);
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .ftabs::-webkit-scrollbar{ display:none; }
+  .ftabs a{ flex:0 0 auto; font-size:11.5px; font-weight:800; text-decoration:none;
+    color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:18px;
+    padding:7px 12px; white-space:nowrap; }
+  .ftabs a:active{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+
+  .screens{ display:flex; gap:44px 26px; flex-wrap:wrap; align-items:flex-start; }
+  .col{ scroll-margin-top:56px; }
+  .frameLbl{ display:flex; align-items:center; gap:9px; font-size:13px; font-weight:900;
+    text-transform:uppercase; letter-spacing:.5px; color:#e6edf3; margin:0 0 6px;
+    padding:8px 12px; background:#161a1f; border:1px solid var(--line);
+    border-left:4px solid var(--blue-soft); border-radius:9px; }
+  .frameLbl .fcount{ flex:0 0 auto; font-size:11px; font-weight:900; letter-spacing:.5px;
+    color:#0b0d10; background:var(--blue-soft); border-radius:20px; padding:2px 9px; }
+  .frameSub{ font-size:11px; color:var(--faint); margin:0 0 10px; max-width:370px; line-height:1.5; }
+  .phone{ width:370px; border-radius:22px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); position:relative; }
+  .scr{ padding:12px; }
+
+  @media (max-width:500px){
+    body{ padding:14px 10px 60px; }
+    .screens{ display:block; }
+    .col{ margin-bottom:0; padding-top:40px; margin-top:44px; border-top:3px solid var(--blue-soft); }
+    .col:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
+    .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .scr{ padding:10px 8px; }
+    .frameLbl{ font-size:14px; padding:10px 12px; }
+    .frameSub{ padding:0 4px; max-width:none; }
+    h1{ font-size:17px; } .lead,.ab{ font-size:12.5px; }
+    .gate{ min-height:78vh; }
+  }
+
+  /* ── driver identity / who-am-i chip ── */
+  .whoami{ display:flex; align-items:center; gap:8px; font-size:11px; color:var(--dim);
+    padding:2px 2px 9px; }
+  .whoami b{ color:#cfe0f5; }
+  .whoami .v{ color:var(--ok); font-weight:800; }
+
+  /* ── trip tab strip (the inline roll-up across a multi-bin trip) ── */
+  .triptabs{ display:flex; gap:7px; overflow-x:auto; padding:2px 2px 10px; margin-bottom:10px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .triptabs::-webkit-scrollbar{ display:none; }
+  .ttab{ flex:0 0 auto; min-width:96px; border:1px solid var(--line); border-left:4px solid var(--line);
+    border-radius:11px; padding:8px 11px; background:#0e1217; }
+  .ttab .tbin{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:16px; font-weight:800; color:#e6edf3; }
+  .ttab .tst{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; margin-top:3px; }
+  .ttab .tct{ font-size:10px; color:var(--faint); margin-top:2px; }
+  .ttab.ready{ border-left-color:var(--s-ready); } .ttab.ready .tst{ color:var(--s-ready); }
+  .ttab.loading{ border-left-color:var(--s-loading); } .ttab.loading .tst{ color:var(--s-loading); }
+  .ttab.wait{ border-left-color:var(--s-wait); } .ttab.wait .tst{ color:#9aa4b0; }
+  .ttab.on{ background:#141c26; border-color:#2f4a63; box-shadow:0 0 0 1px rgba(59,130,246,.25); }
+  .ttab.on .tbin{ color:#9ccbff; }
+  .swipehint{ font-size:9.5px; color:var(--faint); text-align:center; margin:-4px 0 10px; font-style:italic; }
+
+  /* ── destination card (customer / site / ship) ── */
+  .dest{ background:var(--panel); border:.5px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:10px; }
+  .dest .drow{ display:flex; align-items:baseline; gap:9px; margin:4px 0; }
+  .dest .dk{ flex:0 0 62px; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); }
+  .dest .dv{ font-size:13.5px; color:#e6edf3; font-weight:700; }
+  .dest .dv.big{ font-size:15px; color:#cfe0f5; }
+  .dest .ship{ color:var(--warn); font-weight:800; }
+
+  /* ── the green ready gate (ported from loader .gate) ── */
+  .gate{ min-height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:26px 22px; background:var(--ok); color:var(--ok-ink); border-radius:16px; }
+  .gate .gbig{ font-size:74px; line-height:1; font-weight:900; }
+  .gate .gmain{ font-size:26px; font-weight:900; margin-top:6px; line-height:1.15; }
+  .gate .gmain .es{ display:block; font-size:15px; font-weight:800; opacity:.75; margin-top:3px; }
+  .gate .gsub{ font-size:14px; font-weight:700; margin-top:12px; opacity:.92; line-height:1.4; }
+  .gate .handoff{ margin-top:18px; font-size:12.5px; font-weight:700; background:rgba(4,21,10,.14);
+    border-radius:11px; padding:11px 14px; line-height:1.55; }
+  .gate .handoff b{ font-weight:900; }
+
+  /* ── progress block (ported from loader .prog) ── */
+  .prog{ background:var(--panel); border:.5px solid var(--line); border-radius:14px; padding:11px 14px; margin-bottom:9px; }
+  .prog .row{ display:flex; justify-content:space-between; align-items:baseline; }
+  .prog .big{ font-size:22px; font-weight:800; } .prog .small{ font-size:12.5px; color:var(--dim); font-weight:600; }
+  .bar{ height:9px; background:#0b0d10; border-radius:999px; margin-top:9px; overflow:hidden; }
+  .bar > i{ display:block; height:100%; }
+  .bar > i.ok{ background:var(--ok); } .bar > i.amber{ background:var(--warn); }
+  .fresh{ font-size:11px; color:var(--dim); margin-top:9px; display:flex; align-items:center; gap:7px; }
+  .fresh b{ color:#8fb4d8; font-weight:700; }
+  .fresh .noeta{ margin-left:auto; font-size:9px; color:var(--faint); font-style:italic; }
+
+  /* ── "still coming" — read-only where-it-is list ── */
+  .rowlbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#4a545f; margin:12px 2px 6px; display:flex; }
+  .rowlbl .n{ margin-left:auto; color:var(--dim); }
+  .wcat{ margin-bottom:9px; }
+  .wchead{ display:flex; align-items:baseline; gap:8px; margin:9px 2px 5px; }
+  .wchead .nm{ font-size:12px; font-weight:800; color:#cfe0f5; }
+  .wchead .where{ font-size:10px; color:#8fb4d8; }
+  .wchead .badge{ margin-left:auto; font-size:11px; font-weight:800; border-radius:20px; padding:2px 9px; background:#242b34; color:var(--dim); }
+  .wrow{ display:flex; align-items:center; gap:9px; padding:8px 10px; margin:4px 0; background:#111722;
+    border:1px solid #223; border-left:4px solid var(--s-loading); border-radius:9px; }
+  .wrow .wnum{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:13px; min-width:36px; color:#e6edf3; }
+  .wrow .wspec{ font-size:11px; color:var(--dim); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wrow .wst{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--warn); flex:0 0 auto; }
+
+  /* loaded collapse (ported) */
+  .lcollapse{ margin:8px 0 2px; }
+  .lloaded{ font-size:11px; font-weight:800; color:var(--dim); background:#12181f; border:1px solid #223;
+    border-radius:9px; padding:10px 12px; cursor:pointer; display:flex; align-items:center; gap:8px; }
+  .lloaded .arrow{ margin-left:auto; color:#4a545f; }
+  .lcollapse.open .lloaded .arrow{ transform:rotate(180deg); }
+  .lloaded-body{ display:none; padding:6px 0 0; }
+  .lcollapse.open .lloaded-body{ display:block; }
+  .drow2{ display:flex; align-items:center; gap:9px; padding:7px 10px; margin:3px 0; background:#0f1520;
+    border:1px solid #1c2530; border-left:4px solid var(--s-ready); border-radius:8px; opacity:.72; }
+  .drow2 .wnum{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:12px; min-width:36px; color:#7fae90; }
+  .drow2 .wspec{ font-size:10.5px; color:var(--faint); flex:1; }
+
+  /* ── waiting (not-started) block — .waitcard, distinct from the .ttab.wait tab state ── */
+  .waitcard{ min-height:300px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:30px 22px; background:#12161c; border:1px dashed #333b45; border-radius:16px; }
+  .waitcard .wi{ font-size:56px; line-height:1; opacity:.8; }
+  .waitcard .wmain{ font-size:22px; font-weight:900; margin-top:12px; color:#c3ccd6; }
+  .waitcard .wmain .es{ display:block; font-size:13px; font-weight:700; color:var(--faint); margin-top:3px; }
+  .waitcard .wsub{ font-size:13px; color:var(--dim); margin-top:12px; line-height:1.5; }
+  .waitcard .wmeta{ margin-top:16px; font-size:11px; color:var(--faint); background:#0e1217; border:1px solid var(--line); border-radius:10px; padding:9px 13px; line-height:1.6; }
+
+  /* ── trip-ready summary (frame 4) ── */
+  .tripsum{ background:linear-gradient(180deg,#10261a,#0e1a13); border:1px solid rgba(22,192,96,.5); border-radius:16px; padding:16px; margin-bottom:11px; text-align:center; }
+  .tripsum .ti{ font-size:44px; line-height:1; }
+  .tripsum h2{ font-size:21px; font-weight:900; color:var(--ok); margin:8px 0 3px; letter-spacing:.4px; }
+  .tripsum h2 .es{ display:block; font-size:12px; font-weight:700; color:#6fbf8a; margin-top:2px; }
+  .tripsum .tmeta{ font-size:12.5px; color:#bfe8cd; margin-top:6px; font-weight:700; }
+  .binlist .bl{ display:flex; align-items:center; gap:10px; padding:10px 12px; margin:6px 0; background:#111722;
+    border:1px solid #223; border-left:4px solid var(--s-ready); border-radius:10px; }
+  .binlist .blbin{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:16px; font-weight:800; color:#e6edf3; min-width:44px; }
+  .binlist .blmid{ flex:1; min-width:0; }
+  .binlist .blsite{ font-size:12px; color:#cfe0f5; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .binlist .blsub{ font-size:10px; color:var(--faint); margin-top:2px; }
+  .binlist .blok{ font-size:11px; font-weight:800; color:var(--ok); flex:0 0 auto; }
+  .ackbtn{ width:100%; margin-top:14px; padding:15px; border:none; border-radius:13px; background:#04150a;
+    color:#7ef0a8; font-size:16px; font-weight:800; opacity:.9; }
+  .ackbtn .es{ display:block; font-size:11px; font-weight:700; opacity:.7; margin-top:2px; }
+  .readonly{ font-size:10px; color:var(--faint); text-align:center; margin-top:10px; line-height:1.55; font-style:italic; }
+  .readonly b{ color:#8fa4bb; font-style:normal; }
+
+  .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:24px 0 0; max-width:860px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
+  .ann b{ color:#fff; }
+  .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; background:#0e1217; border:1px solid var(--line); border-radius:5px; padding:1px 6px; color:#cfe0f5; }
+</style>
+</head>
+<body>
+  <h1>Driver — pre-departure readiness <span style="color:var(--faint);font-weight:400;font-size:14px">(GA-WIP-217 · LEAN)</span></h1>
+  <p class="lead"><b>One question, answered on the phone before the driver leaves the yard: is my load
+    actually finished loading?</b> Drivers already carry the <b>OptimoRoute</b> app for route, navigation
+    and proof-of-delivery — this view stops at the gate and <b>hands off to OptimoRoute the moment the
+    wheels roll</b>. It is <b>read-only</b>: the driver writes nothing, and no new event types exist.</p>
+  <p class="ab"><b>How a driver's screen works:</b> the home screen is <b>one load's detail</b> — bin,
+    progress, customer, site, ship date, ready-state. A truck carrying several bins shows each bin as a
+    <b>swipeable tab</b> across the top (the strip is the whole-trip roll-up, kept inline); <b>home is the
+    first bin</b>. The tab strip doubles as the driver's pick-list if OptimoRoute assignment isn't available
+    yet. Data comes from the same <b>/api/load-status</b> + <b>/api/loadlist.json</b> the loader already uses.</p>
+  <div class="statekey">
+    <b style="color:var(--faint)">Left edge = load state:</b>
+    <span><i style="background:var(--s-ready)"></i>Ready to depart</span>
+    <span><i style="background:var(--s-loading)"></i>Still loading</span>
+    <span><i style="background:var(--s-wait)"></i>Not started</span>
+  </div>
+
+  <nav class="ftabs">
+    <a href="#f1">1 · Ready (home)</a>
+    <a href="#f2">2 · Still loading</a>
+    <a href="#f3">3 · Not started</a>
+    <a href="#f4">4 · Trip ready · hand-off</a>
+  </nav>
+
+  <div class="screens">
+
+    <!-- ── FRAME 1 — READY DETAIL (HOME) ── -->
+    <div class="col" id="f1">
+      <div class="frameLbl"><span class="fcount">1 / 4</span>Ready-load detail (home)</div>
+      <div class="frameSub">The first bin of the trip and the default screen. James's example: "X8 · 22 of 22 · ready to depart. Customer: AS Builders. Site: Keating Toyota Service. Ship: 7/25." Green gate = the yard cleared it; hand-off to OptimoRoute for the drive.</div>
+      <div class="phone"><div class="scr">
+        <div class="whoami">🚚 <b>Driver</b> · <span class="v">Marcus R.</span> · <span style="color:var(--faint)">3 bins today</span></div>
+
+        <div class="triptabs">
+          <div class="ttab ready on"><div class="tbin">X8</div><div class="tst">● Ready</div><div class="tct">22 / 22</div></div>
+          <div class="ttab loading"><div class="tbin">X4</div><div class="tst">◐ Loading</div><div class="tct">15 / 22</div></div>
+          <div class="ttab wait"><div class="tbin">X12</div><div class="tst">○ Not started</div><div class="tct">0 / 18</div></div>
+        </div>
+        <div class="swipehint">← swipe between bins · desliza entre bins →</div>
+
+        <div class="dest">
+          <div class="drow"><span class="dk">Bin</span><span class="dv big" style="font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px">X8</span></div>
+          <div class="drow"><span class="dk">Customer</span><span class="dv">AS Builders</span></div>
+          <div class="drow"><span class="dk">Site</span><span class="dv">Keating Toyota Service</span></div>
+          <div class="drow"><span class="dk">Ship</span><span class="dv ship">7/25</span></div>
+        </div>
+
+        <div class="gate">
+          <div class="gbig">✓ 22</div>
+          <div class="gmain">READY TO DEPART<span class="es">Listo para salir</span></div>
+          <div class="gsub">All 22 tags are on the truck.</div>
+          <div class="handoff">The yard cleared this load. <b>Navigate the stop in OptimoRoute.</b><br>
+            <span style="opacity:.8">El patio autorizó esta carga. Navega en OptimoRoute.</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 2 — STILL LOADING DETAIL ── -->
+    <div class="col" id="f2">
+      <div class="frameLbl"><span class="fcount">2 / 4</span>Still-loading detail</div>
+      <div class="frameSub">Second tab. "15 of 22, still loading." Progress + what's not yet on the truck grouped by where it is, and the freshness line — "last tag scanned 2 min ago". No ETA is ever shown (there's no data for one; a wrong ETA is worse than none).</div>
+      <div class="phone"><div class="scr">
+        <div class="whoami">🚚 <b>Driver</b> · <span class="v">Marcus R.</span> · <span style="color:var(--faint)">3 bins today</span></div>
+
+        <div class="triptabs">
+          <div class="ttab ready"><div class="tbin">X8</div><div class="tst">● Ready</div><div class="tct">22 / 22</div></div>
+          <div class="ttab loading on"><div class="tbin">X4</div><div class="tst">◐ Loading</div><div class="tct">15 / 22</div></div>
+          <div class="ttab wait"><div class="tbin">X12</div><div class="tst">○ Not started</div><div class="tct">0 / 18</div></div>
+        </div>
+        <div class="swipehint">← swipe between bins · desliza entre bins →</div>
+
+        <div class="dest">
+          <div class="drow"><span class="dk">Bin</span><span class="dv big" style="font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px">X4</span></div>
+          <div class="drow"><span class="dk">Customer</span><span class="dv">Delgado Concrete</span></div>
+          <div class="drow"><span class="dk">Site</span><span class="dv">Grand Parkway Retail Ph2</span></div>
+          <div class="drow"><span class="dk">Ship</span><span class="dv ship">7/25</span></div>
+        </div>
+
+        <div class="prog">
+          <div class="row"><span class="big">15 <span class="small">of 22 loaded</span></span><span class="small">7 left · aún faltan 7</span></div>
+          <div class="bar"><i class="amber" style="width:68%"></i></div>
+          <div class="fresh">🕑 last tag scanned <b>2 min ago</b><span class="noeta">no ETA — progress only</span></div>
+        </div>
+
+        <div class="rowlbl">Still coming — where it is now<span class="n">7 tags</span></div>
+
+        <div class="wcat">
+          <div class="wchead"><span class="nm">At a machine</span><span class="where">still being made</span><span class="badge">4</span></div>
+          <div class="wrow"><span class="wnum">#42</span><span class="wspec">8B03 · 30-04 · qty 12</span><span class="wst">At Shear</span></div>
+          <div class="wrow"><span class="wnum">T-04</span><span class="wspec">0.6" · 44'</span><span class="wst">At PT Atlas</span></div>
+          <div class="wrow"><span class="wnum">T-05</span><span class="wspec">anchor set</span><span class="wst">At PT Atlas</span></div>
+          <div class="wrow"><span class="wnum">#41</span><span class="wspec">3C15 · 6-06</span><span class="wst">At Bender</span></div>
+        </div>
+
+        <div class="wcat">
+          <div class="wchead"><span class="nm">Staged — grab-ready</span><span class="where">on the floor, not yet on the truck</span><span class="badge">3</span></div>
+          <div class="wrow" style="border-left-color:var(--s-ready)"><span class="wnum">H-02</span><span class="wspec">pocket formers</span><span class="wst" style="color:var(--ok)">Staged</span></div>
+          <div class="wrow" style="border-left-color:var(--s-ready)"><span class="wnum">L-01</span><span class="wspec">2x4 forming</span><span class="wst" style="color:var(--ok)">Staged</span></div>
+          <div class="wrow" style="border-left-color:var(--s-ready)"><span class="wnum">H-03</span><span class="wspec">wedges · box</span><span class="wst" style="color:var(--ok)">Staged</span></div>
+        </div>
+
+        <div class="lcollapse"><div class="lloaded" onclick="this.parentNode.classList.toggle('open')">✓ 15 on the truck<span class="arrow">↕</span></div>
+          <div class="lloaded-body">
+            <div class="drow2"><span class="wnum">#39</span><span class="wspec">8B01 · qty 12</span></div>
+            <div class="drow2"><span class="wnum">#40</span><span class="wspec">8B02 · qty 6</span></div>
+            <div class="drow2"><span class="wnum">T-01</span><span class="wspec">0.6" · 42'</span></div>
+            <div class="drow2" style="opacity:.5"><span class="wnum" style="color:var(--faint)">…</span><span class="wspec">+ 12 more loaded</span></div>
+          </div>
+        </div>
+
+        <div class="readonly" style="margin-top:12px">You'll be cleared to depart when all 22 are on the truck. <b>Nothing to do here — the loader is working it.</b><br>Serás autorizado cuando las 22 estén en el camión.</div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 3 — NOT STARTED DETAIL ── -->
+    <div class="col" id="f3">
+      <div class="frameLbl"><span class="fcount">3 / 4</span>Not-started detail</div>
+      <div class="frameSub">Third tab. Loading hasn't begun — nothing on the truck yet. Clear "waiting on the loader" state so the driver knows this bin isn't close, without a fake time estimate.</div>
+      <div class="phone"><div class="scr">
+        <div class="whoami">🚚 <b>Driver</b> · <span class="v">Marcus R.</span> · <span style="color:var(--faint)">3 bins today</span></div>
+
+        <div class="triptabs">
+          <div class="ttab ready"><div class="tbin">X8</div><div class="tst">● Ready</div><div class="tct">22 / 22</div></div>
+          <div class="ttab loading"><div class="tbin">X4</div><div class="tst">◐ Loading</div><div class="tct">15 / 22</div></div>
+          <div class="ttab wait on"><div class="tbin">X12</div><div class="tst">○ Not started</div><div class="tct">0 / 18</div></div>
+        </div>
+        <div class="swipehint">← swipe between bins · desliza entre bins →</div>
+
+        <div class="dest">
+          <div class="drow"><span class="dk">Bin</span><span class="dv big" style="font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px">X12</span></div>
+          <div class="drow"><span class="dk">Customer</span><span class="dv">Northline PT</span></div>
+          <div class="drow"><span class="dk">Site</span><span class="dv">Aldine Westfield Ph2</span></div>
+          <div class="drow"><span class="dk">Ship</span><span class="dv ship">7/25</span></div>
+        </div>
+
+        <div class="waitcard">
+          <div class="wi">🕓</div>
+          <div class="wmain">NOT STARTED<span class="es">Sin empezar</span></div>
+          <div class="wsub">Nothing on the truck yet.<br>The loader hasn't begun this bin.</div>
+          <div class="wmeta">0 of 18 loaded · no tags scanned yet<br>0 de 18 · aún no se escanea nada</div>
+        </div>
+
+        <div class="prog" style="margin-top:9px">
+          <div class="row"><span class="big">0 <span class="small">of 18 loaded</span></span><span class="small">18 left</span></div>
+          <div class="bar"><i class="amber" style="width:0%"></i></div>
+          <div class="fresh">🕑 <b>no scans yet</b><span class="noeta">no ETA — progress only</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 4 — TRIP READY · HAND-OFF (optional) ── -->
+    <div class="col" id="f4">
+      <div class="frameLbl"><span class="fcount">4 / 4</span>Trip ready · pre-departure hand-off</div>
+      <div class="frameSub">Optional. A different moment — every bin on the truck is ready. Whole-trip summary + a read-only acknowledgment that <b>writes nothing</b> (no new event) and hands the truck to OptimoRoute for the run.</div>
+      <div class="phone"><div class="scr">
+        <div class="whoami">🚚 <b>Driver</b> · <span class="v">Marcus R.</span> · <span style="color:var(--faint)">3 bins today</span></div>
+
+        <div class="triptabs">
+          <div class="ttab ready"><div class="tbin">X8</div><div class="tst">● Ready</div><div class="tct">22 / 22</div></div>
+          <div class="ttab ready"><div class="tbin">X4</div><div class="tst">● Ready</div><div class="tct">22 / 22</div></div>
+          <div class="ttab ready"><div class="tbin">X12</div><div class="tst">● Ready</div><div class="tct">18 / 18</div></div>
+        </div>
+
+        <div class="tripsum">
+          <div class="ti">🚚✓</div>
+          <h2>TRIP READY<span class="es">Viaje listo</span></h2>
+          <div class="tmeta">3 bins · 62 tags · all loaded</div>
+        </div>
+
+        <div class="binlist">
+          <div class="bl"><span class="blbin">X8</span><span class="blmid"><div class="blsite">Keating Toyota Service</div><div class="blsub">AS Builders · 22 tags</div></span><span class="blok">✓ Ready</span></div>
+          <div class="bl"><span class="blbin">X4</span><span class="blmid"><div class="blsite">Grand Parkway Retail Ph2</div><div class="blsub">Delgado Concrete · 22 tags</div></span><span class="blok">✓ Ready</span></div>
+          <div class="bl"><span class="blbin">X12</span><span class="blmid"><div class="blsite">Aldine Westfield Ph2</div><div class="blsub">Northline PT · 18 tags</div></span><span class="blok">✓ Ready</span></div>
+        </div>
+
+        <button type="button" class="ackbtn">Got it — this truck is mine<span class="es">Entendido — este camión es mío</span></button>
+        <div class="readonly"><b>Read-only.</b> This records nothing in our system. Departure, route and delivery are owned by <b>OptimoRoute</b> — open that app to run the trip.<br>Solo lectura · la salida y la entrega las controla OptimoRoute.</div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="ann">
+    <b>Notes for review.</b> This is a design mockup — data and names are illustrative. Real data comes from
+    <code>/api/load-status</code> (per-bin <code>loaded</code> / <code>fab_status</code> / <code>location</code>)
+    and <code>/api/loadlist.json</code> (today's loads), both already served and plant-IP-gated — kept as-is per
+    the on-network decision. Two known gaps, shown here display-only, are documented in the design note:
+    <b>(G1)</b> the "last tag scanned 2 min ago" freshness line needs the <code>LOADED</code> event timestamp
+    surfaced into <code>/api/load-status</code>; <b>(G2)</b> the loader's name is deliberately <b>not</b> shown
+    (worker names are tenant-only). The load↔driver assignment is pulled from <b>OptimoRoute</b>
+    (<code>search_orders · includeScheduleInformation</code>), available only after the route is optimized — if
+    that isn't ready pre-departure, the trip tab strip becomes a self-select pick-list over the same load data.
+  </div>
+
+<script>
+// Read-only mockup: the acknowledgment button writes nothing — make that literal.
+document.querySelectorAll('.ackbtn').forEach(function(b){
+  b.addEventListener('click', function(e){ e.preventDefault(); });
+});
+</script>
+</body>
+</html>
