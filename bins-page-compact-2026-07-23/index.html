@@ -194,6 +194,37 @@
   .thmore{ font-size:10.5px; color:#8fb4d8; margin-top:6px; }
   .miss{ background:#1a1410; border:1px solid #4a3a1a; border-radius:10px; padding:11px 13px; margin:6px 0; font-size:11.5px; color:#e8d3ac; line-height:1.5; }
 
+  /* ── progress-bar treatments (frame 6) — loaded = solid --ok, staged = --ok low-opacity; no new tokens ── */
+  .trow2{ display:flex; align-items:center; gap:10px; padding:9px 11px 9px 13px; margin:5px 0;
+    background:#111722; border:1px solid #223; border-left:4px solid var(--s-truck); border-radius:10px; }
+  .trow2 .bin{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; font-size:18px; color:#e6edf3; min-width:44px; }
+  .trow2 .mid{ flex:1; min-width:0; }
+  .trow2 .meta{ font-size:10.5px; color:var(--dim); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .trow2 .rt2{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex:0 0 auto; }
+  .plabel{ font-size:11px; font-weight:800; color:#cfe0f5; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .plabel .l{ color:#46d684; } .plabel .s{ color:#8fd0a8; } .plabel .sep{ color:var(--faint); font-weight:600; }
+  /* T1 segmented — one track, loaded solid then staged pale */
+  .segbar{ position:relative; width:96px; height:9px; background:#0b0d10; border-radius:999px; overflow:hidden; }
+  .segbar .stage{ position:absolute; left:0; top:0; height:100%; background:rgba(22,192,96,.30); }
+  .segbar .load{ position:absolute; left:0; top:0; height:100%; background:var(--ok); }
+  /* T2 threshold — staged fill + a loaded tick */
+  .thbar{ position:relative; width:96px; height:9px; background:#0b0d10; border-radius:999px; overflow:hidden; }
+  .thbar .fill{ position:absolute; left:0; top:0; height:100%; background:rgba(22,192,96,.45); }
+  .thbar .tick{ position:absolute; top:-2px; width:2px; height:13px; background:#eaf2ff; border-radius:1px; box-shadow:0 0 0 1px #0b0d10; }
+  /* T3 dual — two stacked mini bars */
+  .dual{ display:flex; flex-direction:column; gap:3px; }
+  .dline{ display:flex; align-items:center; gap:5px; }
+  .dline .dk{ font-size:8px; font-weight:800; color:var(--faint); width:9px; }
+  .dbar{ width:80px; height:6px; background:#0b0d10; border-radius:999px; overflow:hidden; }
+  .dbar > i{ display:block; height:100%; }
+  .dbar .di-s{ background:rgba(22,192,96,.42); } .dbar .di-l{ background:var(--ok); }
+  .treatlbl{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:#9ccbff;
+    margin:14px 2px 4px; display:flex; align-items:center; gap:7px; }
+  .treatlbl .tag{ font-size:8px; font-weight:800; color:#0b0d10; background:var(--blue-soft); border-radius:5px; padding:1px 6px; letter-spacing:.4px; }
+  .treatnote{ font-size:10px; color:var(--faint); margin:0 2px 6px; line-height:1.5; }
+  .reco{ background:rgba(22,192,96,.08); border:1px solid #1f6b40; border-radius:9px; padding:9px 11px; margin:12px 2px 2px; font-size:10.5px; color:#bfe9cf; line-height:1.5; }
+  .reco b{ color:#7ef0a8; }
+
   .empty{ text-align:center; color:var(--faint); font-size:12px; padding:26px 10px; font-style:italic; }
   .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:24px 0 0; max-width:900px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
   .ann b{ color:#fff; }
@@ -251,6 +282,7 @@
     <a href="#f3">3 · Expanded bin</a>
     <a href="#f4">4 · Search + filter</a>
     <a href="#f5">5 · Unified historical</a>
+    <a href="#f6">6 · Bar treatments</a>
   </nav>
 
   <div class="screens">
@@ -646,6 +678,89 @@
 
         <div class="miss"><b>If the tag isn't found:</b> the card shows a "known but never scanned" empty
           shell (PR #54's <code>scanned:false</code> state), not a dead end.</div>
+
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 6 — PROGRESS-BAR TREATMENTS ══════════ -->
+    <div class="col" id="f6">
+      <div class="frameLbl">6 · Bar treatments <span class="fcount">STAGED + LOADED</span></div>
+      <p class="frameSub">The bar must show <b>two</b> phases: <b>staged</b> (fabricated, ready to load) and
+        <b>loaded</b> (on the truck — a subset of staged). Three treatments, each on the same two bins so the
+        divergence is visible: <b>X14</b> = 19/21 tags, <b>71% staged / 43% loaded</b> (big gap);
+        <b>X12</b> = 17/18 tags, <b>94% staged / 90% loaded</b> (nearly all on the truck). Loaded = solid
+        green; staged-not-yet-loaded = pale green — reusing the LEAN <code style="font-family:ui-monospace">--ok</code> token.</p>
+      <div class="phone"><div class="scr">
+
+        <!-- Treatment 1 — segmented -->
+        <div class="treatlbl"><span class="tag">T1</span>Segmented — one bar, two shades</div>
+        <div class="treatnote">Loaded fills solid from the left; staged-not-loaded continues in pale; rest empty. One glance = two facts.</div>
+        <div class="trow2">
+          <span class="bin">X14</span>
+          <div class="mid"><div class="midtop"><span class="badge b-mixed">Mixed · 3</span></div>
+            <div class="meta">21 tags · 7,110 lbs · Bayou Rebar</div></div>
+          <div class="rt2">
+            <span class="plabel">19/21 <span class="sep">·</span> <span class="l">L43</span> <span class="s">S71</span></span>
+            <span class="segbar"><i class="stage" style="width:71%"></i><i class="load" style="width:43%"></i></span>
+          </div>
+        </div>
+        <div class="trow2">
+          <span class="bin">X12</span>
+          <div class="mid"><div class="midtop"><span class="badge b-truck">On truck</span></div>
+            <div class="meta">18 tags · 9,240 lbs · Gulf Coast PT</div></div>
+          <div class="rt2">
+            <span class="plabel">17/18 <span class="sep">·</span> <span class="l">L90</span> <span class="s">S94</span></span>
+            <span class="segbar"><i class="stage" style="width:94%"></i><i class="load" style="width:90%"></i></span>
+          </div>
+        </div>
+
+        <!-- Treatment 2 — threshold marker -->
+        <div class="treatlbl"><span class="tag">T2</span>Threshold marker — staged fill + loaded tick</div>
+        <div class="treatnote">Bar = staged; a bright tick marks how much is on the truck. Narrow, but the tick is easy to miss while walking.</div>
+        <div class="trow2">
+          <span class="bin">X14</span>
+          <div class="mid"><div class="midtop"><span class="badge b-mixed">Mixed · 3</span></div>
+            <div class="meta">21 tags · 7,110 lbs · Bayou Rebar</div></div>
+          <div class="rt2">
+            <span class="plabel">19/21 <span class="sep">·</span> <span class="s">71%</span> <span class="l">◂43</span></span>
+            <span class="thbar"><i class="fill" style="width:71%"></i><i class="tick" style="left:43%"></i></span>
+          </div>
+        </div>
+        <div class="trow2">
+          <span class="bin">X12</span>
+          <div class="mid"><div class="midtop"><span class="badge b-truck">On truck</span></div>
+            <div class="meta">18 tags · 9,240 lbs · Gulf Coast PT</div></div>
+          <div class="rt2">
+            <span class="plabel">17/18 <span class="sep">·</span> <span class="s">94%</span> <span class="l">◂90</span></span>
+            <span class="thbar"><i class="fill" style="width:94%"></i><i class="tick" style="left:90%"></i></span>
+          </div>
+        </div>
+
+        <!-- Treatment 3 — dual mini bars -->
+        <div class="treatlbl"><span class="tag">T3</span>Dual mini bars — staged over loaded</div>
+        <div class="treatnote">Two stacked bars, S above L. Unambiguous but eats vertical height — pushes the row past one line.</div>
+        <div class="trow2">
+          <span class="bin">X14</span>
+          <div class="mid"><div class="midtop"><span class="badge b-mixed">Mixed · 3</span></div>
+            <div class="meta">19/21 tags · 7,110 lbs</div></div>
+          <div class="rt2 dual">
+            <div class="dline"><span class="dk s">S</span><span class="dbar"><i class="di-s" style="width:71%"></i></span></div>
+            <div class="dline"><span class="dk l" style="color:#46d684">L</span><span class="dbar"><i class="di-l" style="width:43%"></i></span></div>
+          </div>
+        </div>
+        <div class="trow2">
+          <span class="bin">X12</span>
+          <div class="mid"><div class="midtop"><span class="badge b-truck">On truck</span></div>
+            <div class="meta">17/18 tags · 9,240 lbs</div></div>
+          <div class="rt2 dual">
+            <div class="dline"><span class="dk s">S</span><span class="dbar"><i class="di-s" style="width:94%"></i></span></div>
+            <div class="dline"><span class="dk l" style="color:#46d684">L</span><span class="dbar"><i class="di-l" style="width:90%"></i></span></div>
+          </div>
+        </div>
+
+        <div class="reco"><b>Recommendation: T1 (segmented).</b> One bar carries both facts in a single glance
+          with no fine-print — the solid/pale boundary reads at walking distance, where T2's tick disappears
+          and T3's double bar breaks the one-line row. Label <code style="font-family:ui-monospace">19/21 · L43 S71</code>.</div>
 
       </div></div>
     </div>
