@@ -750,12 +750,12 @@
     <!-- ── FRAME 8c — LOADER: APPROVED ── -->
     <div class="col" id="f8c">
       <div class="frameLbl"><span class="fcount">8c / 9</span>Loader — approved</div>
-      <div class="frameSub">Back on the loader's phone: an in-app banner the moment the lead approves (plus an optional SMS/push). The close-out is now recorded — <code>CLOSEOUT_OVERRIDDEN</code> with the approver stamped from the queue record — and the standard shipped state follows.</div>
+      <div class="frameSub">Back on the loader's phone: an in-app banner the moment any lead approves (plus a phone push if the app's installed). The close-out is now recorded — <code>CLOSEOUT_OVERRIDDEN</code> with the approver stamped from the queue record — and the standard shipped state follows.</div>
       <div class="phone"><div class="scr blockscr">
         <div class="apprvd">
           <h3>✓ Approved</h3>
           <div class="ap2"><b>Approved by Ramiro (lead)</b> at 09:26 — 3 min after you asked. Run <b>X8</b> closed out: <b>15 shipped</b>, <b>7 carry</b> to the next truck.</div>
-          <div class="notif">🔔 <span>In-app notification. Optional SMS to your phone + a push if the app is installed — nice-to-have, not required to close out.</span></div>
+          <div class="notif">🔔 <span>In-app banner + a phone push if the app is installed. The in-app state is the source of truth — the push just reaches you when your phone's in your pocket.</span></div>
         </div>
         <div class="tl" style="margin-top:14px">
           <div class="tlrow done"><b>Submitted</b> <span class="t">· 09:23</span></div>
@@ -834,9 +834,10 @@
     <b>Confirm</b> and is done (frame 8); the request drops into a supervisor/lead <b>approvals inbox</b>
     (frame 8b) and the truck can stay parked or start reloading meanwhile. The approver sees bin, tags
     shipped vs carried, reason, loader and an <b>age</b> badge (gold → red); a <b>truck-waiting</b>
-    request pulses amber and sorts to the top. Approve is one tap; reject opens a reason dropdown +
-    note. On approval the loader gets an in-app banner — <b>"approved by Ramiro (lead)"</b> (frame 8c),
-    optional SMS/push — and the close-out records with the approver stamped from the queue record. The
+    request pulses amber and sorts to the top. <b>Any lead or supervisor can approve any load</b> — the
+    queue is not cell-scoped. Approve is one tap; reject opens a reason dropdown + note. On approval the
+    loader gets an in-app banner — <b>"approved by Ramiro (lead)"</b> (frame 8c) plus a phone push if the
+    app's installed — and the close-out records with the approver stamped from the queue record. The
     happy path is untouched: a full <b>22 / 22</b> load has no carry, so nothing is queued and the
     loader closes out themselves. Only a short ship (carry &gt; 0) enters the queue.
     <br><br>
