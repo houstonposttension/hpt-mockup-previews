@@ -213,6 +213,13 @@
     blue for <b>MIXED</b>); an <b>attention flag</b> (SHORT / STALE) floats at the corner only when something
     needs the supervisor. <b>Tap the row</b> to open the drawer: sub-bin → order → the six lifecycle stages →
     tag rows (tag # · weight · status), each tag itself tap-expandable for shape / scanned-by / when / machine.</p>
+  <p class="ab"><b>The progress bar = shipping-readiness by weight.</b> It fills by the <b>share of the bin's
+    weight that has reached staged-or-beyond</b> (fabricated and ready to load) — <b>not</b> delivered, so it
+    climbs through the day. The label beside it is <b>tags-complete / total</b>, the count a supervisor scans.
+    The two diverge when the heavy tags are the ones still out: <b>X14 is 19 of 21 tags (90%) but only 71% of
+    the shipping weight</b> — the 2 remaining are the big ones. Estimated-time-complete is deliberately absent
+    (no reliable per-tag task-time data). Bar semantics are independent of the left-edge colour: a bin can be
+    well over half ready by weight yet still edged/badged by its least-advanced stage.</p>
 
   <div class="gap"><b>⚠ API GAP — costed, not hidden.</b> This mockup draws the <b>target</b> state James
     approved. Two pieces do not exist in production yet: (1) <code>/api/portal-bins-expanded</code> is
@@ -230,6 +237,12 @@
     <span><i style="background:var(--s-truck)"></i>On truck</span>
     <span><i style="background:var(--s-delivered)"></i>Delivered</span>
     <span><i style="background:var(--mixed)"></i>Mixed</span>
+  </div>
+  <div class="keyrow">
+    <b style="color:var(--faint)">Progress bar =</b>
+    <span>fill = <b style="color:#cfe0f5">weight staged-or-beyond ÷ total weight</b></span>
+    <span>label = <b style="color:#cfe0f5">tags complete / total</b></span>
+    <span style="color:var(--faint)">(they diverge when heavy tags remain)</span>
   </div>
 
   <nav class="ftabs">
@@ -270,7 +283,7 @@
             <div class="midtop"><span class="badge b-truck">On truck</span></div>
             <div class="meta"><b>18</b> tags · <b>9,240</b> lbs · Gulf Coast PT</div>
           </div>
-          <div class="rt"><span class="pct">94%</span><span class="minibar"><i style="width:94%"></i></span></div>
+          <div class="rt"><span class="pct">17/18 · 94%</span><span class="minibar"><i style="width:94%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -281,7 +294,7 @@
             <div class="midtop"><span class="badge b-mixed">Mixed · 3</span></div>
             <div class="meta"><b>21</b> tags · <b>7,110</b> lbs · Bayou Rebar</div>
           </div>
-          <div class="rt"><span class="pct">71%</span><span class="minibar"><i style="width:71%"></i></span></div>
+          <div class="rt"><span class="pct">19/21 · 71%</span><span class="minibar"><i style="width:71%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -291,7 +304,7 @@
             <div class="midtop"><span class="badge b-machine">At machine</span></div>
             <div class="meta"><b>12</b> tags · <b>5,880</b> lbs · Gulf Coast PT</div>
           </div>
-          <div class="rt"><span class="pct">48%</span><span class="minibar"><i style="width:48%"></i></span></div>
+          <div class="rt"><span class="pct">6/12 · 48%</span><span class="minibar"><i style="width:48%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -301,7 +314,7 @@
             <div class="midtop"><span class="badge b-staging">In staging</span></div>
             <div class="meta"><b>8</b> tags · <b>3,200</b> lbs · Vela Concrete</div>
           </div>
-          <div class="rt"><span class="pct">62%</span><span class="minibar"><i style="width:62%"></i></span></div>
+          <div class="rt"><span class="pct">5/8 · 62%</span><span class="minibar"><i style="width:62%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -311,7 +324,7 @@
             <div class="midtop"><span class="badge b-notprinted">Not printed</span></div>
             <div class="meta"><b>6</b> tags · <b>2,010</b> lbs · Bayou Rebar</div>
           </div>
-          <div class="rt"><span class="pct">0%</span><span class="minibar"><i style="width:2%"></i></span></div>
+          <div class="rt"><span class="pct">0/6 · 0%</span><span class="minibar"><i style="width:2%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -323,7 +336,7 @@
             <div class="midtop"><span class="badge b-office">In office</span></div>
             <div class="meta"><b>21</b> tags · <b>14,873</b> lbs · Gulf Coast PT</div>
           </div>
-          <div class="rt"><span class="pct">14%</span><span class="minibar"><i style="width:14%"></i></span></div>
+          <div class="rt"><span class="pct">3/21 · 14%</span><span class="minibar"><i style="width:14%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -334,7 +347,7 @@
             <div class="midtop"><span class="badge b-machine">At machine</span></div>
             <div class="meta"><b>14</b> tags · <b>6,020</b> lbs · Vela Concrete</div>
           </div>
-          <div class="rt"><span class="pct">36%</span><span class="minibar"><i style="width:36%"></i></span></div>
+          <div class="rt"><span class="pct">5/14 · 36%</span><span class="minibar"><i style="width:36%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -344,7 +357,7 @@
             <div class="midtop"><span class="badge b-notprinted">Not printed</span></div>
             <div class="meta"><b>9</b> tags · <b>2,780</b> lbs · Bayou Rebar</div>
           </div>
-          <div class="rt"><span class="pct">0%</span><span class="minibar"><i style="width:2%"></i></span></div>
+          <div class="rt"><span class="pct">0/9 · 0%</span><span class="minibar"><i style="width:2%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -386,7 +399,7 @@
               <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT042512 · FT042519</span></div>
             <div class="meta"><b>18</b> tags · <b>9,240</b> lbs · 2 sub-bins (X12.1, X12.2) · site: Katy</div>
           </div>
-          <div class="rt"><span class="pct">94%</span><span class="minibar"><i style="width:94%"></i></span></div>
+          <div class="rt"><span class="pct">17/18 · 94%</span><span class="minibar"><i style="width:94%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -399,7 +412,7 @@
               <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT041188</span></div>
             <div class="meta"><b>21</b> tags · <b>7,110</b> lbs · 2 shy of loaded · site: Cypress</div>
           </div>
-          <div class="rt"><span class="pct">71%</span><span class="minibar"><i style="width:71%"></i></span></div>
+          <div class="rt"><span class="pct">19/21 · 71%</span><span class="minibar"><i style="width:71%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -411,7 +424,7 @@
               <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT042077</span></div>
             <div class="meta"><b>12</b> tags · <b>5,880</b> lbs · Bender 2 · site: Katy</div>
           </div>
-          <div class="rt"><span class="pct">48%</span><span class="minibar"><i style="width:48%"></i></span></div>
+          <div class="rt"><span class="pct">6/12 · 48%</span><span class="minibar"><i style="width:48%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -423,7 +436,7 @@
               <span style="font-size:10.5px;color:var(--faint);font-family:ui-monospace,monospace">FT041190</span></div>
             <div class="meta"><b>6</b> tags · <b>2,010</b> lbs · awaiting print · site: Cypress</div>
           </div>
-          <div class="rt"><span class="pct">0%</span><span class="minibar"><i style="width:2%"></i></span></div>
+          <div class="rt"><span class="pct">0/6 · 0%</span><span class="minibar"><i style="width:2%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -441,20 +454,23 @@
         <div class="bwrap">
           <div class="bhead" style="border-left-color:var(--s-office)">
             <span class="bin">X25</span>
-            <div class="hx"><b>21</b> tags · <b>14,873</b> lbs<br>Ships Mon 07/28 · 3 sub-bins</div>
+            <div class="hx"><b>21</b> tags · <b>14,873</b> lbs<br>Ships Mon 07/28 · 2 sub-bins</div>
           </div>
           <div class="bbody">
             <div class="binfo">
               <span>Customer <b>Gulf Coast PT</b></span>
               <span>Site <b>Katy</b></span>
-              <span>Complete <b>14%</b></span>
+              <span>Complete <b>3/21 · 14%</b></span>
               <span>Priority <b>Normal</b></span>
             </div>
+            <div style="font-size:10px;color:var(--faint);margin:-4px 2px 10px;line-height:1.5">
+              Bar = weight staged-or-beyond (<b style="color:#8fb4d8">2,082 of 14,873 lbs</b>). Only 3 tags
+              are staged; the rest are still in office / at machine.</div>
 
             <!-- sub-bin X25.1 -->
-            <div class="subh"><span class="sb">X25.1</span><span class="ord">Order FT042526</span><span class="sc">6 tags · 4,120 lbs</span></div>
+            <div class="subh"><span class="sb">X25.1</span><span class="ord">Order FT042526</span><span class="sc">9 tags · 6,150 lbs</span></div>
 
-            <div class="stageh sg-office"><i style="background:var(--s-office)"></i>In office<span class="n">4 tags · 2,700 lbs</span></div>
+            <div class="stageh sg-office"><i style="background:var(--s-office)"></i>In office<span class="n">6 tags · 4,100 lbs</span></div>
             <div class="trow">
               <span class="tn">FT042526#1</span>
               <span class="tw"><b>720</b> lbs</span>
@@ -468,8 +484,9 @@
               <span class="tst b-office">In office</span>
               <span class="tcaret">&#9656;</span>
             </div>
+            <div style="text-align:center;font-size:10.5px;color:#8fb4d8;padding:6px 0 2px">…4 more office tags</div>
 
-            <div class="stageh sg-machine"><i style="background:var(--s-machine)"></i>At machine<span class="n">2 tags · 1,420 lbs</span></div>
+            <div class="stageh sg-machine"><i style="background:var(--s-machine)"></i>At machine<span class="n">3 tags · 2,050 lbs</span></div>
             <div class="trow">
               <span class="tn">FT042526#5</span>
               <span class="tw"><b>710</b> lbs</span>
@@ -478,18 +495,29 @@
             </div>
 
             <!-- sub-bin X25.2 -->
-            <div class="subh" style="margin-top:14px"><span class="sb">X25.2</span><span class="ord">Order FT042526</span><span class="sc">9 tags · 6,240 lbs</span></div>
-            <div class="stageh sg-staging"><i style="background:var(--s-staging)"></i>In staging<span class="n">9 tags · 6,240 lbs</span></div>
+            <div class="subh" style="margin-top:14px"><span class="sb">X25.2</span><span class="ord">Order FT042526</span><span class="sc">12 tags · 8,723 lbs</span></div>
+            <div class="stageh sg-office"><i style="background:var(--s-office)"></i>In office<span class="n">5 tags · 3,500 lbs</span></div>
             <div class="trow">
-              <span class="tn">FT042526#11</span>
-              <span class="tw"><b>690</b> lbs</span>
+              <span class="tn">FT042526#12</span>
+              <span class="tw"><b>700</b> lbs</span>
+              <span class="tst b-office">In office</span>
+              <span class="tcaret">&#9656;</span>
+            </div>
+            <div class="stageh sg-machine"><i style="background:var(--s-machine)"></i>At machine<span class="n">4 tags · 3,141 lbs</span></div>
+            <div class="trow">
+              <span class="tn">FT042526#18</span>
+              <span class="tw"><b>790</b> lbs</span>
+              <span class="tst b-machine">At machine</span>
+              <span class="tcaret">&#9656;</span>
+            </div>
+            <div class="stageh sg-staging"><i style="background:var(--s-staging)"></i>In staging<span class="n">3 tags · 2,082 lbs · counts toward bar</span></div>
+            <div class="trow">
+              <span class="tn">FT042526#21</span>
+              <span class="tw"><b>694</b> lbs</span>
               <span class="tst b-staging">In staging</span>
               <span class="tcaret">&#9656;</span>
             </div>
-            <div style="text-align:center;font-size:10.5px;color:#8fb4d8;padding:6px 0 2px">…8 more staged tags</div>
-
-            <!-- delivered collapse -->
-            <div class="stageh sg-delivered"><i style="background:var(--s-delivered)"></i>Delivered<span class="n">6 tags · 4,513 lbs &#9662;</span></div>
+            <div style="text-align:center;font-size:10.5px;color:#8fb4d8;padding:6px 0 2px">…2 more staged tags</div>
 
           </div>
         </div>
@@ -532,7 +560,7 @@
             <div class="midtop"><span class="badge b-machine">At machine</span></div>
             <div class="meta"><b>12</b> tags · <b>5,880</b> lbs · Gulf Coast PT</div>
           </div>
-          <div class="rt"><span class="pct">48%</span><span class="minibar"><i style="width:48%"></i></span></div>
+          <div class="rt"><span class="pct">6/12 · 48%</span><span class="minibar"><i style="width:48%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -541,9 +569,9 @@
           <span class="bin">X25</span>
           <div class="mid">
             <div class="midtop"><span class="badge b-machine">At machine</span></div>
-            <div class="meta"><b>2</b> of 21 tags at machine · Gulf Coast PT</div>
+            <div class="meta"><b>7</b> of 21 tags at machine · Gulf Coast PT</div>
           </div>
-          <div class="rt"><span class="pct">14%</span><span class="minibar"><i style="width:14%"></i></span></div>
+          <div class="rt"><span class="pct">3/21 · 14%</span><span class="minibar"><i style="width:14%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
@@ -603,7 +631,7 @@
             <div class="midtop"><span class="badge b-delivered">Delivered</span></div>
             <div class="meta"><b>21</b> tags · <b>7,110</b> lbs · Bayou Rebar</div>
           </div>
-          <div class="rt"><span class="pct">100%</span><span class="minibar"><i style="width:100%"></i></span></div>
+          <div class="rt"><span class="pct">21/21 · 100%</span><span class="minibar"><i style="width:100%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
         <div class="brow shipped s-delivered">
@@ -612,7 +640,7 @@
             <div class="midtop"><span class="badge b-delivered">Delivered</span></div>
             <div class="meta"><b>15</b> tags · <b>6,430</b> lbs · Gulf Coast PT</div>
           </div>
-          <div class="rt"><span class="pct">100%</span><span class="minibar"><i style="width:100%"></i></span></div>
+          <div class="rt"><span class="pct">15/15 · 100%</span><span class="minibar"><i style="width:100%"></i></span></div>
           <span class="caret">&#9656;</span>
         </div>
 
