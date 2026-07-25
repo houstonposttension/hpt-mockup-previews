@@ -7,9 +7,8 @@
 <!-- Loader mockup — LEAN variant, CANONICAL as of 2026-07-23 (loaders chose it over the dense
      variant in the A/B review). All further iteration happens here; variant-c-category-tabs.html
      is retained as a reference-only "showcase everything" version for design review.
-     Nine frames incl. 8-9 (partial close-out + carry forward). Full design note is in the private
-     repo houstonposttension/wip-processor at docs/spec/loader-category-status-design-2026-07-21.md.
-     This is a preview host, not source. -->
+     Nine frames incl. 8-9 (partial close-out + carry forward). The full design note lives with the
+     source; this is a preview host, not source. -->
 <style>
   :root{
     --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
@@ -219,6 +218,25 @@
   .carrybar .stale{ color:var(--warn); }
   .lrow .carry{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#9ccbff;
     background:#17222e; border:1px solid #2f4a63; border-radius:5px; padding:1px 6px; white-space:nowrap; flex:0 0 auto; }
+  /* supervisor-approval gate (frame 8) — mirrors the one-time-code approval already used at photo capture */
+  .supgate{ background:#2a2013; border:1px solid #5e4a1a; border-radius:12px; padding:12px; margin-top:8px; }
+  .supgate h4{ font-size:13px; margin:0 0 3px; color:var(--warn); display:flex; align-items:center; gap:6px; }
+  .supgate .sgsub{ font-size:11px; color:#e5d3b5; margin:0 0 9px; line-height:1.45; }
+  .otpstep{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin:8px 0 3px; }
+  .otpinp{ width:100%; box-sizing:border-box; font-size:15px; padding:10px 11px; border-radius:9px;
+    background:#0e1217; border:1px solid var(--line); color:#e8eef5; }
+  .otpinp.code{ letter-spacing:6px; text-align:center; font-weight:800; }
+  .otprow{ display:flex; gap:7px; align-items:stretch; }
+  .otprow .otpinp{ flex:1; min-width:0; }
+  .otpbtn{ font-size:12px; font-weight:800; padding:0 14px; border-radius:9px; white-space:nowrap;
+    border:1px solid rgba(255,176,32,.55); background:rgba(255,176,32,.16); color:var(--warn); }
+  .otpbtn.sent{ border-color:rgba(70,214,132,.5); background:rgba(70,214,132,.12); color:var(--ok); }
+  .otpbtn.full{ width:100%; margin-top:9px; padding:11px; }
+  .attrib{ font-size:11px; color:#9ccbff; background:#0e1217; border:1px solid var(--line); border-radius:8px;
+    padding:8px 10px; margin-top:10px; line-height:1.55; }
+  .attrib b{ color:#cfe0f5; }
+  .confirm.locked{ background:#2a2013; color:var(--faint); border:1px solid #5e4a1a; }
+  .lockhint{ font-size:10.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.45; }
   .misscan{ min-height:660px; display:flex; flex-direction:column; justify-content:center; padding:20px 16px; background:#0e1a2a; }
   .misscan .mtitle{ font-size:22px; font-weight:900; color:var(--warn); text-align:center; letter-spacing:.5px; }
   .misscan .msub{ font-size:12.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.5; }
@@ -628,7 +646,7 @@
     <!-- ── FRAME 8 — EARLY CLOSE-OUT (split / carry-forward) ── -->
     <div class="col" id="f8">
       <div class="frameLbl"><span class="fcount">8 / 9</span>Early close-out — split / carry-forward</div>
-      <div class="frameSub">Later in the same run: 15 of 22 loaded, supervisor decides the truck ships now. Same override gate + a reason picker. The carrying list uses lean rows — category on the edge, state on the dot.</div>
+      <div class="frameSub">Later in the same run: 15 of 22 loaded, the truck ships now. The loader fills in the reason, note and photo — but a split needs a <b>lead or supervisor</b> to approve via a one-time code (step 4), same escalation the app uses for photo capture. The carrying list uses lean rows — category on the edge, state on the dot.</div>
       <div class="phone"><div class="scr blockscr">
         <div class="blockhdr" style="background:#2a2013; border-color:#5e4a1a">
           <div class="bi">🚚</div>
@@ -651,13 +669,28 @@
         <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud · 1c9d…</span><span class="ldot st-unknown"></span></div>
         <div class="modal">
           <h3>⚠ Split — ship 15, carry 7</h3>
-          <div class="msub">Recorded against run <b>X8</b> and your name. Both fields required.</div>
+          <div class="msub">A split load needs a <b>lead or supervisor</b> to approve. You fill this in; they approve on your phone.</div>
           <div class="req"><span class="dot"></span>2 · Why is this shipping without them?</div>
           <textarea class="ta">Truck full — shipping the 15 that fit. Remaining 7 (2 still at machines, 3 cloud-pending) go on tomorrow's run, same bin.</textarea>
           <div class="charc">118 / 300</div>
           <div class="req"><span class="dot"></span>3 · Photo of the loaded truck</div>
           <button class="photobtn">✓ Photo captured — tap to retake</button>
-          <button class="confirm">Confirm &amp; ship 15 · carry 7</button>
+          <div class="req"><span class="dot"></span>4 · Lead / supervisor approval</div>
+          <div class="supgate">
+            <h4>🔒 Only a lead can approve a split</h4>
+            <div class="sgsub">Enter a lead or supervisor's phone — they get a one-time code to approve. Same step the app already uses for photo capture.</div>
+            <div class="otpstep">Supervisor phone</div>
+            <div class="otprow">
+              <input class="otpinp" type="tel" value="+1 713 555 0142" readonly>
+              <button class="otpbtn sent">Sent ✓</button>
+            </div>
+            <div class="otpstep">One-time code</div>
+            <input class="otpinp code" type="text" value="· · ·   · · ·" readonly>
+            <button class="otpbtn full">Verify &amp; approve →</button>
+          </div>
+          <div class="attrib">Files against run <b>X8</b>: <b>loaded by you</b> · <b>approved by</b> the lead who enters the code. Both names ride on the close-out event — the audit shows who loaded <i>and</i> who approved the split.</div>
+          <button class="confirm locked">🔒 Confirm &amp; ship 15 · carry 7</button>
+          <div class="lockhint">Unlocks once a lead approves. A full 22 / 22 load needs no approval — you close that out yourself.</div>
         </div>
       </div></div>
     </div>
@@ -673,7 +706,7 @@
           <div class="sub">ships 06/12/26 · 22 tags</div>
           <div class="orders">X8.1 · X8.2 · X8.3</div>
         </div>
-        <div class="carrybar">↩ <b>Carried over from truck 1</b> · closed out 2:14 PM by Jose<br>
+        <div class="carrybar">↩ <b>Carried over from truck 1</b> · closed out 2:14 PM · loaded by you, <b>approved by Ramiro (lead)</b><br>
           <span class="stale">⚠ Ship date 06/12/26 is from the original run — confirm before this truck departs.</span></div>
         <div class="viewtog"><div class="vt on">In progress</div><div class="vt">Punch list <span class="cnt">7</span></div></div>
         <div class="prog"><div class="row"><span class="big">15 <span class="small">of 22 loaded</span></span><span class="small">7 carry-over</span></div><div class="bar"><i style="width:68%"></i></div></div>
@@ -715,10 +748,17 @@
     work collapses to a <b>"✓ N loaded"</b> line. Tap the open rows (#42, #39) to see a drawer.
     <br><br>
     <b>Frames 8–9 — partial close-out + carry forward.</b> The scan <i>is</i> the assignment: whatever
-    is loaded ships, whatever isn't stays in the bin for the next truck. The supervisor doesn't plan a
-    split — they <b>ratify</b> an early close-out with a typed reason (<b>"Split — carry forward"</b>),
-    still backed by the note + photo. The next truck simply reopens the run at <b>15 of 22</b>, with the
-    7 remaining marked <b>↩ carry</b>. No new operation, no reassignment, nothing for the loader to learn.
+    is loaded ships, whatever isn't stays in the bin for the next truck. The next truck simply reopens
+    the run at <b>15 of 22</b>, with the 7 remaining marked <b>↩ carry</b>. No new operation, no
+    reassignment, nothing for the loader to learn.
+    <br><br>
+    <b>A split needs a lead to approve.</b> A regular loader can <i>initiate</i> a partial close-out but
+    cannot approve it alone — step 4 escalates to a <b>lead or supervisor</b>, who approves with a
+    one-time code sent to their phone — the same approval step the scanner already uses for
+    photo capture. The confirm stays <b>🔒 locked</b> until that approval lands, and the close-out
+    event carries <b>both identities</b> — loaded by the worker, approved by the lead. The happy path is
+    untouched: a full <b>22 / 22</b> load has no carry, so no approval is required and the loader closes
+    it out themselves. The gate only fires when something is actually shipping short (carry &gt; 0).
   </div>
 
 <script>
