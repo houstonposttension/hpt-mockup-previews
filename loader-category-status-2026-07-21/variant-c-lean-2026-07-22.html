@@ -7,8 +7,9 @@
 <!-- Loader mockup — LEAN variant, CANONICAL as of 2026-07-23 (loaders chose it over the dense
      variant in the A/B review). All further iteration happens here; variant-c-category-tabs.html
      is retained as a reference-only "showcase everything" version for design review.
-     Nine frames incl. 8-9 (partial close-out + carry forward). The full design note lives with the
-     source; this is a preview host, not source. -->
+     Frames 1-9 incl. the partial close-out + carry-forward flow (8 request · 8b approvals inbox ·
+     8c approved · 9 carry-over). The full design note lives with the source; this is a preview host,
+     not source. -->
 <style>
   :root{
     --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
@@ -218,25 +219,68 @@
   .carrybar .stale{ color:var(--warn); }
   .lrow .carry{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#9ccbff;
     background:#17222e; border:1px solid #2f4a63; border-radius:5px; padding:1px 6px; white-space:nowrap; flex:0 0 auto; }
-  /* supervisor-approval gate (frame 8) — mirrors the one-time-code approval already used at photo capture */
-  .supgate{ background:#2a2013; border:1px solid #5e4a1a; border-radius:12px; padding:12px; margin-top:8px; }
-  .supgate h4{ font-size:13px; margin:0 0 3px; color:var(--warn); display:flex; align-items:center; gap:6px; }
-  .supgate .sgsub{ font-size:11px; color:#e5d3b5; margin:0 0 9px; line-height:1.45; }
-  .otpstep{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin:8px 0 3px; }
-  .otpinp{ width:100%; box-sizing:border-box; font-size:15px; padding:10px 11px; border-radius:9px;
-    background:#0e1217; border:1px solid var(--line); color:#e8eef5; }
-  .otpinp.code{ letter-spacing:6px; text-align:center; font-weight:800; }
-  .otprow{ display:flex; gap:7px; align-items:stretch; }
-  .otprow .otpinp{ flex:1; min-width:0; }
-  .otpbtn{ font-size:12px; font-weight:800; padding:0 14px; border-radius:9px; white-space:nowrap;
-    border:1px solid rgba(255,176,32,.55); background:rgba(255,176,32,.16); color:var(--warn); }
-  .otpbtn.sent{ border-color:rgba(70,214,132,.5); background:rgba(70,214,132,.12); color:var(--ok); }
-  .otpbtn.full{ width:100%; margin-top:9px; padding:11px; }
-  .attrib{ font-size:11px; color:#9ccbff; background:#0e1217; border:1px solid var(--line); border-radius:8px;
-    padding:8px 10px; margin-top:10px; line-height:1.55; }
-  .attrib b{ color:#cfe0f5; }
-  .confirm.locked{ background:#2a2013; color:var(--faint); border:1px solid #5e4a1a; }
-  .lockhint{ font-size:10.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.45; }
+  /* ── approval-queue pattern (frames 8/8b/8c) — replaces the retired OTP gate ── */
+  /* loader side: request-submitted state + mini timeline */
+  .reqsub{ background:#12202f; border:1px solid #2f4a63; border-radius:13px; padding:14px 15px; margin-top:4px; }
+  .reqsub h3{ font-size:15px; margin:0 0 4px; color:#cfe0f5; display:flex; align-items:center; gap:7px; }
+  .reqsub .rs2{ font-size:12px; color:#9ccbff; line-height:1.5; }
+  .reqsub .rs2 b{ color:#cfe0f5; }
+  .tl{ margin-top:12px; border-left:2px solid #2f4a63; padding-left:13px; display:flex; flex-direction:column; gap:11px; }
+  .tlrow{ position:relative; font-size:11.5px; color:var(--dim); line-height:1.35; }
+  .tlrow b{ color:#cfe0f5; font-size:12px; }
+  .tlrow::before{ content:""; position:absolute; left:-19px; top:2px; width:9px; height:9px; border-radius:50%;
+    background:var(--panel); border:2px solid #2f4a63; }
+  .tlrow.done::before{ background:var(--ok); border-color:var(--ok); }
+  .tlrow.now::before{ background:var(--warn); border-color:var(--warn); box-shadow:0 0 0 3px rgba(255,176,32,.18); }
+  .tlrow .t{ color:var(--faint); font-size:10px; }
+  .urg{ display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; text-transform:uppercase;
+    letter-spacing:.4px; color:var(--warn); background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.5);
+    border-radius:14px; padding:3px 9px; margin-top:2px; }
+  .urg .d{ width:7px; height:7px; border-radius:50%; background:var(--warn); animation:pulse 1.3s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.35; transform:scale(1.5);} }
+  .reqfoot{ font-size:11px; color:var(--dim); margin-top:12px; line-height:1.5; text-align:center; }
+  /* approver side: approvals inbox */
+  .inboxhdr{ display:flex; align-items:center; gap:8px; padding:12px 4px 8px; }
+  .inboxhdr h2{ font-size:16px; margin:0; color:var(--txt); }
+  .qbadge{ font-size:11px; font-weight:800; color:var(--ok-ink); background:var(--warn); border-radius:11px; padding:1px 8px; }
+  .apcard{ background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--blue); border-radius:12px;
+    padding:12px 13px; margin-bottom:10px; }
+  .apcard.urgent{ border-left-color:var(--warn); background:#1d1a12; }
+  .apc1{ display:flex; align-items:center; gap:8px; }
+  .apc1 .abin{ font-size:16px; font-weight:900; letter-spacing:.5px; color:var(--txt); }
+  .apc1 .arsn{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--warn);
+    background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.4); border-radius:10px; padding:2px 8px; }
+  .apage{ margin-left:auto; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:10px; }
+  .apage.gold{ color:var(--warn); background:rgba(255,176,32,.14); }
+  .apage.red{ color:var(--bad); background:rgba(255,59,48,.14); }
+  .apc2{ font-size:12px; color:var(--dim); margin-top:6px; line-height:1.5; }
+  .apc2 b{ color:#cfe0f5; }
+  .apc2 .ship{ color:var(--ok); font-weight:700; } .apc2 .carry{ color:#9ccbff; font-weight:700; }
+  .apwait{ display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; text-transform:uppercase;
+    color:var(--warn); margin-top:7px; }
+  .apwait .d{ width:7px; height:7px; border-radius:50%; background:var(--warn); animation:pulse 1.3s ease-in-out infinite; }
+  .apacts{ display:flex; gap:8px; margin-top:11px; }
+  .apacts button{ flex:1; border:none; border-radius:10px; padding:10px; font-size:13px; font-weight:800; }
+  .apok{ background:var(--ok); color:var(--ok-ink); }
+  .apno{ background:transparent; border:1px solid var(--bad)!important; color:var(--bad); }
+  .rejbox{ margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; }
+  .rejbox label{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); }
+  .rejsel{ width:100%; font-size:13px; padding:9px 10px; border-radius:9px; background:#0e1217; border:1px solid var(--line);
+    color:#e8eef5; margin:4px 0 8px; }
+  .rejta{ width:100%; box-sizing:border-box; font-size:12px; padding:9px 10px; border-radius:9px; background:#0e1217;
+    border:1px solid var(--line); color:#e8eef5; resize:none; }
+  /* approved banner (loader gets it back) */
+  .apprvd{ background:rgba(22,192,96,.12); border:1px solid rgba(22,192,96,.5); border-radius:13px; padding:13px 15px;
+    margin-top:4px; }
+  .apprvd h3{ font-size:15px; margin:0 0 3px; color:var(--ok); display:flex; align-items:center; gap:7px; }
+  .apprvd .ap2{ font-size:12px; color:#bfe6cf; line-height:1.5; } .apprvd .ap2 b{ color:#eafff2; }
+  .notif{ font-size:10.5px; color:var(--dim); margin-top:9px; line-height:1.5; display:flex; align-items:flex-start; gap:6px; }
+  /* portal nav badge (like Orphans "13") */
+  .navrow{ display:flex; gap:6px; padding:8px 4px 12px; flex-wrap:wrap; }
+  .navpill{ font-size:11px; font-weight:700; color:var(--dim); background:var(--panel2); border:1px solid var(--line);
+    border-radius:14px; padding:5px 11px; display:inline-flex; align-items:center; gap:6px; }
+  .navpill.on{ color:var(--txt); border-color:var(--blue); }
+  .navpill .nb{ font-size:10px; font-weight:800; color:var(--ok-ink); background:var(--warn); border-radius:9px; padding:0 6px; }
   .misscan{ min-height:660px; display:flex; flex-direction:column; justify-content:center; padding:20px 16px; background:#0e1a2a; }
   .misscan .mtitle{ font-size:22px; font-weight:900; color:var(--warn); text-align:center; letter-spacing:.5px; }
   .misscan .msub{ font-size:12.5px; color:var(--dim); text-align:center; margin-top:6px; line-height:1.5; }
@@ -323,7 +367,9 @@
     <a href="#f4">5 · Wrong bin</a>
     <a href="#f5">6 · Combined</a>
     <a href="#f6">7 · My loads</a>
-    <a href="#f8">8 · Early close-out</a>
+    <a href="#f8">8 · Request sent</a>
+    <a href="#f8b">8b · Approvals inbox</a>
+    <a href="#f8c">8c · Approved</a>
     <a href="#f9">9 · Carry-over</a>
   </nav>
 
@@ -645,52 +691,84 @@
 
     <!-- ── FRAME 8 — EARLY CLOSE-OUT (split / carry-forward) ── -->
     <div class="col" id="f8">
-      <div class="frameLbl"><span class="fcount">8 / 9</span>Early close-out — split / carry-forward</div>
-      <div class="frameSub">Later in the same run: 15 of 22 loaded, the truck ships now. The loader fills in the reason, note and photo — but a split needs a <b>lead or supervisor</b> to approve via a one-time code (step 4), same escalation the app uses for photo capture. The carrying list uses lean rows — category on the edge, state on the dot.</div>
+      <div class="frameLbl"><span class="fcount">8 / 9</span>Early close-out — request sent</div>
+      <div class="frameSub">The loader taps <b>Confirm 15 · carry 7</b> and is done — no code, no waiting on the truck. The request drops into a supervisor/lead <b>approval queue</b>; the truck can stay parked or reloading can start. The loader flagged <b>truck 22N waiting</b>, which sorts the request to the top of the queue.</div>
       <div class="phone"><div class="scr blockscr">
-        <div class="blockhdr" style="background:#2a2013; border-color:#5e4a1a">
-          <div class="bi">🚚</div>
-          <h2 style="color:var(--warn)">SHIP WHAT'S ON THE TRUCK?</h2>
-          <div class="bs" style="color:#e5d3b5"><b>15 of 22 loaded.</b><br>The 7 not on the truck will carry to the next run.</div>
+        <div class="blockhdr" style="background:#12202f; border-color:#2f4a63">
+          <div class="bi">📨</div>
+          <h2 style="color:#9ccbff">REQUEST SUBMITTED</h2>
+          <div class="bs" style="color:#bcd6ef"><b>15 of 22 loaded.</b><br>Awaiting supervisor/lead approval to close out short.</div>
         </div>
-        <div class="req"><span class="dot"></span>1 · Reason</div>
-        <div class="reasons">
-          <span class="rchip">Customer short ship</span>
-          <span class="rchip on">Split — carry forward<span class="rnew">new</span></span>
-          <span class="rchip">QC hold</span>
-        </div>
-        <div class="carrylbl">Carrying to the next truck<span class="c">7 tags</span></div>
-        <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6" · 44'</span><span class="ldot st-machine"></span></div>
-        <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 · 48"</span><span class="ldot st-notprinted"></span></div>
-        <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="ldot st-machine"></span></div>
-        <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs · bundle</span><span class="ldot st-office"></span></div>
-        <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud · f3a1…</span><span class="ldot st-unknown"></span></div>
-        <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud · 7b02…</span><span class="ldot st-unknown"></span></div>
-        <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud · 1c9d…</span><span class="ldot st-unknown"></span></div>
-        <div class="modal">
-          <h3>⚠ Split — ship 15, carry 7</h3>
-          <div class="msub">A split load needs a <b>lead or supervisor</b> to approve. You fill this in; they approve on your phone.</div>
-          <div class="req"><span class="dot"></span>2 · Why is this shipping without them?</div>
-          <textarea class="ta">Truck full — shipping the 15 that fit. Remaining 7 (2 still at machines, 3 cloud-pending) go on tomorrow's run, same bin.</textarea>
-          <div class="charc">118 / 300</div>
-          <div class="req"><span class="dot"></span>3 · Photo of the loaded truck</div>
-          <button class="photobtn">✓ Photo captured — tap to retake</button>
-          <div class="req"><span class="dot"></span>4 · Lead / supervisor approval</div>
-          <div class="supgate">
-            <h4>🔒 Only a lead can approve a split</h4>
-            <div class="sgsub">Enter a lead or supervisor's phone — they get a one-time code to approve. Same step the app already uses for photo capture.</div>
-            <div class="otpstep">Supervisor phone</div>
-            <div class="otprow">
-              <input class="otpinp" type="tel" value="+1 713 555 0142" readonly>
-              <button class="otpbtn sent">Sent ✓</button>
-            </div>
-            <div class="otpstep">One-time code</div>
-            <input class="otpinp code" type="text" value="· · ·   · · ·" readonly>
-            <button class="otpbtn full">Verify &amp; approve →</button>
+        <div class="reqsub">
+          <h3>⏳ Awaiting approval</h3>
+          <div class="rs2">Run <b>X8</b> · <b>15 tags</b> shipping · <b>7 carry</b> to the next run · reason <b>Split — carry forward</b>. A supervisor or lead confirms from the portal — you don't have to wait here.</div>
+          <div class="tl">
+            <div class="tlrow done"><b>Submitted</b> by you <span class="t">· 09:23</span></div>
+            <div class="tlrow now"><b>Awaiting approval</b> — in the supervisor/lead queue<br><span class="urg"><span class="d"></span>Truck 22N waiting</span></div>
+            <div class="tlrow"><b>Close-out fires</b> on approval <span class="t">· not yet</span></div>
           </div>
-          <div class="attrib">Files against run <b>X8</b>: <b>loaded by you</b> · <b>approved by</b> the lead who enters the code. Both names ride on the close-out event — the audit shows who loaded <i>and</i> who approved the split.</div>
-          <button class="confirm locked">🔒 Confirm &amp; ship 15 · carry 7</button>
-          <div class="lockhint">Unlocks once a lead approves. A full 22 / 22 load needs no approval — you close that out yourself.</div>
+          <div class="reqfoot">Truck can stay parked, or start reloading the next run — the close-out records the moment a lead approves.</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 8b — APPROVER: APPROVALS INBOX ── -->
+    <div class="col" id="f8b">
+      <div class="frameLbl"><span class="fcount">8b / 9</span>Supervisor / lead — approvals inbox</div>
+      <div class="frameSub">The <b>Approver-facing</b> surface: a new <b>Approvals</b> pillar in the supervisor/lead mockup. Requests are cards — bin, tags shipped vs carried, reason, loader, and an <b>age</b> badge that escalates gold → red. The <b>truck-waiting</b> request pulses amber and sorts to the top. Approve is one tap; reject opens a reason picker.</div>
+      <div class="phone"><div class="scr">
+        <div class="navrow">
+          <span class="navpill">Production</span>
+          <span class="navpill">Orphans <span class="nb">13</span></span>
+          <span class="navpill on">Approvals <span class="nb">3</span></span>
+        </div>
+        <div class="inboxhdr"><h2>Approvals</h2><span class="qbadge">3</span></div>
+        <div class="apcard urgent">
+          <div class="apc1"><span class="abin">X8</span><span class="arsn">Split — carry fwd</span><span class="apage gold">4 min</span></div>
+          <div class="apc2"><b>Jose</b> · <span class="ship">ship 15</span> · <span class="carry">carry 7</span> · Aldine Westfield Ph2<br>Note: "Truck full — 7 go on tomorrow's run, same bin."</div>
+          <div class="apwait"><span class="d"></span>Truck 22N waiting</div>
+          <div class="apacts"><button class="apok">✓ Approve</button><button class="apno">Reject</button></div>
+        </div>
+        <div class="apcard">
+          <div class="apc1"><span class="abin">R4</span><span class="arsn">QC hold</span><span class="apage red">21 min</span></div>
+          <div class="apc2"><b>Mike</b> · <span class="ship">ship 9</span> · <span class="carry">carry 3</span> · Kingwood Med<br>Note: "3 bars flagged at QC — holding for re-check."</div>
+          <div class="rejbox">
+            <label>Reject reason</label>
+            <select class="rejsel"><option>Choose a reason…</option><option selected>Finish loading — tags are ready</option><option>Wrong bin / customer</option><option>Needs manager, not lead</option><option>Other</option></select>
+            <textarea class="rejta" rows="2">R4 tags cleared QC 5 min ago — load them, don't carry.</textarea>
+            <div class="apacts"><button class="apok">Send rejection</button><button class="apno">Cancel</button></div>
+          </div>
+        </div>
+        <div class="apcard">
+          <div class="apc1"><span class="abin">X4</span><span class="arsn">Customer short</span><span class="apage gold">2 min</span></div>
+          <div class="apc2"><b>Luis</b> · <span class="ship">ship 18</span> · <span class="carry">carry 2</span> · Grand Pkwy 99<br>Note: "Customer approved short ship — 2 chairs follow Friday."</div>
+          <div class="apacts"><button class="apok">✓ Approve</button><button class="apno">Reject</button></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ── FRAME 8c — LOADER: APPROVED ── -->
+    <div class="col" id="f8c">
+      <div class="frameLbl"><span class="fcount">8c / 9</span>Loader — approved</div>
+      <div class="frameSub">Back on the loader's phone: an in-app banner the moment the lead approves (plus an optional SMS/push). The close-out is now recorded — <code>CLOSEOUT_OVERRIDDEN</code> with the approver stamped from the queue record — and the standard shipped state follows.</div>
+      <div class="phone"><div class="scr blockscr">
+        <div class="apprvd">
+          <h3>✓ Approved</h3>
+          <div class="ap2"><b>Approved by Ramiro (lead)</b> at 09:26 — 3 min after you asked. Run <b>X8</b> closed out: <b>15 shipped</b>, <b>7 carry</b> to the next truck.</div>
+          <div class="notif">🔔 <span>In-app notification. Optional SMS to your phone + a push if the app is installed — nice-to-have, not required to close out.</span></div>
+        </div>
+        <div class="tl" style="margin-top:14px">
+          <div class="tlrow done"><b>Submitted</b> <span class="t">· 09:23</span></div>
+          <div class="tlrow done"><b>Approved by Ramiro (lead)</b> <span class="t">· 09:26</span></div>
+          <div class="tlrow done"><b>Close-out recorded</b> — 15 shipped · 7 carry <span class="t">· 09:26</span></div>
+        </div>
+        <div class="secthdr" style="margin-top:14px">✓ Shipped on truck 22N<span class="n">15</span></div>
+        <div class="lcollapse"><div class="lloaded" onclick="this.parentNode.classList.toggle('open')">✓ 15 shipped — closed out &amp; gone<span class="arrow">↕</span></div>
+          <div class="lloaded-body">
+            <div class="lrow cat-rebar doneRow"><span class="lnum">#39</span><span class="lspec">8B01 · qty 12</span></div>
+            <div class="lrow cat-rebar doneRow"><span class="lnum">#40</span><span class="lspec">8B02 · qty 6 · 📷</span></div>
+            <div class="lrow doneRow" style="border-left-color:var(--line)"><span class="lspec" style="color:var(--faint)">…13 more</span></div>
+          </div>
         </div>
       </div></div>
     </div>
@@ -752,13 +830,20 @@
     the run at <b>15 of 22</b>, with the 7 remaining marked <b>↩ carry</b>. No new operation, no
     reassignment, nothing for the loader to learn.
     <br><br>
-    <b>A split needs a lead to approve.</b> A regular loader can <i>initiate</i> a partial close-out but
-    cannot approve it alone — step 4 escalates to a <b>lead or supervisor</b>, who approves with a
-    one-time code sent to their phone — the same approval step the scanner already uses for
-    photo capture. The confirm stays <b>🔒 locked</b> until that approval lands, and the close-out
-    event carries <b>both identities</b> — loaded by the worker, approved by the lead. The happy path is
-    untouched: a full <b>22 / 22</b> load has no carry, so no approval is required and the loader closes
-    it out themselves. The gate only fires when something is actually shipping short (carry &gt; 0).
+    <b>A split needs a lead to approve — via an approval queue, not a code.</b> The loader taps
+    <b>Confirm</b> and is done (frame 8); the request drops into a supervisor/lead <b>approvals inbox</b>
+    (frame 8b) and the truck can stay parked or start reloading meanwhile. The approver sees bin, tags
+    shipped vs carried, reason, loader and an <b>age</b> badge (gold → red); a <b>truck-waiting</b>
+    request pulses amber and sorts to the top. Approve is one tap; reject opens a reason dropdown +
+    note. On approval the loader gets an in-app banner — <b>"approved by Ramiro (lead)"</b> (frame 8c),
+    optional SMS/push — and the close-out records with the approver stamped from the queue record. The
+    happy path is untouched: a full <b>22 / 22</b> load has no carry, so nothing is queued and the
+    loader closes out themselves. Only a short ship (carry &gt; 0) enters the queue.
+    <br><br>
+    <b>The approval queue is a reusable primitive.</b> Same request → inbox → approve/reject → event
+    shape works for scrap approval, void approval, price overrides — anything where a worker acts and a
+    lead ratifies. This is that pattern's first use, not a one-off. (The earlier OTP-via-phone gate is
+    retired — see design note §19.9, superseded 2026-07-24.)
   </div>
 
 <script>
