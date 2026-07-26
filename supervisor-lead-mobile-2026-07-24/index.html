@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Supervisor + Lead Mobile · WIP (16 frames incl. Approvals + Self-service) · 2026-07-24</title>
+<title>Supervisor + Lead Mobile · 18 frames (incl. Approvals + Self-service + Workcell tiles) · 2026-07-24</title>
 <!-- Supervisor + Lead mobile mockup — LEAN treatment (reuses the canonical loader kit).
-     All 16 frames built; all 9 questions answered. Locked: Q1 reroute, Q2 roster, Q3 dark cells,
+     18 frames built; all 9 questions answered (17–18 = workcell tile home + station drill-down).
+     Locked: Q1 reroute, Q2 roster, Q3 dark cells,
      Q4 6-stage lifecycle, Q5 two SSO self-service views, Q6 act-as-operator (supervisor identity),
      Q7 muted "— no target", Q8 shift-scoped repositioning, Q9 M-1..M-N dropped (not a real thing).
      Design note: docs/spec/supervisor-lead-mobile-design-2026-07-24.md (private repo). Preview host only. -->
@@ -335,6 +336,58 @@
   .expirehint b{ color:#cfe0f5; }
   .mvbtn{ width:100%; padding:15px; border:none; border-radius:13px; background:var(--blue); color:#fff; font-size:16px; font-weight:800; }
 
+  /* ── workcell tile home (last-hour) ── */
+  .attn{ background:linear-gradient(180deg,rgba(255,59,48,.1),rgba(255,176,32,.04)); border:1px solid rgba(255,59,48,.4); border-radius:12px; padding:11px 13px; margin-bottom:14px; }
+  .attn .ah{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.7px; color:#ff9b94; display:flex; align-items:center; gap:6px; }
+  .attn .ah .ct{ margin-left:auto; background:var(--bad); color:#fff; border-radius:20px; padding:1px 8px; font-size:11px; }
+  .attn .arow{ font-size:12.5px; margin-top:8px; display:flex; align-items:center; gap:8px; color:#f0dcd9; }
+  .attn .arow .atag{ margin-left:auto; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:#9ccbff; }
+  .cellgrp{ margin-bottom:13px; }
+  .cellhdr{ display:flex; align-items:center; gap:9px; padding:8px 3px; cursor:pointer; border-bottom:1px solid var(--line); margin-bottom:9px; }
+  .cellhdr .cx{ font-size:11px; color:#6b7683; flex:0 0 auto; }
+  .cellhdr .cnm2{ font-size:13px; font-weight:800; }
+  .cellhdr .csub{ font-size:10px; color:var(--faint); }
+  .cellhdr .agg{ margin-left:auto; font-size:13px; }
+  .cellgrp.collapsed .tilewrap{ display:none; }
+  .tilewrap{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .tile{ background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:11px; padding:10px 9px; cursor:pointer; }
+  .tile .tn{ font-size:11.5px; font-weight:800; color:#e6edf3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile .trate{ display:flex; align-items:baseline; gap:5px; margin-top:6px; }
+  .tile .trate .big{ font-size:20px; font-weight:900; line-height:1; }
+  .tile .trate .arr{ font-size:12px; font-weight:800; }
+  .arr.up{ color:var(--ok); } .arr.down{ color:#ff7b73; } .arr.steady{ color:var(--dim); }
+  .tile .trate .sdot{ font-size:10px; margin-left:auto; }
+  .tile .tvs{ font-size:10px; color:var(--dim); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tile.g{ border-left-color:var(--ok); } .tile.g .big{ color:#46d684; }
+  .tile.y{ border-left-color:var(--warn); } .tile.y .big{ color:var(--warn); }
+  .tile.r{ border-left-color:var(--bad); background:linear-gradient(180deg,rgba(255,59,48,.06),transparent); } .tile.r .big{ color:#ff7b73; }
+  .tile.neutral .big{ color:#cfd6de; } .tile.neutral .tvs{ color:var(--faint); font-style:italic; }
+  .tile.coming{ opacity:.55; border-style:dashed; cursor:default; }
+  .tile.coming .big{ color:var(--faint); font-size:13px; }
+  .tile .cta{ font-size:8.5px; font-weight:800; color:#8fb4d8; margin-top:6px; }
+
+  /* ── station drill-down ── */
+  .dstats{ display:flex; gap:8px; margin-bottom:11px; }
+  .dstat{ flex:1; background:var(--panel); border:.5px solid var(--line); border-radius:12px; padding:10px 11px; }
+  .dstat .dk{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); }
+  .dstat .dv{ font-size:19px; font-weight:900; margin-top:4px; line-height:1; }
+  .dstat .dvu{ font-size:11px; color:var(--dim); font-weight:600; }
+  .dstat .dsub{ font-size:10px; color:var(--dim); margin-top:4px; }
+  .dstat.cur .dv{ color:#46d684; } .dstat.shift .dv{ color:#cfe0f5; }
+  .spark{ display:flex; align-items:flex-end; gap:4px; height:46px; margin:4px 2px 2px; }
+  .spark i{ flex:1; background:#2f4a63; border-radius:2px 2px 0 0; min-height:3px; }
+  .spark i.now{ background:var(--ok); }
+  .sparklbl{ display:flex; justify-content:space-between; font-size:8.5px; color:var(--faint); margin:2px 2px 0; }
+  /* tag list — reuses Bins mockup glyphs: ⏳ queued · ⚙ in progress · ✓ done here */
+  .tqrow{ display:flex; align-items:center; gap:9px; padding:8px 10px; margin:4px 0; background:#111722; border:1px solid #223; border-radius:9px; }
+  .tqrow .tqi{ font-size:14px; flex:0 0 auto; }
+  .tqrow .tqid{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; font-weight:800; color:#cfe0f5; }
+  .tqrow .tqmeta{ font-size:10px; color:var(--dim); flex:1; }
+  .tqrow .tqage{ font-size:10.5px; font-weight:700; color:var(--dim); }
+  .tqrow.stall{ background:#1a1410; border-color:#5e2a2a; }
+  .tqrow.stall .tqage{ color:#ff7b73; }
+  .tqrow.stall .stallf{ font-size:8px; font-weight:900; text-transform:uppercase; letter-spacing:.4px; color:#fff; background:var(--bad); border-radius:4px; padding:1px 5px; margin-left:6px; }
+
   .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:26px 0 0; max-width:900px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
   .ann b{ color:#fff; } .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; color:#9ccbff; }
   .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
@@ -351,7 +404,8 @@
     <b>Act-as-operator</b> (Q6 — credits the supervisor's own identity), and <b>shift-scoped
     Repositioning</b> (Q8 — every move expires end of shift). Order status uses the locked 6-stage
     lifecycle (Q4); the 9 target-less machines show a muted <i>— no target</i> (Q7). <b>All 9 questions
-    are answered</b> — Q9 confirmed <code>M-1..M-N</code> was a stray placeholder (dropped). Approvals'
+    are answered</b> — Q9 confirmed <code>M-1..M-N</code> was a stray placeholder (dropped). New:
+    <b>Workcell tile home + station drill-down</b> (frames 17–18). Approvals'
     <b>request-submission</b> side lives in the parallel Loader mockup.</div>
 
   <div class="rolekey">
@@ -384,6 +438,8 @@
     <a href="#f14">14 · Capacity</a>
     <a href="#f15">15 · Act as operator</a>
     <a href="#f16">16 · Reposition</a>
+    <a href="#f17">17 · Workcell tiles</a>
+    <a href="#f18">18 · Station detail</a>
   </nav>
 
   <div class="screens">
@@ -1075,6 +1131,119 @@
       </div></div>
     </div>
 
+    <!-- ══════════ FRAME 17 — WORKCELL TILE HOME (last-hour) ══════════ -->
+    <div class="col" id="f17">
+      <div class="frameLbl role-lead"><span class="fcount">17</span> Workcell tiles <span class="rtag lead">LEAD/SUP</span></div>
+      <div class="frameSub">Home glance: "how is each workcell doing right now." Tile = <b>last-hour lbs/hr</b>
+        + trend vs prior hour + status colour, over <b>vs target</b> (or 7-day avg fallback). Shift-so-far
+        is deliberately NOT on the tile — it lives in drill-down. Needs-attention floats stalled + red up top.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Julian <span class="rolepill lead">Lead</span></div>
+            <div class="sub">Workcells · last hour</div></div>
+          <span class="navbadge red"><span class="ic">✎</span> 5</span>
+        </div>
+
+        <div class="attn">
+          <div class="ah">⚠ Needs attention <span class="ct">2</span></div>
+          <div class="arow">🔴 Double Bender stalled 6h <span class="atag">X25.1</span></div>
+          <div class="arow">🟡 Prima at 77% of target <span class="atag">1.55k / 2k</span></div>
+        </div>
+
+        <div class="cellgrp">
+          <div class="cellhdr"><span class="cx">▾</span><span class="cnm2">Rebar Cutting</span>
+            <span class="csub">6 stations</span><span class="agg">🔴</span></div>
+          <div class="tilewrap">
+            <div class="tile g">
+              <div class="tn">Shear</div>
+              <div class="trate"><span class="big">3.9k</span><span class="arr up">↑</span><span class="sdot">🟢</span></div>
+              <div class="tvs">vs 4k target · 98%</div>
+            </div>
+            <div class="tile y">
+              <div class="tn">Prima</div>
+              <div class="trate"><span class="big">1.55k</span><span class="arr down">↓</span><span class="sdot">🟡</span></div>
+              <div class="tvs">vs 2k target · 77%</div>
+            </div>
+            <div class="tile g">
+              <div class="tn">22N</div>
+              <div class="trate"><span class="big">2.9k</span><span class="arr steady">→</span><span class="sdot">🟢</span></div>
+              <div class="tvs">vs 3k target · 97%</div>
+            </div>
+            <div class="tile r">
+              <div class="tn">Double Bender</div>
+              <div class="trate"><span class="big">0</span><span class="arr down">↓</span><span class="sdot">🔴</span></div>
+              <div class="tvs">stalled 6h · X25.1</div>
+            </div>
+            <div class="tile g">
+              <div class="tn">SSB</div>
+              <div class="trate"><span class="big">2.1k</span><span class="arr up">↑</span><span class="sdot">🟢</span></div>
+              <div class="tvs">vs 2.0k · 7-day avg · 105%</div>
+            </div>
+            <div class="tile neutral">
+              <div class="tn">Radius Bender</div>
+              <div class="trate"><span class="big">1.4k</span><span class="arr up">↑</span><span class="sdot">⚪</span></div>
+              <div class="tvs">— no target</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cellgrp collapsed">
+          <div class="cellhdr"><span class="cx">▸</span><span class="cnm2">Bundling</span>
+            <span class="csub">1 station · not scanning</span><span class="agg">⚪</span></div>
+          <div class="tilewrap">
+            <div class="tile coming"><div class="tn">20 Station</div><div class="trate"><span class="big">—</span></div><div class="cta">⚠ wire station</div></div>
+          </div>
+        </div>
+
+        <div class="cellgrp collapsed">
+          <div class="cellhdr"><span class="cx">▸</span><span class="cnm2">Loading</span>
+            <span class="csub">1 station</span><span class="agg">🟢</span></div>
+          <div class="tilewrap">
+            <div class="tile g"><div class="tn">Loading</div><div class="trate"><span class="big">14</span><span class="arr up">↑</span><span class="sdot">🟢</span></div><div class="tvs">loads · on pace</div></div>
+          </div>
+        </div>
+        <div class="mexist" style="font-size:10px;color:var(--faint);text-align:center;margin-top:8px;font-style:italic">
+          Supervisor default = cells collapsed (plant-wide, less scroll); lead default = expanded. Tap any tile → station detail (frame 18).</div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 18 — STATION DRILL-DOWN ══════════ -->
+    <div class="col" id="f18">
+      <div class="frameLbl role-lead"><span class="fcount">18</span> Station detail <span class="rtag lead">LEAD/SUP</span></div>
+      <div class="frameSub">Tap a tile → station detail. Same current-hour metric as the tile, PLUS the
+        <b>shift-so-far</b> stat ("how well I did my job"), an 8-hour sparkline, who's on the station, tags
+        in progress (stall ≥4h), and what's queued next.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">← Shear</div><div class="sub">Rebar Cutting · 1st shift</div></div>
+          <div class="win"><div class="k">Now</div><div class="v" style="color:#46d684">🟢 on pace</div></div>
+        </div>
+
+        <div class="dstats">
+          <div class="dstat cur"><div class="dk">This hour</div><div class="dv">3.9k <span class="dvu">lb/h</span></div><div class="dsub">↑ vs 3.6k last hr · 98% of 4k</div></div>
+          <div class="dstat shift"><div class="dk">Shift so far</div><div class="dv">3.7k <span class="dvu">lb/h</span></div><div class="dsub">vs 4k target · avg</div></div>
+        </div>
+
+        <div class="sectlbl">Last 8 hours <span class="n">lb/h</span></div>
+        <div class="spark">
+          <i style="height:55%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:80%"></i>
+          <i style="height:66%"></i><i style="height:74%"></i><i style="height:60%"></i><i class="now" style="height:85%"></i>
+        </div>
+        <div class="sparklbl"><span>07:00</span><span>now · 3.9k</span></div>
+
+        <div class="sectlbl">On station <span class="n">1 worker</span></div>
+        <div class="wrow"><div class="av">JG</div><div><div class="wnm">J. Guerra</div><div class="wst">since 06:02 · last scan 2m ago</div></div><div class="wr"><div class="rr">3.9k</div><div class="rl">lb/h</div></div></div>
+
+        <div class="sectlbl">Tags in progress <span class="n">2 · now 10:28</span></div>
+        <div class="tqrow"><span class="tqi">⚙</span><span class="tqid">FT0430#19</span><span class="tqmeta">#6 · started 09:41</span><span class="tqage">47m</span></div>
+        <div class="tqrow stall"><span class="tqi">⚙</span><span class="tqid">FT0429#22</span><span class="tqmeta">#8 · started 06:10</span><span class="tqage">4h 18m<span class="stallf">stalled</span></span></div>
+
+        <div class="sectlbl">Queued next <span class="n">from schedule</span></div>
+        <div class="tqrow"><span class="tqi">⏳</span><span class="tqid">FT0431#08</span><span class="tqmeta">#5 · 23-06 · Kennedy V</span><span class="tqage">next</span></div>
+        <div class="tqrow"><span class="tqi">⏳</span><span class="tqid">FT0431#09</span><span class="tqmeta">#5 · 23-06 · Kennedy V</span><span class="tqage">+1</span></div>
+      </div></div>
+    </div>
+
   </div>
 
   <div class="ann">
@@ -1082,7 +1251,9 @@
     are the <b>Approvals pillar</b> (reusable queue, approver side); 11–14 are the 4 <b>Self-service</b>
     surfaces, each in a Supervisor and an Office view (Q5); 15 is <b>Act-as-operator</b> (Q6 — credits the
     supervisor's own identity); 16 is <b>shift-scoped Reposition</b> (Q8 — writes ShiftOverrides, expires
-    end of shift). The approvals record is shared with the parallel Loader mockup (submission side) — see
+    end of shift); 17–18 are the <b>Workcell tile home</b> (last-hour rate per station, needs-attention on
+    top) and its <b>station drill-down</b> (adds shift-so-far + 8h sparkline + in-progress/queued tags).
+    The approvals record is shared with the parallel Loader mockup (submission side) — see
     spec §5a. Numbers are illustrative. Every muted <i>— no target</i> (Q7) and "not scanning — wire
     station" marker is a
     <b>real gap in the current system</b>, surfaced on purpose rather than papered over. Reroute events
