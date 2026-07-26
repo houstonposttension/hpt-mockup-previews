@@ -6,28 +6,11 @@
 <title>HPT Dispatch — Command Center (mockup)</title>
 <style>
   :root{
-    --bg:#f4f5f7;
-    --panel:#ffffff;
-    --ink:#111827;
-    --ink-mute:#4b5563;
-    --ink-faint:#9ca3af;
-    --line:#e5e7eb;
-    --line-strong:#d1d5db;
-    --brand:#ea580c;
-    --brand-dk:#c2410c;
-    --navy:#0f2547;
-    --navy-dk:#0a1a35;
-    --ok:#16a34a;
-    --warn:#d97706;
-    --bad:#dc2626;
-    --info:#2563eb;
-    --tint-ok:#dcfce7;
-    --tint-warn:#fef3c7;
-    --tint-bad:#fee2e2;
-    --tint-info:#dbeafe;
-    --tint-brand:#fff7ed;
-    --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
-    --radius:10px;
+    --bg:#f4f5f7;--panel:#ffffff;--ink:#111827;--ink-mute:#4b5563;--ink-faint:#9ca3af;
+    --line:#e5e7eb;--line-strong:#d1d5db;--brand:#ea580c;--brand-dk:#c2410c;
+    --navy:#0f2547;--navy-dk:#0a1a35;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--info:#2563eb;
+    --tint-ok:#dcfce7;--tint-warn:#fef3c7;--tint-bad:#fee2e2;--tint-info:#dbeafe;--tint-brand:#fff7ed;
+    --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);--radius:10px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;}
@@ -250,13 +233,66 @@
   .toc h3{margin:0 0 8px;font-size:13px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
   .toc ol{margin:0;padding-left:20px;font-size:13px;line-height:1.7;}
   .toc a{color:var(--info);}
+
+  /* ---- New styles for Frames 7-9 (Manager AI Interaction) ---- */
+  .qa-bar{background:#fff;border-bottom:1px solid var(--line);padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .qa-bar .qa-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-right:6px;}
+  .qa-btn{background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:8px 12px;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--ink);}
+  .qa-btn:hover{background:#fff7ed;border-color:var(--brand);}
+  .qa-btn.active{background:var(--tint-brand);border-color:var(--brand);color:var(--brand-dk);}
+  .qa-btn .ic{font-size:14px;}
+  .qa-form{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;max-width:560px;margin:20px auto;box-shadow:0 8px 24px rgba(15,23,42,.15);}
+  .qa-form h3{margin:0 0 4px;font-size:16px;display:flex;align-items:center;gap:8px;}
+  .qa-form .desc{color:var(--ink-mute);font-size:12.5px;margin:0 0 16px;}
+  .qa-form .field{margin-bottom:14px;}
+  .qa-form label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:4px;font-weight:600;}
+  .qa-form input, .qa-form select, .qa-form textarea{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;}
+  .qa-form textarea{min-height:52px;resize:vertical;}
+  .impact-box{background:var(--tint-brand);border:1px solid #fed7aa;border-radius:8px;padding:12px;font-size:12.5px;color:#7c2d12;line-height:1.5;}
+  .impact-box b{color:var(--brand-dk);}
+  .qa-form-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:12px;border-top:1px solid var(--line);margin-top:8px;}
+  .chat-bar{background:#111827;padding:12px 16px;display:flex;gap:10px;align-items:center;border-top:1px solid var(--navy);}
+  .chat-bar .chat-input{flex:1;background:#1f2937;border:1px solid #374151;border-radius:24px;padding:10px 16px;font-size:13px;color:#e5e7eb;font-family:inherit;display:flex;align-items:center;}
+  .chat-bar .chat-input .caret{color:var(--brand);margin-left:2px;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .chat-bar .chat-input .ph{color:#6b7280;font-style:italic;}
+  .chat-bar .mic, .chat-bar .send{border:1px solid #374151;color:#9ca3af;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;}
+  .chat-bar .mic{background:transparent;}
+  .chat-bar .send{background:var(--brand);color:#fff;border-color:var(--brand-dk);}
+  .parse-preview{background:#fff;margin:16px 20px;padding:16px;border:1px solid var(--line);border-radius:12px;border-left:4px solid var(--brand);box-shadow:var(--shadow);}
+  .parse-preview .pp-head{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--brand-dk);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .parse-preview .pp-head .live{background:var(--ok);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:inline-flex;align-items:center;gap:4px;}
+  .parse-preview .pp-head .live::before{content:"";width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{50%{opacity:.3;}}
+  .parse-preview table{width:100%;font-size:13px;}
+  .parse-preview table td{padding:4px 0;vertical-align:top;}
+  .parse-preview table td.lbl{color:var(--ink-faint);width:100px;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;font-weight:600;}
+  .parse-preview .impact-line{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink);line-height:1.5;}
+  .parse-preview .impact-line b{color:var(--brand);}
+  .parse-preview .actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end;}
+  .alert-inbox{background:#fff;border:1px solid var(--line);border-radius:12px;margin:16px;overflow:hidden;}
+  .alert-inbox-head{background:linear-gradient(180deg,#fff7ed,#fef3c7);padding:12px 16px;border-bottom:1px solid #fed7aa;display:flex;justify-content:space-between;align-items:center;}
+  .alert-inbox-head h3{margin:0;font-size:14px;color:#7c2d12;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .alert-inbox-head .badge{background:var(--warn);color:#fff;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;}
+  .alert-card{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 240px;gap:16px;}
+  .alert-card:last-child{border-bottom:none;}
+  .alert-card .ac-title{font-size:14px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px;color:var(--ink);}
+  .alert-card .ac-source{font-size:11px;color:var(--ink-faint);margin-bottom:8px;}
+  .alert-card .ac-source b{color:var(--ink-mute);}
+  .alert-card .ac-context{font-size:12.5px;color:var(--ink-mute);margin-bottom:10px;line-height:1.5;}
+  .alert-card .ac-suggested{font-size:12.5px;color:var(--ink);background:#fafbfd;padding:10px 12px;border-radius:6px;border-left:3px solid var(--info);line-height:1.5;}
+  .alert-card .ac-suggested b{color:var(--info);}
+  .alert-card .ac-actions{display:flex;flex-direction:column;gap:6px;justify-content:center;}
+  .alert-card .ac-actions button{width:100%;justify-content:center;}
+  .focus-note{background:#fafbfd;padding:14px 20px;color:var(--ink-mute);font-size:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .focus-note b{color:var(--ink);}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="mockup-note">
     <strong>Mockup — HPT Dispatch Command Center</strong> · 2026-07-26 · concept for AI-assisted, human-approved task assignment to stressing subcontractors.<br>
-    Not production. Uses illustrative subs / addresses drawn from a real Stressing Report export. AI proposals, capacity numbers, weather, and pin positions are for layout demonstration only. Serves as the visual reference for the requirements doc handed to the consultant. Base URL pattern: <code>cloud.houstonposttension.com/dispatch/*</code>.
+    Not production. Uses illustrative subs / addresses drawn from a real Stressing Report export. AI proposals, capacity numbers, weather, and pin positions are for layout demonstration only. Serves as the visual reference for the requirements doc handed to the consultant. Base URL pattern: <code>cloud.houstonposttension.com/dispatch/*</code>. Companion spec: <code>requirements.md</code> in this folder.
   </div>
   <div class="toc">
     <h3>Frames</h3>
@@ -267,10 +303,14 @@
       <li><a href="#f4">Weather impact — flagging a zone so the optimizer defers work</a></li>
       <li><a href="#f5">Improved nightly PDF — day-grouped with cables + est hours + route order</a></li>
       <li><a href="#f6">Sub capacity setup — the profile that drives the optimizer</a></li>
+      <li><a href="#f7">Manager AI · natural-language event input with live parse preview</a></li>
+      <li><a href="#f8">Manager AI · quick-action bar + structured form (5 common events)</a></li>
+      <li><a href="#f9">Manager AI · AI-initiated alerts (weather + GPS-lag examples)</a></li>
     </ol>
   </div>
+
   <div class="frame" id="f1">
-    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 6</span></div>
+    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 9</span></div>
     <div class="frame-body"><div class="app">
       <div class="topbar">
         <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
@@ -371,7 +411,7 @@
   </div>
 
   <div class="frame" id="f2">
-    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 6</span></div>
+    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 9</span></div>
     <div class="frame-body"><div class="drawer-layout">
       <div class="drawer-left">
         <div class="sub-profile">
@@ -431,7 +471,7 @@
   </div>
 
   <div class="frame" id="f3">
-    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 6</span></div>
+    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 9</span></div>
     <div class="frame-body"><div class="aq-layout">
       <div class="aq-list">
         <div class="aqli active"><div class="t">Move 3 Woodsons Reserve tasks &middot; Julio &rarr; Sam</div><div class="m">Reassign &middot; +11% on-time &middot; saves 12 mi</div></div>
@@ -469,7 +509,7 @@
   </div>
 
   <div class="frame" id="f4">
-    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 6</span></div>
+    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 9</span></div>
     <div class="frame-body"><div class="wp-wrap">
       <div class="wp-card">
         <h3>Flag weather condition</h3>
@@ -511,7 +551,7 @@
   </div>
 
   <div class="frame" id="f5">
-    <div class="frame-head"><h2>5 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 5 of 6</span></div>
+    <div class="frame-head"><h2>5 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 5 of 9</span></div>
     <div class="frame-body"><div class="pdf-shell"><div class="pdf-page">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><h1>Stressing Schedule</h1><div class="pdf-sub">Felipe Medrano &middot; Cast Concrete LLC &middot; Week of Jul 26&ndash;Aug 1, 2026</div></div>
@@ -553,7 +593,7 @@
   </div>
 
   <div class="frame" id="f6">
-    <div class="frame-head"><h2>6 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 6 of 6</span></div>
+    <div class="frame-head"><h2>6 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 6 of 9</span></div>
     <div class="frame-body"><div class="cs-wrap">
       <div class="cs-card">
         <h3>Capacity profile &middot; Felipe Medrano</h3>
@@ -586,8 +626,171 @@
     </div></div>
   </div>
 
+  <!-- ============ FRAME 7 — NATURAL LANGUAGE EVENT INPUT ============ -->
+  <div class="frame" id="f7">
+    <div class="frame-head"><h2>7 &middot; Manager AI &mdash; natural-language event input</h2><span class="frame-num">Frame 7 of 9</span></div>
+    <div class="frame-body"><div class="app">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
+        <nav><a href="#" class="active">Dispatch</a><a href="#">Orders</a><a href="#">Labor Mgmt</a></nav>
+        <div class="spacer"></div>
+        <div class="user"><span class="av">MJ</span>Maria Juarez &middot; Dispatch</div>
+      </div>
+      <div class="subhead">
+        <div><div class="breadcrumb">Dispatch &middot; <b>Command Center</b></div><h1>Command Center</h1></div>
+        <div class="spacer"></div>
+        <button class="btn ghost">Sun 26 &middot; Rolling 7 days</button>
+      </div>
+      <div class="focus-note"><b>Focus:</b> Command Center content is scrolled above &mdash; this frame highlights the <b>persistent chat input</b> at the bottom of the viewport and the live parse preview that appears above it as the manager types.</div>
+
+      <!-- Persistent chat bar (anchored at bottom of viewport) -->
+      <div class="chat-bar">
+        <button class="mic">&#127908;</button>
+        <div class="chat-input"><span>Julio's machine is down for 5 days starting Monday</span><span class="caret">|</span></div>
+        <button class="send">&rarr;</button>
+      </div>
+
+      <!-- Real-time parse preview appears above the input -->
+      <div class="parse-preview">
+        <div class="pp-head">&#10024; Detected event <span class="live">Live parse</span></div>
+        <table>
+          <tr><td class="lbl">Sub</td><td><b>Julio Perez</b> &mdash; JR Stressing (North Houston + Woodlands)</td></tr>
+          <tr><td class="lbl">Event</td><td><b>Equipment unavailable</b></td></tr>
+          <tr><td class="lbl">Duration</td><td><b>Aug 3 &ndash; Aug 7</b> &nbsp;(Mon&ndash;Fri, 5 working days)</td></tr>
+          <tr><td class="lbl">Confidence</td><td>94% &middot; <a href="#" style="font-size:11.5px;">edit any field</a></td></tr>
+        </table>
+        <div class="impact-line"><b>Impact:</b> <b>12 stops</b> currently assigned to Julio in that window (~38 cables total, 14.5 hrs). Nearest available subs: <b>Sam Boone</b> (32% open capacity) and <b>Ricardo Torres</b> (18% open).</div>
+        <div class="actions">
+          <button class="btn sm">Edit fields</button>
+          <button class="btn sm">Preview proposed changes</button>
+          <button class="btn ok sm">Apply</button>
+        </div>
+      </div>
+
+      <div class="focus-note"><b>Flow:</b> tapping <b>Preview proposed changes</b> opens the side-by-side before/after view (Frame 3 pattern) so Maria sees exactly which 12 stops move to whom before committing. Tapping <b>Apply</b> writes the unavailability record, zeroes Julio's Aug 3&ndash;7 capacity, and queues optimizer proposals for the affected stops.</div>
+    </div></div>
+  </div>
+
+  <!-- ============ FRAME 8 — QUICK-ACTION BAR + STRUCTURED FORM ============ -->
+  <div class="frame" id="f8">
+    <div class="frame-head"><h2>8 &middot; Manager AI &mdash; quick-action bar + structured form</h2><span class="frame-num">Frame 8 of 9</span></div>
+    <div class="frame-body"><div class="app">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
+        <nav><a href="#" class="active">Dispatch</a><a href="#">Orders</a><a href="#">Labor Mgmt</a></nav>
+        <div class="spacer"></div>
+        <div class="user"><span class="av">MJ</span>Maria Juarez &middot; Dispatch</div>
+      </div>
+      <div class="subhead">
+        <div><div class="breadcrumb">Dispatch &middot; <b>Command Center</b></div><h1>Command Center</h1></div>
+        <div class="spacer"></div>
+      </div>
+
+      <!-- Quick actions bar -->
+      <div class="qa-bar">
+        <span class="qa-lbl">Quick actions</span>
+        <button class="qa-btn active"><span class="ic">&#128295;</span>Sub unavailable</button>
+        <button class="qa-btn"><span class="ic">&#9729;</span>Weather delay</button>
+        <button class="qa-btn"><span class="ic">&#129314;</span>Sub sick</button>
+        <button class="qa-btn"><span class="ic">&#128683;</span>Site not ready</button>
+        <button class="qa-btn"><span class="ic">&#128663;</span>Traffic / incident</button>
+        <div class="spacer" style="flex:1;"></div>
+        <button class="qa-btn" style="color:var(--ink-faint);">or type free-text below &darr;</button>
+      </div>
+
+      <div style="background:#f4f5f7;padding:24px;min-height:520px;">
+        <div class="qa-form">
+          <h3><span>&#128295;</span> Sub unavailable</h3>
+          <p class="desc">Faster than typing when you know the shape of the event. Impact preview computes live as you fill.</p>
+          <div class="field">
+            <label>Sub</label>
+            <select><option>Julio Perez &mdash; JR Stressing (North Houston)</option><option>Felipe Medrano &mdash; Cast Concrete (SE Houston)</option><option>Marco D&iacute;az &mdash; Apex Foundation (SW Houston)</option><option>Ricardo Torres &mdash; RT Post-Tension (NW Houston)</option></select>
+          </div>
+          <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><label>From</label><input type="date" value="2026-08-03"></div>
+            <div><label>Through</label><input type="date" value="2026-08-07"></div>
+          </div>
+          <div class="field">
+            <label>Reason</label>
+            <select><option>Equipment &mdash; machine down</option><option>Vehicle &mdash; truck / trailer issue</option><option>Personal &mdash; family / PTO</option><option>Other (specify)</option></select>
+          </div>
+          <div class="field">
+            <label>Notes (optional)</label>
+            <textarea placeholder="Any additional context...">Hydraulic pump replacement &mdash; parts arriving Wed.</textarea>
+          </div>
+          <div class="field">
+            <label>Impacted stops (live)</label>
+            <div class="impact-box"><b>12 stops</b> currently assigned to Julio Perez between Aug 3&ndash;7 (38 cables, 14.5 hrs total). Nearest subs with available capacity: <b>Sam Boone</b> (32% open) &middot; <b>Ricardo Torres</b> (18% open).</div>
+          </div>
+          <div class="qa-form-actions">
+            <button class="btn sm">Cancel</button>
+            <button class="btn primary sm">Preview reassignment</button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ============ FRAME 9 — AI-INITIATED ALERT INBOX ============ -->
+  <div class="frame" id="f9">
+    <div class="frame-head"><h2>9 &middot; Manager AI &mdash; AI-initiated alerts</h2><span class="frame-num">Frame 9 of 9</span></div>
+    <div class="frame-body"><div class="app">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
+        <nav><a href="#" class="active">Dispatch</a><a href="#">Orders</a><a href="#">Labor Mgmt</a></nav>
+        <div class="spacer"></div>
+        <div class="env-strip"><span class="chip"><span class="dot warn"></span>2 alerts need review</span></div>
+        <div class="user"><span class="av">MJ</span>Maria Juarez &middot; Dispatch</div>
+      </div>
+      <div class="subhead">
+        <div><div class="breadcrumb">Dispatch &middot; <b>Command Center</b></div><h1>Command Center</h1></div>
+        <div class="spacer"></div>
+        <button class="btn ghost">Sun 26 &middot; Rolling 7 days</button>
+      </div>
+
+      <div class="focus-note"><b>Placement:</b> the Alerts section sits above the AI Suggestion Queue on the Command Center home. Alerts come from AI-monitored signals (weather API, GPS, GC portal, overdue thresholds) &mdash; distinct from the optimizer's own proposals, which sit below.</div>
+
+      <div class="alert-inbox">
+        <div class="alert-inbox-head">
+          <h3>&#128276; Alerts <span class="badge">2</span></h3>
+          <div><button class="btn sm">Alert log (audit)</button><button class="btn sm">Configure sources</button></div>
+        </div>
+
+        <div class="alert-card">
+          <div>
+            <div class="ac-title">&#9888; Rain forecast Thursday&ndash;Friday &middot; Katy zone</div>
+            <div class="ac-source">Source: <b>Weather API (NOAA)</b> &middot; detected 2026-07-26 06:12 &middot; 3-day forecast, 78% probability</div>
+            <div class="ac-context">2 subs work Katy zone (Felipe, Anselmo). 12 outdoor stops scheduled Thu&ndash;Fri; 4 stops are indoor (garage slabs) and unaffected.</div>
+            <div class="ac-suggested"><b>Suggested:</b> Move 8 outdoor stops to Mon (both subs have capacity); keep 4 indoor stops as-is.</div>
+          </div>
+          <div class="ac-actions">
+            <button class="btn primary sm">Review proposal</button>
+            <button class="btn sm">Snooze 24h</button>
+            <button class="btn ghost sm">Dismiss</button>
+          </div>
+        </div>
+
+        <div class="alert-card">
+          <div>
+            <div class="ac-title">&#128340; Felipe hasn't moved from stop #3 in 2h 15min</div>
+            <div class="ac-source">Source: <b>GPS ping (sub-truck telematics)</b> &middot; stale since 10:47 AM</div>
+            <div class="ac-context">Expected 1h 24m at 18918 Redondo Peak Tr (Sundance Cove). Currently 51 min over. Next 2 stops (Crosby Farms &middot; Sweetgrass) are still in queue.</div>
+            <div class="ac-suggested"><b>Suggested:</b> Ping Felipe via text? Redistribute next 2 stops to <b>Sam Boone</b> (nearest, 45% capacity today)?</div>
+          </div>
+          <div class="ac-actions">
+            <button class="btn primary sm">Text Felipe</button>
+            <button class="btn sm">Reassign next stops</button>
+            <button class="btn ghost sm">Dismiss</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="focus-note"><b>Design principles encoded:</b> (1) every alert shows <b>source + reasoning</b> &mdash; no black box; (2) suggested action is specific to the alert type, not generic; (3) every approve / snooze / dismiss is <b>audit-logged</b> and visible in the Alert Log (accessible from the header). Future graduation: low-risk action types (e.g., "redistribute past-due to nearest available sub") may be flagged for auto-apply with post-hoc notification once dispatcher trust is established.</div>
+    </div></div>
+  </div>
+
   <div class="mockup-note" style="margin-top:32px;background:#0f2547;">
-    <strong>Next up (not in this mockup):</strong> requirements doc for the consultant covering data model (Sub, Task, SiteVisit, Zone, WeatherFlag, Assignment, OptimizerRun), the optimizer's objective + constraint list (OR-Tools style), and acceptance criteria per screen. Say the word and I'll draft it.
+    <strong>Next up (not in this mockup):</strong> The companion <code>requirements.md</code> file in this folder covers the Manager AI Interaction spec (natural-language intake, quick actions, alerts) with acceptance criteria. Still to draft: data model (Sub, Task, SiteVisit, Zone, WeatherFlag, Assignment, OptimizerRun, Alert, Event), the optimizer's objective + constraint list (OR-Tools style), and per-screen acceptance criteria for frames 1&ndash;6.
   </div>
 </div>
 </body>
