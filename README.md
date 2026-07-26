@@ -14,9 +14,9 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ### HPT Cloud — Dispatch Command Center (dated 2026-07-26)
 
-- [Dispatch Command Center — 7 frames (AI-assisted stressing sub dispatch)](https://houstonposttension.github.io/hpt-mockup-previews/dispatch-command-center-2026-07-26/index.html)
+- [Dispatch Command Center — 6 frames (AI-assisted stressing sub dispatch)](https://houstonposttension.github.io/hpt-mockup-previews/dispatch-command-center-2026-07-26/index.html)
 
-Concept for the HPT Cloud dispatch surface at `cloud.houstonposttension.com/dispatch/*`, built to hand to the external consultant. Model: the AI proposes assignments, the human dispatcher approves. 7 frames: (1) Command Center home with per-sub 7-day capacity strips, map + preferred-zone overlays, AI suggestion queue, and past-due tray; (2) Sub detail with per-day route order, cable counts, and est hours; (3) Approval queue with side-by-side before/after and reasoning; (4) Weather flag input with projected optimizer impact; (5) Sub self-service mobile view with LLM-parsed free-text updates ("machine down 5 days"); (6) improved nightly PDF (day-grouped, cables + est hours, field-issue flags, Spanish notes preserved); (7) sub capacity setup driving the optimizer. Consultant-facing — not part of the WIP Processor / Shear97 / Extrusion Log codebases.
+Concept for the HPT Cloud dispatch surface at `cloud.houstonposttension.com/dispatch/*`, built to hand to the external consultant. Model: the AI proposes assignments, the human dispatcher approves. 6 frames: (1) Command Center home with per-sub 7-day capacity strips, map + preferred-zone overlays, AI suggestion queue, and past-due tray; (2) Sub detail with per-day route order, cable counts, and est hours; (3) Approval queue with side-by-side before/after and reasoning; (4) Weather flag input with projected optimizer impact; (5) improved nightly PDF (day-grouped, cables + est hours, field-issue flags, Spanish notes preserved); (6) sub capacity setup driving the optimizer. In v1, the dispatcher does all reallocation herself through the Command Center — no sub-facing self-service surface. Consultant-facing — not part of the WIP Processor / Shear97 / Extrusion Log codebases.
 
 ### Supervisor + Lead mobile (dated 2026-07-24)
 
