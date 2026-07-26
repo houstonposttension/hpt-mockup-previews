@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOCKUP CONTINUOUS-SCROLL — Hourly Throughput (24h window · past + future)</title>
+<style>
+:root {
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --brand:#3b82f6; --warn:#ffb020; --bad:#ff3b30; --btn-sec:#33383f;
+  --ok-tint-bg:rgba(22,192,96,0.10); --ok-tint-border:rgba(22,192,96,0.35);
+  --warn-tint-bg:rgba(255,176,32,0.12); --warn-tint-border:rgba(255,176,32,0.40);
+  --bad-tint-bg:rgba(255,59,48,0.12); --bad-tint-border:rgba(255,59,48,0.30);
+  --down-bg:rgba(120,130,140,0.10); --down-bd:rgba(150,160,170,0.35);
+  --future-bg:rgba(59,130,246,0.04); --future-bd:rgba(59,130,246,0.25);
+  --day-divider:rgba(255,255,255,0.35);
+  --fs-section:17px; --fs-label:12px; --fs-body:15px; --fs-caption:13px; --fs-footnote:11px;
+  --sp-xs:4px; --sp-sm:8px; --sp-md:12px; --sp-base:16px;
+  --radius-sm:10px; --z-topbar:10;
+  --s1:#ffb020; --s1-bg:rgba(255,176,32,0.10); --s1-bd:rgba(255,176,32,0.35);
+  --s2:#3b82f6; --s2-bg:rgba(59,130,246,0.10); --s2-bd:rgba(59,130,246,0.35);
+  --s3:#a855f7; --s3-bg:rgba(168,85,247,0.10); --s3-bd:rgba(168,85,247,0.35);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:var(--fs-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+.mock-meta{flex:0 0 auto;background:#101820;border-bottom:1px dashed #2f4a63;padding:8px 16px;font-size:var(--fs-footnote);color:var(--dim);max-height:30vh;overflow:auto;}
+.mock-meta b{color:#7cc4ff;}
+.mock-meta ul{margin-left:18px;margin-top:4px;}
+.mock-meta li{margin-bottom:2px;}
+.mock-meta .cap{margin-top:6px;color:var(--txt);}
+.topbar{position:sticky;top:0;z-index:var(--z-topbar);flex:0 0 auto;display:flex;align-items:center;gap:var(--sp-md);padding:10px var(--sp-base);background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.topbar-left{flex:1;min-width:0;}
+.breadcrumb{font-size:var(--fs-label);color:var(--dim);}
+.breadcrumb a{color:var(--brand);text-decoration:none;}
+.breadcrumb .sep{margin:0 var(--sp-xs);color:var(--mute);}
+.breadcrumb .current{color:var(--txt);font-weight:600;}
+.topbar-title{font-size:var(--fs-section);font-weight:700;color:var(--txt);}
+.btn{background:var(--btn-sec);border:1px solid var(--line);color:var(--txt);padding:4px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--fs-label);white-space:nowrap;}
+.btn:hover{background:#404850;}
+.btn.icon-btn{padding:4px 9px;}
+.btn.active{background:var(--brand);border-color:var(--brand);color:#fff;}
+.btn-group{display:flex;gap:var(--sp-xs);}
+.nav-window{display:flex;align-items:center;gap:6px;}
+.nav-arrow{background:var(--btn-sec);border:1px solid var(--line);color:var(--txt);width:30px;height:28px;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.nav-arrow:hover{background:#404850;}
+.nav-range{font-size:var(--fs-label);color:var(--dim);min-width:200px;text-align:center;font-variant-numeric:tabular-nums;}
+.btn-now{background:var(--brand);border:1px solid var(--brand);color:#fff;padding:4px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--fs-label);font-weight:600;width:120px;text-align:center;flex:0 0 auto;}
+.btn-now.at-now{background:transparent;color:var(--dim);border-color:var(--line);font-weight:400;cursor:default;}
+.refresh-widget{display:flex;align-items:center;gap:6px;font-size:var(--fs-label);color:var(--dim);min-width:118px;}
+.refresh-widget b{font-variant-numeric:tabular-nums;color:var(--txt);display:inline-block;min-width:20px;text-align:right;}
+#rf-ring{transition:stroke-dashoffset .95s linear;}
+.alert-strip{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:7px var(--sp-base);background:var(--bad-tint-bg);border-bottom:1px solid var(--bad-tint-border);color:var(--bad);font-size:var(--fs-caption);font-weight:600;}
+.alert-strip .alert-icon{font-size:15px;}
+.alert-strip .alert-text{color:var(--txt);font-weight:500;}
+.alert-strip .alert-text b{color:var(--bad);}
+.alert-strip .alert-ack{margin-left:auto;background:transparent;border:1px solid var(--bad-tint-border);color:var(--bad);padding:2px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--fs-label);}
+.chart-panel{flex:0 0 auto;background:var(--panel);border-bottom:1px solid var(--line);padding:var(--sp-md) var(--sp-base);}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);gap:12px;flex-wrap:wrap;}
+.chart-title{font-size:var(--fs-caption);font-weight:600;color:var(--txt);}
+.chart-sub{font-size:var(--fs-footnote);color:var(--mute);margin-left:8px;}
+.chart-legend{display:flex;gap:12px;font-size:var(--fs-footnote);color:var(--dim);flex-wrap:wrap;}
+.chart-legend .li{display:flex;align-items:center;gap:4px;}
+.chart-legend .sw{width:10px;height:10px;border-radius:2px;}
+.rolling-svg{width:100%;height:150px;display:block;background:var(--panel-2);border-radius:var(--radius-sm);}
+.kpi-row{display:flex;gap:var(--sp-sm);padding:var(--sp-md) var(--sp-base);overflow-x:auto;flex:0 0 auto;flex-wrap:nowrap;border-bottom:1px solid var(--line);background:var(--panel);}
+.kpi-card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:var(--sp-sm) var(--sp-md);min-width:118px;flex-shrink:0;text-align:center;}
+.kpi-card.wide{min-width:150px;}
+.kpi-label{font-size:var(--fs-footnote);color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:var(--sp-xs);}
+.kpi-value{font-size:18px;font-weight:700;color:var(--txt);line-height:1.1;}
+.kpi-sub{font-size:var(--fs-footnote);color:var(--mute);margin-top:2px;}
+.kpi-card.ok-card{border-color:var(--ok-tint-border);background:var(--ok-tint-bg);}
+.kpi-card.warn-card{border-color:var(--warn-tint-border);background:var(--warn-tint-bg);}
+.kpi-card.bad-card{border-color:var(--bad-tint-border);background:var(--bad-tint-bg);}
+.kpi-card.pace-card{border-color:var(--brand);background:rgba(59,130,246,0.10);}
+.kpi-delta-ok{color:var(--ok);}.kpi-delta-warn{color:var(--warn);}.kpi-delta-bad{color:var(--bad);}.kpi-delta-brand{color:var(--brand);}
+.legend{display:flex;align-items:center;gap:var(--sp-base);padding:var(--sp-sm) var(--sp-base);background:var(--panel);border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:var(--sp-xs);font-size:var(--fs-label);color:var(--dim);}
+.swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.swatch-ok{background:var(--ok-tint-bg);border:1px solid var(--ok-tint-border);}
+.swatch-warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);}
+.swatch-bad{background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);}
+.swatch-grey{background:var(--panel-2);border:1px solid var(--line);}
+.swatch-down{background:var(--down-bg);border:1px dashed var(--down-bd);}
+.swatch-future{background:var(--future-bg);border:1px dashed var(--future-bd);}
+.swatch-s1{background:var(--s1-bg);border:1px solid var(--s1-bd);}
+.swatch-s2{background:var(--s2-bg);border:1px solid var(--s2-bd);}
+.swatch-s3{background:var(--s3-bg);border:1px solid var(--s3-bd);}
+.ok{background:var(--ok-tint-bg);color:var(--ok);border-color:var(--ok-tint-border)!important;}
+.warn{background:var(--warn-tint-bg);color:var(--warn);border-color:var(--warn-tint-border)!important;}
+.bad{background:var(--bad-tint-bg);color:var(--bad);border-color:var(--bad-tint-border)!important;}
+.grey{background:var(--panel-2);color:var(--mute);}
+.cell.down{background:var(--down-bg);color:var(--dim);border-color:var(--down-bd)!important;border-style:dashed!important;}
+.down-tag{font-size:var(--fs-footnote);font-weight:700;letter-spacing:.5px;color:var(--dim);}
+.cell.future{background:var(--future-bg);color:var(--dim);border-color:var(--future-bd)!important;border-style:dashed!important;}
+.cell.future .cell-lbs{font-style:italic;font-weight:500;color:var(--dim);}
+.sched-tag{font-size:9px;font-weight:700;color:var(--brand);letter-spacing:.4px;text-transform:uppercase;}
+.web-view{overflow:auto;flex:1 1 auto;min-height:0;}
+table{border-collapse:collapse;min-width:100%;}
+th,td{border:1px solid var(--line);white-space:nowrap;}
+td.cell,th.hour{padding:4px 6px;width:56px;min-width:56px;max-width:56px;}
+th.oee-head,td.oee-cell{padding:4px 5px;width:56px;min-width:56px;max-width:56px;text-align:center;}
+th.corner,td.rowhead{padding:5px 8px;width:200px;min-width:200px;max-width:200px;position:sticky;left:0;background:var(--panel);z-index:3;}
+thead th{background:var(--panel);font-size:var(--fs-footnote);color:var(--dim);text-transform:uppercase;letter-spacing:.5px;position:sticky;z-index:2;}
+thead tr.day-banner th{top:0;height:26px;padding:3px 6px;}
+thead tr.shift-banner th{top:26px;height:24px;padding:3px 6px;}
+thead tr.hour-labels th{top:50px;height:24px;}
+thead th.corner{z-index:4;}
+thead tr.hour-labels th.corner{top:50px;}
+thead tr.shift-banner th.corner{top:26px;}
+thead tr.day-banner th.corner{top:0;}
+th.oee-group{color:var(--dim);background:var(--panel-2);text-align:center;font-weight:700;}
+.db{font-weight:700;letter-spacing:.5px;color:var(--txt);background:var(--panel-2);text-align:center;border-bottom-width:2px!important;border-bottom-color:var(--line)!important;}
+.day-boundary-left{border-left:2px solid var(--day-divider)!important;}
+.sb{font-weight:700;letter-spacing:.6px;border-bottom-width:2px!important;text-align:center;font-size:var(--fs-footnote);}
+.sb-1{color:var(--s1);background:var(--s1-bg);border-bottom-color:var(--s1-bd)!important;}
+.sb-2{color:var(--s2);background:var(--s2-bg);border-bottom-color:var(--s2-bd)!important;}
+.sb-3{color:var(--s3);background:var(--s3-bg);border-bottom-color:var(--s3-bd)!important;}
+th.hour{text-align:center;color:var(--dim);}
+.hour.is-now{color:#fff;background:var(--brand);}
+td.cell.is-now{box-shadow:inset 2px 0 0 var(--brand),inset -2px 0 0 var(--brand);}
+.now-tag{display:inline-block;font-size:9px;font-weight:700;color:#fff;background:var(--brand);border-radius:6px;padding:0 5px;margin-left:4px;vertical-align:middle;}
+.now-boundary-left{border-left:3px solid var(--brand)!important;}
+td.rowhead{background:var(--bg);}
+.row-machine td.rowhead{background:var(--panel);}
+.row-machine{background:var(--panel);font-weight:600;color:var(--brand);cursor:pointer;font-size:var(--fs-caption);}
+.row-machine:hover td{background:var(--panel-2);}
+.expand-icon::before{content:"\25B8 ";font-size:var(--fs-footnote);}
+.row-machine.open .expand-icon::before{content:"\25BE ";}
+.rowhead-top{display:flex;align-items:center;gap:6px;}
+.mach-name{display:inline-block;}
+.spark{flex:0 0 auto;display:inline-block;vertical-align:middle;margin-left:auto;}
+.mach-sub{display:block;font-size:var(--fs-footnote);color:var(--mute);font-weight:400;margin-top:1px;}
+.row-op{font-size:var(--fs-label);}
+.row-op td.rowhead{padding-left:22px;color:var(--dim);background:var(--bg);}
+.row-op td.rowhead a{color:var(--brand);text-decoration:none;}
+td.cell{text-align:right;}
+.cell-inner{display:flex;flex-direction:column;align-items:flex-end;gap:1px;position:relative;z-index:1;}
+.cell-lbs{font-size:var(--fs-label);font-weight:600;}
+.cell-pct{font-size:var(--fs-footnote);opacity:.75;}
+.vs-yest{font-size:9px;font-weight:700;line-height:1;}
+.vs-yest.up{color:var(--ok);}
+.vs-yest.down{color:var(--bad);}
+.oee-badge{display:inline-block;font-size:var(--fs-footnote);font-weight:700;padding:1px 6px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--dim);}
+.oee-badge.ok{color:var(--ok);border-color:var(--ok-tint-border);background:var(--ok-tint-bg);}
+.oee-badge.bad{color:var(--bad);border-color:var(--bad-tint-border);background:var(--bad-tint-bg);}
+.oee-badge.bottleneck{color:var(--warn);border-color:var(--warn-tint-border);background:var(--warn-tint-bg);}
+.hide-oee .oee-cell,.hide-oee .oee-head,.hide-oee .oee-group{display:none;}
+/* --- Drill-down: lbs per bar size, inline under the operator (side-panel-per-cell) --- */
+.cell.drillable{cursor:pointer;}
+.cell.drillable:hover{outline:1px solid var(--brand);outline-offset:-1px;}
+.cell.drill-open{box-shadow:inset 0 0 0 2px var(--brand);}
+.row-drill td{background:var(--panel-2);border-top:0;}
+.row-drill td.drill-head{padding-left:22px;color:var(--brand);font-size:var(--fs-footnote);position:sticky;left:0;background:var(--panel-2);z-index:3;}
+td.drill-cell{padding:0!important;text-align:left;white-space:normal;}
+.drill-panel{padding:10px 14px;background:linear-gradient(180deg,rgba(59,130,246,0.06),transparent);}
+.drill-title{font-size:var(--fs-caption);color:var(--txt);margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.drill-type{font-size:var(--fs-footnote);color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
+.drill-close{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:6px;cursor:pointer;padding:1px 7px;font-size:12px;}
+.drill-close:hover{color:var(--txt);border-color:var(--dim);}
+.drill-list{display:flex;flex-direction:column;gap:5px;max-width:640px;}
+.drill-item{display:grid;grid-template-columns:190px 1fr 74px 42px;align-items:center;gap:10px;font-size:var(--fs-label);}
+.drill-label{font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drill-track{height:10px;background:var(--panel);border-radius:5px;overflow:hidden;}
+.drill-fill{display:block;height:100%;background:var(--brand);border-radius:5px;}
+.drill-val{text-align:right;font-variant-numeric:tabular-nums;color:var(--txt);}
+.drill-pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--dim);font-size:var(--fs-footnote);}
+.drill-item.pending .drill-label{color:var(--warn);}
+.drill-item.pending .drill-fill{background:var(--warn);}
+.drill-item.total .drill-label{color:var(--dim);font-weight:500;}
+.drill-item.total .drill-fill{background:var(--btn-sec);}
+.drill-src{margin-top:9px;font-size:var(--fs-footnote);color:var(--mute);border-top:1px dashed var(--line);padding-top:6px;max-width:640px;}
+</style>
+</head>
+<body>
+<div class="mock-meta">
+<b>MOCKUP — CONTINUOUS-SCROLL HOURLY VIEW (24h rolling window, past + future)</b> · 2026-07-21 · not wired to live data.
+<div class="cap"><b>Design intent:</b></div>
+<ul>
+<li>Table columns are a <b>rolling hour window</b>: default 16h back + 8h forward = 24 cols. Scroll left for older; right for scheduled workload.</li>
+<li>Header = 3 stacked rows: <b>DATE</b> (Mon 7/20 spans its calendar hours) → <b>SHIFT</b> (colored bands, cross day boundaries) → <b>HOUR</b>.</li>
+<li><b>Day divider</b> (bold vertical line) between calendar days. Shift bands cross it naturally — 3rd shift (22→05) shows as ONE continuous 8-column band. <b>Solves the 3rd-shift discontinuity.</b></li>
+<li><b>"Now" divider</b> (thick blue vertical line) separates past (actuals) from future (SCHED cells, dashed, italic, from Rebar Optimizer's future-workload feature).</li>
+<li>Rolling 24h chart on top preserved. All MES/OEE features preserved (KPIs, sparklines, vs-yest, DOWN, OEE toggle, alert, refresh).</li>
+<li><b>Drill-down (NEW):</b> click any <b>operator</b> hour cell to drop an inline <b>lbs-per-bar-size</b> panel under that worker for that hour (Machine → User → Hour → bar size). Rebar stations split by bar size; non-rebar (strand/hardware/lumber) and <code>other</code> show <b>total-only</b>; HPT-Cloud skeleton tags with no size yet bucket to <b>Pending — backfill</b>. One cell open at a time. tag_type comes from the <code>scan_stations:</code> block in <code>machine-capability-matrix-v8.yaml</code> — keyed on the <b>scan-station</b> name (not the routing names in <code>machines:</code>), so the benders missing from the routing matrix still split correctly.</li>
+</ul>
+<div class="cap"><b>Try:</b> « ‹ › » to scroll the window. "Jump to now" to snap back. "OEE Detail" to toggle FPY/Uptime/Cycle columns. <b>Expand a station (▸), then click an operator's hour cell</b> for the bar-size drill-down. Variants to compare: <b>Shear</b> (rebar, cutting) · <b>Big Single Bender</b> (rebar, absent from the routing matrix — GA-WIP-096 gap) · <b>20 Station</b> (rebar, non-cutting bundling) · <b>PT Atlas</b>/<b>Hardware</b> (non-rebar, total-only) · <b>Loading</b> (tracked scan point, total-only).</div>
+</div>
+<div class="topbar">
+<div class="topbar-left">
+<div class="breadcrumb"><a href="#">Portal</a><span class="sep">/</span><span class="current">Hourly Throughput</span></div>
+<div class="topbar-title">Hourly Throughput · Continuous 24h Window</div>
+</div>
+<div class="nav-window">
+<button class="nav-arrow" onclick="scrollHrs(-3)" title="Back 3 hours">&laquo;</button>
+<button class="nav-arrow" onclick="scrollHrs(-1)" title="Back 1 hour">&#9664;</button>
+<span class="nav-range" id="nav-range">—</span>
+<button class="nav-arrow" onclick="scrollHrs(1)" title="Forward 1 hour">&#9654;</button>
+<button class="nav-arrow" onclick="scrollHrs(3)" title="Forward 3 hours">&raquo;</button>
+</div>
+<button class="btn-now at-now" id="btn-now" onclick="goNow()">● Now</button>
+<button class="btn" id="oee-toggle" onclick="toggleOEE()" title="Show/hide FPY / Uptime / Cycle columns">OEE Detail</button>
+<div class="btn-group">
+<button class="btn icon-btn" title="Print">🖨</button>
+<button class="btn icon-btn" title="Export">⬇ XLS</button>
+</div>
+<div class="refresh-widget">
+<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="none" stroke="var(--line)" stroke-width="2"/><circle id="rf-ring" cx="9" cy="9" r="7" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-dasharray="43.98" stroke-dashoffset="0" transform="rotate(-90 9 9)"/></svg>
+<span>Refresh in <b id="rf-sec">47</b>s</span>
+</div>
+</div>
+<div class="alert-strip" id="alert-strip">
+<span class="alert-icon">⚠</span>
+<span class="alert-text"><b>Shear</b> behind target for 3h (11:00–13:00) — action needed</span>
+<button class="alert-ack" onclick="document.getElementById('alert-strip').style.display='none'">Acknowledge</button>
+</div>
+<div class="chart-panel">
+<div class="chart-header">
+<div><span class="chart-title">Rolling 24h · Total throughput</span> <span class="chart-sub">target 19,096 lbs/hr</span></div>
+<div class="chart-legend">
+<span class="li"><span class="sw" style="background:var(--ok)"></span>On track</span>
+<span class="li"><span class="sw" style="background:var(--warn)"></span>Warn</span>
+<span class="li"><span class="sw" style="background:var(--bad)"></span>Behind</span>
+<span class="li"><span class="sw" style="background:var(--brand)"></span>Now</span>
+<span class="li"><span class="sw" style="background:var(--future-bg);border:1px dashed var(--future-bd)"></span>Scheduled</span>
+</div>
+</div>
+<svg class="rolling-svg" viewBox="0 0 1400 150" preserveAspectRatio="none">
+<line x1="40" y1="20" x2="1400" y2="20" stroke="#2a3038" stroke-dasharray="2 3"/><line x1="40" y1="60" x2="1400" y2="60" stroke="#2a3038" stroke-dasharray="2 3"/><line x1="40" y1="100" x2="1400" y2="100" stroke="#2a3038" stroke-dasharray="2 3"/><line x1="40" y1="130" x2="1400" y2="130" stroke="#2a3038"/>
+<text x="8" y="24" fill="#6b7280" font-size="10">19k</text><text x="8" y="64" fill="#6b7280" font-size="10">12k</text><text x="8" y="104" fill="#6b7280" font-size="10">6k</text><text x="8" y="134" fill="#6b7280" font-size="10">0</text>
+<g><rect x="60" y="100" width="45" height="30" fill="#ff3b30" opacity="0.85"/><rect x="115" y="40" width="45" height="90" fill="#16c060" opacity="0.85"/><rect x="170" y="60" width="45" height="70" fill="#ffb020" opacity="0.85"/><rect x="225" y="95" width="45" height="35" fill="#ff3b30" opacity="0.85"/><rect x="280" y="55" width="45" height="75" fill="#ffb020" opacity="0.85"/><rect x="335" y="75" width="45" height="55" fill="#ffb020" opacity="0.85"/><rect x="390" y="115" width="45" height="15" fill="#ff3b30" opacity="0.85"/><rect x="445" y="115" width="45" height="15" fill="#ff3b30" opacity="0.85"/><rect x="500" y="35" width="45" height="95" fill="#16c060" opacity="0.85"/><rect x="555" y="25" width="45" height="105" fill="#16c060" opacity="0.85"/><rect x="610" y="120" width="45" height="10" fill="#ff3b30" opacity="0.85"/><rect x="665" y="45" width="45" height="85" fill="#16c060" opacity="0.85"/><rect x="720" y="55" width="45" height="75" fill="#ffb020" opacity="0.85"/><rect x="775" y="70" width="45" height="60" fill="#ffb020" opacity="0.85"/><rect x="830" y="115" width="45" height="15" fill="#ff3b30" opacity="0.85"/><rect x="885" y="65" width="45" height="65" fill="#ffb020" opacity="0.85"/></g>
+<line x1="940" y1="10" x2="940" y2="130" stroke="#3b82f6" stroke-width="2"/><circle cx="940" cy="25" r="4" fill="#3b82f6"/><text x="948" y="29" fill="#3b82f6" font-size="10" font-weight="700">NOW</text>
+<g opacity="0.6"><rect x="945" y="60" width="45" height="70" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1000" y="55" width="45" height="75" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1055" y="70" width="45" height="60" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1110" y="65" width="45" height="65" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1165" y="80" width="45" height="50" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1220" y="75" width="45" height="55" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1275" y="90" width="45" height="40" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="1330" y="85" width="45" height="45" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/></g>
+<text x="1140" y="18" fill="#3b82f6" font-size="9" font-weight="600" text-anchor="middle" opacity="0.7">← SCHEDULED (from Rebar Optimizer) →</text>
+</svg>
+</div>
+<div class="kpi-row" id="kpi-row"></div>
+<div class="legend">
+<span class="legend-item"><span class="swatch swatch-ok"></span>On track (&ge;100%)</span>
+<span class="legend-item"><span class="swatch swatch-warn"></span>Warn (80&ndash;99%)</span>
+<span class="legend-item"><span class="swatch swatch-bad"></span>Behind (&lt;80%)</span>
+<span class="legend-item"><span class="swatch swatch-down"></span>Down</span>
+<span class="legend-item"><span class="swatch swatch-future"></span>Scheduled</span>
+<span class="legend-item"><span class="swatch swatch-grey"></span>No data</span>
+<span class="legend-item"><span class="swatch swatch-s1"></span>Shift 1 (06–14)</span>
+<span class="legend-item"><span class="swatch swatch-s2"></span>Shift 2 (14–22)</span>
+<span class="legend-item"><span class="swatch swatch-s3"></span>Shift 3 (22–06)</span>
+</div>
+<div class="web-view" id="web-view"></div>
+<script>
+const BASE_DATE = new Date(2026, 6, 20, 0, 0);
+const NOW_ABS = 36; const WINDOW = 24;
+let offset = 0; let showOEE = false;
+function absToDate(abs){ return new Date(BASE_DATE.getTime() + abs*3600*1000); }
+function hourOf(abs){ return absToDate(abs).getHours(); }
+function dayKey(abs){ const d = absToDate(abs); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+function dayLabel(abs){ const d = absToDate(abs); const dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]; return `${dow} ${d.getMonth()+1}/${d.getDate()}`; }
+function shiftOf(h){ if(h>=6&&h<14) return 1; if(h>=14&&h<22) return 2; return 3; }
+function shiftKey(abs){
+  const h = hourOf(abs); const s = shiftOf(h);
+  if(s === 3 && h < 6){ const d = absToDate(abs); d.setDate(d.getDate()-1); return `S3-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+  return `S${s}-${dayKey(abs)}`;
+}
+const SHIFT_META = {1:{cls:'sb-1',label:'1st Shift',range:'06–14'},2:{cls:'sb-2',label:'2nd Shift',range:'14–22'},3:{cls:'sb-3',label:'3rd Shift',range:'22–06'}};
+const MACHINES = [
+  {name:'22N', op:'Operator 1', exp:3000, fpy:99.1, uptime:96, cycle:0.97},
+  {name:'Double Bender', op:'Operator 2', exp:260, fpy:97.4, uptime:91, cycle:1.02},
+  {name:'Prima', op:'Operator 3', exp:900, fpy:93.2, uptime:78, cycle:1.15, down:[34,35]},
+  {name:'Shear', op:'Operator 4', exp:28000, fpy:98.2, uptime:94, cycle:1.08},
+  // Rebar bender absent from the routing matrix (GA-WIP-096 gap) — still gets the
+  // bar-size split because tag_type is rebar.
+  {name:'Big Single Bender', op:'Crew A', exp:2250, fpy:97.9, uptime:93, cycle:1.04},
+  // Rebar, NON-cutting: crews pull stock material and bundle per the tag.
+  {name:'20 Station', op:'Crew B', exp:5000, fpy:99.0, uptime:97, cycle:0.99},
+  // Non-rebar stations — demonstrate the total-only drill-down variant.
+  {name:'PT Atlas', op:'Crew C', exp:1500, fpy:99.5, uptime:95, cycle:1.00},
+  {name:'Hardware', op:'Crew D', exp:800,  fpy:99.2, uptime:96, cycle:1.01},
+  // Tracked scan point, no bar categorization.
+  {name:'Loading', op:'Crew E', exp:12000, fpy:99.8, uptime:98, cycle:0.98},
+];
+// scan_station -> tag_type. MIRROR of the `scan_stations:` block in
+// docs/reference/machine-capability-matrix-v8.yaml (the single source of truth the
+// real hourly aggregator reads server-side; this mockup embeds a copy). Keyed on
+// the SCAN STATION name written to scan_event.machine — NOT the routing names in
+// that file's `machines:` list. Only tag_type 'rebar' gets the per-bar-size split;
+// every other tag_type renders total-only. Unknown station -> 'other'.
+//
+// NOTE: `sizes` is a MOCK artifact — the pool this mockup synthesizes a split
+// from. In production the bar sizes are whatever bar_size values the scanned tags
+// actually carry (joined from the tags row); the routing matrix's bar_min/bar_max
+// is a CAPABILITY range, not the source of the breakdown.
+const MACHINE_CONFIG = {
+  // rebar, routed through the cutting engine
+  'Shear':               {tag_type:'rebar',    sizes:['#4','#5','#6','#8','#11','#18']},
+  'Double Bender':       {tag_type:'rebar',    sizes:['#3','#5','#6','#8','#11','#14']},
+  '22N':                 {tag_type:'rebar',    sizes:['#3','#4','#5','#6','#7']},
+  'Prima':               {tag_type:'rebar',    sizes:['#3','#4']},
+  // rebar, NOT in the routing matrix (GA-WIP-096 gap)
+  'Big Single Bender':   {tag_type:'rebar',    sizes:['#5','#6','#8','#9','#11']},
+  'Small Single Bender': {tag_type:'rebar',    sizes:['#3','#4','#5','#6']},
+  'Radius Bender':       {tag_type:'rebar',    sizes:['#4','#5','#6','#8']},
+  // rebar, non-cutting (pull stock + bundle per the tag)
+  '20 Station':          {tag_type:'rebar',    sizes:['#4','#5','#6','#7','#8','#11']},
+  // non-rebar (total-only)
+  'PT Atlas':            {tag_type:'strand',   sizes:null},
+  'Hayes':               {tag_type:'strand',   sizes:null},
+  'Hardware':            {tag_type:'hardware', sizes:null},
+  'Lumber':              {tag_type:'lumber',   sizes:null},
+  // tracked scan points, no bar categorization
+  'Loading':             {tag_type:'other',    sizes:null},
+  'Extrusion':           {tag_type:'other',    sizes:null},   // NEEDS-JAMES: real tag_type unknown
+};
+let seed = 42; function rnd(){ seed = (seed*9301 + 49297) % 233280; return seed/233280; }
+MACHINES.forEach(m => {
+  m.v = new Array(80); m.y = new Array(80);
+  for(let abs=0; abs<80; abs++){
+    const h = hourOf(abs);
+    if(shiftOf(h) === 3){ m.v[abs] = null; m.y[abs] = null; continue; }
+    const isFuture = abs >= NOW_ABS;
+    if(isFuture){ m.v[abs] = Math.round(m.exp * (0.9 + 0.2*rnd())); }
+    else { m.v[abs] = Math.round(m.exp * (0.7 + 0.5*rnd())); }
+    m.y[abs] = Math.round(m.exp * (0.8 + 0.3*rnd()));
+  }
+  if(m.down) m.down.forEach(dAbs => { m.v[dAbs] = null; });
+});
+const fmt = n => (n==null?'—':Math.round(n).toLocaleString());
+const esc = s => s.replace(/[^a-zA-Z0-9_-]/g,'_');
+// Keyed by esc(name), NOT the raw name: the row's onclick passes esc(m.name), so
+// keying this map on the raw name silently broke every multi-word station
+// ("Double Bender" -> toggle wrote openState["Double_Bender"] while render read
+// openState["Double Bender"]), leaving those rows permanently collapsed.
+// (esc must be declared above this line — const TDZ.)
+const openState = {}; MACHINES.forEach(m => openState[esc(m.name)]=false);
+let openCell = null; // {name, abs} — the operator-hour cell whose bar-size panel is open (one at a time)
+function machineByEsc(k){ return MACHINES.find(m => esc(m.name) === k); }
+function cellClass(v,exp){ if(v==null) return 'grey'; const p=v/exp; return p>=1?'ok':p>=.8?'warn':'bad'; }
+function statusColor(m){ const c=cellClass(m.v[NOW_ABS-1],m.exp); return c==='ok'?'var(--ok)':c==='warn'?'var(--warn)':c==='bad'?'var(--bad)':'var(--dim)'; }
+function sparkSVG(vals, color, upToAbs){
+  const w=60,h=18,pad=2;
+  const nums = vals.slice(Math.max(0,upToAbs-24), upToAbs);
+  const valid = nums.filter(x => x!=null);
+  if(valid.length<2) return `<svg class="spark" width="${w}" height="${h}"></svg>`;
+  const max=Math.max(...valid), min=Math.min(...valid);
+  const n=nums.length;
+  let d='', started=false;
+  nums.forEach((x,i)=>{
+    if(x==null){ started=false; return; }
+    const px=pad + (i/(n-1))*(w-2*pad);
+    const py=h-pad - (max===min?0.5:(x-min)/(max-min))*(h-2*pad);
+    d += (started?' L':'M')+px.toFixed(1)+','+py.toFixed(1); started=true;
+  });
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+}
+function oeeCells(m){
+  const fpyCls = m.fpy<95?'bad':'ok';
+  const upCls  = m.uptime<90?'bad':'ok';
+  const cycCls = m.cycle>1.05?'bad bottleneck':(m.cycle<=1.0?'ok':'');
+  return `<td class="oee-cell"><span class="oee-badge ${fpyCls}">${m.fpy.toFixed(1)}%</span></td>`
+       + `<td class="oee-cell"><span class="oee-badge ${upCls}">${m.uptime}%</span></td>`
+       + `<td class="oee-cell"><span class="oee-badge ${cycCls}" title="actual÷standard">${m.cycle.toFixed(2)}</span></td>`;
+}
+const blankOEE = `<td class="oee-cell"></td><td class="oee-cell"></td><td class="oee-cell"></td>`;
+function buildCell(m, abs, dayBoundaryLeft, nowBoundaryLeft, rich, drillable){
+  const now = abs===NOW_ABS; const isFuture = abs >= NOW_ABS;
+  const dh = String(hourOf(abs)).padStart(2,'0')+':00';
+  let extraCls = ''; if(dayBoundaryLeft) extraCls += ' day-boundary-left'; if(nowBoundaryLeft) extraCls += ' now-boundary-left';
+  if(m.down && m.down.includes(abs)){
+    return `<td class="cell down${now?' is-now':''}${extraCls}"><div class="cell-inner"><span class="down-tag">⏸ DOWN</span></div></td>`;
+  }
+  const v = m.v[abs];
+  if(v == null){ return `<td class="cell grey${now?' is-now':''}${extraCls}"><div class="cell-inner"><span class="cell-lbs">—</span></div></td>`; }
+  if(isFuture){ return `<td class="cell future${now?' is-now':''}${extraCls}"><div class="cell-inner"><span class="sched-tag">SCHED</span><span class="cell-lbs">${fmt(v)}</span></div></td>`; }
+  const cls = cellClass(v, m.exp);
+  const pct = v!=null ? Math.round(v/m.exp*100)+'%' : '';
+  let vs = '';
+  if(rich && v!=null && m.y[abs]!=null && m.y[abs]>0){
+    const dpct = Math.round((v-m.y[abs])/m.y[abs]*100); const up = dpct >= 0;
+    vs = `<span class="vs-yest ${up?'up':'down'}" title="vs same hour yesterday (${fmt(m.y[abs])})">${up?'▲':'▼'} ${up?'+':''}${dpct}%</span>`;
+  }
+  // Drill-down: only past operator (per-worker) data cells are clickable — the
+  // owner's ask is a bar-size breakdown "under the worker". Machine rollup cells
+  // and future/DOWN/empty cells are not drillable.
+  const isOpen = drillable && openCell && openCell.name===m.name && openCell.abs===abs;
+  const drillAttrs = drillable ? ` data-drill="1" title="Click for lbs per bar size" onclick="openDrill('${esc(m.name)}',${abs})"` : '';
+  const drillCls = (drillable ? ' drillable' : '') + (isOpen ? ' drill-open' : '');
+  return `<td class="cell ${cls}${now?' is-now':''}${extraCls}${drillCls}"${drillAttrs}><div class="cell-inner"><span class="cell-lbs">${fmt(v)}</span><span class="cell-pct">${pct}</span>${vs}</div></td>`;
+}
+// --- bar-size breakdown (mock) --------------------------------------------
+// Deterministic pseudo-split of a cell's lbs across the machine's producible bar
+// sizes, with an occasional GA-WIP-179 "Pending" slice (skeleton tags, no size
+// yet). Non-rebar machines return a single total-only line. In production these
+// numbers come from the tags row's bar_size (proposal: widen
+// get_weights_for_tag_ids to carry bar_size alongside weight_lbs).
+function sizeBreakdown(m, dabs){
+  const cfg = MACHINE_CONFIG[m.name] || {tag_type:'other', sizes:null};
+  const total = Math.round(m.v[dabs] || 0);
+  if(cfg.tag_type !== 'rebar' || !cfg.sizes){
+    return {tag_type: cfg.tag_type, items:[{label:`Total — ${cfg.tag_type} (bar size N/A)`, lbs: total, kind:'total'}]};
+  }
+  let s = (dabs*131 + m.name.length*17 + 7) % 233280;
+  const rr = ()=>{ s=(s*9301+49297)%233280; return s/233280; };
+  const n = Math.min(cfg.sizes.length, 2 + Math.floor(rr()*Math.min(3, Math.max(1,cfg.sizes.length-1))));
+  const pool = cfg.sizes.slice(); const picked = [];
+  for(let i=0;i<n && pool.length;i++){ picked.push(pool.splice(Math.floor(rr()*pool.length),1)[0]); }
+  picked.sort((a,b)=> parseInt(a.slice(1),10) - parseInt(b.slice(1),10));
+  const pendLbs = rr() < 0.4 ? Math.round(total*(0.08+0.14*rr())) : 0;
+  const bodyTotal = total - pendLbs;
+  const wts = picked.map(()=> 0.5 + rr()); const wsum = wts.reduce((a,b)=>a+b,0) || 1;
+  let acc = 0;
+  const items = picked.map((sz,i)=>{
+    const lbs = i===picked.length-1 ? Math.max(0, bodyTotal-acc) : Math.round(bodyTotal*wts[i]/wsum);
+    acc += lbs; return {label: sz, lbs, kind:'size'};
+  });
+  if(pendLbs>0) items.push({label:'Pending — backfill will resolve', lbs:pendLbs, kind:'pending'});
+  return {tag_type:'rebar', items};
+}
+function drillPanelHTML(m, dabs){
+  const total = Math.round(m.v[dabs] || 0);
+  const hr = String(hourOf(dabs)).padStart(2,'0')+':00';
+  const {tag_type, items} = sizeBreakdown(m, dabs);
+  const maxLbs = Math.max(1, ...items.map(it=>it.lbs));
+  const rows = items.map(it=>{
+    const pct = total>0 ? Math.round(it.lbs/total*100) : 0;
+    const w = Math.round(it.lbs/maxLbs*100);
+    const kindCls = it.kind==='pending' ? ' pending' : (it.kind==='total' ? ' total' : '');
+    return `<div class="drill-item${kindCls}"><span class="drill-label">${it.label}</span>`
+         + `<span class="drill-track"><span class="drill-fill" style="width:${w}%"></span></span>`
+         + `<span class="drill-val">${fmt(it.lbs)} lbs</span><span class="drill-pct">${pct}%</span></div>`;
+  }).join('');
+  const typeTag = tag_type==='rebar' ? 'rebar · lbs per bar size' : `${tag_type} · total only (no bar size)`;
+  return `<div class="drill-panel"><div class="drill-title">${m.name} · ${m.op} · ${hr} — <b>${fmt(total)} lbs</b>`
+       + ` <span class="drill-type">${typeTag}</span>`
+       + `<button class="drill-close" title="Close" onclick="event.stopPropagation();openDrill('${esc(m.name)}',${dabs})">✕</button></div>`
+       + `<div class="drill-list">${rows}</div>`
+       + `<div class="drill-src">Mock split. Live source: <code>tags.bar_size</code> per tag_id (proposal: widen <code>get_weights_for_tag_ids</code>); <code>tag_type</code> from <code>machine-capability-matrix-v8.yaml</code>.</div></div>`;
+}
+function drillRowHTML(m, dabs){
+  return `<tr class="row-drill" data-m="${esc(m.name)}"><td class="rowhead drill-head">↳ ${String(hourOf(dabs)).padStart(2,'0')}:00 breakdown</td>`
+       + `<td class="drill-cell" colspan="99">${drillPanelHTML(m, dabs)}</td></tr>`;
+}
+function openDrill(key, abs){
+  const same = openCell && esc(openCell.name)===key && openCell.abs===abs;
+  const m = machineByEsc(key);
+  openCell = (same || !m) ? null : {name: m.name, abs};
+  render();
+}
+function renderKPI(){
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi-card ok-card"><div class="kpi-label">22N</div><div class="kpi-value">2,940</div><div class="kpi-sub kpi-delta-ok">98% of exp</div></div>
+    <div class="kpi-card ok-card"><div class="kpi-label">Double Bender</div><div class="kpi-value">258</div><div class="kpi-sub kpi-delta-ok">99% of exp</div></div>
+    <div class="kpi-card bad-card"><div class="kpi-label">Prima</div><div class="kpi-value">744</div><div class="kpi-sub kpi-delta-bad">83% of exp</div></div>
+    <div class="kpi-card bad-card"><div class="kpi-label">Shear</div><div class="kpi-value">21,800</div><div class="kpi-sub kpi-delta-bad">78% of exp</div></div>
+    <div class="kpi-card ok-card"><div class="kpi-label">PT Atlas</div><div class="kpi-value">1,460</div><div class="kpi-sub kpi-delta-ok">strand · total-only</div></div>
+    <div class="kpi-card bad-card" style="border-width:2px"><div class="kpi-label">Shift-to-date</div><div class="kpi-value">37,600</div><div class="kpi-sub kpi-delta-bad">81% of pace</div></div>
+    <div class="kpi-card pace-card wide"><div class="kpi-label">At current pace</div><div class="kpi-value kpi-delta-brand">46,200 lbs</div><div class="kpi-sub">82% of shift target</div></div>
+    <div class="kpi-card warn-card wide"><div class="kpi-label">Need to hit 100%</div><div class="kpi-value kpi-delta-warn">4,200/hr</div><div class="kpi-sub">× 5h left in shift</div></div>
+    <div class="kpi-card pace-card wide"><div class="kpi-label">Next 8h scheduled</div><div class="kpi-value kpi-delta-brand">148,900 lbs</div><div class="kpi-sub">from Rebar Optimizer</div></div>`;
+}
+function windowAbs(){ const start = NOW_ABS - 16 + offset; return Array.from({length:WINDOW},(_,i)=> start+i); }
+function render(){
+  const abs = windowAbs();
+  const firstD = absToDate(abs[0]), lastD = absToDate(abs[abs.length-1]);
+  const fmtT = d => `${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]} ${String(d.getHours()).padStart(2,'0')}:00`;
+  document.getElementById('nav-range').textContent = `${fmtT(firstD)} → ${fmtT(lastD)}`;
+  const atNow = offset === 0;
+  const btn = document.getElementById('btn-now');
+  btn.classList.toggle('at-now', atNow);
+  btn.textContent = atNow ? '● Now' : 'Jump to now';
+  let dayBanner = '<th class="corner" rowspan="3">Machine / Operator</th>';
+  dayBanner += '<th class="oee-group oee-head" rowspan="2" colspan="3">OEE / Quality</th>';
+  let i = 0;
+  while(i < abs.length){
+    const key = dayKey(abs[i]); let j = i; while(j < abs.length && dayKey(abs[j]) === key) j++;
+    const boundary = i > 0 ? ' day-boundary-left' : '';
+    dayBanner += `<th class="db${boundary}" colspan="${j-i}">${dayLabel(abs[i])}</th>`;
+    i = j;
+  }
+  let shiftBanner = ''; i = 0;
+  while(i < abs.length){
+    const key = shiftKey(abs[i]); let j = i; while(j < abs.length && shiftKey(abs[j]) === key) j++;
+    const s = shiftOf(hourOf(abs[i])); const meta = SHIFT_META[s];
+    const boundary = i > 0 && dayKey(abs[i]) !== dayKey(abs[i-1]) ? ' day-boundary-left' : '';
+    shiftBanner += `<th class="sb ${meta.cls}${boundary}" colspan="${j-i}">${meta.label} · ${meta.range}</th>`;
+    i = j;
+  }
+  let labels = '<th class="oee-head">FPY</th><th class="oee-head">Uptime</th><th class="oee-head">Cycle</th>';
+  abs.forEach((a, idx) => {
+    const now = a === NOW_ABS;
+    const dayB = idx > 0 && dayKey(a) !== dayKey(abs[idx-1]) ? ' day-boundary-left' : '';
+    const nowB = a === NOW_ABS ? ' now-boundary-left' : '';
+    labels += `<th class="hour${now?' is-now':''}${dayB}${nowB}">${String(hourOf(a)).padStart(2,'0')}:00${now?`<span class="now-tag">NOW</span>`:''}</th>`;
+  });
+  let body = '';
+  MACHINES.forEach(m => {
+    const open = openState[esc(m.name)];
+    body += `<tr class="row-machine${open?' open':''}" onclick="toggle('${esc(m.name)}')">
+      <td class="rowhead"><div class="rowhead-top"><span class="expand-icon"></span><span class="mach-name">${m.name}</span>${sparkSVG(m.v, statusColor(m), NOW_ABS)}</div><span class="mach-sub">${m.op}</span></td>`;
+    body += oeeCells(m);
+    abs.forEach((a, idx) => { body += buildCell(m, a, idx > 0 && dayKey(a) !== dayKey(abs[idx-1]), a === NOW_ABS, true, false); });
+    body += '</tr>';
+    body += `<tr class="row-op" style="${open?'':'display:none'}" data-m="${esc(m.name)}"><td class="rowhead"><a href="#">${m.op}</a></td>${blankOEE}`;
+    abs.forEach((a, idx) => { body += buildCell(m, a, idx > 0 && dayKey(a) !== dayKey(abs[idx-1]), a === NOW_ABS, false, true); });
+    body += '</tr>';
+    // Inline bar-size panel drops in under the operator row for the one open cell,
+    // but only when the machine is expanded and that hour is in the visible window.
+    if(open && openCell && openCell.name===m.name && abs.includes(openCell.abs)){
+      body += drillRowHTML(m, openCell.abs);
+    }
+  });
+  document.getElementById('web-view').innerHTML = `<table class="${showOEE?'':'hide-oee'}"><thead><tr class="day-banner">${dayBanner}</tr><tr class="shift-banner">${shiftBanner}</tr><tr class="hour-labels">${labels}</tr></thead><tbody>${body}</tbody></table>`;
+}
+function scrollHrs(d){ offset += d; render(); }
+function goNow(){ offset = 0; render(); }
+function toggle(name){
+  const nowOpen = !openState[name]; openState[name] = nowOpen;
+  if(!nowOpen && openCell && esc(openCell.name)===name) openCell = null; // collapsing hides its panel
+  render();
+}
+function toggleOEE(){ showOEE = !showOEE; document.getElementById('oee-toggle').classList.toggle('active', showOEE); render(); }
+let rfSec = 47; const RF_TOTAL = 60; const RF_CIRC = 2*Math.PI*7;
+function tickRefresh(){
+  rfSec = rfSec <= 0 ? RF_TOTAL : rfSec-1;
+  document.getElementById('rf-sec').textContent = rfSec;
+  document.getElementById('rf-ring').setAttribute('stroke-dashoffset', (RF_CIRC*((RF_TOTAL-rfSec)/RF_TOTAL)).toFixed(2));
+}
+setInterval(tickRefresh, 1000);
+renderKPI(); render();
+</script>
+</body>
+</html>
