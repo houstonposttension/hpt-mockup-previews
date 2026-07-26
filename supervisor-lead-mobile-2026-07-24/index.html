@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Supervisor + Lead Mobile · WIP (16 frames incl. Approvals + Self-service) · 2026-07-24</title>
 <!-- Supervisor + Lead mobile mockup — LEAN treatment (reuses the canonical loader kit).
-     All 16 frames built. Answered/locked: Q1 reroute, Q2 roster, Q3 dark cells, Q4 6-stage lifecycle,
-     Q5 two SSO self-service views, Q6 act-as-operator (supervisor identity), Q7 muted "— no target",
-     Q8 shift-scoped repositioning. Only Q9 (what M-1..M-N is) remains open — noted inline, non-blocking.
+     All 16 frames built; all 9 questions answered. Locked: Q1 reroute, Q2 roster, Q3 dark cells,
+     Q4 6-stage lifecycle, Q5 two SSO self-service views, Q6 act-as-operator (supervisor identity),
+     Q7 muted "— no target", Q8 shift-scoped repositioning, Q9 M-1..M-N dropped (not a real thing).
      Design note: docs/spec/supervisor-lead-mobile-design-2026-07-24.md (private repo). Preview host only. -->
 <style>
   :root{
@@ -350,8 +350,8 @@
     <b>Approvals</b> pillar, 4 <b>Self-service</b> surfaces in two SSO-gated internal views (Q5),
     <b>Act-as-operator</b> (Q6 — credits the supervisor's own identity), and <b>shift-scoped
     Repositioning</b> (Q8 — every move expires end of shift). Order status uses the locked 6-stage
-    lifecycle (Q4); the 9 target-less machines show a muted <i>— no target</i> (Q7). Only <b>Q9</b>
-    (what <code>M-1..M-N</code> is) is still open — flagged inline, non-blocking. Approvals'
+    lifecycle (Q4); the 9 target-less machines show a muted <i>— no target</i> (Q7). <b>All 9 questions
+    are answered</b> — Q9 confirmed <code>M-1..M-N</code> was a stray placeholder (dropped). Approvals'
     <b>request-submission</b> side lives in the parallel Loader mockup.</div>
 
   <div class="rolekey">
@@ -628,29 +628,29 @@
       <div class="phone"><div class="scr">
         <div class="scanhdr">
           <div class="st">Scanning as</div>
-          <div class="op">M. Reyes <span class="stn">M-4</span></div>
+          <div class="op">M. Reyes <span class="stn">22N</span></div>
         </div>
 
         <div class="reroute future">
           <div class="rlbl">◆ Planned-machine mismatch <span class="futrib">Future</span></div>
-          <div class="rq">This tag was planned for M-3.</div>
-          <div class="tagline">FT0431#18 · #6 · 3-bend stirrup</div>
+          <div class="rq">This tag was planned for Prima.</div>
+          <div class="tagline">FT0431#61 · #4 · stirrup</div>
 
           <div class="flow">
-            <div class="flowbox exp" style="border-color:#3a3a6a"><div class="fk">Planned</div><div class="fv" style="color:var(--purple)">M-3</div></div>
+            <div class="flowbox exp" style="border-color:#3a3a6a"><div class="fk">Planned</div><div class="fv" style="color:var(--purple)">Prima</div></div>
             <span class="arr">→</span>
-            <div class="flowbox act"><div class="fk">Scanned now</div><div class="fv">M-4</div></div>
+            <div class="flowbox act"><div class="fk">Scanned now</div><div class="fv">22N</div></div>
           </div>
 
-          <div class="why">The optimizer assigned this tag to <b>M-3</b>. You're at <b>M-4</b>. If you're
+          <div class="why">The optimizer assigned this tag to <b>Prima</b>. You're at <b>22N</b>. If you're
             taking the work, confirm the reroute so the plan and the floor stay in sync.
             <b>Requires per-tag machine assignment to be persisted first</b> — not live today.</div>
 
           <div class="rbtns">
-            <button class="r-yes">Confirm — I'm running it on M-4</button>
+            <button class="r-yes">Confirm — I'm running it on 22N</button>
             <button class="r-no">No — cancel scan</button>
           </div>
-          <div class="emits">would emit TAG_REROUTED_IMPLICIT · trigger:"planned_machine_mismatch"<br>expected_machine:"M-3" · actual_machine:"M-4"</div>
+          <div class="emits">would emit TAG_REROUTED_IMPLICIT · trigger:"planned_machine_mismatch"<br>expected_machine:"Prima" · actual_machine:"22N"</div>
         </div>
       </div></div>
     </div>
@@ -659,7 +659,7 @@
     <div class="col" id="f7">
       <div class="frameLbl role-sup"><span class="fcount">7</span> Reroute audit <span class="rtag sup">SUPERVISOR</span></div>
       <div class="frameSub">Supervisor sees the aftermath, never the action. Confirmed reroutes grouped
-        by from→to over a window. "3 tags rerouted M-3→M-4 last hour" — a pattern to notice, not a task.</div>
+        by from→to over a window. "3 tags rerouted Prima→22N last hour" — a pattern to notice, not a task.</div>
       <div class="phone"><div class="scr">
         <div class="appbar">
           <div class="who"><div class="nm">Reroutes</div><div class="sub">Confirmed · last 2 hours</div></div>
@@ -688,7 +688,7 @@
 
         <div class="sectlbl">Planned-machine mismatch <span class="n">future · not live</span></div>
         <div class="audrow future">
-          <div class="arflow"><span class="m">M-3</span><span class="arr">→</span><span class="m">M-4</span>
+          <div class="arflow"><span class="m">Prima</span><span class="arr">→</span><span class="m">22N</span>
             <span class="cnt">3<span class="u"> tags</span></span></div>
           <div class="armeta">would appear here once machine assignment is persisted</div>
           <div class="artags">grouped by expected_machine → actual_machine</div>
@@ -854,7 +854,7 @@
               <div class="lifeseg"><div class="bar"></div><div class="lb">Delivered</div></div>
             </div>
             <div class="ssrow"><span class="rk">Tags</span><span class="rv">24 · 18 done / 6 in fab</span></div>
-            <div class="ssrow"><span class="rk">At machine</span><span class="rv mono">SSB (M-3), DB</span></div>
+            <div class="ssrow"><span class="rk">At machine</span><span class="rv mono">SSB, DB</span></div>
             <div class="ssrow"><span class="rk">Work-center</span><span class="rv mono">BENDER</span></div>
             <div class="ssrow"><span class="rk">Stuck &gt;45m</span><span class="rv warn">FT0430#04 · 58m</span></div>
             <div class="caveat"><b>Source:</b> loadview.fab_status_location + lifecycle.phase_to_stage.
@@ -939,7 +939,7 @@
               <div class="v blue">~2h 15m</div>
               <div class="sub2">at current rate · ~16:30 today</div></div>
             <div class="ssrow"><span class="rk">Remaining lbs</span><span class="rv mono">4,800 lb</span></div>
-            <div class="ssrow"><span class="rk">SSB (M-3)</span><span class="rv mono">2,100 lb <span style="color:var(--faint)">· no target</span></span></div>
+            <div class="ssrow"><span class="rk">SSB</span><span class="rv mono">2,100 lb <span style="color:var(--faint)">· no target</span></span></div>
             <div class="ssrow"><span class="rk">DB rate</span><span class="rv mono">0.7k lb/h</span></div>
             <div class="caveat"><b>Source:</b> remaining tags × EXPECTED_LBS_PER_HR. No WIP-ahead / queue
               model. SSB has <i>— no target</i> (Q7) — ETA uses a disclosed fallback rate.</div>
