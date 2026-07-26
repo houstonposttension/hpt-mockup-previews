@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Supervisor + Lead Mobile · WIP (13 frames incl. Approvals) · 2026-07-24</title>
+<title>Supervisor + Lead Mobile · WIP (16 frames incl. Approvals + Self-service) · 2026-07-24</title>
 <!-- Supervisor + Lead mobile mockup — LEAN treatment (reuses the canonical loader kit).
      WORK IN PROGRESS: only the Q1–Q3-unblocked frames are built. Self-service (Q5), repositioning
      (Q8) and act-as-operator (Q6) frames are intentionally HELD as labeled placeholders until James
@@ -284,6 +284,45 @@
   .notelbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin:2px 0 6px; }
   .confirmrej{ width:100%; margin-top:12px; padding:15px; border:none; border-radius:13px; background:var(--bad); color:#fff; font-size:15px; font-weight:800; }
 
+  /* ── self-service: two-phone layout + view toggle ── */
+  .twophone{ display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start; }
+  .pvcol{ display:flex; flex-direction:column; }
+  .pvlbl{ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; margin:0 0 6px 2px; }
+  .pvlbl.sup{ color:var(--warn); } .pvlbl.office{ color:#6ee7a0; }
+  @media (max-width:500px){ .twophone{ display:block; } .pvcol{ margin-bottom:26px; } }
+
+  .vtoggle{ display:flex; gap:4px; background:#0e1217; border:1px solid var(--line); border-radius:11px; padding:3px; margin-bottom:12px; }
+  .vseg{ flex:1; text-align:center; font-size:11px; font-weight:800; color:var(--dim); padding:8px 6px; border-radius:8px; }
+  .vseg.on-sup{ background:rgba(255,176,32,.16); color:var(--warn); }
+  .vseg.on-office{ background:rgba(74,222,128,.14); color:#6ee7a0; }
+  .ssq{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin-bottom:4px; }
+  .ssorder{ font-size:16px; font-weight:800; margin-bottom:3px; }
+  .ssorder .sub{ font-size:11px; color:var(--dim); font-weight:600; }
+
+  /* 6-stage lifecycle bar */
+  .lifebar{ display:flex; gap:3px; margin:10px 0 8px; }
+  .lifeseg{ flex:1; text-align:center; }
+  .lifeseg .bar{ height:6px; border-radius:3px; background:#242b34; }
+  .lifeseg.done .bar{ background:var(--ok); }
+  .lifeseg.now .bar{ background:var(--warn); }
+  .lifeseg .lb{ font-size:7.5px; font-weight:700; text-transform:uppercase; letter-spacing:.2px; color:var(--faint); margin-top:4px; line-height:1.2; }
+  .lifeseg.done .lb{ color:#6ee7a0; } .lifeseg.now .lb{ color:var(--warn); }
+  .lifeseg.office .lb{ font-size:9px; text-transform:none; letter-spacing:0; }
+
+  /* plain self-service rows (office) + dense rows (sup) */
+  .ssbig{ background:var(--panel); border:1px solid var(--line); border-radius:13px; padding:14px; margin-bottom:10px; text-align:center; }
+  .ssbig .k{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--faint); }
+  .ssbig .v{ font-size:26px; font-weight:900; margin-top:6px; line-height:1.15; }
+  .ssbig .v.ok{ color:#46d684; } .ssbig .v.warn{ color:var(--warn); } .ssbig .v.blue{ color:#9ccbff; }
+  .ssbig .sub2{ font-size:12px; color:var(--dim); margin-top:6px; line-height:1.5; }
+  .ssrow{ display:flex; align-items:center; gap:9px; padding:8px 11px; margin:4px 0; background:#111722; border:1px solid #223; border-radius:9px; font-size:12px; }
+  .ssrow .rk{ color:var(--dim); } .ssrow .rv{ margin-left:auto; font-weight:700; color:#e6edf3; }
+  .ssrow .rv.mono{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
+  .ssrow .rv.warn{ color:var(--warn); } .ssrow .rv.ok{ color:#46d684; }
+  .caveat{ font-size:9.5px; color:var(--faint); line-height:1.5; margin-top:8px; font-style:italic; }
+  .caveat b{ color:#8fb4d8; font-style:normal; }
+  .qflag{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--warn); border:1px solid rgba(255,176,32,.35); border-radius:5px; padding:1px 5px; }
+
   .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:26px 0 0; max-width:900px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
   .ann b{ color:#fff; } .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; color:#9ccbff; }
   .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
@@ -295,10 +334,10 @@
     see the whole plant, cross-shift, with Tendon/Hardware/Lumber as remote-manage panes. <b>The
     physical scan drives the system</b> — reroutes and repositioning are read from what workers
     actually do, not entered in a separate console.</p>
-  <div class="wipnote"><b>WORK IN PROGRESS.</b> Built: Q1–Q3 frames (reroute v1 + labeled future,
-    supervisor/lead roster, dark-cell empty state) <b>plus the new Approvals pillar</b> — a reusable
-    queue (split-load / scrap / VOID / price override) that partially answers Q5. Still
-    <b>HELD</b>: self-service (Q5), repositioning (Q8), act-as-operator (Q6). Nothing pushed live yet.
+  <div class="wipnote"><b>WORK IN PROGRESS.</b> Built: situational awareness + reroute (Q1–Q3), the
+    reusable <b>Approvals</b> pillar (split-load / scrap / VOID / price override), and the 4
+    <b>Self-service</b> surfaces in <b>two SSO-gated internal views</b> (Supervisor = dense/coded,
+    Office = plainer) per James's Q5 answer. Still <b>HELD</b>: repositioning (Q8), act-as-operator (Q6).
     The <b>request-submission</b> side of approvals lives in the parallel Loader mockup.</div>
 
   <div class="rolekey">
@@ -325,9 +364,12 @@
     <a href="#f8">8 · Approvals list</a>
     <a href="#f9">9 · Approve</a>
     <a href="#f10">10 · Reject</a>
-    <a class="held" href="#f11">11 · Self-service ⏸</a>
-    <a class="held" href="#f12">12 · Reposition ⏸</a>
-    <a class="held" href="#f13">13 · Act-as-op ⏸</a>
+    <a href="#f11">11 · Order status</a>
+    <a href="#f12">12 · Load ready?</a>
+    <a href="#f13">13 · ETA to finish</a>
+    <a href="#f14">14 · Capacity</a>
+    <a class="held" href="#f15">15 · Reposition ⏸</a>
+    <a class="held" href="#f16">16 · Act-as-op ⏸</a>
   </nav>
 
   <div class="screens">
@@ -691,7 +733,7 @@
           <span class="aptype price">Price override</span>
           <div class="apmid">
             <div class="aptitle">Manual price — walk-in order</div>
-            <div class="apctx">Order <span class="mono">HP-55821</span> · Hardware</div>
+            <div class="apctx">Order <span class="mono">HP-55990</span> · Hardware</div>
             <div class="apsub">by D. Peña · 08:40</div>
           </div>
           <div class="apright"><span class="apage gold">2m</span></div>
@@ -777,26 +819,174 @@
       </div></div>
     </div>
 
-    <!-- ══════════ FRAME 11 — HELD: SELF-SERVICE ══════════ -->
+    <!-- ══════════ FRAME 11 — SELF-SERVICE · ORDER STATUS ══════════ -->
     <div class="col" id="f11">
-      <div class="frameLbl"><span class="fcount">11</span> Self-service <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
-      <div class="frameSub">Four query surfaces: order status · is-it-loaded · ETA to finish · capacity
-        forecast. Data sources are mapped in the spec; the layout depends on the audience.</div>
-      <div class="phone"><div class="scr held">
-        <div class="hi">⏸</div>
-        <div class="hq">Awaiting Q5</div>
-        <h2>Self-service surfaces</h2>
-        <p>Order status · Is it loaded · ETA to finish · Production capacity forecast.</p>
-        <p class="dep"><b>Blocked on Q5 — audience:</b> is this the supervisor answering their <b>own</b>
-          question on the floor, or a surface handed to office/customers so nobody calls? That decides
-          auth, PII exposure, and layout. Also touches <b>Q4</b> (which status vocabulary) and
-          <b>Q7</b> (targets) for the ETA math.</p>
-      </div></div>
+      <div class="frameLbl role-sup"><span class="fcount">11</span> Self-service · Order status <span class="rtag sup" style="background:rgba(74,222,128,.14);color:#6ee7a0">2 VIEWS · SSO</span></div>
+      <div class="frameSub">"Where is my order." Both SSO-gated internal views of the same data. Supervisor
+        = dense, machine codes. Office = plainer, names spelled out. Toggle flips either way; SSO sets the
+        default. 6-stage lifecycle (Q4 working assumption).</div>
+      <div class="twophone">
+        <div class="pvcol"><div class="pvlbl sup">Supervisor view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg on-sup">Supervisor view</span><span class="vseg">Office view</span></div>
+            <div class="ssq">Order status</div>
+            <div class="ssorder">HP-55821 <span class="sub">· Kennedy V · ship today</span></div>
+            <div class="lifebar">
+              <div class="lifeseg done"><div class="bar"></div><div class="lb">Not Printed</div></div>
+              <div class="lifeseg done"><div class="bar"></div><div class="lb">In Office</div></div>
+              <div class="lifeseg now"><div class="bar"></div><div class="lb">At Machine</div></div>
+              <div class="lifeseg"><div class="bar"></div><div class="lb">Staging</div></div>
+              <div class="lifeseg"><div class="bar"></div><div class="lb">On Truck</div></div>
+              <div class="lifeseg"><div class="bar"></div><div class="lb">Delivered</div></div>
+            </div>
+            <div class="ssrow"><span class="rk">Tags</span><span class="rv">24 · 18 done / 6 in fab</span></div>
+            <div class="ssrow"><span class="rk">At machine</span><span class="rv mono">SSB (M-3), DB</span></div>
+            <div class="ssrow"><span class="rk">Work-center</span><span class="rv mono">BENDER</span></div>
+            <div class="ssrow"><span class="rk">Stuck &gt;45m</span><span class="rv warn">FT0430#04 · 58m</span></div>
+            <div class="caveat"><b>Source:</b> loadview.fab_status_location + lifecycle.phase_to_stage.
+              Stage vocabulary = 6-stage lifecycle <span class="qflag">Q4</span></div>
+          </div></div>
+        </div>
+        <div class="pvcol"><div class="pvlbl office">Office view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg">Supervisor view</span><span class="vseg on-office">Office view</span></div>
+            <div class="ssq">Order status</div>
+            <div class="ssorder">Order #55821 <span class="sub">— Kennedy V</span></div>
+            <div class="lifebar">
+              <div class="lifeseg done office"><div class="bar"></div><div class="lb">Printed</div></div>
+              <div class="lifeseg done office"><div class="bar"></div><div class="lb">In office</div></div>
+              <div class="lifeseg now office"><div class="bar"></div><div class="lb">Being made</div></div>
+              <div class="lifeseg office"><div class="bar"></div><div class="lb">Staged</div></div>
+              <div class="lifeseg office"><div class="bar"></div><div class="lb">On truck</div></div>
+              <div class="lifeseg office"><div class="bar"></div><div class="lb">Delivered</div></div>
+            </div>
+            <div class="ssbig"><div class="k">Where it is now</div>
+              <div class="v warn">In fabrication</div>
+              <div class="sub2">6 of 24 tags still being made<br>on the <b>bending machines</b> (Small Single + Double Bender)</div></div>
+            <div class="ssrow"><span class="rk">Ships</span><span class="rv">Today</span></div>
+            <div class="ssrow"><span class="rk">On track?</span><span class="rv warn">1 tag running behind</span></div>
+            <div class="caveat">Same data as supervisor view — machine names spelled out, shop codes hidden.</div>
+          </div></div>
+        </div>
+      </div>
     </div>
 
-    <!-- ══════════ FRAME 12 — HELD: REPOSITION ══════════ -->
+    <!-- ══════════ FRAME 12 — SELF-SERVICE · IS MY LOAD READY ══════════ -->
     <div class="col" id="f12">
-      <div class="frameLbl"><span class="fcount">12</span> Reposition <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
+      <div class="frameLbl role-sup"><span class="fcount">12</span> Self-service · Load ready? <span class="rtag sup" style="background:rgba(74,222,128,.14);color:#6ee7a0">2 VIEWS · SSO</span></div>
+      <div class="frameSub">"Is it loaded?" Yes/no + delivery. Loaded state is solid (LOADED event). Delivery
+        is a 2-day OptimoRoute poll — no live truck position, stated honestly.</div>
+      <div class="twophone">
+        <div class="pvcol"><div class="pvlbl sup">Supervisor view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg on-sup">Supervisor view</span><span class="vseg">Office view</span></div>
+            <div class="ssq">Load ready?</div>
+            <div class="ssorder">Bin X18 <span class="sub">· Kennedy V · ship today</span></div>
+            <div class="ssbig"><div class="k">Load state</div>
+              <div class="v warn">Loading — 4 of 6 tags</div>
+              <div class="sub2">2 tags not yet scanned LOADED</div></div>
+            <div class="ssrow"><span class="rk">Loaded</span><span class="rv ok">FT0431#18, #22, #33, #35</span></div>
+            <div class="ssrow"><span class="rk">Remaining</span><span class="rv mono warn">FT0431#12, #15 <span style="color:var(--faint)">(split-load pending)</span></span></div>
+            <div class="ssrow"><span class="rk">Last LOADED</span><span class="rv">14:06 · M. Reyes</span></div>
+            <div class="ssrow"><span class="rk">Delivery</span><span class="rv">not dispatched</span></div>
+            <div class="caveat"><b>Source:</b> loadview.is_loaded (live LOADED events) + optimoroute poll.
+              No live truck GPS — delivery is a 2-day poll.</div>
+          </div></div>
+        </div>
+        <div class="pvcol"><div class="pvlbl office">Office view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg">Supervisor view</span><span class="vseg on-office">Office view</span></div>
+            <div class="ssq">Is the load ready?</div>
+            <div class="ssorder">Kennedy V <span class="sub">— Bin X18</span></div>
+            <div class="ssbig"><div class="k">Ready to ship?</div>
+              <div class="v warn">Not yet</div>
+              <div class="sub2">4 of 6 items loaded on the truck<br>2 still to go</div></div>
+            <div class="ssrow"><span class="rk">Last item loaded</span><span class="rv">2:06 PM</span></div>
+            <div class="ssrow"><span class="rk">Out for delivery?</span><span class="rv">Not yet</span></div>
+            <div class="caveat">Loaded = confirmed by scan. Delivery status updates a couple times a day
+              (not live GPS).</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ FRAME 13 — SELF-SERVICE · ETA TO FINISH ══════════ -->
+    <div class="col" id="f13">
+      <div class="frameLbl role-sup"><span class="fcount">13</span> Self-service · ETA to finish <span class="rtag sup" style="background:rgba(74,222,128,.14);color:#6ee7a0">2 VIEWS · SSO</span></div>
+      <div class="frameSub">Remaining tags × cell throughput. Buildable but modest — no queue-position model,
+        and blind on the 9 target-less stations (Q7). The office view rounds hard.</div>
+      <div class="twophone">
+        <div class="pvcol"><div class="pvlbl sup">Supervisor view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg on-sup">Supervisor view</span><span class="vseg">Office view</span></div>
+            <div class="ssq">ETA to finish</div>
+            <div class="ssorder">HP-55821 <span class="sub">· 6 tags remaining</span></div>
+            <div class="ssbig"><div class="k">Est. finish (fab)</div>
+              <div class="v blue">~2h 15m</div>
+              <div class="sub2">at current rate · ~16:30 today</div></div>
+            <div class="ssrow"><span class="rk">Remaining lbs</span><span class="rv mono">4,800 lb</span></div>
+            <div class="ssrow"><span class="rk">SSB (M-3)</span><span class="rv mono">2,100 lb <span style="color:var(--faint)">/no tgt</span></span></div>
+            <div class="ssrow"><span class="rk">DB rate</span><span class="rv mono">0.7k lb/h</span></div>
+            <div class="caveat"><b>Source:</b> remaining tags × EXPECTED_LBS_PER_HR. No WIP-ahead / queue
+              model. SSB has no target <span class="qflag">Q7</span> — ETA uses a fallback rate.</div>
+          </div></div>
+        </div>
+        <div class="pvcol"><div class="pvlbl office">Office view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg">Supervisor view</span><span class="vseg on-office">Office view</span></div>
+            <div class="ssq">When will it be done?</div>
+            <div class="ssorder">Order #55821 <span class="sub">— Kennedy V</span></div>
+            <div class="ssbig"><div class="k">Estimated finish</div>
+              <div class="v blue">Around 4:30 PM</div>
+              <div class="sub2">about 2 hours of fabrication left</div></div>
+            <div class="ssrow"><span class="rk">Confidence</span><span class="rv">Rough estimate</span></div>
+            <div class="caveat">An estimate from how fast the line is running now — not a promise. Doesn't
+              count time waiting behind other orders.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ FRAME 14 — SELF-SERVICE · CAPACITY FORECAST ══════════ -->
+    <div class="col" id="f14">
+      <div class="frameLbl role-sup"><span class="fcount">14</span> Self-service · Capacity <span class="rtag sup" style="background:rgba(74,222,128,.14);color:#6ee7a0">2 VIEWS · SSO</span></div>
+      <div class="frameSub">"When can you make X units of Y." The most defensible of the four —
+        per-machine daily caps + current load. Still a cap, not a scheduler.</div>
+      <div class="twophone">
+        <div class="pvcol"><div class="pvlbl sup">Supervisor view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg on-sup">Supervisor view</span><span class="vseg">Office view</span></div>
+            <div class="ssq">Capacity forecast</div>
+            <div class="ssorder">5,000 × #5 <span class="sub">· straight cut, Shear</span></div>
+            <div class="ssbig"><div class="k">Earliest complete</div>
+              <div class="v ok">Thu (in 2 days)</div>
+              <div class="sub2">Shear: 140k lb/day cap · ~62% loaded</div></div>
+            <div class="ssrow"><span class="rk">Job weight</span><span class="rv mono">~9,200 lb</span></div>
+            <div class="ssrow"><span class="rk">Shear free/day</span><span class="rv mono">~53k lb</span></div>
+            <div class="ssrow"><span class="rk">Days needed</span><span class="rv">1 (fits Wed spill → Thu)</span></div>
+            <div class="caveat"><b>Source:</b> config.MACHINE_CAPACITY + machine_demand current load.
+              Per-machine daily cap, not a true scheduler.</div>
+          </div></div>
+        </div>
+        <div class="pvcol"><div class="pvlbl office">Office view</div>
+          <div class="phone"><div class="scr">
+            <div class="vtoggle"><span class="vseg">Supervisor view</span><span class="vseg on-office">Office view</span></div>
+            <div class="ssq">When can we make it?</div>
+            <div class="ssorder">5,000 pieces <span class="sub">— #5 bar, straight</span></div>
+            <div class="ssbig"><div class="k">Earliest we can finish</div>
+              <div class="v ok">Thursday</div>
+              <div class="sub2">the cutting line has room to fit this<br>within about a day of cutting</div></div>
+            <div class="ssrow"><span class="rk">How busy is the line?</span><span class="rv">About 60% full</span></div>
+            <div class="caveat">A planning estimate from daily machine capacity — confirm with the floor
+              before promising a customer.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ FRAME 15 — HELD: REPOSITION ══════════ -->
+    <div class="col" id="f15">
+      <div class="frameLbl"><span class="fcount">15</span> Reposition <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
       <div class="frameSub">"Move Alberto to M-3." Existing primitives could back it, but durable vs
         shift-scoped changes which one — and the whole interaction.</div>
       <div class="phone"><div class="scr held">
@@ -811,9 +1001,9 @@
       </div></div>
     </div>
 
-    <!-- ══════════ FRAME 13 — HELD: ACT-AS-OPERATOR ══════════ -->
-    <div class="col" id="f13">
-      <div class="frameLbl"><span class="fcount">13</span> Act-as-operator <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
+    <!-- ══════════ FRAME 16 — HELD: ACT-AS-OPERATOR ══════════ -->
+    <div class="col" id="f16">
+      <div class="frameLbl"><span class="fcount">16</span> Act-as-operator <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
       <div class="frameSub">Supervisor substitutes in and scans as an operator/loader — reusing the LEAN
         loader components. The blocker is attribution, not layout.</div>
       <div class="phone"><div class="scr held">
@@ -833,10 +1023,11 @@
   </div>
 
   <div class="ann">
-    <b>Reading this mockup.</b> Frames 1–7 are the Q1–Q3-unblocked build; frames 8–10 are the new
-    <b>Approvals pillar</b> (reusable queue, approver side); frames 11–13 are deliberately <b>held</b>
-    until James answers Q5/Q8/Q6. The approvals record is shared with the parallel Loader mockup
-    (submission side) — see spec §5a. Numbers are illustrative. Every "no target · Q7" and
+    <b>Reading this mockup.</b> Frames 1–7 are the Q1–Q3 situational-awareness + reroute build; 8–10
+    are the <b>Approvals pillar</b> (reusable queue, approver side); 11–14 are the 4 <b>Self-service</b>
+    surfaces, each in a Supervisor and an Office view (Q5); 15–16 are deliberately <b>held</b> until
+    James answers Q8/Q6. The approvals record is shared with the parallel Loader mockup (submission
+    side) — see spec §5a. Numbers are illustrative. Every "no target · Q7" and
     "not scanning — wire station" marker is a <b>real gap in the current system</b>, surfaced on purpose
     rather than papered over. Reroute events follow the <code>TAG_REROUTED_IMPLICIT</code> schema in the
     design note (§5). Full design note lives in the private repo at
