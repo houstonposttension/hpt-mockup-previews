@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOCKUP A+ROLLING — Hourly Throughput (MES/OEE): 24h chart + KPI row + Variant A shift-banner table</title>
+<!--
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │ MOBILE LAYOUT (≤768px) — sample wireframe (the @media block reformats to): │
+  │                                                                            │
+  │   ┌────────────────────────────┐   rolling chart shrinks to 100px high     │
+  │   │  ▁▂▅▇▅▂ (100px chart)      │                                           │
+  │   ├────────────────────────────┤   KPI cards scroll horizontally           │
+  │   │ [22N 116%][Shear 78%] →    │                                           │
+  │   ├────────────────────────────┤   shift-banner header row is DROPPED       │
+  │   │ ▸ Shear   ~~╲  RED spark    │   each machine = a stacked CARD           │
+  │   │   FPY 98% Up 94% Cyc 1.08   │   (not a table row)                        │
+  │   │   09  10  11  12  13(now)   │   hour cells wrap w/ their hour label      │
+  │   │  22.7k 27k 21k 20k 21.8k    │                                           │
+  │   ├────────────────────────────┤                                           │
+  │   │ ▸ Prima   ╱╲   GREEN spark  │                                           │
+  │   │   FPY 93% Up 78% Cyc 1.15   │                                           │
+  │   │   … DOWN DOWN 165 933       │                                           │
+  │   └────────────────────────────┘                                           │
+  └──────────────────────────────────────────────────────────────────────────┘
+-->
+<style>
+:root {
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038; --input-bg:#0e1217;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --ok-ink:#04150a; --brand:#3b82f6; --warn:#ffb020; --bad:#ff3b30; --btn-sec:#33383f;
+  --ok-tint-bg:rgba(22,192,96,0.10); --ok-tint-border:rgba(22,192,96,0.35);
+  --warn-tint-bg:rgba(255,176,32,0.12); --warn-tint-border:rgba(255,176,32,0.40);
+  --bad-tint-bg:rgba(255,59,48,0.12); --bad-tint-border:rgba(255,59,48,0.30);
+  --down-bg:rgba(120,130,140,0.10); --down-bd:rgba(150,160,170,0.35);
+  --fs-section:17px; --fs-label:12px; --fs-body:15px; --fs-caption:13px; --fs-footnote:11px;
+  --sp-xs:4px; --sp-sm:8px; --sp-md:12px; --sp-base:16px; --sp-lg:20px;
+  --radius-sm:10px; --radius-md:12px; --z-topbar:10;
+  --s1:#3b82f6; --s1-bg:rgba(59,130,246,0.14); --s1-bd:rgba(59,130,246,0.45);
+  --s2:#a855f7; --s2-bg:rgba(168,85,247,0.14); --s2-bd:rgba(168,85,247,0.45);
+  --s3:#14b8a6; --s3-bg:rgba(20,184,166,0.14); --s3-bd:rgba(20,184,166,0.45);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);font-size:var(--fs-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+.mock-meta{flex:0 0 auto;background:#101820;border-bottom:1px dashed #2f4a63;padding:8px 16px;font-size:var(--fs-footnote);color:var(--dim);max-height:33vh;overflow:auto;}
+.mock-meta b{color:#7cc4ff;}
+.mock-meta .legend2{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:5px;}
+.mock-meta .li{white-space:nowrap;} .mock-meta .li .t{color:var(--ok);font-weight:700;}
+.mock-meta .li .n{color:var(--warn);font-weight:700;}
+.mock-meta .cap{margin-top:5px;color:var(--txt);}
+
+.topbar{position:sticky;top:0;z-index:var(--z-topbar);flex:0 0 auto;display:flex;align-items:center;gap:var(--sp-md);padding:10px var(--sp-base);background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.topbar-left{flex:1;min-width:0;}
+.breadcrumb{font-size:var(--fs-label);color:var(--dim);letter-spacing:.3px;}
+.breadcrumb a{color:var(--brand);text-decoration:none;}
+.breadcrumb .sep{margin:0 var(--sp-xs);color:var(--mute);}
+.breadcrumb .current{color:var(--txt);font-weight:600;}
+.topbar-title{font-size:var(--fs-section);font-weight:700;color:var(--txt);}
+.topbar label{font-size:var(--fs-caption);color:var(--dim);}
+input[type=date]{background:var(--input-bg);border:1px solid var(--line);color:var(--txt);padding:4px 8px;border-radius:var(--radius-sm);font-size:var(--fs-caption);}
+.btn{background:var(--btn-sec);border:1px solid var(--line);color:var(--txt);padding:4px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--fs-label);white-space:nowrap;}
+.btn:hover{background:#404850;}
+.btn.icon-btn{padding:4px 9px;}
+.btn.active{background:var(--brand);border-color:var(--brand);color:#fff;}
+.btn-group{display:flex;gap:var(--sp-xs);}
+
+.nav-window{display:flex;align-items:center;gap:6px;}
+.nav-arrow{background:var(--btn-sec);border:1px solid var(--line);color:var(--txt);width:30px;height:28px;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.nav-arrow:hover{background:#404850;}
+.nav-range{font-size:var(--fs-label);color:var(--dim);min-width:118px;text-align:center;}
+/* CARRY-OVER 3: lock .btn-now width so the "● Now" ⇄ "Jump to now" text swap can't
+   reflow neighbours (the ▶ arrow / export buttons). */
+.btn-now{background:var(--brand);border:1px solid var(--brand);color:#fff;padding:4px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--fs-label);font-weight:600;min-width:106px;text-align:center;flex:0 0 auto;}
+.btn-now.at-now{background:transparent;color:var(--dim);border-color:var(--line);font-weight:400;cursor:default;}
+
+/* FEATURE 6: auto-refresh countdown ring (replaces static "Updated 4:12 PM"). Fixed
+   width + tabular digits so the decrementing number never jitters. */
+.refresh-widget{display:flex;align-items:center;gap:6px;font-size:var(--fs-label);color:var(--dim);min-width:118px;}
+.refresh-widget b{font-variant-numeric:tabular-nums;color:var(--txt);display:inline-block;min-width:20px;text-align:right;}
+#rf-ring{transition:stroke-dashoffset .95s linear;}
+
+/* FEATURE 8: threshold-breach alert strip (persistent, below topbar). */
+.alert-strip{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:7px var(--sp-base);background:var(--bad-tint-bg);border-bottom:1px solid var(--bad-tint-border);color:var(--bad);font-size:var(--fs-caption);font-weight:600;}
+.alert-strip .alert-icon{font-size:15px;}
+.alert-strip .alert-text{color:var(--txt);font-weight:500;}
+.alert-strip .alert-text b{color:var(--bad);}
+.alert-strip .alert-ack{margin-left:auto;background:transparent;border:1px solid var(--bad-tint-border);color:var(--bad);padding:2px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--fs-label);}
+
+/* ── ROLLING 24H CHART SECTION (on top) ── */
+.chart-panel{flex:0 0 auto;background:var(--panel);border-bottom:1px solid var(--line);padding:var(--sp-md) var(--sp-base);}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);gap:12px;flex-wrap:wrap;}
+.chart-title{font-size:var(--fs-caption);font-weight:600;color:var(--txt);}
+.chart-sub{font-size:var(--fs-footnote);color:var(--mute);margin-left:8px;}
+.chart-legend{display:flex;gap:12px;font-size:var(--fs-footnote);color:var(--dim);flex-wrap:wrap;}
+.chart-legend .li{display:flex;align-items:center;gap:4px;}
+.chart-legend .sw{width:10px;height:10px;border-radius:2px;}
+.rolling-svg{width:100%;height:180px;display:block;background:var(--panel-2);border-radius:var(--radius-sm);}
+
+.kpi-row{display:flex;gap:var(--sp-sm);padding:var(--sp-md) var(--sp-base);overflow-x:auto;flex:0 0 auto;flex-wrap:nowrap;border-bottom:1px solid var(--line);background:var(--panel);}
+.kpi-card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:var(--sp-sm) var(--sp-md);min-width:118px;flex-shrink:0;text-align:center;}
+.kpi-card.wide{min-width:150px;}
+.kpi-label{font-size:var(--fs-footnote);color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:var(--sp-xs);}
+.kpi-value{font-size:18px;font-weight:700;color:var(--txt);line-height:1.1;}
+.kpi-sub{font-size:var(--fs-footnote);color:var(--mute);margin-top:2px;}
+.kpi-card.ok-card{border-color:var(--ok-tint-border);background:var(--ok-tint-bg);}
+.kpi-card.warn-card{border-color:var(--warn-tint-border);background:var(--warn-tint-bg);}
+.kpi-card.bad-card{border-color:var(--bad-tint-border);background:var(--bad-tint-bg);}
+.kpi-card.pace-card{border-color:var(--brand);background:rgba(59,130,246,0.10);}
+.kpi-delta-ok{color:var(--ok);}.kpi-delta-warn{color:var(--warn);}.kpi-delta-bad{color:var(--bad);}.kpi-delta-brand{color:var(--brand);}
+
+.legend{display:flex;align-items:center;gap:var(--sp-base);padding:var(--sp-sm) var(--sp-base);background:var(--panel);border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:var(--sp-xs);font-size:var(--fs-label);color:var(--dim);}
+.swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.swatch-ok{background:var(--ok-tint-bg);border:1px solid var(--ok-tint-border);}
+.swatch-warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);}
+.swatch-bad{background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);}
+.swatch-grey{background:var(--panel-2);border:1px solid var(--line);}
+.swatch-down{background:var(--down-bg);border:1px dashed var(--down-bd);}
+.swatch-brk{background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.14) 3px,rgba(255,255,255,0.14) 6px);border:1px solid var(--line);}
+.swatch-s1{background:var(--s1-bg);border:1px solid var(--s1-bd);}
+.swatch-s2{background:var(--s2-bg);border:1px solid var(--s2-bd);}
+.swatch-s3{background:var(--s3-bg);border:1px solid var(--s3-bd);}
+
+.ok{background:var(--ok-tint-bg);color:var(--ok);border-color:var(--ok-tint-border)!important;}
+.warn{background:var(--warn-tint-bg);color:var(--warn);border-color:var(--warn-tint-border)!important;}
+.bad{background:var(--bad-tint-bg);color:var(--bad);border-color:var(--bad-tint-border)!important;}
+.grey{background:var(--panel-2);color:var(--mute);}
+/* FEATURE 2: DOWN — 0 scans for 30+ min. Neutral grey + dashed border + no color
+   coding, deliberately distinct from BEHIND (red = producing but slow). */
+.cell.down{background:var(--down-bg);color:var(--dim);border-color:var(--down-bd)!important;border-style:dashed!important;}
+.down-tag{font-size:var(--fs-footnote);font-weight:700;letter-spacing:.5px;color:var(--dim);}
+
+.web-view{overflow:auto;flex:1 1 auto;min-height:0;}
+table{border-collapse:collapse;min-width:100%;}
+th,td{border:1px solid var(--line);white-space:nowrap;}
+td.cell,th.hour{padding:4px 6px;width:56px;min-width:56px;max-width:56px;}
+th.oee-head,td.oee-cell{padding:4px 5px;width:56px;min-width:56px;max-width:56px;text-align:center;}
+th.corner,td.rowhead{padding:5px 8px;width:186px;min-width:186px;max-width:186px;position:sticky;left:0;}
+thead th{background:var(--panel);font-size:var(--fs-footnote);color:var(--dim);text-transform:uppercase;letter-spacing:.5px;position:sticky;z-index:2;}
+thead tr.shift-banner th{top:0;height:26px;padding:3px 6px;}
+thead tr.hour-labels th{top:26px;height:24px;}
+thead th.corner{z-index:4;}
+thead tr.hour-labels th.corner{top:26px;}
+thead tr.shift-banner th.corner{top:0;}
+th.oee-group{color:var(--dim);background:var(--panel-2);text-align:center;font-weight:700;}
+
+.sb{font-weight:700;letter-spacing:.6px;border-bottom-width:2px!important;text-align:center;}
+.sb-1{color:var(--s1);background:var(--s1-bg);border-bottom-color:var(--s1-bd)!important;}
+.sb-2{color:var(--s2);background:var(--s2-bg);border-bottom-color:var(--s2-bd)!important;}
+.sb-3{color:var(--s3);background:var(--s3-bg);border-bottom-color:var(--s3-bd)!important;}
+
+th.hour{text-align:center;color:var(--dim);}
+.hour.is-now{color:#fff;background:var(--brand);}
+td.cell.is-now{box-shadow:inset 2px 0 0 var(--brand),inset -2px 0 0 var(--brand);}
+.now-tag{display:inline-block;font-size:9px;font-weight:700;color:#fff;background:var(--brand);border-radius:6px;padding:0 5px;margin-left:4px;vertical-align:middle;}
+
+/* FEATURE 5: scheduled-break + PM overlay stripes over specific hour columns. */
+td.cell,th.hour{position:relative;}
+.cell.brk::before,.hour.brk::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.09) 3px,rgba(255,255,255,0.09) 6px);pointer-events:none;}
+.cell.pm::before,.hour.pm::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(168,85,247,0.20) 2px,rgba(168,85,247,0.20) 4px);pointer-events:none;}
+
+td.rowhead{background:var(--bg);}
+.row-machine td.rowhead{background:var(--panel);}
+.row-machine{background:var(--panel);font-weight:600;color:var(--brand);cursor:pointer;font-size:var(--fs-caption);}
+.row-machine:hover td{background:var(--panel-2);}
+.expand-icon::before{content:"\25B8 ";font-size:var(--fs-footnote);}
+.row-machine.open .expand-icon::before{content:"\25BE ";}
+.rowhead-top{display:flex;align-items:center;gap:6px;}
+.mach-name{display:inline-block;}
+.spark{flex:0 0 auto;display:inline-block;vertical-align:middle;margin-left:auto;}
+.mach-sub{display:block;font-size:var(--fs-footnote);color:var(--mute);font-weight:400;margin-top:1px;}
+.row-op{font-size:var(--fs-label);}
+.row-op td.rowhead{padding-left:22px;color:var(--dim);background:var(--bg);}
+.row-op td.rowhead a{color:var(--brand);text-decoration:none;}
+td.cell{text-align:right;}
+.cell-inner{display:flex;flex-direction:column;align-items:flex-end;gap:1px;position:relative;z-index:1;}
+.cell-lbs{font-size:var(--fs-label);font-weight:600;}
+.cell-pct{font-size:var(--fs-footnote);opacity:.75;}
+/* FEATURE 4: same-shift-yesterday delta chip. */
+.vs-yest{font-size:9px;font-weight:700;line-height:1;}
+.vs-yest.up{color:var(--ok);}
+.vs-yest.down{color:var(--bad);}
+/* FEATURE 7: per-hour annotation icon (📝) + hover tooltip via [title]. */
+.ann{position:absolute;top:-2px;left:-2px;font-size:10px;cursor:help;z-index:2;}
+/* FEATURE 11/12/13: OEE badges (FPY / Uptime / Cycle). */
+.oee-badge{display:inline-block;font-size:var(--fs-footnote);font-weight:700;padding:1px 6px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--dim);}
+.oee-badge.ok{color:var(--ok);border-color:var(--ok-tint-border);background:var(--ok-tint-bg);}
+.oee-badge.bad{color:var(--bad);border-color:var(--bad-tint-border);background:var(--bad-tint-bg);}
+.oee-badge.bottleneck{color:var(--warn);border-color:var(--warn-tint-border);background:var(--warn-tint-bg);}
+/* OEE column-group show/hide toggle (topbar). */
+.hide-oee .oee-cell,.hide-oee .oee-head,.hide-oee .oee-group{display:none;}
+
+/* FEATURE 10: mobile — stack machines as cards, drop shift banner, shrink chart. */
+@media (max-width:768px){
+  body{overflow:auto;height:auto;}
+  .mock-meta{max-height:none;}
+  .rolling-svg{height:100px;}
+  .chart-legend{display:none;}
+  .topbar{gap:8px;}
+  .nav-range{min-width:90px;}
+  .web-view{overflow:visible;}
+  table,thead,tbody,tr,td,th{display:block;}
+  thead{display:none;}                       /* drops shift-banner + hour-label rows */
+  tbody tr.row-op{display:none!important;}    /* collapsed on mobile */
+  tr.row-machine{margin:0 10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:8px 10px 10px;}
+  tr.row-machine td{border:none;width:auto!important;max-width:none!important;}
+  td.rowhead{position:static!important;padding:0 0 6px!important;width:auto!important;max-width:none!important;}
+  td.oee-cell,td.cell{display:inline-block;width:auto!important;max-width:none!important;min-width:52px;text-align:center;padding:4px 6px;vertical-align:top;}
+  td.cell{border-top:1px solid var(--line)!important;border-radius:8px;margin:3px;background:var(--panel-2);}
+  td.cell::before{content:attr(data-hour);display:block;font-size:9px;color:var(--mute);margin-bottom:2px;}
+  td.oee-cell::before{content:attr(data-oee);display:block;font-size:9px;color:var(--mute);margin-bottom:2px;}
+  td.oee-cell{margin:3px;}
+  .cell-inner{align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="mock-meta">
+  <b>MOCKUP A + ROLLING (MES / OEE build) — "24h chart on top · KPI row · Variant A shift-banner table below."</b> Standalone review mock · not wired to live data.
+  <div class="legend2">
+    <span class="li"><span class="t">CARRY ✓</span> Machines start COLLAPSED · day-of-week in chart header · locked ▸/Now widths (no jitter)</span>
+    <span class="li"><span class="n">1</span> Delta-to-target KPIs (At-current-pace + Need-to-hit-100%)</span>
+    <span class="li"><span class="n">2</span> DOWN cell state (grey/dashed) vs BEHIND (red) — Prima 10:00–12:00 downtime</span>
+    <span class="li"><span class="n">3</span> Per-machine sparkline (24h trend, status-colored)</span>
+    <span class="li"><span class="n">4</span> "vs Yest" delta chip per cell (▲/▼ %)</span>
+    <span class="li"><span class="n">5</span> Break/PM overlay stripes (10:00, 14:00 break · 12:00 PM)</span>
+    <span class="li"><span class="n">6</span> Auto-refresh countdown ring</span>
+    <span class="li"><span class="n">7</span> Per-hour annotations (📝 hover)</span>
+    <span class="li"><span class="n">8</span> Threshold-breach alert strip (Shear 3h behind)</span>
+    <span class="li"><span class="n">9</span> Print / Export-to-Excel buttons</span>
+    <span class="li"><span class="n">10</span> Mobile card layout (≤768px — see wireframe in source comment)</span>
+    <span class="li"><span class="n">11</span> FPY / scrap % column</span>
+    <span class="li"><span class="n">12</span> Uptime / availability % column</span>
+    <span class="li"><span class="n">13</span> Cycle-time ratio column (actual/std, bottleneck highlight)</span>
+    <span class="li"><span class="n">14</span> <b>"OEE Detail" toggle (topbar) — DEFAULT OFF</b>: clean core view; click to reveal FPY/Uptime/Cycle</span>
+  </div>
+  <div class="cap"><b>Try the "OEE Detail" button in the topbar</b> — it starts OFF for an uncluttered "at a glance" table (just machines + hours) and reveals the 3 OEE columns (FPY/Uptime/Cycle) one click away. Chart = context, table = detail. NOTE: mock date 2026-07-20 is a <b>Monday</b> (the "Fri" in the brief was illustrative).</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="breadcrumb"><a href="#">Portal</a><span class="sep">/</span><span class="current">Hourly Throughput</span></div>
+    <div class="topbar-title">Hourly Throughput</div>
+  </div>
+  <label>Date <input type="date" id="date-pick" value="2026-07-20"></label>
+  <div class="nav-window">
+    <button class="nav-arrow" onclick="jump(-3)" title="Back 3 hours">&#9664;</button>
+    <span class="nav-range" id="nav-range">07:00 – 19:00</span>
+    <button class="nav-arrow" onclick="jump(3)" title="Forward 3 hours">&#9654;</button>
+  </div>
+  <button class="btn-now" id="btn-now" onclick="goNow()">● Now</button>
+  <!-- FEATURE 14: OEE Detail toggle — default OFF (clean core view); reveals the
+       FPY/Uptime/Cycle columns (features 11/12/13) when on. -->
+  <button class="btn" id="oee-toggle" onclick="toggleOEE()" title="Show/hide the OEE detail columns (FPY, Uptime, Cycle)">OEE Detail</button>
+  <!-- FEATURE 9: print / export (icons only in this mock) -->
+  <div class="btn-group">
+    <button class="btn icon-btn" title="Print view">🖨</button>
+    <button class="btn icon-btn" title="Export to Excel">⬇ XLS</button>
+  </div>
+  <!-- FEATURE 6: live countdown ring replaces the static "Updated 4:12 PM" -->
+  <div class="refresh-widget" title="Auto-refresh countdown (cosmetic in mock)">
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <circle cx="9" cy="9" r="7" fill="none" stroke="var(--line)" stroke-width="2"/>
+      <circle id="rf-ring" cx="9" cy="9" r="7" fill="none" stroke="var(--brand)" stroke-width="2"
+              stroke-linecap="round" stroke-dasharray="43.98" stroke-dashoffset="0" transform="rotate(-90 9 9)"/>
+    </svg>
+    <span>Refresh in <b id="rf-sec">47</b>s</span>
+  </div>
+</div>
+
+<!-- ═══ FEATURE 8: THRESHOLD-BREACH ALERT STRIP ═══ -->
+<div class="alert-strip" id="alert-strip">
+  <span class="alert-icon">⚠</span>
+  <span class="alert-text"><b>Shear</b> behind target for 3h (11:00–13:00) — action needed</span>
+  <button class="alert-ack" onclick="document.getElementById('alert-strip').style.display='none'">Acknowledge</button>
+</div>
+
+<!-- ═══ ROLLING 24H CHART ═══ -->
+<div class="chart-panel">
+  <div class="chart-header">
+    <div>
+      <!-- CARRY-OVER 2: day-of-week + date in the chart header -->
+      <span class="chart-title">Mon 2026-07-20 · Last 24 h · Total throughput</span>
+      <span class="chart-sub">17:00 – 16:00 CDT · target 19,096 lbs/hr</span>
+    </div>
+    <div class="chart-legend">
+      <span class="li"><span class="sw" style="background:var(--ok)"></span>On track</span>
+      <span class="li"><span class="sw" style="background:var(--warn)"></span>Warn</span>
+      <span class="li"><span class="sw" style="background:var(--bad)"></span>Behind</span>
+      <span class="li"><span class="sw" style="background:var(--brand)"></span>Now</span>
+    </div>
+  </div>
+  <svg class="rolling-svg" viewBox="0 0 1400 180" preserveAspectRatio="none">
+    <line x1="40" y1="20" x2="1400" y2="20" stroke="#2a3038" stroke-dasharray="2 3"/>
+    <line x1="40" y1="70" x2="1400" y2="70" stroke="#2a3038" stroke-dasharray="2 3"/>
+    <line x1="40" y1="120" x2="1400" y2="120" stroke="#2a3038" stroke-dasharray="2 3"/>
+    <line x1="40" y1="160" x2="1400" y2="160" stroke="#2a3038"/>
+    <text x="8" y="24" fill="#6b7280" font-size="10">19k</text>
+    <text x="8" y="74" fill="#6b7280" font-size="10">12k</text>
+    <text x="8" y="124" fill="#6b7280" font-size="10">6k</text>
+    <text x="8" y="164" fill="#6b7280" font-size="10">0</text>
+    <polyline
+      points="90,130 145,130 200,120 255,50 310,90 365,60 420,70 475,105 530,110 585,60 640,55 695,60 750,90 805,140 860,140 915,140 970,140 1025,140 1080,140 1135,140 1190,140 1245,140 1300,140 1355,140"
+      fill="none" stroke="#ffb020" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8"/>
+    <g>
+      <rect x="705" y="150" width="42" height="10" fill="#ff3b30" opacity="0.85"/>
+      <rect x="760" y="55" width="42" height="105" fill="#16c060" opacity="0.85"/>
+      <rect x="815" y="80" width="42" height="80" fill="#ffb020" opacity="0.85"/>
+      <rect x="870" y="115" width="42" height="45" fill="#ff3b30" opacity="0.85"/>
+      <rect x="925" y="80" width="42" height="80" fill="#ffb020" opacity="0.85"/>
+      <rect x="980" y="95" width="42" height="65" fill="#ffb020" opacity="0.85"/>
+      <rect x="1035" y="140" width="42" height="20" fill="#ff3b30" opacity="0.85"/>
+      <rect x="1090" y="140" width="42" height="20" fill="#ff3b30" opacity="0.85"/>
+      <rect x="1145" y="50" width="42" height="110" fill="#16c060" opacity="0.85"/>
+      <rect x="1200" y="35" width="42" height="125" fill="#16c060" opacity="0.85"/>
+      <rect x="1255" y="145" width="42" height="15" fill="#ff3b30" opacity="0.85"/>
+    </g>
+    <line x1="1276" y1="15" x2="1276" y2="160" stroke="#3b82f6" stroke-width="2"/>
+    <circle cx="1276" cy="30" r="4" fill="#3b82f6"/>
+    <text x="1284" y="34" fill="#3b82f6" font-size="10" font-weight="700">NOW</text>
+    <g fill="#6b7280" font-size="9" text-anchor="middle">
+      <text x="62" y="176">17</text><text x="118" y="176">18</text><text x="174" y="176">19</text>
+      <text x="230" y="176">20</text><text x="286" y="176">21</text><text x="342" y="176">22</text>
+      <text x="398" y="176">23</text><text x="454" y="176">00</text><text x="510" y="176">01</text>
+      <text x="566" y="176">02</text><text x="622" y="176">03</text><text x="678" y="176">04</text>
+      <text x="734" y="176">05</text><text x="790" y="176">06</text><text x="846" y="176">07</text>
+      <text x="902" y="176">08</text><text x="958" y="176">09</text><text x="1014" y="176">10</text>
+      <text x="1070" y="176">11</text><text x="1126" y="176">12</text><text x="1182" y="176">13</text>
+      <text x="1238" y="176">14</text><text x="1294" y="176">15</text><text x="1350" y="176">16</text>
+    </g>
+  </svg>
+</div>
+
+<!-- KPI row -->
+<div class="kpi-row" id="kpi-row"></div>
+
+<!-- Legend for the table -->
+<div class="legend">
+  <span class="legend-item"><span class="swatch swatch-ok"></span>On track (&ge;100%)</span>
+  <span class="legend-item"><span class="swatch swatch-warn"></span>Warn (80&ndash;99%)</span>
+  <span class="legend-item"><span class="swatch swatch-bad"></span>Behind (&lt;80%)</span>
+  <span class="legend-item"><span class="swatch swatch-down"></span>Down (0 scans 30m+)</span>
+  <span class="legend-item"><span class="swatch swatch-grey"></span>No data</span>
+  <span class="legend-item"><span class="swatch swatch-brk"></span>Scheduled break / PM</span>
+  <span class="legend-item"><span class="swatch swatch-s1"></span>Shift 1</span>
+  <span class="legend-item"><span class="swatch swatch-s2"></span>Shift 2</span>
+  <span class="legend-item"><span class="swatch swatch-s3"></span>Shift 3</span>
+</div>
+
+<div class="web-view" id="web-view"></div>
+
+<script>
+const NOW_HOUR = 13, NOW_LABEL = "1:24 PM";
+const WINDOW = 12;
+let offset = 0;
+// FEATURE 14: OEE detail columns OFF by default — clean core view (machines + hours).
+// Supervisors click "OEE Detail" in the topbar to reveal FPY/Uptime/Cycle.
+let showOEE = false;
+
+const BREAKS = [10, 14];   // scheduled breaks (feature 5)
+const PM = [12];           // preventive-maintenance window (feature 5)
+// FEATURE 7: mock per-hour annotations {machine, hour, text}
+const ANNOTATIONS = [
+  {m:'22N',   h:9,  text:'22N die change, 45 min'},
+  {m:'Shear', h:11, text:'Blade wear flagged — slowing feed'},
+  {m:'Prima', h:12, text:'Material jam cleared, ramping back up'},
+];
+function annFor(name,h){ const a=ANNOTATIONS.find(x=>x.m===name&&x.h===h); return a?a.text:null; }
+
+function shiftOf(h){ if(h>=6&&h<14) return 1; if(h>=14&&h<22) return 2; return 3; }
+const SHIFT_META = {1:{cls:'sb-1',label:'SHIFT 1',range:'06:00–14:00'},2:{cls:'sb-2',label:'SHIFT 2',range:'14:00–22:00'},3:{cls:'sb-3',label:'SHIFT 3',range:'22:00–06:00'}};
+
+// 24h arrays (idx = hour). Filled 06–13 (day so far); overnight + future = null.
+// down:[hrs] = 0-scan downtime block. y = same-shift yesterday (feature 4).
+// fpy/uptime/cycle = OEE columns (features 11/12/13).
+const MACHINES = [
+  {name:'22N', op:'Operator 1', exp:3000, fpy:99.1, uptime:96, cycle:0.97,
+   v:[null,null,null,null,null,null, 2910,3180,3050,2760,3420,3090,3270,3473, null,null,null,null,null,null,null,null,null,null],
+   y:[null,null,null,null,null,null, 2800,3050,2990,2700,3100,3200,3150,3300, null,null,null,null,null,null,null,null,null,null]},
+  {name:'Double Bender', op:'Operator 2', exp:260, fpy:97.4, uptime:91, cycle:1.02,
+   v:[null,null,null,null,null,null, 240,255,268,231,262,225,249,270, null,null,null,null,null,null,null,null,null,null],
+   y:[null,null,null,null,null,null, 250,248,255,240,245,238,255,262, null,null,null,null,null,null,null,null,null,null]},
+  {name:'Prima', op:'Operator 3', exp:900, fpy:93.2, uptime:78, cycle:1.15, down:[10,11],
+   v:[null,null,null,null,null,null, 812,903,1162,744,651,480,165,933, null,null,null,null,null,null,null,null,null,null],
+   y:[null,null,null,null,null,null, 800,880,1050,820,900,870,760,900, null,null,null,null,null,null,null,null,null,null]},
+  {name:'Shear', op:'Operator 4', exp:28000, fpy:98.2, uptime:94, cycle:1.08,
+   v:[null,null,null,null,null,null, 24880,31152,28400,22737,26900,21000,20500,21800, null,null,null,null,null,null,null,null,null,null],
+   y:[null,null,null,null,null,null, 26000,30000,29500,27000,28000,27500,27000,28000, null,null,null,null,null,null,null,null,null,null]},
+];
+// CARRY-OVER 1: all machines start COLLAPSED.
+const openState = {}; MACHINES.forEach(m=>openState[m.name]=false);
+
+const fmt = n => (n==null?'—':Math.round(n).toLocaleString());
+const esc = s => s.replace(/[^a-zA-Z0-9_-]/g,'_');
+function cellClass(v,exp){ if(v==null) return 'grey'; const p=v/exp; return p>=1?'ok':p>=.8?'warn':'bad'; }
+function statusColor(m){ const c=cellClass(m.v[NOW_HOUR],m.exp); return c==='ok'?'var(--ok)':c==='warn'?'var(--warn)':c==='bad'?'var(--bad)':'var(--dim)'; }
+
+// FEATURE 3: inline 60x18 sparkline of the machine's 24h trend, status-colored.
+function sparkSVG(vals, color){
+  const w=60,h=18,pad=2;
+  const nums=vals.map(x=>(x==null?null:x));
+  const valid=nums.filter(x=>x!=null);
+  if(valid.length<2) return `<svg class="spark" width="${w}" height="${h}"></svg>`;
+  const max=Math.max(...valid), min=Math.min(...valid);
+  const n=nums.length;
+  let d='', started=false;
+  nums.forEach((x,i)=>{
+    if(x==null){ started=false; return; }
+    const px=pad + (i/(n-1))*(w-2*pad);
+    const py=h-pad - (max===min?0.5:(x-min)/(max-min))*(h-2*pad);
+    d += (started?' L':'M')+px.toFixed(1)+','+py.toFixed(1); started=true;
+  });
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">`
+       + `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+}
+
+// FEATURE 11/12/13: OEE badge cells.
+function oeeCells(m){
+  const fpyCls = m.fpy<95?'bad':'ok';
+  const upCls  = m.uptime<90?'bad':'ok';
+  const cycCls = m.cycle>1.05?'bad bottleneck':(m.cycle<=1.0?'ok':'');
+  return `<td class="oee-cell" data-oee="FPY"><span class="oee-badge ${fpyCls}">${m.fpy.toFixed(1)}%</span></td>`
+       + `<td class="oee-cell" data-oee="Uptime"><span class="oee-badge ${upCls}">${m.uptime}%</span></td>`
+       + `<td class="oee-cell" data-oee="Cycle"><span class="oee-badge ${cycCls}" title="actual ÷ standard cycle time">${m.cycle.toFixed(2)}</span></td>`;
+}
+const blankOEE = `<td class="oee-cell"></td><td class="oee-cell"></td><td class="oee-cell"></td>`;
+
+function buildCell(m, h, rich){
+  const now = h===NOW_HOUR;
+  const overlay = (BREAKS.includes(h)?' brk':'') + (PM.includes(h)?' pm':'');
+  const dh = String(h).padStart(2,'0')+':00';
+  // FEATURE 2: DOWN overrides the value cell.
+  if(m.down && m.down.includes(h)){
+    return `<td class="cell down${now?' is-now':''}${overlay}" data-hour="${dh}"><div class="cell-inner"><span class="down-tag">⏸ DOWN</span></div></td>`;
+  }
+  const v=m.v[h];
+  const cls=cellClass(v,m.exp);
+  const pct=v!=null?Math.round(v/m.exp*100)+'%':'';
+  let vs='';
+  if(rich && v!=null){ const yv=m.y?m.y[h]:null;
+    if(yv!=null && yv>0){ const dpct=Math.round((v-yv)/yv*100); const up=dpct>=0;
+      vs=`<span class="vs-yest ${up?'up':'down'}" title="vs same hour yesterday (${fmt(yv)})">${up?'▲':'▼'} ${up?'+':''}${dpct}%</span>`; } }
+  const ann = rich ? annFor(m.name,h) : null;
+  const annIcon = ann?`<span class="ann" title="${ann}">📝</span>`:'';
+  return `<td class="cell ${cls}${now?' is-now':''}${overlay}" data-hour="${dh}"><div class="cell-inner">${annIcon}<span class="cell-lbs">${fmt(v)}</span><span class="cell-pct">${pct}</span>${vs}</div></td>`;
+}
+
+function renderKPI(){
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi-card ok-card"><div class="kpi-label">22N</div><div class="kpi-value">3,473</div><div class="kpi-sub kpi-delta-ok">116% of exp</div></div>
+    <div class="kpi-card ok-card"><div class="kpi-label">Double Bender</div><div class="kpi-value">270</div><div class="kpi-sub kpi-delta-ok">104% of exp</div></div>
+    <div class="kpi-card ok-card"><div class="kpi-label">Prima</div><div class="kpi-value">933</div><div class="kpi-sub kpi-delta-ok">104% of exp</div></div>
+    <div class="kpi-card bad-card"><div class="kpi-label">Shear</div><div class="kpi-value">21,800</div><div class="kpi-sub kpi-delta-bad">78% of exp</div></div>
+    <div class="kpi-card bad-card" style="border-width:2px"><div class="kpi-label">Shift-to-date</div><div class="kpi-value">37,600</div><div class="kpi-sub kpi-delta-bad">81% of pace</div></div>
+    <!-- FEATURE 1: delta-to-target math -->
+    <div class="kpi-card pace-card wide"><div class="kpi-label">At current pace</div><div class="kpi-value kpi-delta-brand">46,200 lbs</div><div class="kpi-sub">82% of shift target</div></div>
+    <div class="kpi-card warn-card wide"><div class="kpi-label">Need to hit 100%</div><div class="kpi-value kpi-delta-warn">4,200/hr</div><div class="kpi-sub">× 5h left in shift</div></div>
+    <div class="kpi-card"><div class="kpi-label">Δ vs Expected</div><div class="kpi-value kpi-delta-bad">-19.1%</div><div class="kpi-sub">-13,370 lbs</div></div>`;
+}
+
+function render(){
+  const hrs = windowHours();
+  const first=hrs[0], last=hrs[hrs.length-1];
+  document.getElementById('nav-range').textContent = `${String(first).padStart(2,'0')}:00 – ${String(last).padStart(2,'0')}:00`;
+  const atNow = offset===0;
+  const btn=document.getElementById('btn-now'); btn.classList.toggle('at-now',atNow); btn.textContent = atNow?'● Now':'Jump to now';
+
+  // thead — shift banner row + hour-label row, with the OEE column group between the corner and hours.
+  let banner='<th class="corner" rowspan="2">Machine / Operator</th>';
+  banner+='<th class="oee-group oee-head" colspan="3">OEE / Quality</th>';
+  let i=0;
+  while(i<hrs.length){ const s=shiftOf(hrs[i]); let j=i; while(j<hrs.length&&shiftOf(hrs[j])===s) j++;
+    const m=SHIFT_META[s]; banner+=`<th class="sb ${m.cls}" colspan="${j-i}">${m.label} &middot; ${m.range}</th>`; i=j; }
+
+  let labels='<th class="oee-head" title="First-pass yield">FPY</th><th class="oee-head" title="Availability / uptime">Uptime</th><th class="oee-head" title="Actual ÷ standard cycle time">Cycle</th>';
+  hrs.forEach(h=>{ const now=h===NOW_HOUR; const ov=(BREAKS.includes(h)?' brk':'')+(PM.includes(h)?' pm':'');
+    labels+=`<th class="hour${now?' is-now':''}${ov}">${String(h).padStart(2,'0')}:00${now?`<span class="now-tag">NOW</span>`:''}</th>`; });
+
+  let body='';
+  MACHINES.forEach(m=>{
+    const open=openState[m.name];
+    body+=`<tr class="row-machine${open?' open':''}" onclick="toggle('${esc(m.name)}')">
+      <td class="rowhead"><div class="rowhead-top"><span class="expand-icon"></span><span class="mach-name">${m.name}</span>${sparkSVG(m.v, statusColor(m))}</div><span class="mach-sub">${m.op}</span></td>`;
+    body+=oeeCells(m);
+    hrs.forEach(h=>{ body+=buildCell(m,h,true); });
+    body+='</tr>';
+    body+=`<tr class="row-op" style="${open?'':'display:none'}" data-m="${esc(m.name)}">
+      <td class="rowhead"><a href="#">${m.op}</a></td>${blankOEE}`;
+    hrs.forEach(h=>{ body+=buildCell(m,h,false); });
+    body+='</tr>';
+  });
+
+  document.getElementById('web-view').innerHTML =
+    `<table class="${showOEE?'':'hide-oee'}"><thead><tr class="shift-banner">${banner}</tr><tr class="hour-labels">${labels}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function windowHours(){
+  let start = NOW_HOUR - Math.floor(WINDOW/2) + offset;
+  start = Math.max(0, Math.min(24-WINDOW, start));
+  return Array.from({length:WINDOW},(_,i)=>start+i);
+}
+
+function jump(d){ offset+=d; render(); }
+function goNow(){ offset=0; render(); }
+function toggle(name){ openState[name]=!openState[name]; render(); }
+function toggleOEE(){ showOEE=!showOEE; document.getElementById('oee-toggle').classList.toggle('active',showOEE); render(); }
+
+// FEATURE 6: countdown ring (cosmetic — no real refresh).
+let rfSec=47; const RF_TOTAL=60; const RF_CIRC=2*Math.PI*7; // 43.98
+function tickRefresh(){
+  rfSec = rfSec<=0 ? RF_TOTAL : rfSec-1;
+  document.getElementById('rf-sec').textContent = rfSec;
+  const frac=(RF_TOTAL-rfSec)/RF_TOTAL;
+  document.getElementById('rf-ring').setAttribute('stroke-dashoffset',(RF_CIRC*frac).toFixed(2));
+}
+setInterval(tickRefresh,1000);
+
+renderKPI(); render();
+</script>
+</body>
+</html>
