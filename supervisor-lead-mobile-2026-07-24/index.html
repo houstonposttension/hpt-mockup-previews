@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Supervisor + Lead Mobile · WIP (13 frames incl. Approvals) · 2026-07-24</title>
+<!-- Supervisor + Lead mobile mockup — LEAN treatment (reuses the canonical loader kit).
+     WORK IN PROGRESS: only the Q1–Q3-unblocked frames are built. Self-service (Q5), repositioning
+     (Q8) and act-as-operator (Q6) frames are intentionally HELD as labeled placeholders until James
+     answers. Design note: docs/spec/supervisor-lead-mobile-design-2026-07-24.md (private repo).
+     Preview host only, not source. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --ok:#16c060; --ok-ink:#04150a; --bad:#ff3b30; --warn:#ffb020;
+    --blue:#3b82f6; --blue-soft:#7da2c9; --purple:#a78bfa;
+    --rebar:#3b82f6; --tendon:#a78bfa; --hardware:#fb923c; --lumber:#4ade80; --cloud:#ffb020;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; scroll-behavior:smooth; }
+  body{ padding:20px 18px 90px; }
+  h1{ font-size:20px; font-weight:800; margin:0 0 6px; }
+  .lead{ font-size:13px; color:var(--dim); margin:0 0 5px; line-height:1.6; max-width:900px; }
+  .lead b{ color:#cfe0f5; }
+  .wipnote{ border-left:3px solid var(--warn); background:rgba(255,176,32,.07); padding:9px 13px;
+    margin:12px 0 6px; max-width:900px; font-size:12.5px; color:#e8d4a8; line-height:1.6; border-radius:0 8px 8px 0; }
+  .wipnote b{ color:#ffd98a; }
+  .rolekey{ display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 6px; max-width:900px; font-size:11px; color:var(--dim); }
+  .rolekey span{ display:inline-flex; align-items:center; gap:6px; }
+  .rolekey i{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .catkey{ display:flex; flex-wrap:wrap; gap:10px; margin:6px 0 8px; max-width:900px; font-size:11px; color:var(--dim); }
+  .catkey span{ display:inline-flex; align-items:center; gap:6px; }
+  .catkey i{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+
+  /* sticky frame tabs */
+  .ftabs{ position:sticky; top:0; z-index:60; display:flex; gap:5px; overflow-x:auto; padding:9px 0;
+    margin:14px 0 18px; background:#14171c; border-bottom:1px solid var(--line);
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .ftabs::-webkit-scrollbar{ display:none; }
+  .ftabs a{ flex:0 0 auto; font-size:11.5px; font-weight:800; text-decoration:none;
+    color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:18px;
+    padding:7px 12px; white-space:nowrap; }
+  .ftabs a.held{ color:var(--faint); border-style:dashed; }
+  .ftabs a:active{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
+
+  .screens{ display:flex; gap:44px 26px; flex-wrap:wrap; align-items:flex-start; }
+  .col{ scroll-margin-top:56px; }
+  .frameLbl{ display:flex; align-items:center; gap:9px; font-size:13px; font-weight:900;
+    text-transform:uppercase; letter-spacing:.5px; color:#e6edf3; margin:0 0 6px;
+    padding:8px 12px; background:#161a1f; border:1px solid var(--line);
+    border-left:4px solid var(--blue-soft); border-radius:9px; }
+  .frameLbl.role-sup{ border-left-color:var(--warn); }
+  .frameLbl.role-lead{ border-left-color:var(--rebar); }
+  .frameLbl.role-op{ border-left-color:var(--ok); }
+  .frameLbl .fcount{ flex:0 0 auto; font-size:11px; font-weight:900; letter-spacing:.5px;
+    color:#0b0d10; background:var(--blue-soft); border-radius:20px; padding:2px 9px; }
+  .frameLbl .rtag{ flex:0 0 auto; font-size:9px; font-weight:900; letter-spacing:.5px; border-radius:5px; padding:2px 7px; }
+  .rtag.sup{ background:rgba(255,176,32,.18); color:var(--warn); }
+  .rtag.lead{ background:rgba(59,130,246,.18); color:var(--blue-soft); }
+  .rtag.op{ background:rgba(22,192,96,.16); color:#46d684; }
+  .frameSub{ font-size:11px; color:var(--faint); margin:0 0 10px; max-width:370px; line-height:1.5; }
+  .phone{ width:370px; border-radius:22px; overflow:hidden; border:2px solid var(--line); background:var(--bg); box-shadow:0 12px 40px rgba(0,0,0,.5); position:relative; }
+  .scr{ padding:12px; min-height:640px; }
+
+  @media (max-width:500px){
+    body{ padding:14px 10px 60px; }
+    .screens{ display:block; }
+    .col{ margin-bottom:0; padding-top:40px; margin-top:44px; border-top:3px solid var(--blue-soft); }
+    .col:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
+    .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .scr{ padding:10px 8px; }
+    .frameLbl{ font-size:14px; padding:10px 12px; }
+    .frameSub{ padding:0 4px; max-width:none; }
+    h1{ font-size:17px; } .lead{ font-size:12.5px; }
+  }
+
+  /* ── app top bar ── */
+  .appbar{ display:flex; align-items:center; gap:9px; padding:4px 2px 12px; border-bottom:1px solid var(--line); margin-bottom:11px; }
+  .appbar .who{ display:flex; flex-direction:column; }
+  .appbar .nm{ font-size:15px; font-weight:800; }
+  .appbar .sub{ font-size:10.5px; color:var(--dim); margin-top:1px; }
+  .rolepill{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; border-radius:6px; padding:3px 8px; }
+  .rolepill.sup{ background:rgba(255,176,32,.16); color:var(--warn); border:1px solid rgba(255,176,32,.4); }
+  .rolepill.lead{ background:rgba(59,130,246,.16); color:var(--blue-soft); border:1px solid rgba(59,130,246,.4); }
+  .appbar .win{ margin-left:auto; text-align:right; }
+  .appbar .win .k{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); }
+  .appbar .win .v{ font-size:11.5px; font-weight:700; color:#cfe0f5; margin-top:2px; }
+
+  /* ── plant pulse strip (home) ── */
+  .pulse{ display:flex; gap:8px; margin-bottom:12px; }
+  .pcard{ flex:1; background:var(--panel); border:.5px solid var(--line); border-radius:12px; padding:9px 10px; }
+  .pcard .pk{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); }
+  .pcard .pv{ font-size:20px; font-weight:800; margin-top:3px; line-height:1; }
+  .pcard .pd{ font-size:10px; font-weight:700; margin-top:4px; }
+  .pd.up{ color:var(--ok); } .pd.down{ color:var(--bad); } .pd.flat{ color:var(--dim); }
+
+  .sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px; color:#5a6470; margin:16px 2px 8px; display:flex; align-items:center; gap:7px; }
+  .sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; }
+
+  /* ── cell card ── */
+  .cell{ background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:13px; padding:11px 13px; margin-bottom:9px; position:relative; cursor:pointer; }
+  .cell.cat-rebar{ border-left-color:var(--rebar); }
+  .cell.cat-loading{ border-left-color:var(--cloud); }
+  .cell.cat-tendon{ border-left-color:var(--tendon); }
+  .cell.cat-hardware{ border-left-color:var(--hardware); }
+  .cell.cat-lumber{ border-left-color:var(--lumber); }
+  .cell.risk{ border-color:rgba(255,59,48,.4); background:linear-gradient(180deg,rgba(255,59,48,.05),transparent); }
+  .cell.dark{ opacity:.85; border-style:dashed; cursor:default; }
+  .cell .crow{ display:flex; align-items:center; gap:9px; }
+  .cell .cnm{ font-size:15px; font-weight:800; }
+  .cell .cremote{ font-size:8px; font-weight:900; text-transform:uppercase; letter-spacing:.5px; color:var(--purple); border:1px solid rgba(167,139,250,.4); border-radius:5px; padding:1px 6px; }
+  .cell .cstat{ margin-left:auto; display:flex; align-items:center; gap:6px; }
+  .cell .rate{ font-size:16px; font-weight:800; }
+  .cell .unit{ font-size:10px; color:var(--dim); font-weight:600; }
+  .cell .delta{ font-size:11px; font-weight:800; border-radius:20px; padding:2px 8px; }
+  .delta.up{ background:rgba(22,192,96,.15); color:var(--ok); }
+  .delta.down{ background:rgba(255,59,48,.16); color:#ff7b73; }
+  .delta.none{ background:#242b34; color:var(--faint); }
+  .cell .cmeta{ font-size:11px; color:var(--dim); margin-top:7px; display:flex; flex-wrap:wrap; gap:5px 12px; }
+  .cell .cmeta b{ color:#cfe0f5; font-weight:700; }
+  .cell .flag{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; }
+  .flag.warn{ color:var(--warn); } .flag.bad{ color:#ff7b73; } .flag.ok{ color:var(--ok); }
+  .cell .caret{ position:absolute; bottom:9px; right:11px; font-size:10px; color:#4a545f; }
+
+  /* dark cell empty state */
+  .darkbody{ margin-top:9px; padding:10px 11px; background:#0e1217; border:1px dashed #37414c; border-radius:10px; }
+  .darkbody .dh{ font-size:12px; font-weight:800; color:var(--warn); display:flex; align-items:center; gap:7px; }
+  .darkbody .dt{ font-size:11px; color:var(--dim); margin-top:6px; line-height:1.55; }
+  .darkbody .dt code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:#9ccbff; background:#0b0d10; border:1px solid var(--line); border-radius:4px; padding:1px 5px; }
+  .darkbody .fix{ margin-top:9px; font-size:10.5px; font-weight:700; color:#8fb4d8; display:flex; align-items:center; gap:6px; }
+
+  /* ── hotspot banner (supervisor) ── */
+  .hotspot{ background:linear-gradient(180deg,rgba(255,59,48,.1),rgba(255,59,48,.03)); border:1px solid rgba(255,59,48,.4); border-radius:13px; padding:11px 13px; margin-bottom:12px; }
+  .hotspot .hh{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.7px; color:#ff7b73; display:flex; align-items:center; gap:6px; }
+  .hotspot .ht{ font-size:13.5px; font-weight:800; color:#ffd5d1; margin-top:6px; line-height:1.4; }
+  .hotspot .ha{ font-size:11px; color:#e5b9b5; margin-top:5px; line-height:1.5; }
+  .hotspot .hbtn{ margin-top:10px; width:100%; padding:11px; border:none; border-radius:10px; background:#2a1414; color:#ff9b94; border:1px solid #5e2a2a; font-size:13px; font-weight:800; }
+
+  /* ── worker row (cell drill-in) ── */
+  .wrow{ display:flex; align-items:center; gap:10px; padding:9px 11px; margin:5px 0; background:#111722; border:1px solid #223; border-radius:9px; }
+  .wrow .av{ width:30px; height:30px; border-radius:50%; background:#1c2b3a; color:#9ccbff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .wrow .wnm{ font-size:13px; font-weight:700; }
+  .wrow .wst{ font-size:10.5px; color:var(--dim); margin-top:1px; }
+  .wrow .wr{ margin-left:auto; text-align:right; }
+  .wrow .wr .rr{ font-size:14px; font-weight:800; }
+  .wrow .wr .rl{ font-size:9px; color:var(--faint); text-transform:uppercase; letter-spacing:.4px; }
+  .wrow.off{ opacity:.6; }
+  .wrow.off .av{ background:#2a2018; color:var(--warn); }
+  .wrow .offtag{ margin-left:auto; font-size:10px; font-weight:800; color:var(--warn); background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.35); border-radius:20px; padding:3px 9px; }
+
+  /* stuck tags */
+  .stuck{ display:flex; align-items:center; gap:9px; padding:9px 11px; margin:5px 0; background:#1a1410; border:1px solid #4a3a1a; border-radius:9px; }
+  .stuck .num{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; font-weight:800; color:#ffd98a; }
+  .stuck .info{ font-size:10.5px; color:var(--dim); flex:1; }
+  .stuck .age{ font-size:11px; font-weight:800; color:var(--warn); }
+
+  /* incoming (rerouted-in) */
+  .incoming{ display:flex; align-items:center; gap:9px; padding:9px 11px; margin:5px 0; background:#0e1a2a; border:1px solid #2f4a63; border-radius:9px; }
+  .incoming .num{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; font-weight:800; color:#9ccbff; }
+  .incoming .info{ font-size:10.5px; color:var(--dim); flex:1; }
+  .incoming .from{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:#9ccbff; background:#17222e; border:1px solid #2f4a63; border-radius:5px; padding:2px 7px; }
+
+  /* per-machine mini bars (cell drill-in) */
+  .mbar{ display:flex; align-items:center; gap:9px; padding:7px 2px; }
+  .mbar .mn{ font-size:12px; font-weight:700; width:120px; flex:0 0 auto; }
+  .mbar .track{ flex:1; height:7px; background:#0b0d10; border-radius:999px; overflow:hidden; }
+  .mbar .track > i{ display:block; height:100%; }
+  .mbar .val{ font-size:11px; font-weight:800; width:78px; text-align:right; flex:0 0 auto; }
+  .mbar .val .t{ color:var(--faint); font-weight:600; }
+  .notgt{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--warn); border:1px solid rgba(255,176,32,.35); border-radius:5px; padding:1px 5px; }
+
+  /* ── scanner reroute prompt ── */
+  .scanhdr{ background:#0e1a2a; border-bottom:1px solid #2f4a63; margin:-12px -12px 12px; padding:12px; }
+  .scanhdr .st{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:#6b8ba8; }
+  .scanhdr .op{ font-size:13px; font-weight:800; color:#cfe0f5; margin-top:3px; display:flex; align-items:center; gap:8px; }
+  .scanhdr .stn{ margin-left:auto; font-size:11px; font-weight:800; color:#9ccbff; background:#17222e; border:1px solid #2f4a63; border-radius:6px; padding:3px 9px; }
+  .reroute{ background:#1a1410; border:1px solid #4a3a1a; border-radius:16px; padding:16px 15px; }
+  .reroute.future{ background:#141426; border-color:#3a3a6a; }
+  .reroute .rlbl{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.7px; color:var(--warn); display:flex; align-items:center; gap:7px; }
+  .reroute.future .rlbl{ color:var(--purple); }
+  .futrib{ font-size:8px; font-weight:900; text-transform:uppercase; letter-spacing:.5px; color:#0b0d10; background:var(--purple); border-radius:6px; padding:2px 7px; margin-left:auto; }
+  .reroute .rq{ font-size:19px; font-weight:800; color:#ffe0a3; margin:10px 0 4px; line-height:1.25; }
+  .reroute.future .rq{ color:#d6c9ff; }
+  .reroute .tagline{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; color:#cfe0f5; margin-bottom:12px; }
+  .flow{ display:flex; align-items:center; gap:10px; margin:12px 0; }
+  .flowbox{ flex:1; text-align:center; border:1px solid var(--line); border-radius:11px; padding:10px 6px; background:#0e1217; }
+  .flowbox .fk{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); }
+  .flowbox .fv{ font-size:14px; font-weight:800; margin-top:4px; }
+  .flowbox.exp{ border-color:#4a3a1a; } .flowbox.exp .fv{ color:var(--warn); }
+  .flowbox.act{ border-color:#2f4a63; } .flowbox.act .fv{ color:#9ccbff; }
+  .flow .arr{ font-size:18px; color:var(--faint); flex:0 0 auto; }
+  .reroute .why{ font-size:11px; color:var(--dim); line-height:1.55; background:#0e1217; border:1px solid var(--line); border-radius:9px; padding:9px 11px; margin-bottom:14px; }
+  .reroute .why b{ color:#cfe0f5; }
+  .rbtns{ display:flex; flex-direction:column; gap:9px; }
+  .rbtns button{ width:100%; padding:15px; border:none; border-radius:13px; font-size:15px; font-weight:800; }
+  .r-yes{ background:var(--warn); color:#2a1c00; }
+  .reroute.future .r-yes{ background:var(--purple); color:#150a2a; }
+  .r-no{ background:#33383f; color:var(--txt); border:1px solid #4a525c; }
+  .emits{ font-size:9.5px; color:var(--faint); text-align:center; margin-top:11px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; }
+
+  /* ── reroute audit (supervisor aftermath) ── */
+  .audrow{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:11px 13px; margin-bottom:8px; }
+  .audrow .arflow{ display:flex; align-items:center; gap:9px; }
+  .audrow .m{ font-size:13px; font-weight:800; }
+  .audrow .arr{ color:var(--faint); font-size:14px; }
+  .audrow .cnt{ margin-left:auto; font-size:16px; font-weight:800; color:var(--warn); }
+  .audrow .cnt .u{ font-size:10px; color:var(--dim); font-weight:600; }
+  .audrow .armeta{ font-size:10.5px; color:var(--dim); margin-top:6px; }
+  .audrow .artags{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:#9ccbff; margin-top:5px; }
+  .audrow.future{ border-style:dashed; border-color:#3a3a6a; opacity:.9; }
+  .audrow.future .cnt{ color:var(--purple); }
+
+  /* ── HELD placeholder (scoped to .scr so it never hits the nav-tab .held chips) ── */
+  .scr.held{ min-height:640px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px 22px; }
+  .scr.held .hi{ font-size:54px; }
+  .scr.held h2{ font-size:19px; font-weight:900; margin:12px 0 6px; color:#cfd6de; }
+  .scr.held .hq{ font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; color:var(--warn); background:rgba(255,176,32,.12); border:1px solid rgba(255,176,32,.35); border-radius:8px; padding:5px 12px; margin-bottom:14px; }
+  .scr.held p{ font-size:12.5px; color:var(--dim); line-height:1.6; max-width:280px; margin:0 0 8px; }
+  .scr.held .dep{ font-size:11px; color:var(--faint); line-height:1.55; max-width:290px; }
+  .scr.held .dep b{ color:#8fb4d8; }
+
+  /* ── nav badge (pending approvals) ── */
+  .navbadge{ display:inline-flex; align-items:center; gap:5px; margin-left:auto; font-size:11px; font-weight:800;
+    color:#2a1c00; background:var(--warn); border-radius:20px; padding:3px 9px; }
+  .navbadge.red{ background:var(--bad); color:#fff; }
+  .navbadge .ic{ font-size:11px; }
+
+  /* ── approvals list ── */
+  .aprow{ display:flex; align-items:flex-start; gap:10px; padding:11px 12px; margin:6px 0; background:var(--panel);
+    border:1px solid var(--line); border-left:4px solid var(--warn); border-radius:11px; cursor:pointer; position:relative; }
+  .aprow.age-gold{ border-left-color:var(--warn); }
+  .aprow.age-amber{ border-left-color:#ff8c1a; }
+  .aprow.age-red{ border-left-color:var(--bad); background:linear-gradient(180deg,rgba(255,59,48,.05),transparent); }
+  .aprow .aptype{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.5px; border-radius:5px;
+    padding:2px 7px; flex:0 0 auto; }
+  .aptype.split{ background:rgba(255,176,32,.16); color:var(--warn); border:1px solid rgba(255,176,32,.4); }
+  .aptype.scrap{ background:rgba(74,222,128,.14); color:#6ee7a0; border:1px solid rgba(74,222,128,.35); }
+  .aptype.void{ background:rgba(255,59,48,.16); color:#ff7b73; border:1px solid rgba(255,59,48,.4); }
+  .aptype.price{ background:rgba(167,139,250,.16); color:var(--purple); border:1px solid rgba(167,139,250,.4); }
+  .aprow .apmid{ flex:1; min-width:0; }
+  .aprow .aptitle{ font-size:13px; font-weight:800; color:#e6edf3; }
+  .aprow .apctx{ font-size:11px; color:var(--dim); margin-top:3px; line-height:1.45; }
+  .aprow .apctx .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
+  .aprow .apsub{ font-size:10px; color:var(--faint); margin-top:4px; }
+  .aprow .apright{ text-align:right; flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+  .aprow .apage{ font-size:12px; font-weight:800; }
+  .apage.gold{ color:var(--warn); } .apage.amber{ color:#ff8c1a; } .apage.red{ color:#ff5147; }
+  .aprow .truck{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.4px; color:#fff;
+    background:var(--bad); border-radius:5px; padding:2px 6px; display:inline-flex; align-items:center; gap:4px; }
+  .aprow .caret2{ position:absolute; bottom:8px; right:10px; font-size:9px; color:#4a545f; }
+  .scopebar{ font-size:10.5px; color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:9px;
+    padding:8px 11px; margin-bottom:10px; line-height:1.5; }
+  .scopebar b{ color:#9ccbff; }
+
+  /* ── approvals detail ── */
+  .apd-hdr{ background:var(--panel); border:1px solid var(--line); border-radius:13px; padding:13px; margin-bottom:12px; }
+  .apd-hdr .row1{ display:flex; align-items:center; gap:9px; }
+  .apd-hdr .h1t{ font-size:16px; font-weight:800; }
+  .apd-hdr .meta{ font-size:11px; color:var(--dim); margin-top:8px; line-height:1.6; }
+  .apd-hdr .meta b{ color:#cfe0f5; }
+  .ctxbox{ background:#0e1217; border:1px solid var(--line); border-radius:11px; padding:12px; margin-bottom:12px; }
+  .ctxbox .ck{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; color:var(--faint); margin-bottom:6px; }
+  .ctxbox .tagchip{ display:inline-block; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; font-weight:700;
+    color:#9ccbff; background:#111722; border:1px solid #2f4a63; border-radius:6px; padding:3px 8px; margin:0 5px 5px 0; }
+  .ctxbox .reason{ font-size:12.5px; color:#cfe0f5; line-height:1.5; margin-top:4px; font-style:italic; }
+  .apd-btns{ display:flex; gap:9px; margin-top:6px; }
+  .apd-btns button{ flex:1; padding:15px; border:none; border-radius:13px; font-size:15px; font-weight:800; }
+  .b-approve{ background:var(--ok); color:var(--ok-ink); }
+  .b-reject{ background:#2a1414; color:#ff9b94; border:1px solid #5e2a2a; }
+  .decided{ text-align:center; padding:14px; border-radius:13px; font-size:15px; font-weight:800; margin-top:4px; }
+  .decided.ok{ background:rgba(22,192,96,.12); color:#46d684; border:1px solid rgba(22,192,96,.4); }
+  .apnote{ font-size:9.5px; color:var(--faint); text-align:center; margin-top:11px; line-height:1.5; font-family:ui-monospace,Menlo,Consolas,monospace; }
+
+  /* reject reason picker */
+  .rejlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; color:#ff9b94; margin:2px 0 8px; display:flex; align-items:center; gap:6px; }
+  .rejlbl .req{ color:#ff5147; }
+  .reasons2{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
+  .rchip2{ font-size:12px; font-weight:700; padding:9px 12px; border-radius:11px; border:1px solid var(--line); background:#0e1217; color:var(--dim); }
+  .rchip2.on{ background:rgba(255,59,48,.14); border-color:rgba(255,59,48,.5); color:#ff9b94; }
+  .noteta{ width:100%; min-height:58px; background:#0e1217; border:1px solid #5e2a2a; border-radius:11px; padding:11px;
+    color:var(--txt); font-size:12.5px; font-family:inherit; line-height:1.5; }
+  .notelbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin:2px 0 6px; }
+  .confirmrej{ width:100%; margin-top:12px; padding:15px; border:none; border-radius:13px; background:var(--bad); color:#fff; font-size:15px; font-weight:800; }
+
+  .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:26px 0 0; max-width:900px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
+  .ann b{ color:#fff; } .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; color:#9ccbff; }
+  .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
+</style>
+</head>
+<body>
+  <h1>Supervisor + Lead Mobile <span style="color:var(--warn);font-weight:700">· WIP</span> <span style="color:var(--faint);font-weight:400">(LEAN)</span></h1>
+  <p class="lead"><b>One role-scoped UI.</b> Leads see their 3 rebar cells and their shift; supervisors
+    see the whole plant, cross-shift, with Tendon/Hardware/Lumber as remote-manage panes. <b>The
+    physical scan drives the system</b> — reroutes and repositioning are read from what workers
+    actually do, not entered in a separate console.</p>
+  <div class="wipnote"><b>WORK IN PROGRESS.</b> Built: Q1–Q3 frames (reroute v1 + labeled future,
+    supervisor/lead roster, dark-cell empty state) <b>plus the new Approvals pillar</b> — a reusable
+    queue (split-load / scrap / VOID / price override) that partially answers Q5. Still
+    <b>HELD</b>: self-service (Q5), repositioning (Q8), act-as-operator (Q6). Nothing pushed live yet.
+    The <b>request-submission</b> side of approvals lives in the parallel Loader mockup.</div>
+
+  <div class="rolekey">
+    <span><i style="background:var(--warn)"></i> Supervisor frame (plant-wide)</span>
+    <span><i style="background:var(--rebar)"></i> Lead frame (shift + 3 cells)</span>
+    <span><i style="background:var(--ok)"></i> Operator/scanner frame</span>
+  </div>
+  <div class="catkey">
+    <span><i style="background:var(--rebar)"></i> Rebar Cutting</span>
+    <span><i style="background:var(--cloud)"></i> Loading</span>
+    <span><i style="background:var(--tendon)"></i> Tendon</span>
+    <span><i style="background:var(--hardware)"></i> Hardware</span>
+    <span><i style="background:var(--lumber)"></i> Lumber</span>
+  </div>
+
+  <nav class="ftabs">
+    <a href="#f1">1 · Lead home</a>
+    <a href="#f2">2 · Supervisor home</a>
+    <a href="#f3">3 · Cell drill-in</a>
+    <a href="#f4">4 · Dark cell</a>
+    <a href="#f5">5 · Reroute (v1)</a>
+    <a href="#f6">6 · Reroute (future)</a>
+    <a href="#f7">7 · Reroute audit</a>
+    <a href="#f8">8 · Approvals list</a>
+    <a href="#f9">9 · Approve</a>
+    <a href="#f10">10 · Reject</a>
+    <a class="held" href="#f11">11 · Self-service ⏸</a>
+    <a class="held" href="#f12">12 · Reposition ⏸</a>
+    <a class="held" href="#f13">13 · Act-as-op ⏸</a>
+  </nav>
+
+  <div class="screens">
+
+    <!-- ══════════ FRAME 1 — LEAD HOME ══════════ -->
+    <div class="col" id="f1">
+      <div class="frameLbl role-lead"><span class="fcount">1</span> Lead home <span class="rtag lead">LEAD</span></div>
+      <div class="frameSub">Julian's phone. Scoped to his 3 rebar cells + his shift (1st/Day). One glance:
+        are my cells hitting rate, who's missing, what's stuck, what got rerouted into me.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Julian <span class="rolepill lead">Lead</span></div>
+            <div class="sub">Rebar Yard Lead · 1st shift · today</div></div>
+          <span class="navbadge red"><span class="ic">✎</span> 5 approvals</span>
+        </div>
+
+        <div class="pulse">
+          <div class="pcard"><div class="pk">Cut rate</div><div class="pv">3.9k</div><div class="pd down">▼ 12% vs tgt</div></div>
+          <div class="pcard"><div class="pk">On shift</div><div class="pv">6/7</div><div class="pd flat">1 not in</div></div>
+          <div class="pcard"><div class="pk">Stuck</div><div class="pv" style="color:var(--warn)">3</div><div class="pd flat">tags &gt;45m</div></div>
+        </div>
+
+        <div class="sectlbl">My cells <span class="n">3</span></div>
+
+        <div class="cell cat-rebar risk">
+          <div class="crow"><div class="cnm">Rebar Cutting</div>
+            <div class="cstat"><span class="rate">3.9k</span><span class="unit">lb/h</span>
+              <span class="delta down">▼ 12%</span></div></div>
+          <div class="cmeta"><span><b>6</b> operators</span><span class="flag bad">● 3 stuck tags</span>
+            <span><b>Shear</b> pacing behind</span></div>
+          <span class="caret">tap to drill in ▾</span>
+        </div>
+
+        <div class="cell cat-loading">
+          <div class="crow"><div class="cnm">Loading</div>
+            <div class="cstat"><span class="rate">14</span><span class="unit">loads</span>
+              <span class="delta up">▲ on pace</span></div></div>
+          <div class="cmeta"><span><b>2</b> loaders</span><span class="flag ok">● clear</span>
+            <span>last load <b>6m</b> ago</span></div>
+          <span class="caret">tap to drill in ▾</span>
+        </div>
+
+        <div class="cell cat-rebar dark">
+          <div class="crow"><div class="cnm">Rebar Bundling</div>
+            <div class="cstat"><span class="delta none">no data</span></div></div>
+          <div class="darkbody">
+            <div class="dh">⚠ Not scanning yet</div>
+            <div class="dt"><b>20 Station</b> is defined in the station registry
+              (<code>scan_stations:</code>) but is <b>not in the scanner picker</b>
+              (<code>config.SCAN_STATIONS</code>) — so it emits zero events. This cell can't show a
+              rate until the station is wired.</div>
+            <div class="fix">→ Fix: add "20 Station" to the picker list + deploy.</div>
+          </div>
+        </div>
+
+        <div class="sectlbl">Rerouted into my cells <span class="n">2</span></div>
+        <div class="incoming"><span class="num">FT0431#12</span>
+          <span class="info">#5 · 23-06 · was headed to Shear queue</span>
+          <span class="from">from Big Bender</span></div>
+        <div class="incoming"><span class="num">FT0429#07</span>
+          <span class="info">#4 · stirrup · confirmed reroute 08:51</span>
+          <span class="from">from 22N</span></div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 2 — SUPERVISOR HOME ══════════ -->
+    <div class="col" id="f2">
+      <div class="frameLbl role-sup"><span class="fcount">2</span> Supervisor home <span class="rtag sup">SUPERVISOR</span></div>
+      <div class="frameSub">Ricki's phone. Plant-wide, cross-shift. Hotspot surfaces first; every cell
+        visible incl. remote-manage Tendon/Hardware/Lumber. Self-service beats a phone call.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Ricki A. <span class="rolepill sup">Supervisor</span></div>
+            <div class="sub">Plant-wide · cross-shift</div></div>
+          <span class="navbadge red"><span class="ic">✎</span> 5 approvals</span>
+        </div>
+
+        <div class="hotspot">
+          <div class="hh">🔥 Hotspot</div>
+          <div class="ht">Rebar Cutting is 12% behind target on 1st shift.</div>
+          <div class="ha">Shear pacing behind + 3 tags stuck &gt;45m. 6/7 operators in. Lead: Julian.</div>
+          <button class="hbtn">Open Rebar Cutting →</button>
+        </div>
+
+        <div class="pulse">
+          <div class="pcard"><div class="pk">Plant rate</div><div class="pv">9.2k</div><div class="pd down">▼ 6%</div></div>
+          <div class="pcard"><div class="pk">Cells OK</div><div class="pv">3/6</div><div class="pd flat">3 dark</div></div>
+          <div class="pcard"><div class="pk">Reroutes</div><div class="pv" style="color:var(--warn)">5</div><div class="pd flat">last hr</div></div>
+        </div>
+
+        <div class="sectlbl">Rebar floor <span class="n">on-floor</span></div>
+        <div class="cell cat-rebar risk">
+          <div class="crow"><div class="cnm">Rebar Cutting</div>
+            <div class="cstat"><span class="rate">3.9k</span><span class="unit">lb/h</span><span class="delta down">▼ 12%</span></div></div>
+          <div class="cmeta"><span>1st · <b>Julian</b></span><span class="flag bad">● 3 stuck</span><span><b>6/7</b> in</span></div>
+          <span class="caret">tap ▾</span>
+        </div>
+        <div class="cell cat-loading">
+          <div class="crow"><div class="cnm">Loading</div>
+            <div class="cstat"><span class="rate">14</span><span class="unit">loads</span><span class="delta up">▲</span></div></div>
+          <div class="cmeta"><span>1st · <b>Julian</b></span><span class="flag ok">● clear</span></div>
+          <span class="caret">tap ▾</span>
+        </div>
+        <div class="cell cat-rebar dark">
+          <div class="crow"><div class="cnm">Rebar Bundling</div>
+            <div class="cstat"><span class="delta none">no data</span></div></div>
+          <div class="cmeta"><span class="flag warn">⚠ 20 Station not scanning — wire station</span></div>
+        </div>
+
+        <div class="sectlbl">Remote-manage <span class="n">off-floor</span></div>
+        <div class="cell cat-tendon dark">
+          <div class="crow"><div class="cnm">Tendon <span class="cremote">Remote</span></div>
+            <div class="cstat"><span class="delta none">no data</span></div></div>
+          <div class="cmeta"><span class="flag warn">⚠ PT Atlas + Hayes not scanning — wire stations</span></div>
+        </div>
+        <div class="cell cat-hardware">
+          <div class="crow"><div class="cnm">Hardware <span class="cremote">Remote</span></div>
+            <div class="cstat"><span class="rate">1.1k</span><span class="unit">lb/h</span><span class="delta none">no tgt</span></div></div>
+          <div class="cmeta"><span><b>1</b> scanning</span><span class="flag ok">● active</span><span class="notgt">no target set · Q7</span></div>
+          <span class="caret">tap ▾</span>
+        </div>
+        <div class="cell cat-lumber dark">
+          <div class="crow"><div class="cnm">Lumber <span class="cremote">Remote</span></div>
+            <div class="cstat"><span class="delta none">no data</span></div></div>
+          <div class="cmeta"><span class="flag warn">⚠ Lumber station not scanning — wire station</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 3 — CELL DRILL-IN ══════════ -->
+    <div class="col" id="f3">
+      <div class="frameLbl role-lead"><span class="fcount">3</span> Cell drill-in <span class="rtag lead">LEAD/SUP</span></div>
+      <div class="frameSub">Rebar Cutting opened. Rates per machine (only the 5 with targets show a
+        bar), operators + who's off, stuck tags. Same view for lead and supervisor — scope differs upstream.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Rebar Cutting</div><div class="sub">1st shift · Lead: Julian</div></div>
+          <div class="win"><div class="k">Rate</div><div class="v" style="color:#ff7b73">3.9k ▼12%</div></div>
+        </div>
+
+        <div class="sectlbl">Machines <span class="n">7</span></div>
+        <div class="mbar"><span class="mn">Shear</span><div class="track"><i style="width:62%;background:var(--bad)"></i></div><span class="val">2.5k <span class="t">/4k</span></span></div>
+        <div class="mbar"><span class="mn">Big Single Bender</span><div class="track"><i style="width:95%;background:var(--ok)"></i></div><span class="val">2.1k <span class="t">/2.25k</span></span></div>
+        <div class="mbar"><span class="mn">22N</span><div class="track"><i style="width:88%;background:var(--ok)"></i></div><span class="val">2.6k <span class="t">/3k</span></span></div>
+        <div class="mbar"><span class="mn">Prima</span><div class="track"><i style="width:80%;background:var(--warn)"></i></div><span class="val">1.6k <span class="t">/2k</span></span></div>
+        <div class="mbar"><span class="mn">Double Bender</span><div class="track"><i style="width:70%;background:var(--warn)"></i></div><span class="val">0.7k <span class="t">/1k</span></span></div>
+        <div class="mbar"><span class="mn">Small Single Bender</span><div class="track" style="opacity:.4"><i style="width:0%"></i></div><span class="notgt">no target · Q7</span></div>
+        <div class="mbar"><span class="mn">Radius Bender</span><div class="track" style="opacity:.4"><i style="width:0%"></i></div><span class="notgt">no target · Q7</span></div>
+
+        <div class="sectlbl">Operators <span class="n">6 in · 1 off</span></div>
+        <div class="wrow"><div class="av">JG</div><div><div class="wnm">J. Guerra</div><div class="wst">Shear · last scan 2m ago</div></div><div class="wr"><div class="rr">2.5k</div><div class="rl">lb/h</div></div></div>
+        <div class="wrow"><div class="av">MR</div><div><div class="wnm">M. Reyes</div><div class="wst">Big Bender · last scan 4m ago</div></div><div class="wr"><div class="rr">2.1k</div><div class="rl">lb/h</div></div></div>
+        <div class="wrow"><div class="av">AL</div><div><div class="wnm">A. Luna</div><div class="wst">22N · last scan 1m ago</div></div><div class="wr"><div class="rr">2.6k</div><div class="rl">lb/h</div></div></div>
+        <div class="wrow off"><div class="av">DP</div><div><div class="wnm">D. Peña</div><div class="wst">Radius Bender · no scans this shift</div></div><span class="offtag">not in</span></div>
+
+        <div class="sectlbl">Stuck tags <span class="n">3 · &gt;45m in-fab</span></div>
+        <div class="stuck"><span class="num">FT0428#31</span><span class="info">#8 · in-fab at Shear, no move</span><span class="age">1h 12m</span></div>
+        <div class="stuck"><span class="num">FT0430#04</span><span class="info">#5 · in-fab at Double Bender</span><span class="age">58m</span></div>
+        <div class="stuck"><span class="num">FT0430#19</span><span class="info">#6 · in-fab at Shear</span><span class="age">47m</span></div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 4 — DARK CELL DETAIL ══════════ -->
+    <div class="col" id="f4">
+      <div class="frameLbl role-sup"><span class="fcount">4</span> Dark cell <span class="rtag sup">Q3 · honest</span></div>
+      <div class="frameSub">Tapping a remote-manage dark cell. No fabricated numbers — it says exactly why
+        it's empty and what the one fix is. This is the cheapest real improvement in the whole set.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Tendon <span class="cremote" style="color:var(--purple);border-color:rgba(167,139,250,.4);border-radius:5px;padding:1px 6px;border:1px solid">Remote</span></div>
+            <div class="sub">PT Atlas · Hayes</div></div>
+          <div class="win"><div class="k">Status</div><div class="v" style="color:var(--warn)">Not scanning</div></div>
+        </div>
+
+        <div class="darkbody" style="margin-top:2px">
+          <div class="dh">⚠ This cell isn't scanning yet</div>
+          <div class="dt">Both Tendon stations — <b>PT Atlas</b> and <b>Hayes</b> — are defined in the
+            v8 station registry (<code>scan_stations:</code>, branch e339415, tagged
+            <code>tag_type: strand</code>) but neither appears in the live scanner picker
+            (<code>config.SCAN_STATIONS</code>, <code>config.py:61</code>). No worker can select them,
+            so they emit <b>zero events</b> and this pane has nothing to show.</div>
+        </div>
+
+        <div class="sectlbl">What "wire the station" means</div>
+        <div class="darkbody" style="background:#0e1217;border-style:solid;border-color:var(--line)">
+          <div class="dt" style="margin-top:0">1 · Add <code>"PT Atlas"</code> and <code>"Hayes"</code>
+            to <code>SCAN_STATIONS</code>.<br>2 · Deploy — the picker reads the list at page-serve,
+            no HTML change.<br>3 · Scans start flowing; <code>work_center_for()</code> already resolves
+            any station to a work-center, so analytics don't break.</div>
+          <div class="fix">→ Est. one config line per station + a deploy. No new endpoints.</div>
+        </div>
+
+        <div class="sectlbl">Until then</div>
+        <div class="darkbody">
+          <div class="dt" style="margin-top:0">Supervisor manages Tendon <b>by phone</b> (off-floor).
+            This pane will light up the moment the stations are in the picker — no other work needed on
+            the read side. <b>Same empty state applies to</b> 20 Station (Bundling) and Lumber.</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 5 — SCANNER REROUTE (v1 sequence) ══════════ -->
+    <div class="col" id="f5">
+      <div class="frameLbl role-op"><span class="fcount">5</span> Reroute · v1 <span class="rtag op">OPERATOR</span></div>
+      <div class="frameSub">The scan-at-wrong-station IS the reroute signal. v1 (ships today): the tag
+        already finished at a bender, now it's scanned at Small Single Bender — out of sequence. Confirm.</div>
+      <div class="phone"><div class="scr">
+        <div class="scanhdr">
+          <div class="st">Scanning as</div>
+          <div class="op">M. Reyes <span class="stn">Small Single Bender</span></div>
+        </div>
+
+        <div class="reroute">
+          <div class="rlbl">⚠ Out-of-sequence scan</div>
+          <div class="rq">Confirm this tag was rerouted here?</div>
+          <div class="tagline">FT0431#12 · #5 · 23-06</div>
+
+          <div class="flow">
+            <div class="flowbox exp"><div class="fk">Already finished</div><div class="fv">Big Bender</div></div>
+            <span class="arr">→</span>
+            <div class="flowbox act"><div class="fk">Scanned now</div><div class="fv">Small Bender</div></div>
+          </div>
+
+          <div class="why">This tag already has a <b>finished-op event at a bender</b>
+            (Big Single Bender, 08:47). Scanning it again at another bender means the work moved —
+            confirm so the log shows the reroute, or cancel if this was a mis-scan.</div>
+
+          <div class="rbtns">
+            <button class="r-yes">Yes — rerouted here</button>
+            <button class="r-no">No — cancel scan</button>
+          </div>
+          <div class="emits">emits TAG_REROUTED_IMPLICIT · trigger:"sequence"<br>+ the normal OP_FINISHED for Small Bender</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 6 — SCANNER REROUTE (future) ══════════ -->
+    <div class="col" id="f6">
+      <div class="frameLbl role-op"><span class="fcount">6</span> Reroute · future <span class="rtag op">OPERATOR</span></div>
+      <div class="frameSub">Same surface, richer trigger — shown so James sees the aspiration. Needs
+        persisted per-tag machine assignment (MACHINE_ROUTING_V1 seam). Clearly labeled FUTURE, not built.</div>
+      <div class="phone"><div class="scr">
+        <div class="scanhdr">
+          <div class="st">Scanning as</div>
+          <div class="op">M. Reyes <span class="stn">M-4</span></div>
+        </div>
+
+        <div class="reroute future">
+          <div class="rlbl">◆ Planned-machine mismatch <span class="futrib">Future</span></div>
+          <div class="rq">This tag was planned for M-3.</div>
+          <div class="tagline">FT0431#18 · #6 · 3-bend stirrup</div>
+
+          <div class="flow">
+            <div class="flowbox exp" style="border-color:#3a3a6a"><div class="fk">Planned</div><div class="fv" style="color:var(--purple)">M-3</div></div>
+            <span class="arr">→</span>
+            <div class="flowbox act"><div class="fk">Scanned now</div><div class="fv">M-4</div></div>
+          </div>
+
+          <div class="why">The optimizer assigned this tag to <b>M-3</b>. You're at <b>M-4</b>. If you're
+            taking the work, confirm the reroute so the plan and the floor stay in sync.
+            <b>Requires per-tag machine assignment to be persisted first</b> — not live today.</div>
+
+          <div class="rbtns">
+            <button class="r-yes">Confirm — I'm running it on M-4</button>
+            <button class="r-no">No — cancel scan</button>
+          </div>
+          <div class="emits">would emit TAG_REROUTED_IMPLICIT · trigger:"planned_machine_mismatch"<br>expected_machine:"M-3" · actual_machine:"M-4"</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 7 — REROUTE AUDIT (supervisor aftermath) ══════════ -->
+    <div class="col" id="f7">
+      <div class="frameLbl role-sup"><span class="fcount">7</span> Reroute audit <span class="rtag sup">SUPERVISOR</span></div>
+      <div class="frameSub">Supervisor sees the aftermath, never the action. Confirmed reroutes grouped
+        by from→to over a window. "3 tags rerouted M-3→M-4 last hour" — a pattern to notice, not a task.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Reroutes</div><div class="sub">Confirmed · last 2 hours</div></div>
+          <div class="win"><div class="k">Total</div><div class="v" style="color:var(--warn)">9 tags</div></div>
+        </div>
+
+        <div class="sectlbl">Sequence reroutes <span class="n">v1 · live</span></div>
+        <div class="audrow">
+          <div class="arflow"><span class="m">Big Bender</span><span class="arr">→</span><span class="m">Small Bender</span>
+            <span class="cnt">3<span class="u"> tags</span></span></div>
+          <div class="armeta">confirmed by 2 operators · 08:47–09:31</div>
+          <div class="artags">FT0431#12 · FT0431#15 · FT0430#22</div>
+        </div>
+        <div class="audrow">
+          <div class="arflow"><span class="m">22N</span><span class="arr">→</span><span class="m">Prima</span>
+            <span class="cnt">2<span class="u"> tags</span></span></div>
+          <div class="armeta">confirmed by A. Luna · 08:51, 09:04</div>
+          <div class="artags">FT0429#07 · FT0429#09</div>
+        </div>
+        <div class="audrow">
+          <div class="arflow"><span class="m">Shear</span><span class="arr">→</span><span class="m">Double Bender</span>
+            <span class="cnt">1<span class="u"> tag</span></span></div>
+          <div class="armeta">confirmed by J. Guerra · 09:12</div>
+          <div class="artags">FT0430#04</div>
+        </div>
+
+        <div class="sectlbl">Planned-machine mismatch <span class="n">future · not live</span></div>
+        <div class="audrow future">
+          <div class="arflow"><span class="m">M-3</span><span class="arr">→</span><span class="m">M-4</span>
+            <span class="cnt">3<span class="u"> tags</span></span></div>
+          <div class="armeta">would appear here once machine assignment is persisted</div>
+          <div class="artags">grouped by expected_machine → actual_machine</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 8 — APPROVALS LIST ══════════ -->
+    <div class="col" id="f8">
+      <div class="frameLbl role-sup"><span class="fcount">8</span> Approvals list <span class="rtag sup">SUP/LEAD</span></div>
+      <div class="frameSub">New pillar. Reusable <code style="font-family:ui-monospace">hpt-approvals</code>
+        queue — split-load / scrap / VOID / price override. Plant-wide: leads and supervisors see the same
+        list (no cell scope). Most-urgent first; age escalates gold→red; truck-waiting jumps the queue.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Approvals</div><div class="sub">5 pending · most urgent first</div></div>
+          <span class="navbadge red"><span class="ic">✎</span> 5</span>
+        </div>
+        <div class="scopebar"><b>Plant-wide</b> — leads and supervisors see the same list. Any approver
+          can take any request (no cell scope, self-approval allowed). Notify: nav badge + PWA push.</div>
+
+        <div class="aprow age-red">
+          <span class="aptype split">Split-load</span>
+          <div class="apmid">
+            <div class="aptitle">Carry 2 tags to next run</div>
+            <div class="apctx">Bin <span class="mono">X18</span> · <span class="mono">FT0431#12, #15</span> · Loading</div>
+            <div class="apsub">by M. Reyes · 08:20</div>
+          </div>
+          <div class="apright"><span class="truck">🚚 Truck waiting</span><span class="apage red">22m</span></div>
+          <span class="caret2">tap ▾</span>
+        </div>
+
+        <div class="aprow age-amber">
+          <span class="aptype void">VOID</span>
+          <div class="apmid">
+            <div class="aptitle">Void mis-scan at Shear</div>
+            <div class="apctx">Tag <span class="mono">FT0428#31</span> · scanned twice · Rebar Cutting</div>
+            <div class="apsub">by J. Guerra · 08:33</div>
+          </div>
+          <div class="apright"><span class="apage amber">9m</span></div>
+          <span class="caret2">tap ▾</span>
+        </div>
+
+        <div class="aprow age-gold">
+          <span class="aptype scrap">Scrap</span>
+          <div class="apmid">
+            <div class="aptitle">Scrap short cut — #8, 3 bars</div>
+            <div class="apctx">Bin <span class="mono">X23</span> · <span class="mono">FT0430#04</span> · Rebar Cutting</div>
+            <div class="apsub">by A. Luna · 08:39</div>
+          </div>
+          <div class="apright"><span class="apage gold">3m</span></div>
+          <span class="caret2">tap ▾</span>
+        </div>
+
+        <div class="aprow age-gold">
+          <span class="aptype price">Price override</span>
+          <div class="apmid">
+            <div class="aptitle">Manual price — walk-in order</div>
+            <div class="apctx">Order <span class="mono">HP-55821</span> · Hardware</div>
+            <div class="apsub">by D. Peña · 08:40</div>
+          </div>
+          <div class="apright"><span class="apage gold">2m</span></div>
+          <span class="caret2">tap ▾</span>
+        </div>
+
+        <div class="aprow age-gold">
+          <span class="aptype split">Split-load</span>
+          <div class="apmid">
+            <div class="aptitle">Partial — leave 1 bin for AM</div>
+            <div class="apctx">Bin <span class="mono">X7</span> · <span class="mono">FT0431#40</span> · Loading</div>
+            <div class="apsub">by M. Reyes · 08:41</div>
+          </div>
+          <div class="apright"><span class="apage gold">1m</span></div>
+          <span class="caret2">tap ▾</span>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 9 — APPROVALS DETAIL (APPROVE) ══════════ -->
+    <div class="col" id="f9">
+      <div class="frameLbl role-sup"><span class="fcount">9</span> Approve <span class="rtag sup">SUP/LEAD</span></div>
+      <div class="frameSub">Tapped the urgent split-load. Full context — enough to decide without a call.
+        Approve is one tap (note optional). Decision stamps approver + timestamp on the shared record.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">← Approvals</div><div class="sub">Split-load request</div></div>
+          <span class="navbadge red"><span class="ic">✎</span> 5</span>
+        </div>
+
+        <div class="apd-hdr">
+          <div class="row1"><span class="aptype split">Split-load</span><span class="h1t">Carry 2 tags to next run</span></div>
+          <div class="meta">Submitted by <b>M. Reyes</b> (Loading) · <b>08:20</b> · <span style="color:#ff5147;font-weight:800">22m ago</span><br>
+            <span style="color:#ff5147;font-weight:800">🚚 Truck waiting</span> — flagged urgent by submitter</div>
+        </div>
+
+        <div class="ctxbox">
+          <div class="ck">Context</div>
+          <div style="font-size:12px;color:var(--dim);margin-bottom:8px">Bin <b style="color:#cfe0f5">X18</b> · Kennedy V · ship today</div>
+          <span class="tagchip">FT0431#12</span><span class="tagchip">FT0431#15</span>
+          <div class="ck" style="margin-top:12px">Reason given</div>
+          <div class="reason">"Trailer full — carry these 2 to the next run, rest is loaded."</div>
+        </div>
+
+        <div class="apd-btns">
+          <button class="b-approve">✓ Approve</button>
+          <button class="b-reject">Reject</button>
+        </div>
+        <div class="apnote">approve → status:"approved" · approver_id + decided_at stamped<br>submitter notified · truck released</div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 10 — APPROVALS DETAIL (REJECT) ══════════ -->
+    <div class="col" id="f10">
+      <div class="frameLbl role-sup"><span class="fcount">10</span> Reject <span class="rtag sup">SUP/LEAD</span></div>
+      <div class="frameSub">Reject requires a reason (dropdown) + optional note — same audit discipline as
+        supervisor corrections elsewhere. The reason is stored on the shared record's decision_note.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">← Reject request</div><div class="sub">Split-load · X18</div></div>
+          <span class="navbadge red"><span class="ic">✎</span> 5</span>
+        </div>
+
+        <div class="apd-hdr">
+          <div class="row1"><span class="aptype split">Split-load</span><span class="h1t">Carry 2 tags to next run</span></div>
+          <div class="meta">by <b>M. Reyes</b> · Bin <b>X18</b> · <span class="mono" style="font-family:ui-monospace">FT0431#12, #15</span></div>
+        </div>
+
+        <div class="rejlbl"><span class="req">●</span> Reason for rejection <span style="color:var(--faint);font-weight:600;text-transform:none;letter-spacing:0">— required</span></div>
+        <div class="reasons2">
+          <span class="rchip2 on">Load it all — trailer has room</span>
+          <span class="rchip2">Wrong bin</span>
+          <span class="rchip2">Not authorized to split</span>
+          <span class="rchip2">Tags not ready</span>
+          <span class="rchip2">Other</span>
+        </div>
+
+        <div class="notelbl">Optional note to submitter</div>
+        <textarea class="noteta" placeholder="e.g. Re-check — trailer 4 has 2 more slots, load all of X18.">Re-check — trailer 4 has 2 more slots, load all of X18.</textarea>
+
+        <button class="confirmrej">Reject &amp; send reason</button>
+        <div class="apnote">reject → status:"rejected" · decision_note = reason + note<br>submitter sees the reason on their device</div>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 11 — HELD: SELF-SERVICE ══════════ -->
+    <div class="col" id="f11">
+      <div class="frameLbl"><span class="fcount">11</span> Self-service <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
+      <div class="frameSub">Four query surfaces: order status · is-it-loaded · ETA to finish · capacity
+        forecast. Data sources are mapped in the spec; the layout depends on the audience.</div>
+      <div class="phone"><div class="scr held">
+        <div class="hi">⏸</div>
+        <div class="hq">Awaiting Q5</div>
+        <h2>Self-service surfaces</h2>
+        <p>Order status · Is it loaded · ETA to finish · Production capacity forecast.</p>
+        <p class="dep"><b>Blocked on Q5 — audience:</b> is this the supervisor answering their <b>own</b>
+          question on the floor, or a surface handed to office/customers so nobody calls? That decides
+          auth, PII exposure, and layout. Also touches <b>Q4</b> (which status vocabulary) and
+          <b>Q7</b> (targets) for the ETA math.</p>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 12 — HELD: REPOSITION ══════════ -->
+    <div class="col" id="f12">
+      <div class="frameLbl"><span class="fcount">12</span> Reposition <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
+      <div class="frameSub">"Move Alberto to M-3." Existing primitives could back it, but durable vs
+        shift-scoped changes which one — and the whole interaction.</div>
+      <div class="phone"><div class="scr held">
+        <div class="hi">⏸</div>
+        <div class="hq">Awaiting Q8</div>
+        <h2>Repositioning workers</h2>
+        <p>Reassign a worker to a machine / cell from the floor.</p>
+        <p class="dep"><b>Blocked on Q8 — durable vs shift-scoped:</b> a durable role change
+          (<code style="color:#9ccbff">/api/portal-role</code>) vs a temporary "this shift only"
+          assignment (the <code style="color:#9ccbff">ShiftOverrides</code> 7-day-TTL primitive). One is
+          a permanent edit, the other expires — different confirm copy, different undo, different audit.</p>
+      </div></div>
+    </div>
+
+    <!-- ══════════ FRAME 13 — HELD: ACT-AS-OPERATOR ══════════ -->
+    <div class="col" id="f13">
+      <div class="frameLbl"><span class="fcount">13</span> Act-as-operator <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
+      <div class="frameSub">Supervisor substitutes in and scans as an operator/loader — reusing the LEAN
+        loader components. The blocker is attribution, not layout.</div>
+      <div class="phone"><div class="scr held">
+        <div class="hi">⏸</div>
+        <div class="hq">Awaiting Q6</div>
+        <h2>Act as operator / loader</h2>
+        <p>Supervisor steps in and scans, reusing the LEAN loader kit + override scopes
+          (void_scan, out_of_seq_op, reprint_tag, manual_capture_approve).</p>
+        <p class="dep"><b>Blocked on Q6 — attribution:</b> does the substitute scan credit the
+          <b>supervisor</b>, the <b>absent worker</b>, or a distinct <b>on-behalf-of</b> actor? No
+          impersonation primitive exists today — <code style="color:#9ccbff">actor</code> is the
+          device's registered pseudonym. This decides whether the hourly grid credits the operator's
+          row or opens a supervisor row.</p>
+      </div></div>
+    </div>
+
+  </div>
+
+  <div class="ann">
+    <b>Reading this mockup.</b> Frames 1–7 are the Q1–Q3-unblocked build; frames 8–10 are the new
+    <b>Approvals pillar</b> (reusable queue, approver side); frames 11–13 are deliberately <b>held</b>
+    until James answers Q5/Q8/Q6. The approvals record is shared with the parallel Loader mockup
+    (submission side) — see spec §5a. Numbers are illustrative. Every "no target · Q7" and
+    "not scanning — wire station" marker is a <b>real gap in the current system</b>, surfaced on purpose
+    rather than papered over. Reroute events follow the <code>TAG_REROUTED_IMPLICIT</code> schema in the
+    design note (§5). Full design note lives in the private repo at
+    <code>docs/spec/supervisor-lead-mobile-design-2026-07-24.md</code>.
+  </div>
+</body>
+</html>
