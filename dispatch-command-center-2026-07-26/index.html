@@ -233,8 +233,6 @@
   .toc h3{margin:0 0 8px;font-size:13px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
   .toc ol{margin:0;padding-left:20px;font-size:13px;line-height:1.7;}
   .toc a{color:var(--info);}
-
-  /* ---- New styles for Frames 7-9 (Manager AI Interaction) ---- */
   .qa-bar{background:#fff;border-bottom:1px solid var(--line);padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
   .qa-bar .qa-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-right:6px;}
   .qa-btn{background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:8px 12px;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:500;color:var(--ink);}
@@ -286,31 +284,90 @@
   .alert-card .ac-actions button{width:100%;justify-content:center;}
   .focus-note{background:#fafbfd;padding:14px 20px;color:var(--ink-mute);font-size:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
   .focus-note b{color:var(--ink);}
+
+  /* ---- Rule citation on every AI proposal card ---- */
+  .rule-cite{font-size:10.5px;color:var(--ink-faint);margin-top:8px;padding-top:6px;border-top:1px dashed #f0f1f4;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;display:flex;align-items:center;gap:5px;}
+  .rule-cite a{color:var(--info);font-weight:600;}
+  .rule-cite .rc-ic{opacity:.7;}
+
+  /* ---- Frame 10 — AI Rules Registry ---- */
+  .rr-layout{display:grid;grid-template-columns:420px 1fr;height:720px;}
+  .rr-list{background:#fff;border-right:1px solid var(--line);overflow-y:auto;}
+  .rr-filters{padding:12px 14px;border-bottom:1px solid var(--line);background:#fafbfd;position:sticky;top:0;z-index:2;}
+  .rr-search{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:8px;font-family:inherit;}
+  .rr-catfilter{display:flex;gap:4px;flex-wrap:wrap;}
+  .rr-catfilter .cf-btn{background:#fff;border:1px solid var(--line-strong);border-radius:999px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:500;}
+  .rr-catfilter .cf-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .rr-row{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .rr-row:hover{background:#fafbfd;}
+  .rr-row.selected{background:#fff7ed;border-left:3px solid var(--brand);}
+  .rr-row .r-id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--ink);background:#f3f4f6;padding:2px 6px;border-radius:3px;letter-spacing:.02em;display:inline-block;}
+  .rr-row .r-name{font-weight:600;font-size:13px;margin:5px 0 5px;color:var(--ink);line-height:1.35;}
+  .rr-row .r-meta{font-size:11px;color:var(--ink-faint);}
+  .rr-row .r-chips{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;}
+  .cat-chip{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:3px;}
+  .cat-chip.opt{background:var(--tint-info);color:#1d4ed8;}
+  .cat-chip.alert{background:var(--tint-warn);color:#b45309;}
+  .cat-chip.auto{background:var(--tint-brand);color:var(--brand-dk);}
+  .cat-chip.constraint{background:#e0e7ff;color:#4338ca;}
+  .status-chip{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:3px;}
+  .status-chip.active{background:var(--tint-ok);color:#15803d;}
+  .status-chip.draft{background:#f3f4f6;color:var(--ink-mute);}
+  .status-chip.retired{background:var(--tint-bad);color:#b91c1c;}
+  .rr-detail{padding:20px 24px;overflow-y:auto;background:#fafbfd;}
+  .rr-detail-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px;}
+  .rr-detail-head h3{margin:6px 0 0;font-size:17px;line-height:1.35;}
+  .rr-detail-head .r-id-detail{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--ink);background:#f3f4f6;padding:3px 8px;border-radius:4px;display:inline-block;margin-right:8px;}
+  .rr-toggle{display:flex;align-items:center;gap:8px;}
+  .toggle-sw{width:44px;height:24px;background:var(--ok);border-radius:12px;position:relative;cursor:pointer;transition:background .15s;}
+  .toggle-sw::after{content:"";position:absolute;right:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .toggle-sw.off{background:#d1d5db;}
+  .toggle-sw.off::after{left:2px;right:auto;}
+  .rr-section{margin-bottom:20px;}
+  .rr-section h4{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700;}
+  .rr-section .body{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;color:var(--ink);}
+  .rr-section .body.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--ink);background:#f9fafb;white-space:pre-wrap;}
+  .params-table{width:100%;font-size:12px;}
+  .params-table td{padding:8px 12px;border-bottom:1px dashed #f0f1f4;vertical-align:top;}
+  .params-table tr:last-child td{border-bottom:none;}
+  .params-table td.k{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;width:200px;}
+  .params-table td.v{font-weight:600;width:140px;}
+  .params-table td.d{color:var(--ink-faint);font-size:11.5px;}
+  .hist-row{padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px;}
+  .hist-row:last-child{border-bottom:none;}
+  .hist-row .hr-line1{display:flex;justify-content:space-between;margin-bottom:3px;align-items:baseline;}
+  .hist-row .hr-actor{font-weight:600;color:var(--ink);}
+  .hist-row .hr-time{color:var(--ink-faint);font-size:11px;}
+  .hist-row .hr-change{color:var(--ink);font-size:12px;font-family:ui-monospace,monospace;background:#f9fafb;padding:2px 6px;border-radius:3px;display:inline-block;margin-top:2px;}
+  .hist-row .hr-reason{color:var(--ink-mute);font-size:11.5px;font-style:italic;margin-top:4px;line-height:1.4;}
+  .rp-link{display:block;padding:6px 0;font-size:12.5px;border-bottom:1px dashed #f0f1f4;}
+  .rp-link:last-child{border-bottom:none;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="mockup-note">
-    <strong>Mockup — HPT Dispatch Command Center</strong> · 2026-07-26 · concept for AI-assisted, human-approved task assignment to stressing subcontractors.<br>
+    <strong>Mockup &mdash; HPT Dispatch Command Center</strong> &middot; 2026-07-26 &middot; concept for AI-assisted, human-approved task assignment to stressing subcontractors.<br>
     Not production. Uses illustrative subs / addresses drawn from a real Stressing Report export. AI proposals, capacity numbers, weather, and pin positions are for layout demonstration only. Serves as the visual reference for the requirements doc handed to the consultant. Base URL pattern: <code>cloud.houstonposttension.com/dispatch/*</code>. Companion spec: <code>requirements.md</code> in this folder.
   </div>
   <div class="toc">
     <h3>Frames</h3>
     <ol>
-      <li><a href="#f1">Command Center — home (overview + AI queue + past due)</a></li>
-      <li><a href="#f2">Sub detail — 7-day view with per-day stops, cables, and est hours</a></li>
-      <li><a href="#f3">Approval queue — reviewing an AI-proposed reassignment</a></li>
-      <li><a href="#f4">Weather impact — flagging a zone so the optimizer defers work</a></li>
-      <li><a href="#f5">Improved nightly PDF — day-grouped with cables + est hours + route order</a></li>
-      <li><a href="#f6">Sub capacity setup — the profile that drives the optimizer</a></li>
-      <li><a href="#f7">Manager AI · natural-language event input with live parse preview</a></li>
-      <li><a href="#f8">Manager AI · quick-action bar + structured form (5 common events)</a></li>
-      <li><a href="#f9">Manager AI · AI-initiated alerts (weather + GPS-lag examples)</a></li>
+      <li><a href="#f1">Command Center &mdash; home (overview + AI queue + past due)</a></li>
+      <li><a href="#f2">Sub detail &mdash; 7-day view with per-day stops, cables, and est hours</a></li>
+      <li><a href="#f3">Approval queue &mdash; reviewing an AI-proposed reassignment</a></li>
+      <li><a href="#f4">Weather impact &mdash; flagging a zone so the optimizer defers work</a></li>
+      <li><a href="#f5">Improved nightly PDF &mdash; day-grouped with cables + est hours + route order</a></li>
+      <li><a href="#f6">Sub capacity setup &mdash; the profile that drives the optimizer</a></li>
+      <li><a href="#f7">Manager AI &middot; natural-language event input with live parse preview</a></li>
+      <li><a href="#f8">Manager AI &middot; quick-action bar + structured form (5 common events)</a></li>
+      <li><a href="#f9">Manager AI &middot; AI-initiated alerts (weather + GPS-lag examples)</a></li>
+      <li><a href="#f10">AI Rules Registry &mdash; browsable, versioned, auditable rules</a></li>
     </ol>
   </div>
 
   <div class="frame" id="f1">
-    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 9</span></div>
+    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 10</span></div>
     <div class="frame-body"><div class="app">
       <div class="topbar">
         <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
@@ -385,11 +442,11 @@
         <div class="panel">
           <div class="panel-head"><h3>AI suggestions &middot; 8</h3><span class="meta">Last run: 4 min ago</span></div>
           <div class="ai-summary"><b>Summary:</b> 4 reassignments proposed (Julio's machine-down + weather in Crosby), 2 reschedules, 2 load rebalances. Est. impact: <b>+11% on-time</b>, <b>&minus;38 mi drive</b> this week.</div>
-          <div class="ai-item"><div class="ai-head"><span class="ai-type reassign">Reassign</span></div><div class="ai-title">Move 3 Woodsons Reserve tasks from Julio &rarr; Sam</div><div class="ai-body">Julio down 5 days. Sam is 32% under capacity Mon&ndash;Wed and works same zone. Drive time neutral.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
-          <div class="ai-item"><div class="ai-head"><span class="ai-type reschedule">Reschedule</span></div><div class="ai-title">Defer 14 Crosby tasks by 2 days (weather)</div><div class="ai-body">Rain forecast Mon&ndash;Wed. Pushing to Thu&ndash;Sat keeps Felipe + Ever + Eric within capacity and preserves on-time targets.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
-          <div class="ai-item"><div class="ai-head"><span class="ai-type load">Load balance</span></div><div class="ai-title">Shift 2 Candela tasks from Cameron &rarr; Marco</div><div class="ai-body">Cameron over cap Wed (7.5h). Marco 44% open. Same GC (Westin), 4 mi apart.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
-          <div class="ai-item"><div class="ai-head"><span class="ai-type overdue">Overdue</span></div><div class="ai-title">Reassign 2 past-due tasks to Ricardo</div><div class="ai-body">River Ranch Trails (Dayton) &mdash; 9 days overdue, currently unassigned. Ricardo has Wed capacity and is nearest available.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
-          <div class="ai-item"><div class="ai-head"><span class="ai-type reassign">Reassign</span></div><div class="ai-title">Route order: reorder Felipe's Tue stops</div><div class="ai-body">Current order zigzags. Proposed order saves 11 mi. Same tasks, same day.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type reassign">Reassign</span></div><div class="ai-title">Move 3 Woodsons Reserve tasks from Julio &rarr; Sam</div><div class="ai-body">Julio down 5 days. Sam is 32% under capacity Mon&ndash;Wed and works same zone. Drive time neutral.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div><div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">OPT-CAP-01</a> (v1.3)</div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type reschedule">Reschedule</span></div><div class="ai-title">Defer 14 Crosby tasks by 2 days (weather)</div><div class="ai-body">Rain forecast Mon&ndash;Wed. Pushing to Thu&ndash;Sat keeps Felipe + Ever + Eric within capacity and preserves on-time targets.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div><div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">ALERT-WEATHER-01</a> (v1.2)</div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type load">Load balance</span></div><div class="ai-title">Shift 2 Candela tasks from Cameron &rarr; Marco</div><div class="ai-body">Cameron over cap Wed (7.5h). Marco 44% open. Same GC (Westin), 4 mi apart.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div><div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">OPT-CAP-01</a> (v1.3)</div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type overdue">Overdue</span></div><div class="ai-title">Reassign 2 past-due tasks to Ricardo</div><div class="ai-body">River Ranch Trails (Dayton) &mdash; 9 days overdue, currently unassigned. Ricardo has Wed capacity and is nearest available.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div><div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">ALERT-PAST-DUE-01</a> (v0.3 draft)</div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type reassign">Reassign</span></div><div class="ai-title">Route order: reorder Felipe's Tue stops</div><div class="ai-body">Current order zigzags. Proposed order saves 11 mi. Same tasks, same day.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div><div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">OPT-DRIVE-01</a> (v2.1)</div></div>
         </div>
       </div>
       <div class="past-due">
@@ -411,7 +468,7 @@
   </div>
 
   <div class="frame" id="f2">
-    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 9</span></div>
+    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 10</span></div>
     <div class="frame-body"><div class="drawer-layout">
       <div class="drawer-left">
         <div class="sub-profile">
@@ -452,7 +509,10 @@
             <div class="task-row"><div class="stop-wrap"><div class="stop">2</div><div class="stop-lbl">10:20</div></div><div><div class="addr">Webercrest Heights</div><div class="sub-addr">11410 Zenyatta Ln, Houston</div></div><div class="cables">64 cables</div><div class="est">2h 06m</div></div>
             <div class="task-row"><div class="stop-wrap"><div class="stop">3</div><div class="stop-lbl">12:30</div></div><div><div class="addr">Briscoe Falls</div><div class="sub-addr">7814 Gunner Trail Dr, Richmond</div></div><div class="cables">80 cables</div><div class="est">2h 30m</div></div>
             <div class="task-row"><div class="stop-wrap"><div class="stop">4</div><div class="stop-lbl">15:10</div></div><div><div class="addr">Briscoe Falls</div><div class="sub-addr">7814 Mica Valley Ln, Richmond</div></div><div class="cables">76 cables</div><div class="est">2h 24m</div></div>
-            <div style="padding:8px 0 0;"><div style="background:var(--tint-bad);border-radius:6px;padding:8px 10px;font-size:12px;color:#7c2d12;">&#9888; AI recommends moving Briscoe Falls stops to <b>Cameron</b> (same zone, 60% capacity Mon). &mdash; <a href="#" style="color:var(--brand);font-weight:600;">Review</a></div></div>
+            <div style="padding:8px 0 0;">
+              <div style="background:var(--tint-bad);border-radius:6px;padding:8px 10px;font-size:12px;color:#7c2d12;">&#9888; AI recommends moving Briscoe Falls stops to <b>Cameron</b> (same zone, 60% capacity Mon). &mdash; <a href="#" style="color:var(--brand);font-weight:600;">Review</a></div>
+              <div class="rule-cite" style="margin-top:4px;padding-top:4px;border:none;"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">OPT-CAP-01</a> (v1.3)</div>
+            </div>
           </div>
           <div class="day-block">
             <div class="day-row"><div class="day-name">Tue Jul 28</div><div class="day-hrs">8.0 / 8.0 hrs <span class="bar warn"><span class="fill" style="width:100%"></span></span></div></div>
@@ -471,7 +531,7 @@
   </div>
 
   <div class="frame" id="f3">
-    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 9</span></div>
+    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 10</span></div>
     <div class="frame-body"><div class="aq-layout">
       <div class="aq-list">
         <div class="aqli active"><div class="t">Move 3 Woodsons Reserve tasks &middot; Julio &rarr; Sam</div><div class="m">Reassign &middot; +11% on-time &middot; saves 12 mi</div></div>
@@ -485,7 +545,8 @@
       </div>
       <div class="aq-detail">
         <h3>Move 3 Woodsons Reserve tasks &middot; Julio &rarr; Sam</h3>
-        <div style="font-size:12px;color:var(--ink-faint);margin-bottom:16px;">Proposed by optimizer &middot; run 2026-07-26 14:22</div>
+        <div style="font-size:12px;color:var(--ink-faint);margin-bottom:6px;">Proposed by optimizer &middot; run 2026-07-26 14:22</div>
+        <div class="rule-cite" style="margin-bottom:14px;padding:0;border:none;"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">OPT-CAP-01</a> (v1.3) &mdash; combined with manually-flagged unavailability event for Julio</div>
         <div class="aq-why"><b>Why:</b> Julio Ram&iacute;rez reported his stressing machine down for 5 days (Sun&ndash;Thu). He has 3 Woodsons Reserve tasks assigned Mon&ndash;Tue (total 128 cables, ~4.0 hrs). Sam Boone is in the same North zone, 32% under capacity Mon&ndash;Wed, and works the same GC (Toll Brothers). Reassigning preserves on-time delivery and adds no drive time.</div>
         <div class="aq-diff">
           <div class="aq-side before"><div class="lbl">Before</div><div class="name">Julio Ram&iacute;rez</div><div class="cap-line">Mon: <b>0h / 8h</b> &mdash; down, tasks would slip</div><div class="cap-line">Tue: <b>0h / 8h</b> &mdash; down, tasks would slip</div><div class="cap-line" style="color:var(--bad);">Projected on-time: <b>0% for these 3</b></div></div>
@@ -509,7 +570,7 @@
   </div>
 
   <div class="frame" id="f4">
-    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 9</span></div>
+    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 10</span></div>
     <div class="frame-body"><div class="wp-wrap">
       <div class="wp-card">
         <h3>Flag weather condition</h3>
@@ -551,7 +612,7 @@
   </div>
 
   <div class="frame" id="f5">
-    <div class="frame-head"><h2>5 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 5 of 9</span></div>
+    <div class="frame-head"><h2>5 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 5 of 10</span></div>
     <div class="frame-body"><div class="pdf-shell"><div class="pdf-page">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><h1>Stressing Schedule</h1><div class="pdf-sub">Felipe Medrano &middot; Cast Concrete LLC &middot; Week of Jul 26&ndash;Aug 1, 2026</div></div>
@@ -593,7 +654,7 @@
   </div>
 
   <div class="frame" id="f6">
-    <div class="frame-head"><h2>6 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 6 of 9</span></div>
+    <div class="frame-head"><h2>6 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 6 of 10</span></div>
     <div class="frame-body"><div class="cs-wrap">
       <div class="cs-card">
         <h3>Capacity profile &middot; Felipe Medrano</h3>
@@ -626,9 +687,8 @@
     </div></div>
   </div>
 
-  <!-- ============ FRAME 7 — NATURAL LANGUAGE EVENT INPUT ============ -->
   <div class="frame" id="f7">
-    <div class="frame-head"><h2>7 &middot; Manager AI &mdash; natural-language event input</h2><span class="frame-num">Frame 7 of 9</span></div>
+    <div class="frame-head"><h2>7 &middot; Manager AI &mdash; natural-language event input</h2><span class="frame-num">Frame 7 of 10</span></div>
     <div class="frame-body"><div class="app">
       <div class="topbar">
         <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
@@ -642,15 +702,11 @@
         <button class="btn ghost">Sun 26 &middot; Rolling 7 days</button>
       </div>
       <div class="focus-note"><b>Focus:</b> Command Center content is scrolled above &mdash; this frame highlights the <b>persistent chat input</b> at the bottom of the viewport and the live parse preview that appears above it as the manager types.</div>
-
-      <!-- Persistent chat bar (anchored at bottom of viewport) -->
       <div class="chat-bar">
         <button class="mic">&#127908;</button>
         <div class="chat-input"><span>Julio's machine is down for 5 days starting Monday</span><span class="caret">|</span></div>
         <button class="send">&rarr;</button>
       </div>
-
-      <!-- Real-time parse preview appears above the input -->
       <div class="parse-preview">
         <div class="pp-head">&#10024; Detected event <span class="live">Live parse</span></div>
         <table>
@@ -666,14 +722,12 @@
           <button class="btn ok sm">Apply</button>
         </div>
       </div>
-
-      <div class="focus-note"><b>Flow:</b> tapping <b>Preview proposed changes</b> opens the side-by-side before/after view (Frame 3 pattern) so Maria sees exactly which 12 stops move to whom before committing. Tapping <b>Apply</b> writes the unavailability record, zeroes Julio's Aug 3&ndash;7 capacity, and queues optimizer proposals for the affected stops.</div>
+      <div class="focus-note"><b>Flow:</b> tapping <b>Preview proposed changes</b> opens the side-by-side before/after view (Frame 3 pattern) so Maria sees exactly which 12 stops move to whom before committing. Tapping <b>Apply</b> writes the unavailability record, zeroes Julio's Aug 3&ndash;7 capacity, and queues optimizer proposals for the affected stops (each proposal will cite its triggering rule from Frame 10).</div>
     </div></div>
   </div>
 
-  <!-- ============ FRAME 8 — QUICK-ACTION BAR + STRUCTURED FORM ============ -->
   <div class="frame" id="f8">
-    <div class="frame-head"><h2>8 &middot; Manager AI &mdash; quick-action bar + structured form</h2><span class="frame-num">Frame 8 of 9</span></div>
+    <div class="frame-head"><h2>8 &middot; Manager AI &mdash; quick-action bar + structured form</h2><span class="frame-num">Frame 8 of 10</span></div>
     <div class="frame-body"><div class="app">
       <div class="topbar">
         <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
@@ -685,8 +739,6 @@
         <div><div class="breadcrumb">Dispatch &middot; <b>Command Center</b></div><h1>Command Center</h1></div>
         <div class="spacer"></div>
       </div>
-
-      <!-- Quick actions bar -->
       <div class="qa-bar">
         <span class="qa-lbl">Quick actions</span>
         <button class="qa-btn active"><span class="ic">&#128295;</span>Sub unavailable</button>
@@ -697,7 +749,6 @@
         <div class="spacer" style="flex:1;"></div>
         <button class="qa-btn" style="color:var(--ink-faint);">or type free-text below &darr;</button>
       </div>
-
       <div style="background:#f4f5f7;padding:24px;min-height:520px;">
         <div class="qa-form">
           <h3><span>&#128295;</span> Sub unavailable</h3>
@@ -731,9 +782,8 @@
     </div></div>
   </div>
 
-  <!-- ============ FRAME 9 — AI-INITIATED ALERT INBOX ============ -->
   <div class="frame" id="f9">
-    <div class="frame-head"><h2>9 &middot; Manager AI &mdash; AI-initiated alerts</h2><span class="frame-num">Frame 9 of 9</span></div>
+    <div class="frame-head"><h2>9 &middot; Manager AI &mdash; AI-initiated alerts</h2><span class="frame-num">Frame 9 of 10</span></div>
     <div class="frame-body"><div class="app">
       <div class="topbar">
         <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
@@ -747,21 +797,19 @@
         <div class="spacer"></div>
         <button class="btn ghost">Sun 26 &middot; Rolling 7 days</button>
       </div>
-
       <div class="focus-note"><b>Placement:</b> the Alerts section sits above the AI Suggestion Queue on the Command Center home. Alerts come from AI-monitored signals (weather API, GPS, GC portal, overdue thresholds) &mdash; distinct from the optimizer's own proposals, which sit below.</div>
-
       <div class="alert-inbox">
         <div class="alert-inbox-head">
           <h3>&#128276; Alerts <span class="badge">2</span></h3>
           <div><button class="btn sm">Alert log (audit)</button><button class="btn sm">Configure sources</button></div>
         </div>
-
         <div class="alert-card">
           <div>
             <div class="ac-title">&#9888; Rain forecast Thursday&ndash;Friday &middot; Katy zone</div>
             <div class="ac-source">Source: <b>Weather API (NOAA)</b> &middot; detected 2026-07-26 06:12 &middot; 3-day forecast, 78% probability</div>
             <div class="ac-context">2 subs work Katy zone (Felipe, Anselmo). 12 outdoor stops scheduled Thu&ndash;Fri; 4 stops are indoor (garage slabs) and unaffected.</div>
             <div class="ac-suggested"><b>Suggested:</b> Move 8 outdoor stops to Mon (both subs have capacity); keep 4 indoor stops as-is.</div>
+            <div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">ALERT-WEATHER-01</a> (v1.2)</div>
           </div>
           <div class="ac-actions">
             <button class="btn primary sm">Review proposal</button>
@@ -769,13 +817,13 @@
             <button class="btn ghost sm">Dismiss</button>
           </div>
         </div>
-
         <div class="alert-card">
           <div>
             <div class="ac-title">&#128340; Felipe hasn't moved from stop #3 in 2h 15min</div>
             <div class="ac-source">Source: <b>GPS ping (sub-truck telematics)</b> &middot; stale since 10:47 AM</div>
             <div class="ac-context">Expected 1h 24m at 18918 Redondo Peak Tr (Sundance Cove). Currently 51 min over. Next 2 stops (Crosby Farms &middot; Sweetgrass) are still in queue.</div>
             <div class="ac-suggested"><b>Suggested:</b> Ping Felipe via text? Redistribute next 2 stops to <b>Sam Boone</b> (nearest, 45% capacity today)?</div>
+            <div class="rule-cite"><span class="rc-ic">&#9881;</span>Triggered by rule <a href="#f10">ALERT-GPS-STALL-01</a> (v1.0)</div>
           </div>
           <div class="ac-actions">
             <button class="btn primary sm">Text Felipe</button>
@@ -784,13 +832,130 @@
           </div>
         </div>
       </div>
+      <div class="focus-note"><b>Design principles encoded:</b> (1) every alert shows <b>source + reasoning</b> &mdash; no black box; (2) every alert card cites the <b>rule</b> that fired it (see Frame 10); (3) every approve / snooze / dismiss is <b>audit-logged</b> and visible in the Alert Log (accessible from the header). Future graduation: low-risk action types (e.g., "redistribute past-due to nearest available sub") may be flagged for auto-apply with post-hoc notification once dispatcher trust is established.</div>
+    </div></div>
+  </div>
 
-      <div class="focus-note"><b>Design principles encoded:</b> (1) every alert shows <b>source + reasoning</b> &mdash; no black box; (2) suggested action is specific to the alert type, not generic; (3) every approve / snooze / dismiss is <b>audit-logged</b> and visible in the Alert Log (accessible from the header). Future graduation: low-risk action types (e.g., "redistribute past-due to nearest available sub") may be flagged for auto-apply with post-hoc notification once dispatcher trust is established.</div>
+  <!-- ============ FRAME 10 — AI RULES REGISTRY ============ -->
+  <div class="frame" id="f10">
+    <div class="frame-head"><h2>10 &middot; AI Rules Registry &mdash; browsable, versioned, auditable</h2><span class="frame-num">Frame 10 of 10</span></div>
+    <div class="frame-body"><div class="app">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
+        <nav><a href="#">Dispatch</a><a href="#" class="active">AI Rules Registry</a><a href="#">Orders</a></nav>
+        <div class="spacer"></div>
+        <div class="user"><span class="av">MJ</span>Maria Juarez &middot; Dispatch</div>
+      </div>
+      <div class="subhead">
+        <div><div class="breadcrumb">Dispatch &middot; <b>AI Rules Registry</b></div><h1>AI Rules Registry</h1></div>
+        <div class="spacer"></div>
+        <button class="btn">Change history (all)</button>
+        <button class="btn primary">+ Propose new rule (draft)</button>
+      </div>
+      <div class="rr-layout">
+        <div class="rr-list">
+          <div class="rr-filters">
+            <input class="rr-search" placeholder="&#128269; Search rules by ID, name, or description...">
+            <div class="rr-catfilter">
+              <button class="cf-btn active">All 7</button>
+              <button class="cf-btn">Optimization 3</button>
+              <button class="cf-btn">Alert 3</button>
+              <button class="cf-btn">Auto-apply 0</button>
+              <button class="cf-btn">Constraint 1</button>
+            </div>
+          </div>
+          <div class="rr-row"><span class="r-id">OPT-DRIVE-01</span><div class="r-name">Minimize daily drive time</div><div class="r-chips"><span class="cat-chip opt">Optimization</span><span class="status-chip active">Active</span></div><div class="r-meta">v2.1 &middot; Last edited by ops-admin on Jul 12</div></div>
+          <div class="rr-row"><span class="r-id">OPT-ZONE-01</span><div class="r-name">Prefer subs' assigned zones (penalty for out-of-zone)</div><div class="r-chips"><span class="cat-chip opt">Optimization</span><span class="status-chip active">Active</span></div><div class="r-meta">v1.0 &middot; Last edited by ops-admin on Jun 3</div></div>
+          <div class="rr-row"><span class="r-id">OPT-CAP-01</span><div class="r-name">Never exceed sub's weekly capacity (hard constraint)</div><div class="r-chips"><span class="cat-chip opt">Optimization</span><span class="status-chip active">Active</span></div><div class="r-meta">v1.3 &middot; Last edited by ops-admin on Jul 20</div></div>
+          <div class="rr-row selected"><span class="r-id">ALERT-WEATHER-01</span><div class="r-name">Rain forecast in sub's zone &rarr; propose light day</div><div class="r-chips"><span class="cat-chip alert">Alert</span><span class="status-chip active">Active</span></div><div class="r-meta">v1.2 &middot; Last edited by Maria Juarez on Jul 24</div></div>
+          <div class="rr-row"><span class="r-id">ALERT-GPS-STALL-01</span><div class="r-name">Sub GPS unchanged &gt; 2h &rarr; propose check-in + redistribute</div><div class="r-chips"><span class="cat-chip alert">Alert</span><span class="status-chip active">Active</span></div><div class="r-meta">v1.0 &middot; Last edited by ops-admin on Jul 8</div></div>
+          <div class="rr-row"><span class="r-id">ALERT-PAST-DUE-01</span><div class="r-name">Sub late &gt; 20% this week &rarr; propose 30% capacity cut</div><div class="r-chips"><span class="cat-chip alert">Alert</span><span class="status-chip draft">Draft</span></div><div class="r-meta">v0.3 &middot; Last edited by James Brady on Jul 26</div></div>
+          <div class="rr-row"><span class="r-id">CONSTRAINT-MIN-VISITS-01</span><div class="r-name">Every sub gets &ge; 3 stops/week (retention floor)</div><div class="r-chips"><span class="cat-chip constraint">Constraint</span><span class="status-chip active">Active</span></div><div class="r-meta">v1.0 &middot; Last edited by ops-admin on Jul 1</div></div>
+        </div>
+        <div class="rr-detail">
+          <div class="rr-detail-head">
+            <div>
+              <div><span class="r-id-detail">ALERT-WEATHER-01</span><span class="cat-chip alert">Alert</span><span class="status-chip active" style="margin-left:6px;">Active</span></div>
+              <h3>Rain forecast in sub's zone &rarr; propose light day</h3>
+              <div style="color:var(--ink-faint);font-size:12px;margin-top:6px;">v1.2 &middot; activated by Maria Juarez on 2026-07-24 &middot; <a href="#">6 approved proposals in last 30 days</a></div>
+            </div>
+            <div class="rr-toggle">
+              <span style="font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;">Enabled</span>
+              <div class="toggle-sw"></div>
+            </div>
+          </div>
+
+          <div class="rr-section">
+            <h4>What this rule does (plain English)</h4>
+            <div class="body">When the weather forecast API predicts adverse weather (rain, freeze, high wind) in a zone where a sub is scheduled to work outdoor stops, the AI generates an alert proposing to defer outdoor stops and preserve indoor stops as-is. Suggests target reschedule day within the sub's rolling 7-day capacity envelope.</div>
+          </div>
+
+          <div class="rr-section">
+            <h4>Trigger &mdash; when this fires</h4>
+            <div class="body code">SOURCE: weather_api (NOAA)
+CONDITION:
+  forecast.probability &gt;= params.probability_threshold
+  AND forecast.date_range overlaps assigned_stops.date_range
+  AND assigned_stops.zone IN sub.preferred_zones
+  AND assigned_stops.location_type = 'outdoor'
+CHECK EVERY: 4 hours during business hours</div>
+          </div>
+
+          <div class="rr-section">
+            <h4>Action &mdash; what AI proposes</h4>
+            <div class="body">Generate an alert card in the dispatcher's Alerts inbox with: (a) affected stops list split by indoor / outdoor; (b) suggested reschedule target within the sub's rolling 7-day capacity; (c) impact preview (hours displaced, on-time delta). <b>Requires dispatcher approval</b> before any assignment changes take effect. Alert is auto-dismissed if the forecast probability drops below threshold before dispatcher acts.</div>
+          </div>
+
+          <div class="rr-section">
+            <h4>Parameters (tunable)</h4>
+            <div class="body" style="padding:0;">
+              <table class="params-table">
+                <tr><td class="k">probability_threshold</td><td class="v">70%</td><td class="d">Minimum rain probability to fire</td></tr>
+                <tr><td class="k">forecast_hours_ahead</td><td class="v">120 hrs</td><td class="d">Look-ahead window (5 days)</td></tr>
+                <tr><td class="k">outdoor_stop_types</td><td class="v">stress, grout, cut</td><td class="d">Labor items considered outdoor</td></tr>
+                <tr><td class="k">min_lead_time_hrs</td><td class="v">12 hrs</td><td class="d">Don't fire if adverse day already started</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="rr-section">
+            <h4>Change history</h4>
+            <div class="body" style="padding:0;">
+              <div class="hist-row">
+                <div class="hr-line1"><span class="hr-actor">Maria Juarez</span><span class="hr-time">2026-07-24 &middot; 14:22</span></div>
+                <div class="hr-change">v1.1 &rarr; v1.2 &middot; probability_threshold 60% &rarr; 70%</div>
+                <div class="hr-reason">"Getting too many false-positive alerts on 60%. Bumping threshold." &middot; Reviewed by ops-admin.</div>
+              </div>
+              <div class="hist-row">
+                <div class="hr-line1"><span class="hr-actor">ops-admin</span><span class="hr-time">2026-07-10 &middot; 09:15</span></div>
+                <div class="hr-change">v1.0 &rarr; v1.1 &middot; added min_lead_time_hrs param</div>
+                <div class="hr-reason">"Rule was firing for storms already in progress. Adding lead time floor. Rollback plan: remove param if noise increases."</div>
+              </div>
+              <div class="hist-row">
+                <div class="hr-line1"><span class="hr-actor">ops-admin</span><span class="hr-time">2026-06-22 &middot; 11:00</span></div>
+                <div class="hr-change">v0.9 (draft) &rarr; v1.0 (activated)</div>
+                <div class="hr-reason">"Initial activation after 2-week shadow-mode observation. Fired 14 times shadow, would have proposed correctly on 12."</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rr-section">
+            <h4>Related proposals (last 30 days)</h4>
+            <div class="body">
+              <a href="#" class="rp-link">2026-07-26 &middot; Defer 14 Crosby tasks by 2 days (weather) &mdash; <b>approved</b> by Maria</a>
+              <a href="#" class="rp-link">2026-07-18 &middot; Defer 6 Katy stops (rain forecast Thu) &mdash; <b>approved</b> by Maria</a>
+              <a href="#" class="rp-link">2026-07-11 &middot; Defer 3 East Houston stops (freeze warning) &mdash; <b>dismissed</b>, forecast changed</a>
+              <a href="#" class="rp-link">2026-07-04 &middot; Defer 8 Fulshear stops &mdash; <b>approved</b> by Maria</a>
+              <a href="#" style="display:block;padding:6px 0;font-size:12px;color:var(--info);">+ 8 more (view all)</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div></div>
   </div>
 
   <div class="mockup-note" style="margin-top:32px;background:#0f2547;">
-    <strong>Next up (not in this mockup):</strong> The companion <code>requirements.md</code> file in this folder covers the Manager AI Interaction spec (natural-language intake, quick actions, alerts) with acceptance criteria. Still to draft: data model (Sub, Task, SiteVisit, Zone, WeatherFlag, Assignment, OptimizerRun, Alert, Event), the optimizer's objective + constraint list (OR-Tools style), and per-screen acceptance criteria for frames 1&ndash;6.
+    <strong>Companion spec:</strong> the <code>requirements.md</code> file in this folder covers §1 Manager AI Interaction + §2 AI Rules Registry (data model, API contract, governance, seed rules, ISO 9001 alignment) with acceptance criteria per section. Still to draft: data model, optimizer objective + constraint list (OR-Tools style), and per-screen acceptance criteria for frames 1&ndash;6.
   </div>
 </div>
 </body>
