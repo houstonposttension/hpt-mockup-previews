@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440, initial-scale=1">
+<title>HPT Dispatch — Command Center (mockup)</title>
+<style>
+  :root{
+    --bg:#f4f5f7;
+    --panel:#ffffff;
+    --ink:#111827;
+    --ink-mute:#4b5563;
+    --ink-faint:#9ca3af;
+    --line:#e5e7eb;
+    --line-strong:#d1d5db;
+    --brand:#ea580c;
+    --brand-dk:#c2410c;
+    --navy:#0f2547;
+    --navy-dk:#0a1a35;
+    --ok:#16a34a;
+    --warn:#d97706;
+    --bad:#dc2626;
+    --info:#2563eb;
+    --tint-ok:#dcfce7;
+    --tint-warn:#fef3c7;
+    --tint-bad:#fee2e2;
+    --tint-info:#dbeafe;
+    --tint-brand:#fff7ed;
+    --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;}
+  a{color:var(--info);text-decoration:none;}
+  .wrap{max-width:1440px;margin:0 auto;padding:24px;}
+  .mockup-note{background:#111827;color:#e5e7eb;padding:16px 20px;border-radius:12px;margin-bottom:24px;font-size:13px;line-height:1.5;}
+  .mockup-note strong{color:#fbbf24;}
+  .mockup-note code{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px;font-size:12px;}
+  .frame{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:32px;border:1px solid var(--line);}
+  .frame-head{background:linear-gradient(180deg,#fafbfd,#f3f4f6);padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+  .frame-head h2{margin:0;font-size:15px;font-weight:600;color:var(--ink);}
+  .frame-head .frame-num{font-size:11px;font-weight:600;color:var(--ink-faint);letter-spacing:.05em;text-transform:uppercase;}
+  .frame-body{padding:0;}
+  .app{background:var(--bg);}
+  .topbar{background:var(--navy);color:#e5e7eb;padding:10px 20px;display:flex;align-items:center;gap:20px;}
+  .topbar .logo{display:flex;align-items:center;gap:10px;}
+  .topbar .logo-mark{width:32px;height:32px;background:var(--brand);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:12px;letter-spacing:.02em;}
+  .topbar .logo-txt{font-weight:600;font-size:14px;}
+  .topbar .logo-sub{font-size:11px;color:#9ca3af;}
+  .topbar nav{display:flex;gap:4px;margin-left:20px;}
+  .topbar nav a{color:#cbd5e1;padding:6px 12px;border-radius:6px;font-size:13px;}
+  .topbar nav a.active{background:rgba(255,255,255,.08);color:#fff;}
+  .topbar .spacer{flex:1;}
+  .topbar .env-strip{display:flex;align-items:center;gap:14px;font-size:12px;color:#cbd5e1;}
+  .topbar .env-strip .chip{background:rgba(255,255,255,.06);padding:4px 10px;border-radius:999px;display:flex;align-items:center;gap:6px;}
+  .topbar .env-strip .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);}
+  .topbar .env-strip .dot.warn{background:var(--warn);}
+  .topbar .user{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);padding:4px 10px 4px 4px;border-radius:999px;}
+  .topbar .user .av{width:26px;height:26px;border-radius:50%;background:#8b5cf6;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;}
+  .subhead{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:20px;}
+  .subhead h1{margin:0;font-size:18px;font-weight:600;}
+  .subhead .breadcrumb{color:var(--ink-faint);font-size:12px;}
+  .subhead .breadcrumb b{color:var(--ink-mute);font-weight:500;}
+  .subhead .spacer{flex:1;}
+  .btn{background:#fff;border:1px solid var(--line-strong);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+  .btn:hover{background:#f9fafb;}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand-dk);}
+  .btn.primary:hover{background:var(--brand-dk);}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--ink-mute);}
+  .btn.ok{background:var(--ok);color:#fff;border-color:#15803d;}
+  .btn.bad{background:#fff;color:var(--bad);border-color:#fca5a5;}
+  .btn.sm{padding:5px 9px;font-size:12px;}
+  .btn.tiny{padding:3px 8px;font-size:11px;}
+  .layout{display:grid;grid-template-columns:340px 1fr 340px;gap:16px;padding:16px;}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .panel-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#fafbfd;}
+  .panel-head h3{margin:0;font-size:13px;font-weight:600;color:var(--ink);}
+  .panel-head .meta{font-size:11px;color:var(--ink-faint);}
+  .panel-body{padding:12px 14px;}
+  .sub-card{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;}
+  .sub-card:hover{background:#fafbfd;}
+  .sub-card.selected{background:#fff7ed;border-left:3px solid var(--brand);}
+  .sub-card:last-child{border-bottom:none;}
+  .sub-card .row1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .sub-card .name{font-weight:600;font-size:13.5px;}
+  .sub-card .company{font-size:11.5px;color:var(--ink-faint);}
+  .sub-card .zone{font-size:11px;color:var(--ink-mute);background:#f3f4f6;padding:2px 6px;border-radius:4px;}
+  .sub-card .status-flag{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:2px 6px;border-radius:4px;}
+  .status-flag.ok{background:var(--tint-ok);color:#15803d;}
+  .status-flag.warn{background:var(--tint-warn);color:#b45309;}
+  .status-flag.bad{background:var(--tint-bad);color:#b91c1c;}
+  .status-flag.info{background:var(--tint-info);color:#1d4ed8;}
+  .status-flag.brand{background:var(--tint-brand);color:var(--brand-dk);}
+  .capstrip{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:6px;}
+  .capstrip .cell{position:relative;height:26px;border-radius:4px;background:#f3f4f6;overflow:hidden;}
+  .capstrip .cell .fill{position:absolute;bottom:0;left:0;right:0;background:var(--ok);}
+  .capstrip .cell.warn .fill{background:var(--warn);}
+  .capstrip .cell.bad .fill{background:var(--bad);}
+  .capstrip .cell.over .fill{background:var(--bad);}
+  .capstrip .cell.past .fill{background:#94a3b8;}
+  .capstrip .cell .lbl{position:absolute;top:2px;left:0;right:0;font-size:9px;text-align:center;color:var(--ink-mute);font-weight:600;z-index:2;}
+  .capstrip .cell .val{position:absolute;bottom:2px;left:0;right:0;font-size:9px;text-align:center;color:#fff;font-weight:600;z-index:2;text-shadow:0 1px 1px rgba(0,0,0,.3);}
+  .capstrip .cell.today{outline:2px solid var(--brand);outline-offset:-2px;}
+  .capstrip .cell.over::after{content:"!";position:absolute;top:-1px;right:2px;font-size:11px;color:#fff;font-weight:800;z-index:3;}
+  .sub-legend{display:flex;gap:12px;padding:8px 14px;background:#fafbfd;border-bottom:1px solid var(--line);font-size:11px;color:var(--ink-mute);}
+  .sub-legend .sw{display:inline-flex;align-items:center;gap:5px;}
+  .sub-legend .box{width:10px;height:10px;border-radius:2px;}
+  .map-wrap{position:relative;background:#e6ebf1;border-radius:12px;overflow:hidden;height:640px;border:1px solid var(--line);}
+  .map-controls{position:absolute;top:12px;left:12px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px;display:flex;gap:4px;box-shadow:var(--shadow);z-index:5;}
+  .map-controls .btn{padding:5px 10px;font-size:12px;}
+  .map-legend{position:absolute;bottom:12px;left:12px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow);z-index:5;font-size:11.5px;}
+  .map-legend h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:600;}
+  .map-legend .item{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+  .map-legend .swatch{width:12px;height:12px;border-radius:50%;}
+  .map-search{position:absolute;top:12px;right:12px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 10px;box-shadow:var(--shadow);z-index:5;font-size:12px;color:var(--ink-mute);width:220px;display:flex;align-items:center;gap:6px;}
+  .weather-flag{position:absolute;top:60px;right:12px;background:#fff;border:1px solid var(--warn);border-left:4px solid var(--warn);border-radius:8px;padding:10px 12px;box-shadow:var(--shadow);z-index:5;font-size:12px;width:260px;}
+  .weather-flag .wf-title{font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+  .weather-flag .wf-body{color:var(--ink-mute);font-size:11.5px;line-height:1.4;}
+  .ai-item{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .ai-item:hover{background:#fafbfd;}
+  .ai-item:last-child{border-bottom:none;}
+  .ai-item .ai-head{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+  .ai-item .ai-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:3px;}
+  .ai-type.reassign{background:var(--tint-info);color:#1d4ed8;}
+  .ai-type.reschedule{background:var(--tint-warn);color:#b45309;}
+  .ai-type.load{background:var(--tint-brand);color:var(--brand-dk);}
+  .ai-type.overdue{background:var(--tint-bad);color:#b91c1c;}
+  .ai-item .ai-title{font-size:13px;font-weight:500;line-height:1.35;margin-bottom:4px;}
+  .ai-item .ai-body{font-size:11.5px;color:var(--ink-mute);line-height:1.4;}
+  .ai-item .ai-actions{display:flex;gap:6px;margin-top:8px;}
+  .ai-summary{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 12px;margin:12px 14px;font-size:12px;color:#7c2d12;}
+  .ai-summary b{color:#9a3412;}
+  .past-due{background:#fff;border:1px solid var(--line);border-radius:12px;margin:0 16px 16px;overflow:hidden;}
+  .past-due-head{background:#fef2f2;border-bottom:1px solid #fecaca;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+  .past-due-head h3{margin:0;font-size:14px;font-weight:600;color:#991b1b;display:flex;align-items:center;gap:8px;}
+  .past-due-head .badge{background:var(--bad);color:#fff;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;}
+  .pd-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .pd-table th{text-align:left;padding:8px 14px;font-weight:500;color:var(--ink-faint);font-size:11px;text-transform:uppercase;letter-spacing:.03em;border-bottom:1px solid var(--line);background:#fafbfd;}
+  .pd-table td{padding:9px 14px;border-bottom:1px solid var(--line);color:var(--ink);}
+  .pd-table tr:last-child td{border-bottom:none;}
+  .pd-table .lateness{color:var(--bad);font-weight:600;}
+  .pd-table .lateness.warn{color:var(--warn);}
+  .drawer-layout{display:grid;grid-template-columns:1fr 480px;height:640px;}
+  .drawer-left{background:#f9fafb;border-right:1px solid var(--line);padding:16px;overflow-y:auto;}
+  .drawer-right{padding:16px;overflow-y:auto;}
+  .sub-profile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;}
+  .sub-profile .name-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .sub-profile .name-row .n{font-size:18px;font-weight:600;}
+  .sub-profile .fact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 20px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;}
+  .sub-profile .fact-grid .lbl{color:var(--ink-faint);font-size:11px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px;}
+  .sub-profile .fact-grid .val{color:var(--ink);font-weight:500;}
+  .week-view{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .week-view .wv-head{padding:10px 14px;border-bottom:1px solid var(--line);background:#fafbfd;font-weight:600;font-size:13px;}
+  .day-block{border-bottom:1px solid var(--line);padding:10px 14px;}
+  .day-block:last-child{border-bottom:none;}
+  .day-block .day-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .day-block .day-name{font-weight:600;font-size:13px;}
+  .day-block .day-name .today{background:var(--brand);color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;margin-left:6px;text-transform:uppercase;font-weight:700;}
+  .day-block .day-hrs{font-size:12px;color:var(--ink-mute);}
+  .day-block .day-hrs .bar{display:inline-block;width:80px;height:6px;background:#f3f4f6;border-radius:3px;margin-left:6px;vertical-align:middle;position:relative;overflow:hidden;}
+  .day-block .day-hrs .bar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--ok);border-radius:3px;}
+  .day-block .day-hrs .bar.warn .fill{background:var(--warn);}
+  .day-block .day-hrs .bar.bad .fill{background:var(--bad);}
+  .task-row{display:grid;grid-template-columns:52px 1fr 90px 80px;gap:10px;padding:6px 0;border-top:1px dashed #f0f1f4;font-size:12px;align-items:center;}
+  .task-row:first-of-type{border-top:none;}
+  .task-row .stop{background:var(--navy);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+  .task-row .stop.field{background:var(--bad);}
+  .task-row .stop-lbl{color:var(--ink-faint);font-size:10px;margin-top:2px;text-align:center;}
+  .task-row .stop-wrap{display:flex;flex-direction:column;align-items:center;}
+  .task-row .addr{color:var(--ink);font-weight:500;}
+  .task-row .sub-addr{color:var(--ink-faint);font-size:11px;}
+  .task-row .cables{color:var(--ink-mute);font-size:12px;text-align:right;}
+  .task-row .est{color:var(--ink-mute);font-size:12px;text-align:right;}
+  .task-row .field-badge{background:var(--tint-bad);color:#b91c1c;font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:5px;text-transform:uppercase;}
+  .aq-layout{display:grid;grid-template-columns:340px 1fr;height:640px;}
+  .aq-list{background:#fff;border-right:1px solid var(--line);overflow-y:auto;}
+  .aq-list .aqli{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .aq-list .aqli.active{background:#fff7ed;border-left:3px solid var(--brand);}
+  .aq-list .aqli .t{font-size:13px;font-weight:500;margin-bottom:2px;}
+  .aq-list .aqli .m{font-size:11px;color:var(--ink-faint);}
+  .aq-detail{padding:20px;overflow-y:auto;background:#fafbfd;}
+  .aq-detail h3{margin:0 0 6px;font-size:16px;}
+  .aq-detail .aq-why{background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.5;margin-bottom:14px;}
+  .aq-diff{display:grid;grid-template-columns:1fr 40px 1fr;gap:12px;align-items:stretch;margin-bottom:16px;}
+  .aq-side{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;}
+  .aq-side.before{border-top:3px solid var(--ink-faint);}
+  .aq-side.after{border-top:3px solid var(--ok);}
+  .aq-side .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:8px;}
+  .aq-side .name{font-weight:600;font-size:14px;margin-bottom:4px;}
+  .aq-side .cap-line{font-size:12px;color:var(--ink-mute);margin-bottom:8px;}
+  .aq-side .cap-line b{color:var(--ink);}
+  .aq-arrow{display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--brand);font-weight:700;}
+  .aq-actions{display:flex;gap:8px;justify-content:flex-end;padding-top:12px;border-top:1px solid var(--line);}
+  .aq-tasks-affected{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px;}
+  .aq-tasks-affected .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:8px;}
+  .aq-tasks-affected table{width:100%;border-collapse:collapse;font-size:12px;}
+  .aq-tasks-affected th{text-align:left;font-weight:500;color:var(--ink-faint);font-size:10.5px;text-transform:uppercase;padding:4px 6px;border-bottom:1px solid var(--line);}
+  .aq-tasks-affected td{padding:6px;border-bottom:1px dashed #f0f1f4;}
+  .aq-tasks-affected tr:last-child td{border-bottom:none;}
+  .wp-wrap{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .wp-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .wp-card h3{margin:0 0 14px;font-size:14px;}
+  .wp-form label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:4px;font-weight:600;}
+  .wp-form .field{margin-bottom:14px;}
+  .wp-form input, .wp-form select, .wp-form textarea{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;}
+  .wp-form textarea{min-height:60px;resize:vertical;}
+  .zone-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .zone-tag{background:#f3f4f6;padding:5px 10px;border-radius:999px;font-size:12px;cursor:pointer;border:1px solid transparent;}
+  .zone-tag.selected{background:var(--tint-warn);border-color:var(--warn);color:#7c2d12;font-weight:500;}
+  .wp-impact{margin-top:12px;padding:12px;background:var(--tint-info);border-radius:8px;border:1px solid #bfdbfe;color:#1e3a8a;font-size:12.5px;line-height:1.5;}
+  .wp-impact b{color:#1e40af;}
+  .ss-phone{width:390px;margin:20px auto;background:#000;border-radius:36px;padding:12px;box-shadow:0 20px 60px rgba(15,23,42,.2);}
+  .ss-screen{background:#fff;border-radius:26px;overflow:hidden;height:720px;display:flex;flex-direction:column;}
+  .ss-topbar{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+  .ss-topbar .n{font-size:15px;font-weight:600;}
+  .ss-topbar .s{font-size:11px;color:#cbd5e1;}
+  .ss-body{flex:1;overflow-y:auto;padding:16px;background:#f4f5f7;}
+  .ss-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid var(--line);}
+  .ss-card h4{margin:0 0 8px;font-size:13px;}
+  .ss-card .row{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;color:var(--ink-mute);}
+  .ss-card .row b{color:var(--ink);}
+  .ss-quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .ss-quick .qb{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;}
+  .ss-quick .qb .ic{font-size:18px;margin-bottom:4px;color:var(--brand);}
+  .ss-msg-input{background:#fff;border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:8px;align-items:center;}
+  .ss-msg-input input{flex:1;border:1px solid var(--line-strong);border-radius:20px;padding:8px 14px;font-size:13px;font-family:inherit;}
+  .ss-msg-input .send{background:var(--brand);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:14px;}
+  .ss-chat{padding:0 0 12px;}
+  .ss-bubble{max-width:80%;padding:8px 12px;border-radius:14px;font-size:13px;margin-bottom:8px;line-height:1.4;}
+  .ss-bubble.me{background:var(--brand);color:#fff;margin-left:auto;border-bottom-right-radius:4px;}
+  .ss-bubble.them{background:#fff;color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .ss-bubble.system{background:var(--tint-info);color:#1e3a8a;border:1px solid #bfdbfe;font-size:12px;text-align:center;margin:6px auto;max-width:90%;border-radius:8px;}
+  .pdf-shell{background:#e5e7eb;padding:24px;display:flex;justify-content:center;}
+  .pdf-page{background:#fff;width:816px;min-height:1056px;padding:48px 56px;box-shadow:0 8px 24px rgba(0,0,0,.15);font:12px/1.35 "Segoe UI",-apple-system,sans-serif;color:#111;}
+  .pdf-page h1{font-size:22px;margin:0 0 4px;color:var(--navy);}
+  .pdf-page .pdf-sub{color:#666;font-size:12px;margin-bottom:20px;}
+  .pdf-summary{background:#f9fafb;border:1px solid var(--line);border-radius:8px;padding:12px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px;}
+  .pdf-summary .s-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#666;margin-bottom:2px;}
+  .pdf-summary .s-val{font-size:16px;font-weight:600;color:var(--navy);}
+  .pdf-day{margin-bottom:22px;page-break-inside:avoid;}
+  .pdf-day-h{background:var(--navy);color:#fff;padding:6px 12px;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:center;}
+  .pdf-day-h .n{font-size:13px;font-weight:600;}
+  .pdf-day-h .meta{font-size:11px;color:#cbd5e1;}
+  .pdf-tbl{width:100%;border-collapse:collapse;font-size:11px;border:1px solid #d1d5db;border-top:none;border-radius:0 0 6px 6px;overflow:hidden;}
+  .pdf-tbl th{background:#f3f4f6;text-align:left;padding:5px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:#4b5563;border-bottom:1px solid #d1d5db;}
+  .pdf-tbl td{padding:6px 8px;border-bottom:1px solid #e5e7eb;vertical-align:top;}
+  .pdf-tbl tr:last-child td{border-bottom:none;}
+  .pdf-tbl .stop-c{background:var(--navy);color:#fff;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+  .pdf-tbl .stop-c.field{background:#b91c1c;}
+  .pdf-tbl .cables-c{text-align:right;font-weight:600;}
+  .pdf-tbl .est-c{text-align:right;color:#4b5563;}
+  .pdf-tbl .field-badge{background:#fee2e2;color:#991b1b;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;text-transform:uppercase;}
+  .pdf-tbl .note{color:#4b5563;font-style:italic;font-size:10.5px;margin-top:2px;}
+  .pdf-tbl .lab{font-size:10px;color:#666;}
+  .pdf-footer{margin-top:32px;padding-top:12px;border-top:1px solid var(--line);font-size:10px;color:#666;display:flex;justify-content:space-between;}
+  .cs-wrap{padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .cs-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .cs-card h3{margin:0 0 4px;font-size:15px;}
+  .cs-card .desc{color:var(--ink-mute);font-size:12px;margin-bottom:16px;}
+  .cs-row{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);}
+  .cs-row:last-child{border-bottom:none;}
+  .cs-row label{font-size:12.5px;color:var(--ink);font-weight:500;}
+  .cs-row .sub{color:var(--ink-faint);font-size:11px;display:block;margin-top:2px;font-weight:400;}
+  .cs-row input, .cs-row select{border:1px solid var(--line-strong);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;max-width:200px;}
+  .cs-row .unit{color:var(--ink-faint);font-size:12px;margin-left:6px;}
+  .zone-picker{background:#f9fafb;border:1px dashed var(--line-strong);border-radius:10px;padding:14px;margin-top:8px;}
+  .zone-picker .z-hdr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;color:var(--ink-mute);}
+  .preview-calc{background:var(--tint-brand);border:1px solid #fed7aa;border-radius:10px;padding:14px;color:#7c2d12;font-size:12.5px;line-height:1.5;margin-top:12px;}
+  .preview-calc b{color:var(--brand-dk);}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:24px;}
+  .toc h3{margin:0 0 8px;font-size:13px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+  .toc ol{margin:0;padding-left:20px;font-size:13px;line-height:1.7;}
+  .toc a{color:var(--info);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mockup-note">
+    <strong>Mockup — HPT Dispatch Command Center</strong> · 2026-07-26 · concept for AI-assisted, human-approved task assignment to stressing subcontractors.<br>
+    Not production. Uses illustrative subs / addresses drawn from a real Stressing Report export. AI proposals, capacity numbers, weather, and pin positions are for layout demonstration only. Serves as the visual reference for the requirements doc handed to the consultant. Base URL pattern: <code>cloud.houstonposttension.com/dispatch/*</code>.
+  </div>
+  <div class="toc">
+    <h3>Frames</h3>
+    <ol>
+      <li><a href="#f1">Command Center — home (overview + AI queue + past due)</a></li>
+      <li><a href="#f2">Sub detail — 7-day view with per-day stops, cables, and est hours</a></li>
+      <li><a href="#f3">Approval queue — reviewing an AI-proposed reassignment</a></li>
+      <li><a href="#f4">Weather impact — flagging a zone so the optimizer defers work</a></li>
+      <li><a href="#f5">Sub self-service (mobile) — "machine down 5 days" via chat</a></li>
+      <li><a href="#f6">Improved nightly PDF — day-grouped with cables + est hours + route order</a></li>
+      <li><a href="#f7">Sub capacity setup — the profile that drives the optimizer</a></li>
+    </ol>
+  </div>
+  <div class="frame" id="f1">
+    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 7</span></div>
+    <div class="frame-body"><div class="app">
+      <div class="topbar">
+        <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
+        <nav><a href="#" class="active">Dispatch</a><a href="#">Orders</a><a href="#">Labor Mgmt</a><a href="#">Accounting</a><a href="#">Catalog</a></nav>
+        <div class="spacer"></div>
+        <div class="env-strip"><span class="chip"><span class="dot"></span>Optimizer synced 4 min ago</span><span class="chip"><span class="dot warn"></span>Weather: East Houston rain (3 days)</span></div>
+        <div class="user"><span class="av">MJ</span>Maria Juarez &middot; Dispatch</div>
+      </div>
+      <div class="subhead">
+        <div><div class="breadcrumb">Dispatch &middot; <b>Command Center</b></div><h1>Command Center</h1></div>
+        <div class="spacer"></div>
+        <button class="btn ghost">Sun 26 &middot; Rolling 7 days</button>
+        <button class="btn">Filters</button>
+        <button class="btn">Configure subs</button>
+        <button class="btn primary">&#8635; Re-run optimizer</button>
+      </div>
+      <div class="layout">
+        <div class="panel">
+          <div class="panel-head"><h3>Subcontractors &middot; 8</h3><span class="meta">Rolling 7 days</span></div>
+          <div class="sub-legend"><span class="sw"><span class="box" style="background:var(--ok)"></span>Balanced</span><span class="sw"><span class="box" style="background:var(--warn)"></span>Near cap</span><span class="sw"><span class="box" style="background:var(--bad)"></span>Over</span></div>
+          <div class="sub-card selected"><div class="row1"><div><div class="name">Felipe Medrano</div><div class="company">Cast Concrete LLC &middot; SE Houston + Crosby</div></div><span class="status-flag ok">On-time 92%</span></div><div class="capstrip"><div class="cell warn"><span class="lbl">Sun</span><span class="val">7.5h</span><div class="fill" style="height:94%"></div></div><div class="cell over"><span class="lbl">Mon</span><span class="val">9.2h</span><div class="fill" style="height:100%"></div></div><div class="cell today warn"><span class="lbl">Tue</span><span class="val">8.0h</span><div class="fill" style="height:100%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">6.5h</span><div class="fill" style="height:81%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">7.0h</span><div class="fill" style="height:88%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Julio Ram&iacute;rez</div><div class="company">JR Stressing &middot; North Houston + Woodlands</div></div><span class="status-flag bad">Machine down &middot; 5d</span></div><div class="capstrip"><div class="cell past"><span class="lbl">Sun</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell past"><span class="lbl">Mon</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">4.0h</span><div class="fill" style="height:50%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">6.5h</span><div class="fill" style="height:81%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Marco D&iacute;az</div><div class="company">Apex Foundation Ltd &middot; SW Houston + Fulshear</div></div><span class="status-flag warn">On-time 74%</span></div><div class="capstrip"><div class="cell"><span class="lbl">Sun</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell warn"><span class="lbl">Mon</span><span class="val">7.5h</span><div class="fill" style="height:94%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">4.5h</span><div class="fill" style="height:56%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">5.5h</span><div class="fill" style="height:69%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">4.0h</span><div class="fill" style="height:50%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Ricardo Torres</div><div class="company">RT Post-Tension &middot; NW Houston + Katy</div></div><span class="status-flag ok">On-time 88%</span></div><div class="capstrip"><div class="cell"><span class="lbl">Sun</span><span class="val">4.0h</span><div class="fill" style="height:50%"></div></div><div class="cell"><span class="lbl">Mon</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">6.5h</span><div class="fill" style="height:81%"></div></div><div class="cell warn"><span class="lbl">Wed</span><span class="val">7.5h</span><div class="fill" style="height:94%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">3.0h</span><div class="fill" style="height:38%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Ever Cord&oacute;n</div><div class="company">Cast Concrete LLC &middot; East Houston + Baytown</div></div><span class="status-flag warn">Weather flag</span></div><div class="capstrip"><div class="cell"><span class="lbl">Sun</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell"><span class="lbl">Mon</span><span class="val">2.0h</span><div class="fill" style="height:25%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">3.5h</span><div class="fill" style="height:44%"></div></div><div class="cell warn"><span class="lbl">Fri</span><span class="val">7.5h</span><div class="fill" style="height:94%"></div></div><div class="cell over"><span class="lbl">Sat</span><span class="val">8.5h</span><div class="fill" style="height:100%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Sam Boone</div><div class="company">Cast Concrete LLC &middot; Montgomery + Conroe</div></div><span class="status-flag ok">On-time 96%</span></div><div class="capstrip"><div class="cell"><span class="lbl">Sun</span><span class="val">4.0h</span><div class="fill" style="height:50%"></div></div><div class="cell"><span class="lbl">Mon</span><span class="val">5.5h</span><div class="fill" style="height:69%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">4.5h</span><div class="fill" style="height:56%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Cameron Blake</div><div class="company">Apex Foundation Ltd &middot; Richmond + Fulshear</div></div><span class="status-flag ok">On-time 90%</span></div><div class="capstrip"><div class="cell"><span class="lbl">Sun</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell"><span class="lbl">Mon</span><span class="val">6.5h</span><div class="fill" style="height:81%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">5.5h</span><div class="fill" style="height:69%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">6.0h</span><div class="fill" style="height:75%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">4.5h</span><div class="fill" style="height:56%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div></div></div>
+          <div class="sub-card"><div class="row1"><div><div class="name">Eric Anderson</div><div class="company">Cast Concrete LLC &middot; Crosby + Dayton</div></div><span class="status-flag ok">On-time 85%</span></div><div class="capstrip"><div class="cell"><span class="lbl">Sun</span><span class="val">3.0h</span><div class="fill" style="height:38%"></div></div><div class="cell"><span class="lbl">Mon</span><span class="val">5.5h</span><div class="fill" style="height:69%"></div></div><div class="cell today"><span class="lbl">Tue</span><span class="val">5.0h</span><div class="fill" style="height:63%"></div></div><div class="cell"><span class="lbl">Wed</span><span class="val">6.5h</span><div class="fill" style="height:81%"></div></div><div class="cell"><span class="lbl">Thu</span><span class="val">4.0h</span><div class="fill" style="height:50%"></div></div><div class="cell"><span class="lbl">Fri</span><span class="val">5.5h</span><div class="fill" style="height:69%"></div></div><div class="cell"><span class="lbl">Sat</span><span class="val">0h</span><div class="fill" style="height:0%"></div></div></div></div>
+        </div>
+        <div>
+          <div class="map-wrap">
+            <div class="map-controls"><button class="btn sm">Tue Jul 28</button><button class="btn sm">Zone overlays &#9679;</button><button class="btn sm">Show unassigned</button></div>
+            <div class="map-search">&#128269; Search address, order, or sub&hellip;</div>
+            <div class="weather-flag"><div class="wf-title">&#9888; Weather flag active</div><div class="wf-body">Rain forecast in <b>East Houston + Crosby zone</b> for Mon&ndash;Wed. Optimizer is deferring 14 tasks; affected subs marked in list.</div></div>
+            <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+              <rect width="900" height="600" fill="#e6ebf1"/>
+              <ellipse cx="450" cy="320" rx="120" ry="90" fill="none" stroke="#c7ceda" stroke-width="18"/>
+              <ellipse cx="450" cy="320" rx="220" ry="170" fill="none" stroke="#c7ceda" stroke-width="10" opacity=".7"/>
+              <ellipse cx="450" cy="320" rx="340" ry="260" fill="none" stroke="#c7ceda" stroke-width="6" opacity=".5"/>
+              <path d="M 620 100 Q 780 130 820 240 Q 800 340 700 350 Q 620 280 620 100 Z" fill="#fee2e2" fill-opacity=".55" stroke="#fca5a5" stroke-width="1" stroke-dasharray="4 3"/>
+              <text x="750" y="180" font-size="12" font-weight="600" fill="#991b1b">Crosby / Dayton</text>
+              <text x="755" y="196" font-size="10" fill="#991b1b">Felipe &middot; Ever &middot; Eric</text>
+              <path d="M 320 40 Q 500 30 620 100 Q 580 180 500 200 Q 380 180 320 100 Z" fill="#dbeafe" fill-opacity=".55" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4 3"/>
+              <text x="410" y="72" font-size="12" font-weight="600" fill="#1e40af">North / Woodlands</text>
+              <text x="435" y="88" font-size="10" fill="#1e40af">Julio &middot; Sam</text>
+              <path d="M 80 260 Q 60 380 140 460 Q 240 430 260 340 Q 200 260 80 260 Z" fill="#dcfce7" fill-opacity=".55" stroke="#86efac" stroke-width="1" stroke-dasharray="4 3"/>
+              <text x="105" y="330" font-size="12" font-weight="600" fill="#166534">Fulshear / Katy</text>
+              <text x="120" y="346" font-size="10" fill="#166534">Ricardo &middot; Cameron</text>
+              <path d="M 180 440 Q 260 520 380 520 Q 400 460 350 420 Q 260 420 180 440 Z" fill="#fef3c7" fill-opacity=".55" stroke="#fcd34d" stroke-width="1" stroke-dasharray="4 3"/>
+              <text x="230" y="480" font-size="12" font-weight="600" fill="#854d0e">Richmond / Rosenberg</text>
+              <text x="250" y="496" font-size="10" fill="#854d0e">Marco &middot; Cameron</text>
+              <path d="M 480 540 Q 620 560 680 500 Q 640 440 560 440 Q 480 480 480 540 Z" fill="#f3e8ff" fill-opacity=".55" stroke="#c4b5fd" stroke-width="1" stroke-dasharray="4 3"/>
+              <text x="520" y="510" font-size="12" font-weight="600" fill="#5b21b6">South / Alvin / Pearland</text>
+              <defs><pattern id="rainPattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(20)"><line x1="0" y1="0" x2="0" y2="8" stroke="#1e40af" stroke-width="1.2"/></pattern></defs>
+              <g opacity=".35"><path d="M 620 100 Q 780 130 820 240 Q 800 340 700 350 Q 620 280 620 100 Z" fill="url(#rainPattern)"/></g>
+              <text x="438" y="325" font-size="10" font-weight="600" fill="#4b5563">Downtown</text>
+              <circle cx="450" cy="315" r="4" fill="#4b5563"/>
+              <g fill="#ea580c" stroke="#7c2d12" stroke-width="1"><circle cx="700" cy="215" r="7"/><circle cx="706" cy="225" r="7"/><circle cx="694" cy="223" r="7"/><circle cx="700" cy="235" r="7"/><circle cx="712" cy="217" r="7"/><circle cx="688" cy="212" r="7"/><circle cx="720" cy="260" r="7"/><circle cx="740" cy="280" r="7"/></g>
+              <g fill="#2563eb" stroke="#1e3a8a" stroke-width="1"><circle cx="470" cy="90" r="7"/><circle cx="490" cy="100" r="7"/><circle cx="510" cy="110" r="7"/></g>
+              <g fill="#60a5fa" stroke="#1e40af" stroke-width="1"><circle cx="400" cy="120" r="7"/><circle cx="420" cy="140" r="7"/><circle cx="410" cy="155" r="7"/></g>
+              <g fill="#eab308" stroke="#713f12" stroke-width="1"><circle cx="280" cy="470" r="7"/><circle cx="300" cy="480" r="7"/><circle cx="320" cy="475" r="7"/><circle cx="290" cy="490" r="7"/></g>
+              <g fill="#16a34a" stroke="#14532d" stroke-width="1"><circle cx="160" cy="340" r="7"/><circle cx="180" cy="360" r="7"/><circle cx="200" cy="345" r="7"/></g>
+              <g fill="#0d9488" stroke="#134e4a" stroke-width="1"><circle cx="140" cy="410" r="7"/><circle cx="160" cy="420" r="7"/><circle cx="150" cy="435" r="7"/></g>
+              <g fill="#b91c1c" stroke="#450a0a" stroke-width="1"><circle cx="770" cy="335" r="7"/><circle cx="785" cy="325" r="7"/></g>
+              <g fill="#c2410c" stroke="#7c2d12" stroke-width="1"><circle cx="720" cy="200" r="7"/><circle cx="730" cy="185" r="7"/></g>
+              <g fill="#94a3b8" stroke="#334155" stroke-width="1.5" stroke-dasharray="3 2"><circle cx="540" cy="380" r="7"/><circle cx="560" cy="400" r="7"/><circle cx="600" cy="430" r="7"/><circle cx="640" cy="440" r="7"/></g>
+              <polyline points="700,215 706,225 694,223 700,235 712,217 720,260 740,280" fill="none" stroke="#ea580c" stroke-width="2" stroke-dasharray="5 3" opacity=".7"/>
+            </svg>
+            <div class="map-legend"><h4>Pins by sub</h4><div class="item"><span class="swatch" style="background:#ea580c"></span>Felipe Medrano</div><div class="item"><span class="swatch" style="background:#2563eb"></span>Julio Ram&iacute;rez</div><div class="item"><span class="swatch" style="background:#eab308"></span>Marco D&iacute;az</div><div class="item"><span class="swatch" style="background:#16a34a"></span>Ricardo Torres</div><div class="item"><span class="swatch" style="background:#0d9488"></span>Cameron Blake</div><div class="item"><span class="swatch" style="background:#b91c1c"></span>Ever Cord&oacute;n</div><div class="item"><span class="swatch" style="background:#c2410c"></span>Eric Anderson</div><div class="item"><span class="swatch" style="background:#60a5fa"></span>Sam Boone</div><div class="item"><span class="swatch" style="background:#94a3b8;border:1.5px dashed #334155"></span>Unassigned (4)</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>AI suggestions &middot; 8</h3><span class="meta">Last run: 4 min ago</span></div>
+          <div class="ai-summary"><b>Summary:</b> 4 reassignments proposed (Julio's machine-down + weather in Crosby), 2 reschedules, 2 load rebalances. Est. impact: <b>+11% on-time</b>, <b>&minus;38 mi drive</b> this week.</div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type reassign">Reassign</span></div><div class="ai-title">Move 3 Woodsons Reserve tasks from Julio &rarr; Sam</div><div class="ai-body">Julio down 5 days. Sam is 32% under capacity Mon&ndash;Wed and works same zone. Drive time neutral.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type reschedule">Reschedule</span></div><div class="ai-title">Defer 14 Crosby tasks by 2 days (weather)</div><div class="ai-body">Rain forecast Mon&ndash;Wed. Pushing to Thu&ndash;Sat keeps Felipe + Ever + Eric within capacity and preserves on-time targets.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type load">Load balance</span></div><div class="ai-title">Shift 2 Candela tasks from Cameron &rarr; Marco</div><div class="ai-body">Cameron over cap Wed (7.5h). Marco 44% open. Same GC (Westin), 4 mi apart.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type overdue">Overdue</span></div><div class="ai-title">Reassign 2 past-due tasks to Ricardo</div><div class="ai-body">River Ranch Trails (Dayton) &mdash; 9 days overdue, currently unassigned. Ricardo has Wed capacity and is nearest available.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
+          <div class="ai-item"><div class="ai-head"><span class="ai-type reassign">Reassign</span></div><div class="ai-title">Route order: reorder Felipe's Tue stops</div><div class="ai-body">Current order zigzags. Proposed order saves 11 mi. Same tasks, same day.</div><div class="ai-actions"><button class="btn ok sm">Approve</button><button class="btn sm">Edit</button><button class="btn bad sm">Reject</button></div></div>
+        </div>
+      </div>
+      <div class="past-due">
+        <div class="past-due-head"><h3>Past Due &middot; unresolved <span class="badge">7</span></h3><div><button class="btn sm">Assign selected</button><button class="btn sm">Send to AI for suggestions</button></div></div>
+        <table class="pd-table">
+          <thead><tr><th style="width:32px;"><input type="checkbox"></th><th>Location</th><th>Address</th><th>Order</th><th>GC</th><th>Assigned To</th><th>Expected</th><th>Lateness</th><th>Cables</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><input type="checkbox"></td><td>River Ranch Trails</td><td>2225 W Post Oak Cir, Dayton TX 77535</td><td>#11421</td><td>Adams Homes</td><td>&mdash;</td><td>Jul 17</td><td class="lateness">9 days late</td><td>32</td><td><span class="status-flag bad">On hold</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>Foxlake Apts Ph 2</td><td>19615 Park Row Blvd, Houston TX 77084</td><td>#12088</td><td>CWT Construction</td><td>Ever Cord&oacute;n</td><td>Jul 19</td><td class="lateness">7 days late</td><td>184</td><td><span class="status-flag warn">Waiting on GC</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>Venterra Fulshear Apts</td><td>11430 FM 359, Richmond TX 77441</td><td>#11982</td><td>CWT Construction</td><td>Marco D&iacute;az</td><td>Jul 20</td><td class="lateness">6 days late</td><td>140</td><td><span class="status-flag warn">Rain &mdash; 2 days</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>Alvin, TX</td><td>2195 A/B W Lang St, Brazoria TX 77511</td><td>#11744</td><td>OC Restoration</td><td>&mdash;</td><td>Jul 21</td><td class="lateness">5 days late</td><td>48</td><td><span class="status-flag bad">Unassigned</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>Colton</td><td>1602 Cleburne Ct, Magnolia TX 77316</td><td>#8934</td><td>David Weekley Homes</td><td>Felipe Medrano</td><td>Jul 22</td><td class="lateness warn">4 days late</td><td>&mdash;</td><td><span class="status-flag info">Field Issues</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>Audubon</td><td>16907 Feather Preen Ct, Magnolia TX 77354</td><td>#11527</td><td>Ravenna Homes</td><td>Felipe Medrano</td><td>Jul 22</td><td class="lateness warn">4 days late</td><td>&mdash;</td><td><span class="status-flag info">Field Issues</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>Sundance Cove</td><td>2319 Pioneer Landing Ln, Crosby TX 77532</td><td>#12102</td><td>Meritage Homes</td><td>Felipe Medrano</td><td>Jul 24</td><td class="lateness warn">2 days late</td><td>28</td><td><span class="status-flag warn">Rescheduling</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="frame" id="f2">
+    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 7</span></div>
+    <div class="frame-body"><div class="drawer-layout">
+      <div class="drawer-left">
+        <div class="sub-profile">
+          <div class="name-row"><div><div class="n">Felipe Medrano</div><div style="color:var(--ink-faint);font-size:12px;">Cast Concrete LLC</div></div><div><span class="status-flag ok" style="font-size:11px;">Active &middot; On-time 92%</span></div></div>
+          <div style="font-size:12.5px;color:var(--ink-mute);">Preferred zones: <b>SE Houston, Crosby, Dayton</b> &middot; Contact: (832) 744-6494 &middot; English + Spanish</div>
+          <div class="fact-grid">
+            <div><div class="lbl">Daily capacity</div><div class="val">8.0 hrs</div></div>
+            <div><div class="lbl">Setup per site</div><div class="val">30 min</div></div>
+            <div><div class="lbl">Time per cable</div><div class="val">1.5 min</div></div>
+            <div><div class="lbl">Working days</div><div class="val">Sun&ndash;Fri</div></div>
+            <div><div class="lbl">This week load</div><div class="val">42.2 hrs / 45.0 avail</div></div>
+            <div><div class="lbl">Trend (4 wk)</div><div class="val" style="color:var(--ok);">&uarr; 4% on-time</div></div>
+          </div>
+        </div>
+        <div class="sub-profile">
+          <div class="name-row"><div style="font-weight:600;font-size:13px;">Recent notes</div></div>
+          <ul style="margin:0;padding-left:16px;font-size:12.5px;color:var(--ink-mute);line-height:1.6;">
+            <li>Jul 24 &mdash; Requested Sat off (family)</li>
+            <li>Jul 22 &mdash; Flagged 3 field issues at Audubon</li>
+            <li>Jul 20 &mdash; Completed 8 stops in Sundance Cove in one visit</li>
+          </ul>
+        </div>
+      </div>
+      <div class="drawer-right">
+        <div class="week-view">
+          <div class="wv-head">Week of Jul 26 &middot; 7 days</div>
+          <div class="day-block">
+            <div class="day-row"><div class="day-name">Sun Jul 26 <span class="today">Today</span></div><div class="day-hrs">7.5 / 8.0 hrs <span class="bar warn"><span class="fill" style="width:94%"></span></span></div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">1</div><div class="stop-lbl">08:00</div></div><div><div class="addr">Sundance Cove</div><div class="sub-addr">2319 Pioneer Landing Ln, Crosby</div></div><div class="cables">28 cables</div><div class="est">1h 12m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">2</div><div class="stop-lbl">09:20</div></div><div><div class="addr">Sundance Cove</div><div class="sub-addr">2326 Pioneer Landing Ln, Crosby</div></div><div class="cables">28 cables</div><div class="est">1h 12m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">3</div><div class="stop-lbl">10:35</div></div><div><div class="addr">Sundance Cove</div><div class="sub-addr">18918 Redondo Peak Tr, Crosby</div></div><div class="cables">36 cables</div><div class="est">1h 24m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">4</div><div class="stop-lbl">12:00</div></div><div><div class="addr">Crosby Farms</div><div class="sub-addr">635 Salto Shipwreck Ln, Crosby</div></div><div class="cables">44 cables</div><div class="est">1h 36m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop field">5</div><div class="stop-lbl">14:00</div></div><div><div class="addr">Audubon <span class="field-badge">Field</span></div><div class="sub-addr">16907 Feather Preen Ct, Magnolia</div></div><div class="cables">Repair</div><div class="est">2h 00m</div></div>
+          </div>
+          <div class="day-block" style="background:#fff7ed;">
+            <div class="day-row"><div class="day-name">Mon Jul 27 <span class="status-flag brand" style="margin-left:6px;">Over cap</span></div><div class="day-hrs">9.2 / 8.0 hrs <span class="bar bad"><span class="fill" style="width:100%"></span></span></div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">1</div><div class="stop-lbl">08:00</div></div><div><div class="addr">Webercrest Heights</div><div class="sub-addr">11408 Zenyatta Ln, Houston</div></div><div class="cables">72 cables</div><div class="est">2h 18m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">2</div><div class="stop-lbl">10:20</div></div><div><div class="addr">Webercrest Heights</div><div class="sub-addr">11410 Zenyatta Ln, Houston</div></div><div class="cables">64 cables</div><div class="est">2h 06m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">3</div><div class="stop-lbl">12:30</div></div><div><div class="addr">Briscoe Falls</div><div class="sub-addr">7814 Gunner Trail Dr, Richmond</div></div><div class="cables">80 cables</div><div class="est">2h 30m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">4</div><div class="stop-lbl">15:10</div></div><div><div class="addr">Briscoe Falls</div><div class="sub-addr">7814 Mica Valley Ln, Richmond</div></div><div class="cables">76 cables</div><div class="est">2h 24m</div></div>
+            <div style="padding:8px 0 0;"><div style="background:var(--tint-bad);border-radius:6px;padding:8px 10px;font-size:12px;color:#7c2d12;">&#9888; AI recommends moving Briscoe Falls stops to <b>Cameron</b> (same zone, 60% capacity Mon). &mdash; <a href="#" style="color:var(--brand);font-weight:600;">Review</a></div></div>
+          </div>
+          <div class="day-block">
+            <div class="day-row"><div class="day-name">Tue Jul 28</div><div class="day-hrs">8.0 / 8.0 hrs <span class="bar warn"><span class="fill" style="width:100%"></span></span></div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">1</div><div class="stop-lbl">08:00</div></div><div><div class="addr">Stewarts Ranch</div><div class="sub-addr">1701 Hopson Ranch Dr, Conroe</div></div><div class="cables">52 cables</div><div class="est">1h 48m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">2</div><div class="stop-lbl">09:55</div></div><div><div class="addr">Stewarts Ranch</div><div class="sub-addr">2134 Rawls Ranch Ct, Conroe</div></div><div class="cables">48 cables</div><div class="est">1h 42m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">3</div><div class="stop-lbl">12:00</div></div><div><div class="addr">Crosby Farms</div><div class="sub-addr">630 Salto Shipwreck Ln, Crosby</div></div><div class="cables">60 cables</div><div class="est">2h 00m</div></div>
+            <div class="task-row"><div class="stop-wrap"><div class="stop">4</div><div class="stop-lbl">14:15</div></div><div><div class="addr">Sweetgrass Village</div><div class="sub-addr">12855 Shaily Faith Ct, Crosby</div></div><div class="cables">40 cables</div><div class="est">1h 30m</div></div>
+          </div>
+          <div class="day-block"><div class="day-row"><div class="day-name">Wed Jul 29</div><div class="day-hrs">6.5 hrs <span class="bar"><span class="fill" style="width:81%"></span></span></div></div></div>
+          <div class="day-block"><div class="day-row"><div class="day-name">Thu Jul 30</div><div class="day-hrs">5.0 hrs <span class="bar"><span class="fill" style="width:63%"></span></span></div></div></div>
+          <div class="day-block"><div class="day-row"><div class="day-name">Fri Jul 31</div><div class="day-hrs">7.0 hrs <span class="bar"><span class="fill" style="width:88%"></span></span></div></div></div>
+          <div class="day-block"><div class="day-row"><div class="day-name">Sat Aug 1</div><div class="day-hrs" style="color:var(--ink-faint);">Off &middot; requested</div></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="frame" id="f3">
+    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 7</span></div>
+    <div class="frame-body"><div class="aq-layout">
+      <div class="aq-list">
+        <div class="aqli active"><div class="t">Move 3 Woodsons Reserve tasks &middot; Julio &rarr; Sam</div><div class="m">Reassign &middot; +11% on-time &middot; saves 12 mi</div></div>
+        <div class="aqli"><div class="t">Defer 14 Crosby tasks by 2 days</div><div class="m">Reschedule &middot; weather</div></div>
+        <div class="aqli"><div class="t">Shift 2 Candela tasks &middot; Cameron &rarr; Marco</div><div class="m">Load balance &middot; same GC</div></div>
+        <div class="aqli"><div class="t">Reassign 2 past-due Dayton tasks to Ricardo</div><div class="m">Overdue &middot; unassigned</div></div>
+        <div class="aqli"><div class="t">Reorder Felipe's Tue route</div><div class="m">Route &middot; saves 11 mi</div></div>
+        <div class="aqli"><div class="t">Assign 3 unassigned Alvin tasks to Marco</div><div class="m">Assign &middot; unassigned</div></div>
+        <div class="aqli"><div class="t">Split 200-cable apartment across 2 days</div><div class="m">Load &middot; Foxlake #12088</div></div>
+        <div class="aqli"><div class="t">Add Sat capacity to Ever (weather backlog)</div><div class="m">Ask sub &middot; weather rebound</div></div>
+      </div>
+      <div class="aq-detail">
+        <h3>Move 3 Woodsons Reserve tasks &middot; Julio &rarr; Sam</h3>
+        <div style="font-size:12px;color:var(--ink-faint);margin-bottom:16px;">Proposed by optimizer &middot; run 2026-07-26 14:22</div>
+        <div class="aq-why"><b>Why:</b> Julio Ram&iacute;rez reported his stressing machine down for 5 days (Sun&ndash;Thu). He has 3 Woodsons Reserve tasks assigned Mon&ndash;Tue (total 128 cables, ~4.0 hrs). Sam Boone is in the same North zone, 32% under capacity Mon&ndash;Wed, and works the same GC (Toll Brothers). Reassigning preserves on-time delivery and adds no drive time.</div>
+        <div class="aq-diff">
+          <div class="aq-side before"><div class="lbl">Before</div><div class="name">Julio Ram&iacute;rez</div><div class="cap-line">Mon: <b>0h / 8h</b> &mdash; down, tasks would slip</div><div class="cap-line">Tue: <b>0h / 8h</b> &mdash; down, tasks would slip</div><div class="cap-line" style="color:var(--bad);">Projected on-time: <b>0% for these 3</b></div></div>
+          <div class="aq-arrow">&rarr;</div>
+          <div class="aq-side after"><div class="lbl">After</div><div class="name">Sam Boone</div><div class="cap-line">Mon: 5.5h &rarr; <b>7.3h / 8h</b> &check;</div><div class="cap-line">Tue: 5.0h &rarr; <b>7.2h / 8h</b> &check;</div><div class="cap-line" style="color:var(--ok);">Projected on-time: <b>96%</b></div></div>
+        </div>
+        <div class="aq-tasks-affected">
+          <div class="lbl">Tasks affected (3)</div>
+          <table>
+            <thead><tr><th>Order</th><th>Address</th><th>Cables</th><th>Date</th><th>Est</th></tr></thead>
+            <tbody>
+              <tr><td>#9072</td><td>4655 Flintrock Park Dr, The Woodlands</td><td>48</td><td>Mon Jul 27</td><td>1h 42m</td></tr>
+              <tr><td>#9088</td><td>4661 Flintrock Park Dr, The Woodlands</td><td>44</td><td>Mon Jul 27</td><td>1h 36m</td></tr>
+              <tr><td>#9124</td><td>4712 Flintrock Park Dr, The Woodlands</td><td>36</td><td>Tue Jul 28</td><td>1h 24m</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="aq-actions"><button class="btn ghost sm">Skip for now</button><button class="btn bad">Reject</button><button class="btn">Edit assignment</button><button class="btn ok" style="padding:8px 16px;">Approve reassignment</button></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="frame" id="f4">
+    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 7</span></div>
+    <div class="frame-body"><div class="wp-wrap">
+      <div class="wp-card">
+        <h3>Flag weather condition</h3>
+        <p style="color:var(--ink-mute);font-size:12.5px;margin:0 0 16px;">Manually flag a zone as impacted. The optimizer will defer or redistribute affected tasks and note "weather" as the reason in the audit log.</p>
+        <div class="wp-form">
+          <div class="field"><label>Zone(s) impacted</label>
+            <div class="zone-tags">
+              <span class="zone-tag">North / Woodlands</span>
+              <span class="zone-tag selected">Crosby / Dayton</span>
+              <span class="zone-tag">Fulshear / Katy</span>
+              <span class="zone-tag">Richmond / Rosenberg</span>
+              <span class="zone-tag">South / Alvin</span>
+              <span class="zone-tag selected">East Houston</span>
+            </div>
+          </div>
+          <div class="field"><label>Condition</label>
+            <select><option>Heavy rain &mdash; outdoor work halted</option><option>Light rain &mdash; reduced pace</option><option>Extreme heat &mdash; half-day only</option><option>Freeze / ice</option><option>Wind advisory</option></select>
+          </div>
+          <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><label>Start</label><input type="date" value="2026-07-27"></div>
+            <div><label>Through</label><input type="date" value="2026-07-29"></div>
+          </div>
+          <div class="field"><label>Notes (optional)</label><textarea placeholder="e.g. Ground too soft even after rain stops &mdash; expect 1 extra day dry-out">Confirmed with subs. Ground will need a day to dry after Wed.</textarea></div>
+        </div>
+      </div>
+      <div class="wp-card">
+        <h3>Projected impact</h3>
+        <div style="font-size:12.5px;color:var(--ink-mute);margin-bottom:14px;">Optimizer preview based on current assignments.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div style="background:#fafbfd;border:1px solid var(--line);border-radius:10px;padding:12px;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);">Tasks affected</div><div style="font-size:22px;font-weight:600;color:var(--ink);">14</div><div style="font-size:11.5px;color:var(--ink-mute);">across 3 subs</div></div>
+          <div style="background:#fafbfd;border:1px solid var(--line);border-radius:10px;padding:12px;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);">Hours displaced</div><div style="font-size:22px;font-weight:600;color:var(--ink);">36.5</div><div style="font-size:11.5px;color:var(--ink-mute);">&rarr; moved to Thu&ndash;Sat</div></div>
+          <div style="background:#fafbfd;border:1px solid var(--line);border-radius:10px;padding:12px;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);">Subs impacted</div><div style="font-size:22px;font-weight:600;color:var(--ink);">Felipe, Ever, Eric</div></div>
+          <div style="background:#fafbfd;border:1px solid var(--line);border-radius:10px;padding:12px;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);">On-time delta</div><div style="font-size:22px;font-weight:600;color:var(--warn);">&minus;4%</div><div style="font-size:11.5px;color:var(--ink-mute);">vs. leaving unchanged: &minus;18%</div></div>
+        </div>
+        <div class="wp-impact"><b>Optimizer plan:</b> Ever's Fri (7.5h) and Sat (8.5h) will push into overtime. Recommend asking Ever to add Sat, or reassign 2 Crosby tasks (28 + 36 cables) to Eric who has open capacity Thu.</div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;"><button class="btn">Save flag only</button><button class="btn primary">Save + run optimizer</button></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="frame" id="f5">
+    <div class="frame-head"><h2>5 &middot; Sub self-service (mobile) &mdash; "machine down 5 days" via chat</h2><span class="frame-num">Frame 5 of 7</span></div>
+    <div class="frame-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px;background:#f4f5f7;">
+      <div>
+        <h3 style="margin-top:0;font-size:15px;">Sub-facing mobile view</h3>
+        <p style="color:var(--ink-mute);font-size:13px;">A lightweight mobile web app subs open from a link in the nightly PDF email. Shows today's schedule and lets them message dispatch. Free-text messages are parsed by the LLM layer into structured updates the manager approves.</p>
+        <div class="ss-phone"><div class="ss-screen">
+          <div class="ss-topbar"><div><div class="n">Julio Ram&iacute;rez</div><div class="s">HPT Dispatch &middot; Sun Jul 26</div></div><div style="font-size:11px;background:rgba(255,255,255,.1);padding:3px 8px;border-radius:6px;">Espa&ntilde;ol</div></div>
+          <div class="ss-body">
+            <div class="ss-quick"><div class="qb"><div class="ic">&#128197;</div>Today's stops</div><div class="qb"><div class="ic">&check;</div>Mark done</div><div class="qb"><div class="ic">&#128295;</div>Machine down</div><div class="qb"><div class="ic">&#127783;</div>Weather issue</div></div>
+            <div class="ss-card"><h4>Today &middot; 3 stops</h4><div class="row"><span>Sundance Cove &mdash; 2319 Pioneer</span><b>28c</b></div><div class="row"><span>Sundance Cove &mdash; 2326 Pioneer</span><b>28c</b></div><div class="row"><span>Woodsons Reserve &mdash; 4655 Flintrock</span><b>48c</b></div><div class="row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--line);"><span><b>Total</b></span><b>3h 30m</b></div></div>
+            <div class="ss-chat">
+              <div class="ss-bubble them">Hi Julio &mdash; anything to report?</div>
+              <div class="ss-bubble me">Mi maquina se rompio, no puedo trabajar por 5 dias</div>
+              <div class="ss-bubble system">&#10024; Understood &mdash; <b>machine down 5 days (Sun Jul 26 &rarr; Thu Jul 30)</b>. Sent to Maria for review.</div>
+              <div class="ss-bubble them">Got it. Dispatch has been notified. Your Mon&ndash;Tue tasks may be reassigned. Confirm when you're back up.</div>
+            </div>
+          </div>
+          <div class="ss-msg-input"><input type="text" placeholder="Type a message&hellip;"><button class="send">&rarr;</button></div>
+        </div></div>
+      </div>
+      <div>
+        <h3 style="margin-top:0;font-size:15px;">What dispatch sees</h3>
+        <p style="color:var(--ink-mute);font-size:13px;">A single card in Maria's inbox with the LLM's parsed interpretation. She approves, edits, or rejects. Approval automatically zeros Julio's capacity for those days and triggers the optimizer.</p>
+        <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;"><div><div style="font-weight:600;">Sub update &middot; Julio Ram&iacute;rez</div><div style="color:var(--ink-faint);font-size:12px;">Received via mobile &middot; 2026-07-26 07:42</div></div><span class="status-flag warn">Pending review</span></div>
+          <div style="background:#fafbfd;border-left:3px solid var(--line-strong);padding:10px 12px;font-style:italic;color:var(--ink-mute);font-size:12.5px;border-radius:0 6px 6px 0;margin-bottom:12px;">"Mi maquina se rompio, no puedo trabajar por 5 dias"</div>
+          <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;margin-bottom:14px;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--brand-dk);font-weight:700;margin-bottom:6px;">&#10024; AI interpretation</div>
+            <table style="width:100%;font-size:12.5px;">
+              <tr><td style="color:var(--ink-mute);padding:3px 0;width:100px;">Type:</td><td><b>Unavailability</b></td></tr>
+              <tr><td style="color:var(--ink-mute);padding:3px 0;">Reason:</td><td><b>Machine down</b></td></tr>
+              <tr><td style="color:var(--ink-mute);padding:3px 0;">Duration:</td><td><b>5 days</b></td></tr>
+              <tr><td style="color:var(--ink-mute);padding:3px 0;">Effective:</td><td><b>Sun Jul 26 &rarr; Thu Jul 30</b></td></tr>
+              <tr><td style="color:var(--ink-mute);padding:3px 0;">Confidence:</td><td>High (95%)</td></tr>
+            </table>
+          </div>
+          <div style="font-size:12.5px;color:var(--ink-mute);margin-bottom:14px;"><b>Impact:</b> 3 tasks currently assigned Mon&ndash;Tue (128 cables total) will be flagged for reassignment. Optimizer will propose alternates after you approve.</div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn bad sm">Reject</button><button class="btn sm">Edit dates</button><button class="btn ok sm">Approve &mdash; mark unavailable</button></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="frame" id="f6">
+    <div class="frame-head"><h2>6 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 6 of 7</span></div>
+    <div class="frame-body"><div class="pdf-shell"><div class="pdf-page">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><h1>Stressing Schedule</h1><div class="pdf-sub">Felipe Medrano &middot; Cast Concrete LLC &middot; Week of Jul 26&ndash;Aug 1, 2026</div></div>
+        <div style="text-align:right;"><div style="width:60px;height:60px;background:var(--brand);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;">HPT</div><div style="font-size:10px;color:#666;margin-top:4px;">Generated Sat Jul 25 &middot; 22:00</div></div>
+      </div>
+      <div class="pdf-summary">
+        <div><div class="s-lbl">Total stops</div><div class="s-val">18</div></div>
+        <div><div class="s-lbl">Total cables</div><div class="s-val">742</div></div>
+        <div><div class="s-lbl">Est hours</div><div class="s-val">39.2</div></div>
+        <div><div class="s-lbl">Field issues</div><div class="s-val" style="color:#b91c1c;">2</div></div>
+      </div>
+      <div class="pdf-day">
+        <div class="pdf-day-h"><span class="n">Sunday, Jul 26</span><span class="meta">5 stops &middot; 152 cables &middot; est 7h 24m</span></div>
+        <table class="pdf-tbl">
+          <thead><tr><th style="width:40px;">Stop</th><th style="width:50px;">Time</th><th>Address</th><th style="width:180px;">Labor</th><th style="width:90px;">GC</th><th style="width:60px;">Cables</th><th style="width:60px;">Est</th></tr></thead>
+          <tbody>
+            <tr><td><span class="stop-c">1</span></td><td>08:00</td><td>2319 Pioneer Landing Ln, Crosby<br><span class="lab">Sundance Cove &middot; Ord #12102</span></td><td class="lab">Cut &middot; Grout &middot; Stress</td><td class="lab">Meritage</td><td class="cables-c">28</td><td class="est-c">1h 12m</td></tr>
+            <tr><td><span class="stop-c">2</span></td><td>09:20</td><td>2326 Pioneer Landing Ln, Crosby<br><span class="lab">Sundance Cove &middot; Ord #12452</span></td><td class="lab">Cut &middot; Grout &middot; Stress</td><td class="lab">Meritage</td><td class="cables-c">28</td><td class="est-c">1h 12m</td></tr>
+            <tr><td><span class="stop-c">3</span></td><td>10:35</td><td>18918 Redondo Peak Tr, Crosby<br><span class="lab">Sundance Cove &middot; Ord #12241</span></td><td class="lab">Cut &middot; Grout</td><td class="lab">David Weekley</td><td class="cables-c">36</td><td class="est-c">1h 24m</td></tr>
+            <tr><td><span class="stop-c">4</span></td><td>12:00</td><td>635 Salto Shipwreck Ln, Crosby<br><span class="lab">Crosby Farms &middot; Ord #12432</span></td><td class="lab">Paint &middot; Stress</td><td class="lab">Lennar</td><td class="cables-c">44</td><td class="est-c">1h 36m</td></tr>
+            <tr><td><span class="stop-c field">5</span></td><td>14:00</td><td>16907 Feather Preen Ct, Magnolia <span class="field-badge">Field Issue</span><br><span class="lab">Audubon &middot; Ord #11527</span><div class="note">"Aqui quieren hacer una reparaci&oacute;n. Hab&iacute;same cuando vaya para decirle al encargado que vaya a chequiar."</div></td><td class="lab">Field repair</td><td class="lab">Ravenna</td><td class="cables-c">&mdash;</td><td class="est-c">2h 00m</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pdf-day">
+        <div class="pdf-day-h"><span class="n">Monday, Jul 27</span><span class="meta" style="color:#fca5a5;">4 stops &middot; 292 cables &middot; est 9h 18m &mdash; OVER CAPACITY</span></div>
+        <table class="pdf-tbl">
+          <tbody>
+            <tr><td><span class="stop-c">1</span></td><td>08:00</td><td>11408 Zenyatta Ln, Houston<br><span class="lab">Webercrest Heights &middot; Ord #12539</span></td><td class="lab">Cut &middot; Stress &middot; Grout</td><td class="lab">Meritage</td><td class="cables-c">72</td><td class="est-c">2h 18m</td></tr>
+            <tr><td><span class="stop-c">2</span></td><td>10:20</td><td>11410 Zenyatta Ln, Houston<br><span class="lab">Webercrest Heights &middot; Ord #12540</span></td><td class="lab">Cut &middot; Stress &middot; Grout</td><td class="lab">Meritage</td><td class="cables-c">64</td><td class="est-c">2h 06m</td></tr>
+            <tr><td><span class="stop-c">3</span></td><td>12:30</td><td>7814 Gunner Trail Dr, Richmond<br><span class="lab">Briscoe Falls &middot; Ord #12561</span></td><td class="lab">Cut &middot; Stress &middot; Grout</td><td class="lab">Kb Home</td><td class="cables-c">80</td><td class="est-c">2h 30m</td></tr>
+            <tr><td><span class="stop-c">4</span></td><td>15:10</td><td>7814 Mica Valley Ln, Richmond<br><span class="lab">Briscoe Falls &middot; Ord #12538</span></td><td class="lab">Cut &middot; Stress &middot; Grout</td><td class="lab">Kb Home</td><td class="cables-c">76</td><td class="est-c">2h 24m</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align:center;padding:16px;color:#9ca3af;font-size:11px;">&mdash; Days Tue Jul 28 through Fri Jul 31 continue on next page &mdash;</div>
+      <div class="pdf-footer"><div>Questions? Call Maria at Dispatch: (713) 555-0142 &middot; maria.j@hpt.com</div><div>Page 1 of 3 &middot; HPT Cloud &middot; Dispatch v2</div></div>
+    </div></div></div>
+  </div>
+
+  <div class="frame" id="f7">
+    <div class="frame-head"><h2>7 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 7 of 7</span></div>
+    <div class="frame-body"><div class="cs-wrap">
+      <div class="cs-card">
+        <h3>Capacity profile &middot; Felipe Medrano</h3>
+        <p class="desc">These values are the currency the optimizer uses. Change them any time &mdash; takes effect on the next run.</p>
+        <div class="cs-row"><label>Daily working hours<span class="sub">Hours available in a normal workday</span></label><div><input type="number" value="8.0" step="0.5"><span class="unit">hrs</span></div></div>
+        <div class="cs-row"><label>Setup time per site<span class="sub">Fixed cost to arrive, unload, walk the slab</span></label><div><input type="number" value="30" step="5"><span class="unit">min</span></div></div>
+        <div class="cs-row"><label>Time per cable<span class="sub">Rate for the actual stressing/grouting work</span></label><div><input type="number" value="1.5" step="0.1"><span class="unit">min/cable</span></div></div>
+        <div class="cs-row"><label>Max sites per day<span class="sub">Hard cap regardless of hours (drive fatigue)</span></label><div><input type="number" value="6"><span class="unit">sites</span></div></div>
+        <div class="cs-row"><label>Working days<span class="sub">Which days of the week</span></label><div><input type="text" value="Sun, Mon, Tue, Wed, Thu, Fri" style="width:260px;"></div></div>
+        <div class="cs-row"><label>Preferred zones<span class="sub">Optimizer strongly prefers these</span></label>
+          <div><div class="zone-picker"><div class="z-hdr"><span>3 selected</span><a href="#" style="font-size:11.5px;">Edit polygons on map</a></div><div class="zone-tags"><span class="zone-tag selected">SE Houston</span><span class="zone-tag selected">Crosby</span><span class="zone-tag selected">Dayton</span><span class="zone-tag">Baytown</span><span class="zone-tag">+ add</span></div></div></div>
+        </div>
+        <div class="preview-calc"><b>Preview:</b> With these values, Felipe can complete <b>~8 sites averaging 32 cables each per day</b> (240 cables, 8h). A 200-cable apartment stop = ~5h 30m; an 80-cable house = ~2h 30m.</div>
+      </div>
+      <div class="cs-card">
+        <h3>Performance history</h3>
+        <p class="desc">Auto-computed from completed vs. assigned dates. The optimizer uses on-time % as a soft weighting.</p>
+        <table style="width:100%;font-size:12.5px;border-collapse:collapse;">
+          <thead><tr><th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;">Week</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;">Tasks</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;">On-time</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;">Avg late</th><th style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:.05em;">Miles</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--line);">Jul 19 (this week)</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">24</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ok);"><b>92%</b></td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">0.4d</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">312</td></tr>
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--line);">Jul 12</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">28</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ok);"><b>89%</b></td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">0.6d</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">288</td></tr>
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--line);">Jul 5</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">22</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--warn);"><b>82%</b></td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">1.1d</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">340</td></tr>
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--line);">Jun 28</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">26</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--ok);"><b>88%</b></td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">0.7d</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);">302</td></tr>
+            <tr><td style="padding:6px 8px;">Jun 21</td><td style="text-align:right;padding:6px 8px;">25</td><td style="text-align:right;padding:6px 8px;color:var(--ok);"><b>90%</b></td><td style="text-align:right;padding:6px 8px;">0.5d</td><td style="text-align:right;padding:6px 8px;">294</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:16px;padding:12px;background:var(--tint-ok);border:1px solid #86efac;border-radius:8px;color:#14532d;font-size:12.5px;">&check; <b>Trend:</b> Felipe is trending up (+4% on-time last 4 wks). Optimizer weight adjusted from 1.00 &rarr; 1.05 &mdash; will now receive slightly more work vs. peers with declining trends.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="mockup-note" style="margin-top:32px;background:#0f2547;">
+    <strong>Next up (not in this mockup):</strong> requirements doc for the consultant covering data model (Sub, Task, SiteVisit, Zone, WeatherFlag, Assignment, OptimizerRun), the optimizer's objective + constraint list (OR-Tools style), API contract for the LLM interpretation service, and acceptance criteria per screen. Say the word and I'll draft it.
+  </div>
+</div>
+</body>
+</html>
