@@ -186,7 +186,11 @@
   .mgrp .mh .n{ margin-left:auto; font-size:10px; font-weight:700; color:var(--dim); }
   .mspl{ display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; font-size:10px; margin:4px 2px 0 14px; }
   .mspl .n{ margin-left:auto; font-weight:700; color:var(--faint); }
-  .mspl.done{ color:#46d684; } .mspl.prog{ color:var(--warn); }
+  .mspl.done{ color:#46d684; } .mspl.prog{ color:var(--warn); } .mspl.queued{ color:#8fa4bb; }
+  /* needs-attention callout at top of a machine with a stalled tag */
+  .mattn{ display:flex; align-items:center; gap:6px; font-size:9.5px; font-weight:800; letter-spacing:.3px;
+    color:#ff9b94; background:rgba(255,59,48,.10); border:1px solid #5e2a2a; border-radius:6px; padding:4px 8px; margin:1px 0 6px; }
+  .mattn i{ width:6px; height:6px; border-radius:50%; background:var(--bad); flex:0 0 auto; }
   .stall{ display:inline-flex; align-items:center; gap:4px; font-size:8.5px; font-weight:800; text-transform:uppercase;
     letter-spacing:.4px; color:#ff9b94; background:rgba(255,59,48,.16); border:1px solid #5e2a2a; border-radius:5px; padding:1px 6px; margin-left:8px; }
   .stall i{ width:6px; height:6px; border-radius:50%; background:var(--bad); }
@@ -492,10 +496,12 @@
     <!-- ══════════ FRAME 3 — EXPANDED BIN ══════════ -->
     <div class="col" id="f3">
       <div class="frameLbl">3 · Expanded bin <span class="fcount">DRAWER</span></div>
-      <p class="frameSub"><b>At-machine tags sub-group by machine</b>, and each machine splits into
-        <b>✓ Done here</b> (op finished on this machine) vs <b>⚙ In progress</b> (still mid-fab); an empty
-        split is hidden. A <b style="color:#ff9b94">🔴 stalled &gt;4h</b> marker flags in-progress tags stuck
-        at a machine with no OP_FINISHED — the "why is Bender 2 stuck?" signal. Tapping <b>X25</b> opens it in place. Depth = sub-bin → order → the six
+      <p class="frameSub"><b>At-machine tags sub-group by machine</b>; each machine splits three ways:
+        <b>✓ Done here</b> (OP_FINISHED on this machine), <b>⚙ In progress</b> (OP_STARTED, no OP_FINISHED),
+        <b>⏳ Queued</b> (no OP_STARTED — in the pipeline, e.g. 5-day-out); empty splits hidden.
+        <b style="color:#ff9b94">Stalled</b> = <b>OP_STARTED &gt; 4h ago with no OP_FINISHED</b> — only in-progress
+        tags qualify, <b>never queued ones</b>. A stall raises a <b style="color:#ff9b94">⚠ Needs-attention</b>
+        callout on the machine. Tapping <b>X25</b> opens it in place. Depth = sub-bin → order → the six
         lifecycle-v2 stages → tag rows. Only <b>tag # · weight · status</b> ride the tag row; tapping a
         tag reveals shape / scanned-by / when / machine (shown open on the first tag here).</p>
       <div class="phone"><div class="scr">
@@ -538,8 +544,10 @@
             <div class="stageh sg-machine"><i style="background:var(--s-machine)"></i>At machine<span class="n">3 tags · 2,050 lbs</span></div>
             <div class="mgrp">
               <div class="mh">⚙ Bender 2<span class="n">3 tags · 2,050 lbs</span></div>
+              <div class="mattn"><i></i>⚠ 1 stalled on Bender 2 · started 6h ago, not finished</div>
               <div class="mspl done">✓ Done here<span class="n">1 tag · 680 lbs</span></div>
-              <div class="mspl prog">⚙ In progress<span class="stall"><i></i>1 stalled &gt;4h</span><span class="n">2 tags · 1,370 lbs</span></div>
+              <div class="mspl prog">⚙ In progress<span class="stall"><i></i>stalled 6h</span><span class="n">1 tag · 690 lbs</span></div>
+              <div class="mspl queued">⏳ Queued <span style="font-weight:400;opacity:.8">(not started)</span><span class="n">1 tag · 680 lbs</span></div>
             </div>
 
             <!-- sub-bin X25.2 -->
@@ -554,12 +562,12 @@
             <div class="stageh sg-machine"><i style="background:var(--s-machine)"></i>At machine<span class="n">4 tags · 3,141 lbs</span></div>
             <div class="mgrp">
               <div class="mh">⚙ Bender 2<span class="n">2 tags · 1,571 lbs</span></div>
-              <div class="mspl prog">⚙ In progress<span class="n">2 tags · 1,571 lbs</span></div>
+              <div class="mspl prog">⚙ In progress <span style="font-weight:400;opacity:.8">(started &lt;4h)</span><span class="n">2 tags · 1,571 lbs</span></div>
             </div>
             <div class="mgrp">
               <div class="mh">⚙ Shear 1<span class="n">2 tags · 1,570 lbs</span></div>
               <div class="mspl done">✓ Done here<span class="n">1 tag · 790 lbs</span></div>
-              <div class="mspl prog">⚙ In progress<span class="n">1 tag · 780 lbs</span></div>
+              <div class="mspl queued">⏳ Queued <span style="font-weight:400;opacity:.8">(5-day-out, not started)</span><span class="n">1 tag · 780 lbs</span></div>
             </div>
             <div class="stageh sg-staging"><i style="background:var(--s-staging)"></i>In staging<span class="n">3 tags · 2,082 lbs · counts toward bar</span></div>
             <div class="trow">
