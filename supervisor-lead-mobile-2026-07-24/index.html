@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Supervisor + Lead Mobile · WIP (16 frames incl. Approvals + Self-service) · 2026-07-24</title>
 <!-- Supervisor + Lead mobile mockup — LEAN treatment (reuses the canonical loader kit).
-     WORK IN PROGRESS. Built: Q1–Q3 (situational awareness + reroute), Approvals pillar, the 4
-     Self-service surfaces in two SSO views (Q5), Act-as-operator (Q6). Locked: Q4 (6-stage lifecycle),
-     Q7 (muted "— no target"). Only Reposition (Q8) remains HELD; Q9 (M-1..M-N) still open. Design note:
-     docs/spec/supervisor-lead-mobile-design-2026-07-24.md (private repo). Preview host only, not source. -->
+     All 16 frames built. Answered/locked: Q1 reroute, Q2 roster, Q3 dark cells, Q4 6-stage lifecycle,
+     Q5 two SSO self-service views, Q6 act-as-operator (supervisor identity), Q7 muted "— no target",
+     Q8 shift-scoped repositioning. Only Q9 (what M-1..M-N is) remains open — noted inline, non-blocking.
+     Design note: docs/spec/supervisor-lead-mobile-design-2026-07-24.md (private repo). Preview host only. -->
 <style>
   :root{
     --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --line:#2a3038;
@@ -42,7 +42,6 @@
   .ftabs a{ flex:0 0 auto; font-size:11.5px; font-weight:800; text-decoration:none;
     color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:18px;
     padding:7px 12px; white-space:nowrap; }
-  .ftabs a.held{ color:var(--faint); border-style:dashed; }
   .ftabs a:active{ background:#17222e; border-color:#2f4a63; color:#9ccbff; }
 
   .screens{ display:flex; gap:44px 26px; flex-wrap:wrap; align-items:flex-start; }
@@ -212,15 +211,6 @@
   .audrow.future{ border-style:dashed; border-color:#3a3a6a; opacity:.9; }
   .audrow.future .cnt{ color:var(--purple); }
 
-  /* ── HELD placeholder (scoped to .scr so it never hits the nav-tab .held chips) ── */
-  .scr.held{ min-height:640px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px 22px; }
-  .scr.held .hi{ font-size:54px; }
-  .scr.held h2{ font-size:19px; font-weight:900; margin:12px 0 6px; color:#cfd6de; }
-  .scr.held .hq{ font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; color:var(--warn); background:rgba(255,176,32,.12); border:1px solid rgba(255,176,32,.35); border-radius:8px; padding:5px 12px; margin-bottom:14px; }
-  .scr.held p{ font-size:12.5px; color:var(--dim); line-height:1.6; max-width:280px; margin:0 0 8px; }
-  .scr.held .dep{ font-size:11px; color:var(--faint); line-height:1.55; max-width:290px; }
-  .scr.held .dep b{ color:#8fb4d8; }
-
   /* ── nav badge (pending approvals) ── */
   .navbadge{ display:inline-flex; align-items:center; gap:5px; margin-left:auto; font-size:11px; font-weight:800;
     color:#2a1c00; background:var(--warn); border-radius:20px; padding:3px 9px; }
@@ -334,6 +324,17 @@
   .schip{ font-size:9.5px; font-weight:700; color:#8fb4d8; background:#111722; border:1px solid #2f4a63; border-radius:6px; padding:4px 8px; font-family:ui-monospace,Menlo,Consolas,monospace; }
   .scanbtn2{ width:100%; padding:15px; border:none; border-radius:13px; background:var(--ok); color:var(--ok-ink); font-size:16px; font-weight:800; margin-top:14px; }
 
+  /* ── repositioning (Pillar 2 · shift-scoped) ── */
+  .mpicklbl{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin:14px 0 7px; }
+  .mpicks{ display:flex; flex-wrap:wrap; gap:7px; }
+  .mpick{ font-size:12.5px; font-weight:700; padding:9px 12px; border-radius:11px; border:1px solid var(--line); background:#0e1217; color:var(--dim); position:relative; }
+  .mpick.on{ background:rgba(59,130,246,.14); border-color:rgba(59,130,246,.55); color:#9ccbff; }
+  .mpick .beh{ font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.3px; color:#ff7b73; display:block; margin-top:2px; }
+  .expirehint{ display:flex; align-items:center; gap:9px; background:rgba(59,130,246,.08); border:1px solid rgba(59,130,246,.4); border-radius:11px; padding:11px 13px; margin:13px 0; font-size:11.5px; color:#9ccbff; line-height:1.5; }
+  .expirehint .clock{ font-size:17px; flex:0 0 auto; }
+  .expirehint b{ color:#cfe0f5; }
+  .mvbtn{ width:100%; padding:15px; border:none; border-radius:13px; background:var(--blue); color:#fff; font-size:16px; font-weight:800; }
+
   .ann{ background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin:26px 0 0; max-width:900px; font-size:12.5px; color:#c3ccd6; line-height:1.65; }
   .ann b{ color:#fff; } .ann code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; color:#9ccbff; }
   .mono{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#9ccbff; }
@@ -345,12 +346,13 @@
     see the whole plant, cross-shift, with Tendon/Hardware/Lumber as remote-manage panes. <b>The
     physical scan drives the system</b> — reroutes and repositioning are read from what workers
     actually do, not entered in a separate console.</p>
-  <div class="wipnote"><b>WORK IN PROGRESS.</b> Built: situational awareness + reroute (Q1–Q3), the
-    reusable <b>Approvals</b> pillar, the 4 <b>Self-service</b> surfaces in two SSO-gated internal views
-    (Q5), and <b>Act-as-operator</b> (Q6 — scans credit the supervisor's own identity). Order status uses
-    the locked 6-stage lifecycle (Q4); the 9 target-less machines show a muted <i>— no target</i> (Q7).
-    Only <b>Reposition</b> (Q8) stays held. Approvals' <b>request-submission</b> side lives in the
-    parallel Loader mockup.</div>
+  <div class="wipnote"><b>All 16 frames built.</b> Situational awareness + reroute (Q1–Q3), the reusable
+    <b>Approvals</b> pillar, 4 <b>Self-service</b> surfaces in two SSO-gated internal views (Q5),
+    <b>Act-as-operator</b> (Q6 — credits the supervisor's own identity), and <b>shift-scoped
+    Repositioning</b> (Q8 — every move expires end of shift). Order status uses the locked 6-stage
+    lifecycle (Q4); the 9 target-less machines show a muted <i>— no target</i> (Q7). Only <b>Q9</b>
+    (what <code>M-1..M-N</code> is) is still open — flagged inline, non-blocking. Approvals'
+    <b>request-submission</b> side lives in the parallel Loader mockup.</div>
 
   <div class="rolekey">
     <span><i style="background:var(--warn)"></i> Supervisor frame (plant-wide)</span>
@@ -381,7 +383,7 @@
     <a href="#f13">13 · ETA to finish</a>
     <a href="#f14">14 · Capacity</a>
     <a href="#f15">15 · Act as operator</a>
-    <a class="held" href="#f16">16 · Reposition ⏸</a>
+    <a href="#f16">16 · Reposition</a>
   </nav>
 
   <div class="screens">
@@ -1034,20 +1036,42 @@
       </div></div>
     </div>
 
-    <!-- ══════════ FRAME 16 — HELD: REPOSITION ══════════ -->
+    <!-- ══════════ FRAME 16 — REPOSITION (Q8 built · shift-scoped) ══════════ -->
     <div class="col" id="f16">
-      <div class="frameLbl"><span class="fcount">16</span> Reposition <span class="rtag sup" style="background:rgba(255,176,32,.14)">HELD</span></div>
-      <div class="frameSub">"Move Alberto to M-3." Existing primitives could back it, but durable vs
-        shift-scoped changes which one — and the whole interaction.</div>
-      <div class="phone"><div class="scr held">
-        <div class="hi">⏸</div>
-        <div class="hq">Awaiting Q8</div>
-        <h2>Repositioning workers</h2>
-        <p>Reassign a worker to a machine / cell from the floor.</p>
-        <p class="dep"><b>Blocked on Q8 — durable vs shift-scoped:</b> a durable role change
-          (<code style="color:#9ccbff">/api/portal-role</code>) vs a temporary "this shift only"
-          assignment (the <code style="color:#9ccbff">ShiftOverrides</code> 7-day-TTL primitive). One is
-          a permanent edit, the other expires — different confirm copy, different undo, different audit.</p>
+      <div class="frameLbl role-sup"><span class="fcount">16</span> Reposition <span class="rtag sup">SUP/LEAD</span></div>
+      <div class="frameSub">Pillar 2. Move a worker to another machine from the floor. Q8 answer:
+        <b>every move is shift-scoped</b> (writes ShiftOverrides, 7-day TTL) — no durable option, so a
+        careless move can't become permanent. Every move shows an "expires end of shift" hint.</div>
+      <div class="phone"><div class="scr">
+        <div class="appbar">
+          <div class="who"><div class="nm">Reposition</div><div class="sub">1st shift · Rebar Cutting</div></div>
+          <div class="win"><div class="k">Why</div><div class="v" style="color:#ff7b73">Shear ▼38%</div></div>
+        </div>
+
+        <div class="ssq">Move worker</div>
+        <div class="ssorder">M. Reyes <span class="sub">· now on Big Single Bender (93% of target)</span></div>
+
+        <div class="flow">
+          <div class="flowbox exp" style="border-color:#2f4a63"><div class="fk">From</div><div class="fv" style="color:#9ccbff">Big Bender</div></div>
+          <span class="arr">→</span>
+          <div class="flowbox act"><div class="fk">To</div><div class="fv">Shear</div></div>
+        </div>
+
+        <div class="mpicklbl">Move to</div>
+        <div class="mpicks">
+          <span class="mpick on">Shear <span class="beh">behind ▼38%</span></span>
+          <span class="mpick">Double Bender</span>
+          <span class="mpick">22N</span>
+          <span class="mpick">Radius Bender <span class="beh" style="color:var(--faint)">no operator</span></span>
+          <span class="mpick">Loading</span>
+        </div>
+
+        <div class="expirehint"><span class="clock">⏳</span>
+          <div>This move <b>expires at end of shift</b> (1st, today). It writes a shift override, not a
+            permanent reassignment — re-apply next shift if you still need it.</div></div>
+
+        <button class="mvbtn">Move M. Reyes → Shear (this shift)</button>
+        <div class="emits">writes ShiftOverrides(worker=M. Reyes, plant_date, shift=1, station=Shear)<br>7-day TTL · auto-expires · no durable /api/portal-role change</div>
       </div></div>
     </div>
 
@@ -1057,9 +1081,10 @@
     <b>Reading this mockup.</b> Frames 1–7 are the Q1–Q3 situational-awareness + reroute build; 8–10
     are the <b>Approvals pillar</b> (reusable queue, approver side); 11–14 are the 4 <b>Self-service</b>
     surfaces, each in a Supervisor and an Office view (Q5); 15 is <b>Act-as-operator</b> (Q6 — credits the
-    supervisor's own identity); 16 (Reposition) is the last <b>held</b> frame, awaiting Q8. The approvals
-    record is shared with the parallel Loader mockup (submission side) — see spec §5a. Numbers are
-    illustrative. Every muted <i>— no target</i> (Q7) and "not scanning — wire station" marker is a
+    supervisor's own identity); 16 is <b>shift-scoped Reposition</b> (Q8 — writes ShiftOverrides, expires
+    end of shift). The approvals record is shared with the parallel Loader mockup (submission side) — see
+    spec §5a. Numbers are illustrative. Every muted <i>— no target</i> (Q7) and "not scanning — wire
+    station" marker is a
     <b>real gap in the current system</b>, surfaced on purpose rather than papered over. Reroute events
     follow the <code>TAG_REROUTED_IMPLICIT</code> schema in the design note (§5). Full design note lives
     in the private repo at <code>docs/spec/supervisor-lead-mobile-design-2026-07-24.md</code>.

@@ -12,11 +12,11 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ## Current mockups
 
-### Supervisor + Lead mobile (dated 2026-07-24) — WORK IN PROGRESS
+### Supervisor + Lead mobile (dated 2026-07-24)
 
-- [Supervisor + Lead mobile — 16 frames incl. Approvals + Self-service](https://houstonposttension.github.io/hpt-mockup-previews/supervisor-lead-mobile-2026-07-24/index.html)
+- [Supervisor + Lead mobile — 16 frames (Approvals + Self-service + all pillars)](https://houstonposttension.github.io/hpt-mockup-previews/supervisor-lead-mobile-2026-07-24/index.html)
 
-One role-scoped mobile UI for supervisors (plant-wide, cross-shift) and leads (shift-level, 3 rebar cells). Frames 1–7 are situational-awareness + reroute; 8–10 are the reusable `hpt-approvals` queue (approver side); 11–14 are the 4 self-service surfaces each in a Supervisor and an Office view (both SSO-gated, internal-only); 15 is act-as-operator (substitute scan credits the supervisor's own identity). Only frame 16 (repositioning) is a **held** placeholder, pending one open question. Design note in the private repo at `docs/spec/supervisor-lead-mobile-design-2026-07-24.md`.
+One role-scoped mobile UI for supervisors (plant-wide, cross-shift) and leads (shift-level, 3 rebar cells). All 16 frames built: situational-awareness + reroute (1–7); the reusable `hpt-approvals` queue, approver side (8–10); 4 self-service surfaces each in a Supervisor and an Office view, both SSO-gated/internal-only (11–14); act-as-operator, substitute scan credits the supervisor's own identity (15); shift-scoped repositioning that expires end of shift (16). Design note in the private repo at `docs/spec/supervisor-lead-mobile-design-2026-07-24.md`.
 
 ### Loader category-status (GA-WIP-193, dated 2026-07-21)
 
