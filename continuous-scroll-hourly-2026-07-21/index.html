@@ -170,6 +170,16 @@ td.drill-cell{padding:0!important;text-align:left;white-space:normal;}
 .drill-item.total .drill-label{color:var(--dim);font-weight:500;}
 .drill-item.total .drill-fill{background:var(--btn-sec);}
 .drill-src{margin-top:9px;font-size:var(--fs-footnote);color:var(--mute);border-top:1px dashed var(--line);padding-top:6px;max-width:640px;}
+/* Mobile: the desktop app-shell (body height:100vh + overflow:hidden) gives the
+   table whatever height is left over. On a phone the chrome above it already
+   exceeds the viewport, so .web-view collapses to 0px and the page cannot scroll
+   to reveal it. Let the document scroll and size the table to its content.
+   .web-view keeps overflow:auto so the 24h timeline still scrolls sideways. */
+@media (max-width:768px){
+  body{height:auto;overflow:visible;}
+  .mock-meta{max-height:none;}
+  .web-view{flex:0 0 auto;}
+}
 </style>
 </head>
 <body>
