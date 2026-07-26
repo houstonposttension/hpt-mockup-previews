@@ -209,27 +209,6 @@
   .zone-tag.selected{background:var(--tint-warn);border-color:var(--warn);color:#7c2d12;font-weight:500;}
   .wp-impact{margin-top:12px;padding:12px;background:var(--tint-info);border-radius:8px;border:1px solid #bfdbfe;color:#1e3a8a;font-size:12.5px;line-height:1.5;}
   .wp-impact b{color:#1e40af;}
-  .ss-phone{width:390px;margin:20px auto;background:#000;border-radius:36px;padding:12px;box-shadow:0 20px 60px rgba(15,23,42,.2);}
-  .ss-screen{background:#fff;border-radius:26px;overflow:hidden;height:720px;display:flex;flex-direction:column;}
-  .ss-topbar{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
-  .ss-topbar .n{font-size:15px;font-weight:600;}
-  .ss-topbar .s{font-size:11px;color:#cbd5e1;}
-  .ss-body{flex:1;overflow-y:auto;padding:16px;background:#f4f5f7;}
-  .ss-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid var(--line);}
-  .ss-card h4{margin:0 0 8px;font-size:13px;}
-  .ss-card .row{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;color:var(--ink-mute);}
-  .ss-card .row b{color:var(--ink);}
-  .ss-quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-  .ss-quick .qb{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 10px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;}
-  .ss-quick .qb .ic{font-size:18px;margin-bottom:4px;color:var(--brand);}
-  .ss-msg-input{background:#fff;border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:8px;align-items:center;}
-  .ss-msg-input input{flex:1;border:1px solid var(--line-strong);border-radius:20px;padding:8px 14px;font-size:13px;font-family:inherit;}
-  .ss-msg-input .send{background:var(--brand);color:#fff;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:14px;}
-  .ss-chat{padding:0 0 12px;}
-  .ss-bubble{max-width:80%;padding:8px 12px;border-radius:14px;font-size:13px;margin-bottom:8px;line-height:1.4;}
-  .ss-bubble.me{background:var(--brand);color:#fff;margin-left:auto;border-bottom-right-radius:4px;}
-  .ss-bubble.them{background:#fff;color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:4px;}
-  .ss-bubble.system{background:var(--tint-info);color:#1e3a8a;border:1px solid #bfdbfe;font-size:12px;text-align:center;margin:6px auto;max-width:90%;border-radius:8px;}
   .pdf-shell{background:#e5e7eb;padding:24px;display:flex;justify-content:center;}
   .pdf-page{background:#fff;width:816px;min-height:1056px;padding:48px 56px;box-shadow:0 8px 24px rgba(0,0,0,.15);font:12px/1.35 "Segoe UI",-apple-system,sans-serif;color:#111;}
   .pdf-page h1{font-size:22px;margin:0 0 4px;color:var(--navy);}
@@ -286,13 +265,12 @@
       <li><a href="#f2">Sub detail — 7-day view with per-day stops, cables, and est hours</a></li>
       <li><a href="#f3">Approval queue — reviewing an AI-proposed reassignment</a></li>
       <li><a href="#f4">Weather impact — flagging a zone so the optimizer defers work</a></li>
-      <li><a href="#f5">Sub self-service (mobile) — "machine down 5 days" via chat</a></li>
-      <li><a href="#f6">Improved nightly PDF — day-grouped with cables + est hours + route order</a></li>
-      <li><a href="#f7">Sub capacity setup — the profile that drives the optimizer</a></li>
+      <li><a href="#f5">Improved nightly PDF — day-grouped with cables + est hours + route order</a></li>
+      <li><a href="#f6">Sub capacity setup — the profile that drives the optimizer</a></li>
     </ol>
   </div>
   <div class="frame" id="f1">
-    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 7</span></div>
+    <div class="frame-head"><h2>1 &middot; Command Center &mdash; home</h2><span class="frame-num">Frame 1 of 6</span></div>
     <div class="frame-body"><div class="app">
       <div class="topbar">
         <div class="logo"><div class="logo-mark">HPT</div><div><div class="logo-txt">HPT Cloud</div><div class="logo-sub">Dispatch</div></div></div>
@@ -393,7 +371,7 @@
   </div>
 
   <div class="frame" id="f2">
-    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 7</span></div>
+    <div class="frame-head"><h2>2 &middot; Sub detail &mdash; Felipe Medrano's 7-day view</h2><span class="frame-num">Frame 2 of 6</span></div>
     <div class="frame-body"><div class="drawer-layout">
       <div class="drawer-left">
         <div class="sub-profile">
@@ -453,7 +431,7 @@
   </div>
 
   <div class="frame" id="f3">
-    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 7</span></div>
+    <div class="frame-head"><h2>3 &middot; Approval queue &mdash; reviewing an AI-proposed reassignment</h2><span class="frame-num">Frame 3 of 6</span></div>
     <div class="frame-body"><div class="aq-layout">
       <div class="aq-list">
         <div class="aqli active"><div class="t">Move 3 Woodsons Reserve tasks &middot; Julio &rarr; Sam</div><div class="m">Reassign &middot; +11% on-time &middot; saves 12 mi</div></div>
@@ -491,7 +469,7 @@
   </div>
 
   <div class="frame" id="f4">
-    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 7</span></div>
+    <div class="frame-head"><h2>4 &middot; Weather impact &mdash; flag a zone so the optimizer defers work</h2><span class="frame-num">Frame 4 of 6</span></div>
     <div class="frame-body"><div class="wp-wrap">
       <div class="wp-card">
         <h3>Flag weather condition</h3>
@@ -533,51 +511,7 @@
   </div>
 
   <div class="frame" id="f5">
-    <div class="frame-head"><h2>5 &middot; Sub self-service (mobile) &mdash; "machine down 5 days" via chat</h2><span class="frame-num">Frame 5 of 7</span></div>
-    <div class="frame-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px;background:#f4f5f7;">
-      <div>
-        <h3 style="margin-top:0;font-size:15px;">Sub-facing mobile view</h3>
-        <p style="color:var(--ink-mute);font-size:13px;">A lightweight mobile web app subs open from a link in the nightly PDF email. Shows today's schedule and lets them message dispatch. Free-text messages are parsed by the LLM layer into structured updates the manager approves.</p>
-        <div class="ss-phone"><div class="ss-screen">
-          <div class="ss-topbar"><div><div class="n">Julio Ram&iacute;rez</div><div class="s">HPT Dispatch &middot; Sun Jul 26</div></div><div style="font-size:11px;background:rgba(255,255,255,.1);padding:3px 8px;border-radius:6px;">Espa&ntilde;ol</div></div>
-          <div class="ss-body">
-            <div class="ss-quick"><div class="qb"><div class="ic">&#128197;</div>Today's stops</div><div class="qb"><div class="ic">&check;</div>Mark done</div><div class="qb"><div class="ic">&#128295;</div>Machine down</div><div class="qb"><div class="ic">&#127783;</div>Weather issue</div></div>
-            <div class="ss-card"><h4>Today &middot; 3 stops</h4><div class="row"><span>Sundance Cove &mdash; 2319 Pioneer</span><b>28c</b></div><div class="row"><span>Sundance Cove &mdash; 2326 Pioneer</span><b>28c</b></div><div class="row"><span>Woodsons Reserve &mdash; 4655 Flintrock</span><b>48c</b></div><div class="row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--line);"><span><b>Total</b></span><b>3h 30m</b></div></div>
-            <div class="ss-chat">
-              <div class="ss-bubble them">Hi Julio &mdash; anything to report?</div>
-              <div class="ss-bubble me">Mi maquina se rompio, no puedo trabajar por 5 dias</div>
-              <div class="ss-bubble system">&#10024; Understood &mdash; <b>machine down 5 days (Sun Jul 26 &rarr; Thu Jul 30)</b>. Sent to Maria for review.</div>
-              <div class="ss-bubble them">Got it. Dispatch has been notified. Your Mon&ndash;Tue tasks may be reassigned. Confirm when you're back up.</div>
-            </div>
-          </div>
-          <div class="ss-msg-input"><input type="text" placeholder="Type a message&hellip;"><button class="send">&rarr;</button></div>
-        </div></div>
-      </div>
-      <div>
-        <h3 style="margin-top:0;font-size:15px;">What dispatch sees</h3>
-        <p style="color:var(--ink-mute);font-size:13px;">A single card in Maria's inbox with the LLM's parsed interpretation. She approves, edits, or rejects. Approval automatically zeros Julio's capacity for those days and triggers the optimizer.</p>
-        <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;"><div><div style="font-weight:600;">Sub update &middot; Julio Ram&iacute;rez</div><div style="color:var(--ink-faint);font-size:12px;">Received via mobile &middot; 2026-07-26 07:42</div></div><span class="status-flag warn">Pending review</span></div>
-          <div style="background:#fafbfd;border-left:3px solid var(--line-strong);padding:10px 12px;font-style:italic;color:var(--ink-mute);font-size:12.5px;border-radius:0 6px 6px 0;margin-bottom:12px;">"Mi maquina se rompio, no puedo trabajar por 5 dias"</div>
-          <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;margin-bottom:14px;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--brand-dk);font-weight:700;margin-bottom:6px;">&#10024; AI interpretation</div>
-            <table style="width:100%;font-size:12.5px;">
-              <tr><td style="color:var(--ink-mute);padding:3px 0;width:100px;">Type:</td><td><b>Unavailability</b></td></tr>
-              <tr><td style="color:var(--ink-mute);padding:3px 0;">Reason:</td><td><b>Machine down</b></td></tr>
-              <tr><td style="color:var(--ink-mute);padding:3px 0;">Duration:</td><td><b>5 days</b></td></tr>
-              <tr><td style="color:var(--ink-mute);padding:3px 0;">Effective:</td><td><b>Sun Jul 26 &rarr; Thu Jul 30</b></td></tr>
-              <tr><td style="color:var(--ink-mute);padding:3px 0;">Confidence:</td><td>High (95%)</td></tr>
-            </table>
-          </div>
-          <div style="font-size:12.5px;color:var(--ink-mute);margin-bottom:14px;"><b>Impact:</b> 3 tasks currently assigned Mon&ndash;Tue (128 cables total) will be flagged for reassignment. Optimizer will propose alternates after you approve.</div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn bad sm">Reject</button><button class="btn sm">Edit dates</button><button class="btn ok sm">Approve &mdash; mark unavailable</button></div>
-        </div>
-      </div>
-    </div></div>
-  </div>
-
-  <div class="frame" id="f6">
-    <div class="frame-head"><h2>6 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 6 of 7</span></div>
+    <div class="frame-head"><h2>5 &middot; Improved nightly PDF &mdash; day-grouped with cables, hours, and route</h2><span class="frame-num">Frame 5 of 6</span></div>
     <div class="frame-body"><div class="pdf-shell"><div class="pdf-page">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><h1>Stressing Schedule</h1><div class="pdf-sub">Felipe Medrano &middot; Cast Concrete LLC &middot; Week of Jul 26&ndash;Aug 1, 2026</div></div>
@@ -618,8 +552,8 @@
     </div></div></div>
   </div>
 
-  <div class="frame" id="f7">
-    <div class="frame-head"><h2>7 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 7 of 7</span></div>
+  <div class="frame" id="f6">
+    <div class="frame-head"><h2>6 &middot; Sub capacity setup &mdash; the profile that drives the optimizer</h2><span class="frame-num">Frame 6 of 6</span></div>
     <div class="frame-body"><div class="cs-wrap">
       <div class="cs-card">
         <h3>Capacity profile &middot; Felipe Medrano</h3>
@@ -653,7 +587,7 @@
   </div>
 
   <div class="mockup-note" style="margin-top:32px;background:#0f2547;">
-    <strong>Next up (not in this mockup):</strong> requirements doc for the consultant covering data model (Sub, Task, SiteVisit, Zone, WeatherFlag, Assignment, OptimizerRun), the optimizer's objective + constraint list (OR-Tools style), API contract for the LLM interpretation service, and acceptance criteria per screen. Say the word and I'll draft it.
+    <strong>Next up (not in this mockup):</strong> requirements doc for the consultant covering data model (Sub, Task, SiteVisit, Zone, WeatherFlag, Assignment, OptimizerRun), the optimizer's objective + constraint list (OR-Tools style), and acceptance criteria per screen. Say the word and I'll draft it.
   </div>
 </div>
 </body>
