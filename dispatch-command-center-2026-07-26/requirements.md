@@ -1,6 +1,6 @@
 # HPT Cloud — Dispatch Requirements
-**Version 0.1** · 2026-07-26 · Owner: James Brady (HPT), for external consultant build.
-Visual reference: [`index.html`](./index.html) (9-frame mockup) in this same folder.
+**Version 0.2** · 2026-07-26 · Owner: James Brady (HPT), for external consultant build.
+Visual reference: [`index.html`](./index.html) (10-frame mockup) in this same folder.
 
 ---
 
@@ -12,8 +12,8 @@ The Dispatch surface at `cloud.houstonposttension.com/dispatch/*` lets an intern
 
 **Users (v1):**
 - **Dispatcher** (primary) — currently Maria Juarez. Lives in Command Center all day.
-- **Ops admin** — sets up sub profiles, capacity, zones; not a daily user.
-- **Read-only** (VP / GM) — dashboards + drill-down.
+- **Ops admin** — sets up sub profiles, capacity, zones, and edits AI rules; not a daily user.
+- **Read-only** (VP / GM) — dashboards + drill-down + rule change history.
 
 **Non-users (v1):** subcontractors themselves. They receive the nightly PDF; nothing else.
 
@@ -72,49 +72,191 @@ The dispatcher is the sole intake for external events that affect scheduling. Sh
   - **GPS-lag** (sub-truck telematics — integration TBD). Trigger: sub hasn't moved from an assigned stop for > 150% of estimated stop time.
   - **Site-ready signal** (external — GC portal or CWT integration where available). Trigger: flagged blocker or ready-status change.
   - **Overdue thresholds** (internal). Trigger: task > 3 days past expected date.
-- Each alert card shows:
-  - **Title** (short, actionable)
-  - **Source** with detection timestamp and provider name (no black-box)
-  - **Context** (relevant scheduling data)
-  - **Suggested action** with reasoning (e.g., "Move 8 outdoor stops to Mon; keep 4 indoor stops as-is")
-  - **Action buttons** — specific to the alert type (not generic Approve/Reject). E.g. GPS-lag has "Text Felipe" and "Reassign next stops".
+- Each alert card shows: title, source with detection timestamp and provider name, contextual data, suggested action with reasoning, action buttons specific to the alert type (not generic Approve/Reject).
+- **Every alert card MUST cite the rule that triggered it** (see §2.3). Small text at the bottom of the card: `Triggered by rule ALERT-WEATHER-01 (v1.2)` — links to the rule detail in the AI Rules Registry (frame 10).
 
 **Acceptance criteria:**
 - **AC-AL-1**: Alerts are audit-logged whether approved, snoozed, or dismissed — immutable log with dispatcher identity + timestamp + optional reason.
 - **AC-AL-2**: Snooze options: 1h, 4h, 24h, until tomorrow, custom.
 - **AC-AL-3**: An **Alert Log** view accessible from the alerts header shows all alerts (active + resolved) with filter/search over the last 90 days.
-- **AC-AL-4**: Dismissing an alert accepts an optional 1-line reason (not required, captured if entered) that feeds back to the alert's source-type weighting.
-- **AC-AL-5**: Alert source configuration (which sources are enabled, thresholds per source) is admin-editable via a **Configure sources** modal.
-- **AC-AL-6**: A weather-source alert must show the underlying forecast provider name and probability (e.g., "NOAA · 78% probability").
-- **AC-AL-7**: A GPS-lag alert must show the last known ping timestamp and the expected duration remaining, so the dispatcher can judge urgency without leaving the card.
+- **AC-AL-4**: Dismissing an alert accepts an optional 1-line reason.
+- **AC-AL-5**: Alert source configuration (which sources are enabled, thresholds per source) is admin-editable via a **Configure sources** modal — but the *sources themselves* are AI-rule–driven (§2), not a separate configuration surface.
 
 ### 1.4 Cross-cutting AI principles (apply to §1.1, §1.2, §1.3, and the AI Suggestion Queue)
 
-- **No black-box actions.** Every AI proposal shows: (a) data source / signal that triggered it, (b) the reasoning (why this proposal), (c) the before/after visual of the impact.
+- **No black-box actions.** Every AI proposal shows: (a) data source / signal that triggered it, (b) the reasoning (why this proposal), (c) the before/after visual of the impact, (d) the **rule that generated it** (§2.3).
 - **Every AI action is human-approved in v1.** No auto-apply.
 - **Every proposal is traceable.** Approved, rejected, snoozed, and dismissed proposals are all logged with dispatcher identity, timestamp, and any note.
 - **Rejection captures a reason** (optional 1-line note) that feeds back to weight future proposals of the same type.
-- **Future graduation path** (v2 or later, gated behind a per-action-type configuration toggle): low-risk action types may be flagged for auto-apply with post-hoc notification once dispatcher trust is established. Candidate low-risk types include:
-  - "Redistribute past-due unassigned task to nearest available sub in same zone"
-  - "Reorder within-day route to minimize drive time"
-- Auto-apply is **never** allowed for: sub reassignments across companies, weather reschedules, or any action that changes a sub's total daily hours by more than 20%.
+- **Future graduation path** (v2 or later, gated behind a per-rule configuration toggle): low-risk rule categories (`AutoApply`) may be flagged for auto-apply with post-hoc notification once dispatcher trust is established. Governed by rule status transitions in §2.
 
 ---
 
-## Sections still to draft (v0.2 target)
+## Section 2 — AI Rules Registry (v1 priority)
 
-- **Section 2 — Data model.** Entities: `Sub`, `SubCompany`, `Task`, `SiteVisit` (group of tasks at same address on same date), `Zone` (polygon), `WeatherFlag`, `Assignment`, `OptimizerRun`, `Alert`, `Event`, `AuditLog`. Field-by-field.
-- **Section 3 — Optimizer objective and constraints.** Formal statement suitable for OR-Tools or equivalent. Objective: maximize on-time completion weighted by capacity-utilization and drive-time. Constraints: capacity, zone preference, working days, stickiness penalty (churn from prior plan), weather flags.
-- **Section 4 — Capacity profile schema and math.** Per frame 6.
-- **Section 5 — Nightly PDF generation spec.** Per frame 5 — layout, day grouping, cable / hours per day, field-issue treatment, notes preservation (multilingual), email delivery.
-- **Section 6 — Command Center primary view spec.** Per frame 1 — three-column layout, map/pin behavior, past-due tray thresholds.
-- **Section 7 — Approval queue spec.** Per frame 3 — proposal types, side-by-side rendering, action buttons, keyboard shortcuts.
-- **Section 8 — Weather flagging spec.** Per frame 4.
-- **Section 9 — Sub detail view spec.** Per frame 2.
-- **Section 10 — Roles and permissions.** Dispatcher, ops admin, read-only.
-- **Section 11 — Audit log spec.** Retention, viewer UI, export.
-- **Section 12 — Integration points.** External systems the consultant will need to coordinate on (GC portals, telematics, weather API, and the internal HPT WIP scanner / ADP / ClickUp — noted as integration boundaries only; internal implementation not the consultant's concern).
+### 2.1 Purpose
+
+Every AI action in the system — optimizer proposals, alerts, constraints — is generated by an explicit **rule** stored in the AI Rules Registry. The registry is a first-class, versioned, auditable surface with two audiences:
+
+- **Developer side**: structured schema the consultant implements; the AI reads all Active rules on every optimization pass.
+- **User side** (dispatcher + ops admin): browsable, filterable UI (frame 10) showing which rules are currently active, what they do, who enabled them and when, and every change ever made.
+
+This is the audit trail that satisfies both internal governance and **ISO 9001 alignment** — the rules registry IS the auditable record of AI decision-making inside HPT operations.
+
+### 2.2 Data model
+
+```
+Rule {
+  rule_id            string    // kebab-case, category-prefixed, e.g. "ALERT-WEATHER-01"
+  category           enum      // Optimization | Alert | AutoApply | Constraint
+  name               string    // Short human-readable, ~60 chars
+  description_plain  text      // Plain-English "what this rule does" (dispatcher-readable)
+  trigger_definition text      // Condition spec (structured pseudo-code or DSL — see 2.4)
+  action_definition  text      // What the AI proposes when the rule fires
+  params_schema      json      // JSON Schema for tunable parameters (draft-07)
+  params_current     json      // The actual current values matching params_schema
+  version            string    // semver-ish, e.g. "1.2" or "0.3" (drafts start at 0.x)
+  status             enum      // Active | Draft | Retired
+  activated_by       string    // User ID that most recently activated
+  activated_at       timestamp
+  edit_history       EditRecord[]   // Append-only, see below
+  created_by         string
+  created_at         timestamp
+}
+
+EditRecord {
+  actor              string    // User ID
+  actor_role         enum      // dispatcher | ops_admin | consultant | system
+  timestamp          timestamp
+  change_summary     string    // Machine-readable diff summary
+  change_reason      text      // Human-provided rationale (required)
+  reviewer           string    // For material changes, a second identity
+  rollback_plan      text      // Required on Active→Active edits
+  previous_version   string
+  new_version        string
+}
+```
+
+### 2.3 Rendering rule — every AI proposal cites its source rule
+
+**Every AI-generated card in the UI MUST render a citation line at the bottom:**
+
+```
+Triggered by rule ALERT-WEATHER-01 (v1.2)
+```
+
+Tapping the rule ID navigates to that rule's detail view in the AI Rules Registry (frame 10). This applies to:
+- Every card in the AI Suggestion Queue (Command Center, frame 1)
+- Every card in the AI Alerts inbox (frame 9)
+- The detailed proposal in the Approval Queue (frame 3)
+- Any inline AI recommendation embedded in other views (e.g., over-cap warning in frame 2)
+
+Cards where multiple rules combined to produce a proposal cite each — most-primary rule first, chained (e.g., `OPT-CAP-01 (v1.3) + ALERT-EQUIPMENT-01 (v1.0)`).
+
+### 2.4 API contract
+
+**Runtime read (AI-side):**
+
+```
+GET /api/rules?status=Active
+→ returns array of Rule objects
+```
+
+- The AI reads all Active rules on **every optimization pass** (typically nightly + on-demand).
+- Rules are combined by category: Optimization + Constraint rules feed the OR-Tools objective function; Alert rules run as scheduled monitors; AutoApply rules (v2+) execute their action directly.
+- Draft and Retired rules are visible in the registry UI but never affect AI behavior.
+
+**Governance write (admin/dispatcher-side) — proposal-review-activate flow:**
+
+```
+POST /api/rules                                    // create Draft
+PATCH /api/rules/{id}?action=edit                  // edit Draft (versions to 0.x+1)
+PATCH /api/rules/{id}?action=submit_for_activation // Draft → pending review
+PATCH /api/rules/{id}?action=activate              // pending review → Active (requires reviewer identity)
+PATCH /api/rules/{id}?action=retire                // Active → Retired
+```
+
+- Every write **appends** to `edit_history`; the history is **immutable** (never destructive).
+- Active → Active edits (e.g., tuning `probability_threshold` from 60% → 70%) also write to `edit_history` and require `change_reason` and `rollback_plan`.
+- Activation of a new rule (Draft → Active) requires a reviewer identity distinct from the creator, and a summary of the shadow-mode observation period (recommended 2 weeks minimum for Alert rules).
+
+**History read:**
+
+```
+GET /api/rules/{id}/history            // full edit_history for one rule
+GET /api/rules/history?since=...       // system-wide change stream (for VP/audit view)
+```
+
+### 2.5 Rule categories
+
+- **Optimization** — feeds weights into the optimizer's objective function. Fires on every optimizer pass.
+- **Alert** — scheduled monitor that generates alert cards for the dispatcher. Fires on its own schedule (typically every 4h).
+- **Constraint** — hard rule the optimizer must respect. Violating a Constraint blocks the optimizer from producing that assignment.
+- **AutoApply** — v2+ only. Fires and applies action directly without dispatcher approval. Post-hoc notification only. **No AutoApply rules ship in v1.**
+
+### 2.6 Seed rules for v1 (concrete examples the consultant implements)
+
+| rule_id | Category | Name | Status |
+|---|---|---|---|
+| `OPT-DRIVE-01` | Optimization | Minimize daily drive time (weight in objective function) | Active |
+| `OPT-ZONE-01` | Optimization | Prefer subs' assigned zones (penalty for out-of-zone) | Active |
+| `OPT-CAP-01` | Optimization | Never exceed sub's weekly capacity (hard constraint) | Active |
+| `ALERT-WEATHER-01` | Alert | Rain forecast in sub's zone → propose light day | Active |
+| `ALERT-GPS-STALL-01` | Alert | Sub GPS unchanged > 2h → propose check-in + redistribute | Active |
+| `ALERT-PAST-DUE-01` | Alert | Sub late > 20% this week → propose 30% capacity cut | Draft (activate after 2-week shadow) |
+| `CONSTRAINT-MIN-VISITS-01` | Constraint | Every sub gets ≥ 3 stops/week (retention floor) | Active |
+
+Each seed rule ships with:
+- Full `description_plain`, `trigger_definition`, `action_definition`
+- A `params_schema` + reasonable `params_current` defaults
+- Initial `edit_history` entry documenting shadow-mode observation and activation reasoning
+
+### 2.7 Governance & change process (mini-ADR discipline)
+
+Rule additions and changes follow a lightweight ADR (Architecture Decision Record) discipline:
+
+1. **Draft** the rule (or edit) with `change_reason` and `rollback_plan` filled in.
+2. **Shadow-mode** period (Alert rules): rule fires but generates no dispatcher-visible action for a configured window (default 2 weeks). System logs what it would have proposed. Ops admin reviews.
+3. **Reviewer** activation: a second identity (typically ops-admin for dispatcher edits, or VP for ops-admin edits) approves activation. Recorded in `edit_history`.
+4. **Post-activation monitoring**: for the first 30 days after Active, the rule is flagged in the registry UI and any anomalies (spike in dismissals, drop in approval rate) generate a "Rule performance" alert to ops-admin.
+5. **Manager notification**: when the consultant or ops-admin changes a rule, the dispatcher sees a **Rule change** alert in her inbox with the summary + `change_reason`.
+
+### 2.8 ISO 9001 alignment
+
+The rules registry, edit history, and per-proposal rule citations together satisfy ISO 9001 clause 7.1.6 (organizational knowledge) and clause 8.5.1 (control of production and service provision) for AI-driven decision-making:
+
+- Every AI decision is traceable to a versioned, human-authored rule.
+- Every rule change carries actor identity, timestamp, rationale, reviewer, and rollback plan.
+- The change log is append-only (immutable).
+- Dispatcher decisions on AI proposals are separately logged (§1.4), giving a full audit chain from AI signal → AI proposal → human decision → operational outcome.
+
+### 2.9 Acceptance criteria
+
+- **AC-RR-1**: Registry list view (frame 10) loads all rules within 200 ms.
+- **AC-RR-2**: Every AI proposal card in the app renders a citation line linking to its source rule; no AI proposal card ships without one.
+- **AC-RR-3**: Editing a param on an Active rule is blocked until `change_reason` and `rollback_plan` are provided.
+- **AC-RR-4**: Draft → Active transition is blocked until a reviewer identity distinct from the creator confirms.
+- **AC-RR-5**: `edit_history` is append-only enforced at the DB level (no update / delete permission on the history table for any application role).
+- **AC-RR-6**: A rule detail view shows the last N=20 proposals the rule generated, with each proposal's approve / reject / dismiss status.
+- **AC-RR-7**: Disabling an Active rule (toggle off) requires a confirmation dialog citing the number of proposals the rule generated in the last 30 days.
+- **AC-RR-8**: The rules registry API supports read-only export of the full ruleset (JSON) for external audit review.
 
 ---
 
-*This document is the v0.1 hand-off. The Manager AI Interaction section (§1) is complete for consultant build. Remaining sections are stubbed and will be drafted in follow-up passes as James clarifies each area.*
+## Sections still to draft (v0.3 target)
+
+- **Section 3 — Data model.** Entities: `Sub`, `SubCompany`, `Task`, `SiteVisit`, `Zone`, `WeatherFlag`, `Assignment`, `OptimizerRun`, `Alert`, `Event`, `AuditLog`. Field-by-field.
+- **Section 4 — Optimizer objective and constraints.** Formal statement suitable for OR-Tools or equivalent. Objective composed from active `Optimization` rules; hard constraints from active `Constraint` rules.
+- **Section 5 — Capacity profile schema and math.** Per frame 6.
+- **Section 6 — Nightly PDF generation spec.** Per frame 5.
+- **Section 7 — Command Center primary view spec.** Per frame 1.
+- **Section 8 — Approval queue spec.** Per frame 3.
+- **Section 9 — Weather flagging spec.** Per frame 4.
+- **Section 10 — Sub detail view spec.** Per frame 2.
+- **Section 11 — Roles and permissions.** Dispatcher, ops admin, read-only.
+- **Section 12 — Audit log spec.** Retention, viewer UI, export.
+- **Section 13 — Integration points.** External systems: GC portals, telematics, weather API, HPT WIP scanner / ADP / ClickUp (integration boundaries only).
+
+---
+
+*Version 0.2 hand-off — §1 Manager AI Interaction and §2 AI Rules Registry are complete for consultant build. Remaining sections are stubbed and will be drafted in follow-up passes.*
