@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VP Portfolio Command · everything in flight, one surface · 2026-07-27</title>
+<!-- VP Dashboard — portfolio overview + command surface (CONCEPT MOCKUP, 2026-07-27).
+     One screen that answers "what is in flight everywhere" AND lets the VP push priority
+     without opening GitHub. Feature-level approval replaces per-PR approval theater.
+     All data is real in-flight work as of 2026-07-27; employee names are anonymized
+     (Operator 1 / Operator 2). Nothing here is wired to a live system. -->
+<style>
+  :root{
+    /* ramp 1 — surface / neutral */
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+    --line:#2a3038; --line2:#39424e;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    /* ramp 2 — accent (blue) */
+    --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+    /* status */
+    --ok:#16c060; --ok-dim:rgba(22,192,96,.15);
+    --warn:#ffb020; --warn-dim:rgba(255,176,32,.15);
+    --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15);
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:20px 16px 70px; }
+
+  /* ── page chrome (desktop only context) ── */
+  .pagehead{ max-width:860px; margin:0 auto 16px; }
+  .pagehead h1{ font-size:19px; font-weight:800; margin:0 0 6px; }
+  .pagehead p{ font-size:12.5px; color:var(--dim); line-height:1.6; margin:0 0 8px; }
+  .pagehead b{ color:#cfe0f5; }
+  .wipnote{ border-left:3px solid var(--warn); background:rgba(255,176,32,.07); padding:9px 13px;
+    margin:10px 0 4px; font-size:12px; color:#e8d4a8; line-height:1.6; border-radius:0 8px 8px 0; }
+  .wipnote b{ color:#ffd98a; }
+
+  .stage{ display:flex; justify-content:center; }
+  .phone{ width:414px; border-radius:24px; overflow:hidden; border:2px solid var(--line);
+    background:var(--bg); box-shadow:0 16px 50px rgba(0,0,0,.55); }
+  .scr{ padding:12px 11px 26px; min-height:820px; }
+
+  @media (max-width:520px){
+    body{ padding:12px 0 40px; }
+    .pagehead{ padding:0 12px; }
+    .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .scr{ padding:10px 9px 24px; }
+  }
+
+  /* ── app bar ── */
+  .appbar{ display:flex; align-items:center; gap:9px; padding:2px 2px 11px;
+    border-bottom:1px solid var(--line); margin-bottom:11px; }
+  .appbar .nm{ font-size:16px; font-weight:800; letter-spacing:-.2px; }
+  .appbar .sub{ font-size:10.5px; color:var(--dim); margin-top:2px; }
+  .rolepill{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    border-radius:6px; padding:3px 8px; background:var(--acc-dim); color:var(--acc-soft);
+    border:1px solid var(--acc-line); }
+  .appbar .win{ margin-left:auto; text-align:right; }
+  .appbar .win .k{ font-size:8.5px; font-weight:800; text-transform:uppercase;
+    letter-spacing:.5px; color:var(--faint); }
+  .appbar .win .v{ font-size:11.5px; font-weight:700; color:#cfe0f5; margin-top:2px; }
+
+  /* ── atmosphere strip ── */
+  .sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+    color:#5a6470; margin:15px 2px 8px; display:flex; align-items:center; gap:7px; }
+  .sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; }
+  .sectlbl .tap{ margin-left:auto; color:var(--acc-soft); font-weight:800; font-size:9.5px; cursor:pointer; }
+
+  .pulse{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .pcard{ background:var(--panel); border:1px solid var(--line); border-radius:11px;
+    padding:8px 7px; text-align:center; cursor:pointer; }
+  .pcard.hot{ border-color:rgba(255,59,48,.45); background:linear-gradient(180deg,rgba(255,59,48,.08),transparent); }
+  .pcard.warm{ border-color:rgba(255,176,32,.4); background:linear-gradient(180deg,rgba(255,176,32,.07),transparent); }
+  .pcard .pv{ font-size:21px; font-weight:800; line-height:1; }
+  .pcard .pk{ font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.4px;
+    color:var(--faint); margin-top:5px; line-height:1.3; }
+  .pcard.hot .pv{ color:#ff7b73; }
+  .pcard.warm .pv{ color:var(--warn); }
+
+  .atmo{ margin-top:8px; display:none; }
+  .atmo.open{ display:block; }
+  .atrow{ display:flex; gap:9px; align-items:flex-start; background:var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--line2);
+    border-radius:10px; padding:9px 11px; margin-bottom:6px; }
+  .atrow.bad{ border-left-color:var(--bad); }
+  .atrow.warn{ border-left-color:var(--warn); }
+  .atrow.info{ border-left-color:var(--acc); }
+  .atrow .ic{ font-size:14px; line-height:1.2; }
+  .atrow .t{ font-size:12.5px; font-weight:700; line-height:1.35; }
+  .atrow .m{ font-size:10.5px; color:var(--dim); margin-top:3px; line-height:1.5; }
+  .atrow .m b{ color:#cfe0f5; font-weight:700; }
+  .atrow .src{ font-size:9px; color:var(--faint); margin-top:4px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.4px; }
+
+  /* ── filters ── */
+  .filterbar{ margin-top:4px; }
+  .chips{ display:flex; gap:5px; overflow-x:auto; padding:3px 1px 6px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .chips::-webkit-scrollbar{ display:none; }
+  .chip{ flex:0 0 auto; font-size:10.5px; font-weight:800; color:var(--dim);
+    background:#0e1217; border:1px solid var(--line); border-radius:18px;
+    padding:6px 11px; white-space:nowrap; cursor:pointer; }
+  .chip.on{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .chip .ct{ color:var(--faint); font-weight:700; margin-left:4px; }
+  .chip.on .ct{ color:#7da2c9; }
+
+  .sortbar{ display:flex; align-items:center; gap:6px; margin:2px 1px 4px; }
+  .sortbar .lbl{ font-size:9px; font-weight:900; text-transform:uppercase;
+    letter-spacing:.5px; color:var(--faint); }
+  .sortbar .seg{ margin-left:auto; display:flex; background:#0e1217;
+    border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+  .sortbar .seg button{ font:inherit; font-size:10px; font-weight:800; color:var(--dim);
+    background:transparent; border:none; padding:6px 11px; cursor:pointer; }
+  .sortbar .seg button.on{ background:var(--acc-dim); color:#9ccbff; }
+
+  /* ── feature card ── */
+  .fcard{ background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--line2);
+    border-radius:13px; padding:10px 11px; margin-bottom:8px; cursor:pointer; position:relative; }
+  .fcard.st-broken{ border-color:rgba(255,59,48,.4); background:linear-gradient(180deg,rgba(255,59,48,.06),transparent); }
+  .fcard.st-blocked{ border-color:rgba(255,176,32,.35); background:linear-gradient(180deg,rgba(255,176,32,.05),transparent); }
+  .fcard.paused{ opacity:.5; border-style:dashed; }
+  .fcard.open{ background:var(--panel2); }
+
+  .fr1{ display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+  .systag{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    border-radius:5px; padding:2px 7px; background:#0e1217; border:1px solid var(--line); color:var(--dim); }
+  .vtag{ font-size:9.5px; font-weight:800; color:var(--faint); font-variant-numeric:tabular-nums; }
+  .prio{ margin-left:auto; display:flex; align-items:center; gap:5px; }
+  .prio .rank{ font-size:11px; font-weight:900; color:#cfe0f5; background:#0e1217;
+    border:1px solid var(--line); border-radius:6px; padding:3px 7px; font-variant-numeric:tabular-nums; }
+  .prio .rank.top{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .arrows{ display:flex; flex-direction:column; gap:2px; }
+  .arrows button{ font:inherit; font-size:9px; line-height:1; color:var(--dim); background:#0e1217;
+    border:1px solid var(--line); border-radius:4px; padding:2px 5px; cursor:pointer; }
+  .arrows button:active{ background:var(--acc-dim); color:#9ccbff; }
+
+  .fname{ font-size:14.5px; font-weight:800; line-height:1.3; margin-bottom:5px; }
+  .fr2{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .state{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    border-radius:5px; padding:3px 7px; }
+  .state.proposed{ background:#242b34; color:var(--dim); }
+  .state.approved{ background:var(--acc-dim); color:#9ccbff; }
+  .state.progress{ background:var(--acc-dim); color:#9ccbff; }
+  .state.review{ background:var(--warn-dim); color:var(--warn); }
+  .state.shipping{ background:var(--warn-dim); color:var(--warn); }
+  .state.live{ background:var(--ok-dim); color:#46d684; }
+  .state.blocked{ background:var(--warn-dim); color:#ffcf6b; }
+  .state.broken{ background:var(--bad-dim); color:#ff7b73; }
+  .state.paused{ background:#242b34; color:var(--faint); }
+  .risk{ display:inline-flex; align-items:center; gap:4px; font-size:9.5px;
+    font-weight:800; color:var(--faint); }
+  .risk i{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .risk.r1 i{ background:var(--ok); } .risk.r2 i{ background:var(--warn); }
+  .risk.r3 i{ background:var(--bad); }
+  .apvd{ font-size:9px; font-weight:900; color:#46d684; background:var(--ok-dim);
+    border-radius:5px; padding:3px 6px; letter-spacing:.4px; }
+
+  .deprow{ font-size:10.5px; color:var(--dim); margin-top:7px; line-height:1.45;
+    display:flex; gap:6px; align-items:flex-start; }
+  .deprow .dk{ color:var(--faint); font-weight:800; text-transform:uppercase;
+    font-size:8.5px; letter-spacing:.4px; padding-top:1px; flex:0 0 auto; }
+  .deprow b{ color:#cfe0f5; font-weight:700; }
+  .deprow.blocking{ color:#ffcf6b; }
+  .deprow.blocking b{ color:var(--warn); }
+
+  .prog{ height:4px; border-radius:3px; background:#0e1217; margin-top:9px; overflow:hidden; }
+  .prog i{ display:block; height:100%; background:var(--acc); border-radius:3px; }
+  .prog.done i{ background:var(--ok); }
+  .prog.stall i{ background:var(--warn); }
+  .prog.dead i{ background:var(--bad); }
+
+  /* ── expanded drawer ── */
+  .drawer{ display:none; margin-top:11px; padding-top:11px; border-top:1px solid var(--line); }
+  .fcard.open .drawer{ display:block; }
+  .dlbl{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    color:#5a6470; margin:0 0 6px; }
+  .why{ font-size:11.5px; color:var(--dim); line-height:1.6; margin-bottom:11px; }
+  .why b{ color:#cfe0f5; font-weight:700; }
+
+  .depgrid{ margin-bottom:11px; }
+  .depitem{ display:flex; gap:7px; align-items:center; font-size:11px; padding:5px 8px;
+    background:#0e1217; border:1px solid var(--line); border-radius:8px; margin-bottom:4px; }
+  .depitem .ar{ color:var(--faint); font-weight:900; font-size:10px; flex:0 0 auto; }
+  .depitem .dn{ color:#cfe0f5; font-weight:700; }
+  .depitem .ds{ margin-left:auto; font-size:8.5px; font-weight:900; text-transform:uppercase;
+    letter-spacing:.4px; color:var(--faint); flex:0 0 auto; }
+  .depitem.hard{ border-color:rgba(255,176,32,.35); }
+  .depitem.hard .ds{ color:var(--warn); }
+
+  .act{ font-size:11px; color:var(--dim); line-height:1.5; padding:5px 0 5px 13px;
+    position:relative; border-left:1px solid var(--line); margin-left:3px; }
+  .act::before{ content:""; position:absolute; left:-3.5px; top:11px; width:6px; height:6px;
+    border-radius:50%; background:var(--line2); }
+  .act.new::before{ background:var(--acc); }
+  .act .d{ color:var(--faint); font-weight:800; font-size:9.5px; margin-right:5px; }
+  .act b{ color:#cfe0f5; font-weight:700; }
+
+  .ctrls{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:12px; }
+  .ctrls .wide{ grid-column:1 / -1; }
+  .btn{ font:inherit; font-size:11.5px; font-weight:800; color:var(--txt); background:var(--panel3);
+    border:1px solid var(--line2); border-radius:9px; padding:10px 8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn:active{ transform:translateY(1px); }
+  .btn.approve{ background:rgba(22,192,96,.14); border-color:rgba(22,192,96,.45); color:#5ce08d; }
+  .btn.approved{ background:#0e1217; border-color:var(--line); color:var(--faint); cursor:default; }
+  .btn.pause{ background:rgba(255,176,32,.12); border-color:rgba(255,176,32,.4); color:#ffcf6b; }
+  .btn.resume{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .btn.ghost{ background:#0e1217; border-color:var(--line); color:var(--dim); }
+
+  .approve-note{ font-size:10px; color:var(--faint); line-height:1.5; margin-top:7px;
+    text-align:center; }
+  .approve-note b{ color:#5ce08d; }
+
+  /* ── toast ── */
+  .toast{ position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px);
+    background:var(--panel3); border:1px solid var(--line2); border-radius:12px;
+    padding:11px 15px; font-size:11.5px; line-height:1.5; color:var(--txt);
+    box-shadow:0 10px 34px rgba(0,0,0,.6); max-width:min(390px,92vw); z-index:90;
+    opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+  .toast .tt{ font-weight:900; margin-bottom:4px; }
+  .toast .tb{ color:var(--dim); }
+  .toast .tb b{ color:#cfe0f5; }
+  .toast.ok{ border-color:rgba(22,192,96,.45); }
+  .toast.ok .tt{ color:#5ce08d; }
+  .toast.acc .tt{ color:#9ccbff; }
+  .toast.warn{ border-color:rgba(255,176,32,.45); }
+  .toast.warn .tt{ color:var(--warn); }
+
+  .empty{ text-align:center; color:var(--faint); font-size:11.5px; padding:26px 10px; }
+  .footnote{ font-size:10px; color:var(--faint); line-height:1.6; margin-top:16px;
+    padding-top:11px; border-top:1px solid var(--line); }
+  .footnote b{ color:var(--dim); }
+</style>
+</head>
+<body>
+
+<div class="pagehead">
+  <h1>VP Portfolio Command — concept mockup</h1>
+  <p>One surface that answers <b>"what is in flight, everywhere"</b> and lets you <b>push priority from inside it</b>.
+     Every card is real work as of <b>2026-07-27</b>. Tap a card to expand; the priority arrows, pause toggle
+     and feature-level approve all respond.</p>
+  <div class="wipnote"><b>Mockup only.</b> Nothing is wired to a live system — no PR is approved, no priority is
+    stored. Employee names are anonymized. This is the <b>shape</b> to react to, not the build.</div>
+</div>
+
+<div class="stage">
+<div class="phone"><div class="scr">
+
+  <div class="appbar">
+    <div>
+      <div class="nm">Portfolio Command</div>
+      <div class="sub">All systems · 20 in flight</div>
+    </div>
+    <span class="rolepill">VP</span>
+    <div class="win">
+      <div class="k">Mon 27 Jul</div>
+      <div class="v">2nd shift · 14:20</div>
+    </div>
+  </div>
+
+  <!-- ── ATMOSPHERE ── -->
+  <div class="sectlbl">Atmosphere — today
+    <span class="tap" id="atmoToggle">show detail ▾</span></div>
+  <div class="pulse">
+    <div class="pcard hot"    onclick="openAtmo()"><div class="pv">1</div><div class="pk">Incident</div></div>
+    <div class="pcard warm"   onclick="openAtmo()"><div class="pv">4</div><div class="pk">Blockers</div></div>
+    <div class="pcard warm"   onclick="openAtmo()"><div class="pv">2</div><div class="pk">Waiting<br>on HR</div></div>
+    <div class="pcard"        onclick="openAtmo()"><div class="pv">3</div><div class="pk">Agents<br>running</div></div>
+  </div>
+
+  <div class="atmo" id="atmo">
+    <div class="atrow bad">
+      <div class="ic">🔴</div>
+      <div>
+        <div class="t">Postgres dual-write is dropping every write after a host restart</div>
+        <div class="m">Pool init latched <b>None</b> forever — ~170 lost rows / 7 days, no reconciliation.
+          Fix is written and sitting in review.</div>
+        <div class="src">Incident · WIP Processor · PR #166</div>
+      </div>
+    </div>
+    <div class="atrow warn">
+      <div class="ic">⛔</div>
+      <div>
+        <div class="t">Hardware pilot can't start — every worker bounces to a Microsoft login</div>
+        <div class="m">The two V2 register routes aren't in the Easy Auth allow-list.
+          <b>Operator 1</b> and <b>Operator 2</b> are idle waiting on it. One app-setting change, needs your OK.</div>
+        <div class="src">Blocker · WIP Processor · needs approval</div>
+      </div>
+    </div>
+    <div class="atrow warn">
+      <div class="ic">📇</div>
+      <div>
+        <div class="t">ADP has mobile numbers for 4 of 44 people</div>
+        <div class="m">Phone-first sign-in can't reach <b>33 workers</b> until HR mirrors the numbers we already
+          collected. Request sent this morning; no reply yet.</div>
+        <div class="src">Waiting on HR · sent 09:10 today</div>
+      </div>
+    </div>
+    <div class="atrow warn">
+      <div class="ic">🖨️</div>
+      <div>
+        <div class="t">Tag printer down at the shear line</div>
+        <div class="m">Tag pilot paused — no printed tags means no scan volume to validate against.
+          Vendor callback expected tomorrow.</div>
+        <div class="src">Blocker · plant floor · reported 11:40</div>
+      </div>
+    </div>
+    <div class="atrow info">
+      <div class="ic">⚙️</div>
+      <div>
+        <div class="t">3 background agents running</div>
+        <div class="m">Governance ledger audit · ADP field matrix · deploy-drift scan. Roughly <b>40 min</b>
+          of capacity committed before anything new can start.</div>
+        <div class="src">Resource · capacity</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FILTERS ── -->
+  <div class="sectlbl">In flight <span class="n" id="countLbl">20 features</span></div>
+  <div class="filterbar">
+    <div class="chips" id="sysChips"></div>
+    <div class="chips" id="stateChips"></div>
+    <div class="sortbar">
+      <span class="lbl">Sort</span>
+      <div class="seg" id="sortSeg">
+        <button data-sort="priority" class="on">Priority</button>
+        <button data-sort="risk">Risk</button>
+        <button data-sort="recency">Recent</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="footnote">
+    <b>What this replaces:</b> the governance ledger, the dispatch console's PR queue, the open-PR list,
+    and four status docs. Approval happens once per <b>feature</b> — not once per pull request.
+  </div>
+
+</div></div>
+</div>
+
+<div class="toast" id="toast"><div class="tt"></div><div class="tb"></div></div>
+
+<script>
+/* ─────────── data: real in-flight work, 2026-07-27 ─────────── */
+const SYS = {
+  wip:  "WIP Processor",
+  cloud:"HPT Cloud",
+  disp: "Dispatch Console",
+  gov:  "HPT Governance",
+  mem:  "HPT Memory",
+  gh:   "HPT-GitHub",
+  sh97: "Shear97",
+  ext:  "Extrusion Log",
+  infra:"Infrastructure"
+};
+
+let F = [
+  { id:"pg-latch", sys:"wip", name:"Postgres dual-write pool-latch fix", ver:"1.32.2",
+    state:"shipping", risk:3, prog:85, approved:false, paused:false, age:0,
+    why:"Every Postgres write has been silently dropped since the last host restart — the connection pool latched to <b>None</b> and never retried. Warn-only fan-out means nothing alarmed. Fix is written; it is the gate on the whole database move.",
+    deps:{ blocks:["DO Postgres cutover"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #166",
+    acts:[["today","Fix pushed, <b>review requested</b>"],["today","Root cause confirmed: lazy init latch"],["7d","~170 writes lost, no reconciliation"]] },
+
+  { id:"v2-pilot", sys:"wip", name:"V2 phone registration — hardware pilot", ver:"1.32.x",
+    state:"blocked", risk:3, prog:70, approved:false, paused:false, age:0,
+    why:"Workers type their own number and get a text code — no supervisor setup. Code is deployed. Two register routes are missing from the Easy Auth allow-list, so every worker bounces to a Microsoft login they have no account for. <b>Operator 1</b> and <b>Operator 2</b> are staged and waiting.",
+    deps:{ blocks:["Deactivation gate","Phone-first rollout"], blockedBy:["Easy Auth allow-list","ADP phone numbers"] },
+    hardBlock:"Easy Auth allow-list — one app-setting change, needs approval",
+    ref:"hardware pilot runbook",
+    acts:[["today","Blocker confirmed live — login redirect reproduced"],["today","Runbook + QR analysis delivered"],["2d","Pilot roster staged"]] },
+
+  { id:"adp-w0", sys:"wip", name:"ADP Wave 0 — roster SFTP sanity check", ver:"1.33",
+    state:"review", risk:2, prog:60, approved:false, paused:false, age:0,
+    why:"ADP writes the roster straight over SFTP — there is no loader to gate. This inverts it: validate, then <b>promote</b> a known-good copy that readers actually read. Stops a bad roster from corrupting identity on every registration. Ships in shadow mode first.",
+    deps:{ blocks:["ADP Wave 4 — reconciliation","Employment-status alignment"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #168 · GA-WIP-249",
+    acts:[["today","Opened for review — 10 checks, shadow mode"],["today","Design: promote-on-validate"],["1d","Alignment plan v2 accepted"]] },
+
+  { id:"adp-w1", sys:"wip", name:"ADP Wave 1 — override provenance + request state", ver:"1.33",
+    state:"review", risk:1, prog:55, approved:false, paused:false, age:0,
+    why:"An HPT override stops being a competing truth and becomes a <b>request to HR</b> with an SLA clock. Adds source, set-by, last-ADP-seen and request state per field. Additive columns are free today and expensive after the Postgres cutover — this is the sequencing argument.",
+    deps:{ blocks:["ADP Wave 2 — read alignment","ADP Wave 3 — write alignment"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #167 · GA-WIP-248",
+    acts:[["today","Opened for review — schema only, nothing reads it"],["today","Scope grew: state machine, not 4 columns"]] },
+
+  { id:"adp-w2", sys:"wip", name:"ADP Wave 2 — read alignment (resolve_field)", ver:"1.34",
+    state:"proposed", risk:3, prog:0, approved:false, paused:false, age:0,
+    why:"One resolver returning value + who is master + why, routed through every screen and both registration paths. Highest blast radius in the plan — needs a shadow-compare period before it changes any output.",
+    deps:{ blocks:["ADP Wave 3","ADP Wave 4"], blockedBy:["ADP Wave 1 — provenance"] },
+    hardBlock:"ADP Wave 1 must land first",
+    ref:"alignment plan v2 §C",
+    acts:[["today","Scoped — ~1 sprint, needs decision on 3 fields"]] },
+
+  { id:"do-pg", sys:"infra", name:"DO Postgres migration — cutover", ver:"2.0",
+    state:"blocked", risk:3, prog:45, approved:false, paused:false, age:2,
+    why:"Moves tags, operations, events and imports off Azure Table Storage. Parity soak cannot start while dual-write is dropping rows — the comparison would be meaningless.",
+    deps:{ blocks:["Table Storage retirement"], blockedBy:["Postgres dual-write pool-latch fix"] },
+    hardBlock:"Blocked by the live incident (PR #166)",
+    ref:"GA-WIP-062",
+    acts:[["2d","Parity soak blocked"],["10d","B1 recreate resolved the zero-rows root cause"]] },
+
+  { id:"hourly-scroll", sys:"wip", name:"Continuous-scroll hourly view", ver:"1.33",
+    state:"progress", risk:1, prog:75, approved:false, paused:false, age:0,
+    why:"Date / shift / hour header with a past-and-future window and scheduled workload from the optimizer. Mockup locked; the port to the live view is the remaining work.",
+    deps:{ blocks:["Bar-size drill-down"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #108 · mockup locked",
+    acts:[["today","Nav-arrow position locked across at-now / off-now"],["6d","Mockup published"]] },
+
+  { id:"drilldown", sys:"wip", name:"Hourly lbs-per-bar-size drill-down", ver:"1.34",
+    state:"review", risk:1, prog:65, approved:false, paused:false, age:0,
+    why:"Tap an hour, see the pounds split by bar size and by bender. Keys on <b>scan station</b>, not routing — keying off machines silently drops three benders. Flag is OFF.",
+    deps:{ blocks:[], blockedBy:["Continuous-scroll hourly view"] },
+    hardBlock:null,
+    ref:"PR #160 · GA-WIP-236",
+    acts:[["today","Phase 2 opened, flag OFF"],["today","scan_stations registry added"]] },
+
+  { id:"disp-v2", sys:"disp", name:"Dispatch Console v2", ver:"2.0",
+    state:"progress", risk:2, prog:70, approved:false, paused:false, age:1,
+    why:"Private authenticated review dashboard on DigitalOcean. Duplicates GitHub's approval flow — if this portfolio surface owns approval, the console's queue becomes redundant and should be dropped rather than finished.",
+    deps:{ blocks:[], blockedBy:["Deploy-drift guardrails"] },
+    hardBlock:null,
+    ref:"PR #117 · GA-WIP-203",
+    acts:[["1d","Deploy guardrails A–D opened (PR #155)"],["1d","Drift: app builds from a feature branch, not master"]] },
+
+  { id:"disp-guard", sys:"disp", name:"Deploy-drift guardrails", ver:"2.0",
+    state:"review", risk:2, prog:80, approved:false, paused:false, age:1,
+    why:"The deployed console builds from a feature branch while master has none of the code. Guardrails A–D make that state impossible to reach silently.",
+    deps:{ blocks:["Dispatch Console v2"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #155 · GA-WIP-243",
+    acts:[["1d","Opened for review"]] },
+
+  { id:"hw-qr", sys:"cloud", name:"HPT Cloud QR — tag scan integration", ver:"1.32",
+    state:"live", risk:1, prog:95, approved:true, paused:false, age:0,
+    why:"Cloud QR payloads are bare UUIDs and parse cleanly — no collision with shear tickets or BF2D strings. Code shipped in 1.29 and is live in prod. One app setting stands between here and a working scan path; the flag is <b>OFF</b>.",
+    deps:{ blocks:["Hardware pilot scan path"], blockedBy:[] },
+    hardBlock:null,
+    ref:"GA-WIP-179 · flag OFF in prod",
+    acts:[["today","Confirmed: format compatible, zero settings match the flag"],["today","Prod on app 1.32.0 / scanner 1.14.0"]] },
+
+  { id:"gov-ledger", sys:"gov", name:"Governance ledger close-out + tagging backfill", ver:"—",
+    state:"review", risk:1, prog:90, approved:false, paused:false, age:0,
+    why:"110 rows re-tagged across six dimensions with plain-language summaries. This is the data layer this dashboard would read from — without it, half the rows have no system or feature to group by.",
+    deps:{ blocks:["Portfolio dashboard (this)"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #165",
+    acts:[["today","110 rows tagged"],["today","Triage: 22 rows need your decision"]] },
+
+  { id:"tag-search", sys:"wip", name:"Tag Search v2 — multi-field + shared scan engine", ver:"1.33",
+    state:"review", risk:2, prog:80, approved:false, paused:false, age:3,
+    why:"Search a tag by any field, with a full audit trail, sharing one extracted scanner engine. Sitting in review three days.",
+    deps:{ blocks:[], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #124 · GA-WIP-217",
+    acts:[["3d","Opened for review — no movement since"]] },
+
+  { id:"notify", sys:"wip", name:"Alerting — Twilio SMS + Graph email", ver:"1.33",
+    state:"progress", risk:2, prog:40, approved:false, paused:false, age:4,
+    why:"The Teams webhook is dead, so every severity-gated alert currently goes nowhere. Until this lands, silent failure is the default failure mode across the platform.",
+    deps:{ blocks:["ADP Wave 0 alerting","Incident alerting"], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #119 · GA-WIP-180 (draft)",
+    acts:[["4d","Draft opened, 1 of 2 PRs"]] },
+
+  { id:"secret-gate", sys:"gh", name:"Secret-scan deploy gate", ver:"—",
+    state:"approved", risk:2, prog:50, approved:true, paused:false, age:6,
+    why:"Two fail-closed jobs gating the build and the real artifact. Reviewer said ship. The branch has been written but never pushed for six days.",
+    deps:{ blocks:[], blockedBy:[] },
+    hardBlock:null,
+    ref:"GA-WIP-167 · staged, not pushed",
+    acts:[["6d","Reviewer: SHIP"],["6d","Branch staged locally, never pushed"]] },
+
+  { id:"test-iso", sys:"gh", name:"Test isolation + parallel test runs", ver:"—",
+    state:"review", risk:1, prog:70, approved:false, paused:false, age:6,
+    why:"Module stubs leak between tests, so the suite has to run single-threaded. Re-enabling parallel runs cuts the deploy gate's wall-clock materially.",
+    deps:{ blocks:[], blockedBy:[] },
+    hardBlock:null,
+    ref:"PR #106",
+    acts:[["6d","Opened, awaiting review"]] },
+
+  { id:"az-do", sys:"infra", name:"Azure → DO App Platform migration", ver:"3.0",
+    state:"blocked", risk:3, prog:10, approved:false, paused:false, age:2,
+    why:"Full exit from Azure Function Apps to two DO apps with flag-based routing for instant rollback. Due date <b>already passed (25 Jul)</b> — it needs a new date or an explicit park.",
+    deps:{ blocks:[], blockedBy:["DO Postgres migration"] },
+    hardBlock:"Overdue — needs a new date or a park decision",
+    ref:"GA-WIP-099",
+    acts:[["2d","Due date passed with no reschedule"]] },
+
+  { id:"sh97", sys:"sh97", name:"Ticket-format registry + optimizer alignment", ver:"1.1",
+    state:"proposed", risk:2, prog:20, approved:false, paused:false, age:5,
+    why:"Three open governance rows on the Shear97 side that have never been triaged. Bend angles are absent from the ingest, which leaves one routing decision permanently dormant.",
+    deps:{ blocks:["Machine routing v1"], blockedBy:[] },
+    hardBlock:null,
+    ref:"GA-SH97-001/002/003",
+    acts:[["5d","Filed, untriaged"]] },
+
+  { id:"mem", sys:"mem", name:"Session memory index", ver:"—",
+    state:"live", risk:1, prog:100, approved:true, paused:false, age:0,
+    why:"Cross-session fact index. Running and current — the reason today's blockers were recognized in minutes rather than rediscovered.",
+    deps:{ blocks:[], blockedBy:[] },
+    hardBlock:null,
+    ref:"in service",
+    acts:[["today","4 new facts written"]] },
+
+  { id:"ext", sys:"ext", name:"Extrusion log capture", ver:"0.1",
+    state:"proposed", risk:1, prog:0, approved:false, paused:false, age:9,
+    why:"Not started. Placed here so it stops living only in conversation — a proposed feature with no owner is still portfolio state.",
+    deps:{ blocks:[], blockedBy:[] },
+    hardBlock:null,
+    ref:"no row filed",
+    acts:[["9d","Discussed, nothing filed"]] }
+];
+
+/* priority = array order */
+F.forEach((f,i)=> f.p = i+1);
+
+const STATE_LBL = { proposed:"Proposed", approved:"Approved", progress:"In progress",
+  review:"In review", shipping:"Shipping", live:"Live", blocked:"Blocked", broken:"Broken" };
+const RISK_LBL = { 1:"low", 2:"med", 3:"high" };
+const PROG_CLS = { broken:"dead", blocked:"stall", live:"done", shipping:"done" };
+
+let sysFilter = "all", stateFilter = "all", sortBy = "priority", openId = null;
+
+/* ─────────── chips ─────────── */
+function buildChips(){
+  const sysCounts = {};
+  F.forEach(f => sysCounts[f.sys] = (sysCounts[f.sys]||0)+1);
+  let h = `<div class="chip ${sysFilter==='all'?'on':''}" onclick="setSys('all')">All systems<span class="ct">${F.length}</span></div>`;
+  Object.keys(SYS).filter(k=>sysCounts[k]).forEach(k=>{
+    h += `<div class="chip ${sysFilter===k?'on':''}" onclick="setSys('${k}')">${SYS[k]}<span class="ct">${sysCounts[k]}</span></div>`;
+  });
+  document.getElementById("sysChips").innerHTML = h;
+
+  const stCounts = {};
+  F.forEach(f => { const s = f.paused ? "paused" : f.state; stCounts[s] = (stCounts[s]||0)+1; });
+  let h2 = `<div class="chip ${stateFilter==='all'?'on':''}" onclick="setState('all')">Any state</div>`;
+  ["broken","blocked","review","shipping","progress","approved","proposed","live","paused"].forEach(s=>{
+    if(!stCounts[s]) return;
+    const lbl = s==="paused" ? "Paused" : STATE_LBL[s];
+    h2 += `<div class="chip ${stateFilter===s?'on':''}" onclick="setState('${s}')">${lbl}<span class="ct">${stCounts[s]}</span></div>`;
+  });
+  document.getElementById("stateChips").innerHTML = h2;
+}
+function setSys(k){ sysFilter = k; render(); }
+function setState(k){ stateFilter = k; render(); }
+
+document.getElementById("sortSeg").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  sortBy = b.dataset.sort;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  render();
+});
+
+/* ─────────── render ─────────── */
+function visible(){
+  let v = F.filter(f =>
+    (sysFilter==="all" || f.sys===sysFilter) &&
+    (stateFilter==="all" || (stateFilter==="paused" ? f.paused : (!f.paused && f.state===stateFilter))));
+  if(sortBy==="priority") v.sort((a,b)=>a.p-b.p);
+  if(sortBy==="risk")     v.sort((a,b)=> b.risk-a.risk || a.p-b.p);
+  if(sortBy==="recency")  v.sort((a,b)=> a.age-b.age || a.p-b.p);
+  return v;
+}
+
+function card(f){
+  const st = f.paused ? "paused" : f.state;
+  const stLbl = f.paused ? "Paused" : STATE_LBL[f.state];
+  const progCls = PROG_CLS[f.state] || "";
+  const isOpen = openId===f.id;
+
+  let deps = "";
+  if(f.hardBlock){
+    deps = `<div class="deprow blocking"><span class="dk">Held</span><span><b>${f.hardBlock}</b></span></div>`;
+  } else if(f.deps.blocks.length){
+    deps = `<div class="deprow"><span class="dk">Blocks</span><span>${f.deps.blocks.map(d=>`<b>${d}</b>`).join(" · ")}</span></div>`;
+  }
+
+  let drawer = "";
+  if(isOpen){
+    const depItems = [
+      ...f.deps.blockedBy.map(d=>`<div class="depitem hard"><span class="ar">←</span><span class="dn">${d}</span><span class="ds">blocks this</span></div>`),
+      ...f.deps.blocks.map(d=>`<div class="depitem"><span class="ar">→</span><span class="dn">${d}</span><span class="ds">waits on this</span></div>`)
+    ].join("") || `<div class="depitem"><span class="dn" style="color:var(--faint);font-weight:600">Nothing depends on this, and it waits on nothing.</span></div>`;
+
+    const acts = f.acts.map((a,i)=>`<div class="act ${i===0&&f.age===0?'new':''}"><span class="d">${a[0]}</span>${a[1]}</div>`).join("");
+
+    drawer = `
+      <div class="drawer" onclick="event.stopPropagation()">
+        <div class="dlbl">Why it matters</div>
+        <div class="why">${f.why}</div>
+
+        <div class="dlbl">Dependencies</div>
+        <div class="depgrid">${depItems}</div>
+
+        <div class="dlbl">Recent activity</div>
+        ${acts}
+
+        <div class="ctrls">
+          <button class="btn ghost" onclick="bump('${f.id}',-1)">▲ Raise priority</button>
+          <button class="btn ghost" onclick="bump('${f.id}',1)">▼ Lower priority</button>
+          <button class="btn ${f.paused?'resume':'pause'}" onclick="togglePause('${f.id}')">
+            ${f.paused?'▶ Resume':'⏸ Pause'}</button>
+          <button class="btn ghost" onclick="jump('${f.id}')">↗ ${f.ref.split(' · ')[0]}</button>
+          <button class="btn ${f.approved?'approved':'approve'} wide" onclick="approve('${f.id}')">
+            ${f.approved?'✓ Approved at feature level':'✓ Approve this feature'}</button>
+        </div>
+        <div class="approve-note">${f.approved
+          ? 'Carries to every PR on this feature. <b>You will not be asked again.</b>'
+          : 'One approval covers every PR under this feature — no per-PR re-ask.'}</div>
+      </div>`;
+  }
+
+  return `
+  <div class="fcard st-${st} ${f.paused?'paused':''} ${isOpen?'open':''}" onclick="toggle('${f.id}')">
+    <div class="fr1">
+      <span class="systag">${SYS[f.sys]}</span>
+      <span class="vtag">${f.ver==="—"?"":"v"+f.ver}</span>
+      <div class="prio" onclick="event.stopPropagation()">
+        <span class="rank ${f.p<=3?'top':''}">P${f.p}</span>
+        <span class="arrows">
+          <button onclick="bump('${f.id}',-1)">▲</button>
+          <button onclick="bump('${f.id}',1)">▼</button>
+        </span>
+      </div>
+    </div>
+    <div class="fname">${f.name}</div>
+    <div class="fr2">
+      <span class="state ${st}">${stLbl}</span>
+      <span class="risk r${f.risk}"><i></i>${RISK_LBL[f.risk]} risk</span>
+      ${f.approved?'<span class="apvd">✓ APPROVED</span>':''}
+      <span class="vtag" style="margin-left:auto">${f.ref.split(' · ')[0]}</span>
+    </div>
+    ${deps}
+    <div class="prog ${progCls}"><i style="width:${f.prog}%"></i></div>
+    ${drawer}
+  </div>`;
+}
+
+function render(){
+  const v = visible();
+  document.getElementById("list").innerHTML = v.length
+    ? v.map(card).join("")
+    : `<div class="empty">Nothing matches that filter.</div>`;
+  document.getElementById("countLbl").textContent =
+    v.length === F.length ? `${F.length} features` : `${v.length} of ${F.length}`;
+  buildChips();
+}
+
+/* ─────────── actions (mocked) ─────────── */
+function toggle(id){ openId = openId===id ? null : id; render(); }
+
+function bump(id, dir){
+  event.stopPropagation();
+  /* move relative to what is on screen, so the arrows work under any filter or sort */
+  const v = visible();
+  const vi = v.findIndex(f=>f.id===id);
+  const target = v[vi + dir];
+  if(!target) return;
+  const i = F.findIndex(f=>f.id===id);
+  const j = F.findIndex(f=>f.id===target.id);
+  const moved = F[i], displaced = F[j];
+  F.splice(i,1); F.splice(j,0,moved);
+  F.forEach((f,k)=> f.p = k+1);
+  render();
+  toast("acc", `${moved.name} → P${moved.p}`,
+    `<b>${displaced.name}</b> moved to P${displaced.p}. ` +
+    (moved.deps.blocks.length
+      ? `${moved.deps.blocks.length} downstream item${moved.deps.blocks.length>1?'s':''} reflowed with it.`
+      : `Nothing downstream to reflow.`));
+}
+
+function togglePause(id){
+  event.stopPropagation();
+  const f = F.find(x=>x.id===id);
+  f.paused = !f.paused;
+  render();
+  if(f.paused){
+    toast("warn", `Paused — ${f.name}`,
+      f.deps.blocks.length
+        ? `<b>${f.deps.blocks.join(", ")}</b> ${f.deps.blocks.length>1?'are':'is'} now held too. Work stops at the next commit boundary.`
+        : `Nothing downstream is affected. Work stops at the next commit boundary.`);
+  } else {
+    toast("acc", `Resumed — ${f.name}`, `Back in the queue at <b>P${f.p}</b>.`);
+  }
+}
+
+function approve(id){
+  event.stopPropagation();
+  const f = F.find(x=>x.id===id);
+  if(f.approved) return;
+  f.approved = true;
+  render();
+  toast("ok", `Approved — ${f.name}`,
+    `Carries to <b>${f.ref}</b> and every future PR under this feature. ` +
+    `No per-PR approval, no second ask.`);
+}
+
+function jump(id){
+  event.stopPropagation();
+  const f = F.find(x=>x.id===id);
+  toast("acc", `Would open ${f.ref}`, `Mockup — nothing is wired. In the real thing this deep-links straight to the change.`);
+}
+
+let toastT;
+function toast(kind, title, body){
+  const t = document.getElementById("toast");
+  t.className = `toast show ${kind}`;
+  t.querySelector(".tt").textContent = title;
+  t.querySelector(".tb").innerHTML = body;
+  clearTimeout(toastT);
+  toastT = setTimeout(()=> t.className = `toast ${kind}`, 4200);
+}
+
+/* atmosphere toggle */
+function openAtmo(){
+  const a = document.getElementById("atmo");
+  const on = a.classList.toggle("open");
+  document.getElementById("atmoToggle").textContent = on ? "hide detail ▴" : "show detail ▾";
+}
+document.getElementById("atmoToggle").addEventListener("click", openAtmo);
+
+render();
+</script>
+</body>
+</html>
