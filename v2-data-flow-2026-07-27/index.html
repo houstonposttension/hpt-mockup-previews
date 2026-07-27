@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2 Data Flow Map — 61 fields · 8 stores · 18 gaps</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --panel-3:#22272e;
+  --line:#2a3038; --line-2:#353c45; --input-bg:#0e1217;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --brand:#3b82f6; --warn:#ffb020; --bad:#ff3b30;
+  --p1:#ff3b30; --p1-bg:rgba(255,59,48,0.10); --p1-bd:rgba(255,59,48,0.42);
+  --p2:#ffb020; --p2-bg:rgba(255,176,32,0.10); --p2-bd:rgba(255,176,32,0.40);
+  --p3:#7cc4ff; --p3-bg:rgba(124,196,255,0.08); --p3-bd:rgba(124,196,255,0.32);
+  /* store colour coding */
+  --s-adp:#3b82f6;   --s-adp-bg:rgba(59,130,246,0.13);
+  --s-wp:#16c060;    --s-wp-bg:rgba(22,192,96,0.12);
+  --s-wm:#a855f7;    --s-wm-bg:rgba(168,85,247,0.13);
+  --s-wa:#f97316;    --s-wa-bg:rgba(249,115,22,0.13);
+  --s-so:#14b8a6;    --s-so-bg:rgba(20,184,166,0.13);
+  --s-ra:#ec4899;    --s-ra-bg:rgba(236,72,153,0.13);
+  --s-yml:#94a3b8;   --s-yml-bg:rgba(148,163,184,0.12);
+  --s-ls:#22d3ee;    --s-ls-bg:rgba(34,211,238,0.12);
+  --s-der:#8b949e;   --s-der-bg:rgba(139,148,158,0.10);
+  --fs-h1:20px; --fs-h2:17px; --fs-body:14px; --fs-cap:12.5px; --fs-fine:11px;
+  --sp-xs:4px; --sp-sm:8px; --sp-md:12px; --sp-base:16px; --sp-lg:24px;
+  --r-sm:8px; --r-md:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:104px;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--txt); font-size:var(--fs-body); line-height:1.5;
+  -webkit-text-size-adjust:100%;
+}
+code,.mono{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;font-size:0.92em;}
+/* NOT nowrap: long paths like scripts/backfill_worker_position_ids_2026-07-11.py
+   are wider than a phone viewport and would push the whole page horizontally. */
+code{background:var(--input-bg);border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:#c9d6e4;overflow-wrap:anywhere;}
+a{color:var(--brand);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+/* ── sticky header ─────────────────────────────────────────────── */
+.hdr{position:sticky;top:0;z-index:40;background:rgba(22,26,31,0.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.hdr-in{max-width:1400px;margin:0 auto;padding:10px var(--sp-base) 8px;}
+.hdr h1{font-size:var(--fs-h1);font-weight:700;letter-spacing:-0.2px;line-height:1.25;}
+.hdr .sub{font-size:var(--fs-fine);color:var(--mute);margin-top:2px;}
+.counts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.pill{display:inline-flex;align-items:baseline;gap:5px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:var(--fs-fine);color:var(--dim);white-space:nowrap;}
+.pill b{font-size:13px;color:var(--txt);font-variant-numeric:tabular-nums;}
+.pill.p1{border-color:var(--p1-bd);background:var(--p1-bg);} .pill.p1 b{color:var(--p1);}
+.pill.p2{border-color:var(--p2-bd);background:var(--p2-bg);} .pill.p2 b{color:var(--p2);}
+.pill.p3{border-color:var(--p3-bd);background:var(--p3-bg);} .pill.p3 b{color:var(--p3);}
+nav.toc{display:flex;gap:2px;margin-top:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+nav.toc::-webkit-scrollbar{display:none;}
+nav.toc a{font-size:var(--fs-fine);color:var(--dim);padding:5px 10px;border-radius:var(--r-sm);white-space:nowrap;border:1px solid transparent;}
+nav.toc a:hover{background:var(--panel-3);color:var(--txt);text-decoration:none;border-color:var(--line);}
+
+/* ── layout ────────────────────────────────────────────────────── */
+main{max-width:1400px;margin:0 auto;padding:var(--sp-lg) var(--sp-base) 80px;}
+section{margin-bottom:44px;scroll-margin-top:110px;}
+h2{font-size:var(--fs-h2);font-weight:700;margin-bottom:var(--sp-xs);display:flex;align-items:center;gap:var(--sp-sm);flex-wrap:wrap;}
+h2 .num{font-size:var(--fs-fine);color:var(--mute);font-weight:600;letter-spacing:1px;}
+h3{font-size:14px;font-weight:700;color:var(--dim);margin:var(--sp-lg) 0 var(--sp-sm);text-transform:uppercase;letter-spacing:0.6px;}
+.lede{color:var(--dim);font-size:var(--fs-cap);margin-bottom:var(--sp-base);max-width:80ch;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);}
+
+/* ── diagram ───────────────────────────────────────────────────── */
+.diagram-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);overflow-x:auto;-webkit-overflow-scrolling:touch;padding:var(--sp-sm);}
+.diagram-wrap svg{display:block;min-width:1180px;height:auto;}
+.scrollhint{font-size:var(--fs-fine);color:var(--mute);margin-top:6px;display:none;}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:var(--sp-md);font-size:var(--fs-fine);color:var(--dim);}
+.legend .k{display:inline-flex;align-items:center;gap:5px;}
+.legend .sw{width:11px;height:11px;border-radius:3px;border:1px solid rgba(255,255,255,0.18);flex:0 0 auto;}
+
+/* ── controls ──────────────────────────────────────────────────── */
+.controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:var(--sp-md);}
+.btn{background:var(--panel-3);border:1px solid var(--line-2);color:var(--dim);padding:5px 12px;border-radius:var(--r-sm);cursor:pointer;font-size:var(--fs-fine);font-family:inherit;white-space:nowrap;}
+.btn:hover{background:#2e353d;color:var(--txt);}
+.btn.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600;}
+.btn.on.p1{background:var(--p1);border-color:var(--p1);}
+.btn.on.p2{background:var(--p2);border-color:var(--p2);color:#221600;}
+.btn.on.p3{background:var(--p3);border-color:var(--p3);color:#04121e;}
+.ctl-label{font-size:var(--fs-fine);color:var(--mute);margin-right:2px;}
+input[type=search]{background:var(--input-bg);border:1px solid var(--line);color:var(--txt);padding:5px 10px;border-radius:var(--r-sm);font-size:var(--fs-fine);font-family:inherit;min-width:180px;flex:1 1 180px;max-width:280px;}
+input[type=search]::placeholder{color:var(--mute);}
+
+/* ── matrix table ──────────────────────────────────────────────── */
+.tbl-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-cap);min-width:1180px;}
+thead th{
+  position:sticky;top:0;z-index:5;background:var(--panel-2);color:var(--dim);
+  text-align:left;font-weight:600;font-size:var(--fs-fine);text-transform:uppercase;letter-spacing:0.5px;
+  padding:9px 10px;border-bottom:1px solid var(--line-2);white-space:nowrap;cursor:pointer;user-select:none;
+}
+thead th:hover{color:var(--txt);}
+thead th .arrow{color:var(--brand);font-size:9px;margin-left:3px;opacity:0;}
+thead th.sorted .arrow{opacity:1;}
+tbody td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--dim);}
+tbody tr:hover td{background:rgba(255,255,255,0.022);}
+tbody tr{border-left:3px solid transparent;}
+td.f-name{color:var(--txt);font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;min-width:150px;}
+/* no nowrap here — .store-tag pins itself to one line, but the source-of-truth
+   prose beneath it must wrap or it blows out the stacked mobile card. */
+td.f-store{overflow-wrap:anywhere;}
+.store-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;}
+.st-adp{background:var(--s-adp-bg);color:var(--s-adp);border:1px solid var(--s-adp);}
+.st-wp {background:var(--s-wp-bg); color:var(--s-wp); border:1px solid var(--s-wp);}
+.st-wm {background:var(--s-wm-bg); color:var(--s-wm); border:1px solid var(--s-wm);}
+.st-wa {background:var(--s-wa-bg); color:var(--s-wa); border:1px solid var(--s-wa);}
+.st-so {background:var(--s-so-bg); color:var(--s-so); border:1px solid var(--s-so);}
+.st-ra {background:var(--s-ra-bg); color:var(--s-ra); border:1px solid var(--s-ra);}
+.st-yml{background:var(--s-yml-bg);color:var(--s-yml);border:1px solid var(--s-yml);}
+.st-ls {background:var(--s-ls-bg); color:var(--s-ls); border:1px solid var(--s-ls);}
+.st-der{background:var(--s-der-bg);color:var(--s-der);border:1px solid var(--s-der);}
+tr.row-adp{border-left-color:var(--s-adp);} tr.row-wp{border-left-color:var(--s-wp);}
+tr.row-wm{border-left-color:var(--s-wm);}   tr.row-wa{border-left-color:var(--s-wa);}
+tr.row-so{border-left-color:var(--s-so);}   tr.row-ra{border-left-color:var(--s-ra);}
+tr.row-yml{border-left-color:var(--s-yml);} tr.row-ls{border-left-color:var(--s-ls);}
+tr.row-der{border-left-color:var(--s-der);}
+.gapref{display:inline-block;background:var(--p1-bg);border:1px solid var(--p1-bd);color:var(--p1);border-radius:5px;padding:1px 6px;font-size:10.5px;font-weight:700;margin:1px 2px 1px 0;white-space:nowrap;}
+.gapref:hover{background:rgba(255,59,48,0.2);text-decoration:none;}
+.gapref.g2{background:var(--p2-bg);border-color:var(--p2-bd);color:var(--p2);}
+.gapref.g2:hover{background:rgba(255,176,32,0.2);}
+.gapref.g3{background:var(--p3-bg);border-color:var(--p3-bd);color:var(--p3);}
+.gapref.g3:hover{background:rgba(124,196,255,0.2);}
+.nogap{color:var(--mute);}
+.pii-ok{color:var(--ok);} .pii-bad{color:var(--bad);font-weight:600;}
+
+/* ── gap cards ─────────────────────────────────────────────────── */
+.gaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:var(--sp-md);}
+.gap{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line-2);border-radius:var(--r-md);padding:var(--sp-base);scroll-margin-top:120px;}
+.gap.sev-P1{border-left-color:var(--p1);}
+.gap.sev-P2{border-left-color:var(--p2);}
+.gap.sev-P3{border-left-color:var(--p3);}
+.gap-hd{display:flex;align-items:center;gap:var(--sp-sm);flex-wrap:wrap;margin-bottom:6px;}
+.gap-id{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;font-weight:700;color:var(--txt);}
+.sev{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:0.4px;}
+.sev-badge-P1{background:var(--p1-bg);border:1px solid var(--p1-bd);color:var(--p1);}
+.sev-badge-P2{background:var(--p2-bg);border:1px solid var(--p2-bd);color:var(--p2);}
+.sev-badge-P3{background:var(--p3-bg);border:1px solid var(--p3-bd);color:var(--p3);}
+.gap h4{font-size:14px;font-weight:600;color:var(--txt);line-height:1.35;margin-bottom:var(--sp-sm);}
+.gap p{font-size:var(--fs-cap);color:var(--dim);margin-bottom:var(--sp-sm);}
+.gap .lbl{font-size:10px;font-weight:700;letter-spacing:0.7px;color:var(--mute);text-transform:uppercase;display:block;margin-bottom:3px;}
+.refs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:var(--sp-sm);}
+.ref{background:var(--input-bg);border:1px solid var(--line);border-radius:5px;padding:2px 7px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;color:#8fb3d4;white-space:nowrap;}
+.fixbox{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 11px;font-size:var(--fs-cap);color:var(--dim);margin-bottom:var(--sp-sm);}
+.fixbox .lbl{color:var(--ok);}
+.deps{font-size:var(--fs-fine);color:var(--mute);}
+.deps b{color:var(--dim);}
+.wave-chip{display:inline-block;background:var(--panel-3);border:1px solid var(--line-2);border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:0.3px;}
+
+/* ── override matrix ───────────────────────────────────────────── */
+.ovr-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table.ovr{min-width:820px;}
+table.ovr td{text-align:center;}
+table.ovr td.f{text-align:left;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--txt);font-weight:600;white-space:nowrap;}
+table.ovr td.note{text-align:left;font-size:var(--fs-fine);color:var(--mute);min-width:190px;}
+table.ovr th{text-align:center;cursor:default;}
+table.ovr th:first-child{text-align:left;}
+.yes{color:var(--ok);font-size:15px;font-weight:700;}
+.no{color:var(--bad);font-size:14px;font-weight:700;}
+.dash{color:#4b5563;font-size:14px;}
+.ind{color:var(--warn);font-size:13px;font-weight:700;}
+.cellnote{display:block;font-size:9.5px;color:var(--mute);line-height:1.25;margin-top:1px;font-family:inherit;font-weight:400;}
+.audit-none{color:var(--bad);font-weight:600;}
+.audit-yes{color:var(--ok);}
+
+/* ── waves timeline ────────────────────────────────────────────── */
+.waves{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--sp-md);position:relative;}
+.wave{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--sp-base);position:relative;overflow:hidden;}
+.wave::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;}
+.wave.w1::before{background:linear-gradient(180deg,var(--p1),#a01f18);}
+.wave.w2::before{background:linear-gradient(180deg,var(--p2),#a3690a);}
+.wave.w3::before{background:linear-gradient(180deg,var(--p3),#2b6188);}
+.wave-hd{display:flex;align-items:center;gap:var(--sp-sm);margin-bottom:3px;}
+.wave-n{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:0 0 auto;}
+.w1 .wave-n{background:var(--p1);color:#fff;} .w2 .wave-n{background:var(--p2);color:#221600;} .w3 .wave-n{background:var(--p3);color:#04121e;}
+.wave h3{margin:0;font-size:14px;color:var(--txt);text-transform:none;letter-spacing:0;}
+.wave .when{font-size:var(--fs-fine);color:var(--mute);margin-bottom:var(--sp-md);padding-left:34px;}
+.wave ol{list-style:none;counter-reset:step;}
+.wave li{position:relative;padding:0 0 var(--sp-md) 22px;font-size:var(--fs-cap);color:var(--dim);border-left:1px dashed var(--line-2);margin-left:9px;}
+.wave li:last-child{border-left-color:transparent;padding-bottom:0;}
+.wave li::before{content:"";position:absolute;left:-4.5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--panel);border:2px solid var(--line-2);}
+.w1 li::before{border-color:var(--p1);} .w2 li::before{border-color:var(--p2);} .w3 li::before{border-color:var(--p3);}
+.wave li b{color:var(--txt);}
+.notrec{margin-top:var(--sp-md);background:rgba(255,59,48,0.06);border:1px solid var(--p1-bd);border-radius:var(--r-md);padding:var(--sp-md) var(--sp-base);font-size:var(--fs-cap);color:var(--dim);}
+.notrec b{color:var(--p1);}
+
+/* ── audit / verdict blocks ────────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:var(--sp-md);}
+.verdict{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--sp-base);font-size:var(--fs-cap);color:var(--dim);}
+.verdict h4{font-size:13px;color:var(--txt);margin-bottom:var(--sp-sm);}
+.verdict ul{list-style:none;margin-top:var(--sp-sm);}
+.verdict li{padding-left:16px;position:relative;margin-bottom:5px;}
+.verdict li::before{content:"▸";position:absolute;left:0;color:var(--mute);}
+table.audit{min-width:520px;}
+table.audit td:first-child{color:var(--txt);}
+
+.stores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--sp-sm);}
+.store-card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line-2);border-radius:var(--r-sm);padding:10px 12px;font-size:var(--fs-fine);color:var(--mute);}
+.store-card .nm{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;font-weight:700;color:var(--txt);display:block;margin-bottom:3px;}
+.store-card .rw{margin-top:3px;}
+.store-card .rw span{color:var(--dim);}
+.store-card.c-adp{border-left-color:var(--s-adp);} .store-card.c-wp{border-left-color:var(--s-wp);}
+.store-card.c-wm{border-left-color:var(--s-wm);}   .store-card.c-wa{border-left-color:var(--s-wa);}
+.store-card.c-so{border-left-color:var(--s-so);}   .store-card.c-ra{border-left-color:var(--s-ra);}
+.store-card.c-yml{border-left-color:var(--s-yml);} .store-card.c-ls{border-left-color:var(--s-ls);}
+
+footer{border-top:1px solid var(--line);padding:var(--sp-lg) var(--sp-base);text-align:center;font-size:var(--fs-fine);color:var(--mute);max-width:1400px;margin:0 auto;}
+.empty{padding:var(--sp-lg);text-align:center;color:var(--mute);font-size:var(--fs-cap);}
+.toplink{position:fixed;right:14px;bottom:14px;z-index:50;background:var(--panel-2);border:1px solid var(--line-2);color:var(--dim);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.toplink:hover{background:var(--panel-3);color:var(--txt);text-decoration:none;}
+
+/* ── mobile ────────────────────────────────────────────────────── */
+@media (max-width:820px){
+  :root{--fs-h1:16px;--fs-h2:15px;--fs-body:13.5px;--fs-cap:12px;}
+  main{padding:var(--sp-base) 10px 70px;}
+  .scrollhint{display:block;}
+  .gaps{grid-template-columns:1fr;}
+  .gap{padding:var(--sp-md);}
+  input[type=search]{max-width:none;}
+  /* field matrix → stacked cards. Scoped to .matrix-wrap ONLY: the audit table
+     shares .tbl-wrap and still needs its overflow-x:auto to stay clipped. */
+  .matrix-wrap{overflow-x:visible;background:transparent;border:0;border-radius:0;}
+  table.matrix{min-width:0;display:block;}
+  table.matrix thead{display:none;}
+  table.matrix tbody{display:block;}
+  table.matrix tbody tr{display:block;background:var(--panel);border:1px solid var(--line);border-left-width:4px;border-radius:var(--r-md);margin-bottom:10px;padding:4px 0;}
+  table.matrix tbody td{display:block;border:0;padding:5px 12px;overflow-wrap:anywhere;}
+  table.matrix tbody td::before{content:attr(data-l);display:block;font-size:9.5px;font-weight:700;letter-spacing:0.7px;color:var(--mute);text-transform:uppercase;margin-bottom:2px;}
+  table.matrix tbody td.f-name{font-size:13.5px;padding-top:9px;}
+  table.matrix tbody td.f-name::before{display:none;}
+  table.matrix tbody td:empty{display:none;}
+  .ovr-wrap table.ovr{min-width:700px;}
+}
+@media (max-width:520px){
+  .counts .pill{font-size:10px;padding:2px 9px;}
+  .hdr-in{padding:8px 10px 6px;}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <h1>V2 Data Flow Map — 61 fields · 8 stores · 18 gaps</h1>
+    <div class="sub">Worker-identity data plane · read-only analysis, 2026-07-27 · branch <span class="mono">feature/hourly-drilldown-spec-2026-07-21</span> · no fixes applied</div>
+    <div class="counts">
+      <span class="pill"><b>61</b> fields</span>
+      <span class="pill"><b>8</b> stores</span>
+      <span class="pill"><b>18</b> gaps</span>
+      <span class="pill"><b>9</b> override paths</span>
+      <span class="pill p1">🚨 <b>5</b> P1</span>
+      <span class="pill p2">⚠️ <b>8</b> P2</span>
+      <span class="pill p3">ℹ️ <b>5</b> P3</span>
+      <span class="pill"><b>4</b> unaudited mutations</span>
+    </div>
+    <nav class="toc">
+      <a href="#flow">Flow diagram</a>
+      <a href="#stores">Stores</a>
+      <a href="#matrix">Field ownership</a>
+      <a href="#gaps">Gap list</a>
+      <a href="#override">Override matrix</a>
+      <a href="#audit">Audit coverage</a>
+      <a href="#waves">Remediation waves</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════════ 1. FLOW DIAGRAM ═══════════════ -->
+<section id="flow">
+  <h2><span class="num">01</span> V2 registration flow — sources → endpoints → stores → outcomes</h2>
+  <p class="lede">
+    The structural inversion behind every V2-specific gap: <b>V1 starts from a Position ID the worker
+    selects</b>, so it always has an ADP identity. <b>V2 starts from a phone the worker types</b>, and
+    only acquires an ADP identity if that phone happens to be populated in the roster CSV.
+    Red = gap. Amber = conditional / lossy path.
+  </p>
+
+  <div class="diagram-wrap">
+  <svg viewBox="0 0 1240 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="V2 registration data flow diagram">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#586173"/>
+      </marker>
+      <marker id="ahr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff3b30"/>
+      </marker>
+      <marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#16c060"/>
+      </marker>
+      <marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffb020"/>
+      </marker>
+      <style>
+        .bx{fill:#1c2128;stroke:#2a3038;stroke-width:1;rx:8;}
+        .bx-src{fill:rgba(59,130,246,0.12);stroke:#3b82f6;}
+        .bx-ep{fill:#1c2128;stroke:#3f4855;}
+        .bx-bad{fill:rgba(255,59,48,0.13);stroke:#ff3b30;stroke-width:1.5;}
+        .bx-warn{fill:rgba(255,176,32,0.12);stroke:#ffb020;stroke-width:1.4;}
+        .bx-ok{fill:rgba(22,192,96,0.11);stroke:#16c060;}
+        .bx-store{fill:#22272e;stroke:#4a5461;}
+        .t{fill:#f2f4f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;font-weight:600;}
+        .tm{fill:#9aa4b0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10px;font-weight:400;}
+        .tb{fill:#ff3b30;font-family:-apple-system,'Segoe UI',sans-serif;font-size:10px;font-weight:700;}
+        .tw{fill:#ffb020;font-family:-apple-system,'Segoe UI',sans-serif;font-size:10px;font-weight:700;}
+        .tg{fill:#16c060;font-family:-apple-system,'Segoe UI',sans-serif;font-size:10px;font-weight:700;}
+        .col{fill:#6b7280;font-family:-apple-system,'Segoe UI',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.2px;}
+        .ln{stroke:#586173;stroke-width:1.3;fill:none;}
+        .ln-r{stroke:#ff3b30;stroke-width:1.6;fill:none;}
+        .ln-g{stroke:#16c060;stroke-width:1.4;fill:none;}
+        .ln-a{stroke:#ffb020;stroke-width:1.4;fill:none;}
+        .elbl{fill:#6b7280;font-family:-apple-system,'Segoe UI',sans-serif;font-size:9.5px;}
+      </style>
+    </defs>
+
+    <!-- column headers -->
+    <text class="col" x="20"  y="22">SOURCES</text>
+    <text class="col" x="238" y="22">ENDPOINTS</text>
+    <text class="col" x="482" y="22">RESOLUTION LOGIC</text>
+    <text class="col" x="762" y="22">STORES (tenant-only)</text>
+    <text class="col" x="1000" y="22">OUTCOMES</text>
+    <line x1="20" y1="30" x2="1220" y2="30" stroke="#2a3038" stroke-width="1"/>
+
+    <!-- ═══ col 1 : sources ═══ -->
+    <rect class="bx bx-src" x="20" y="52" width="182" height="50" rx="8"/>
+    <text class="t"  x="32" y="72">ADP roster CSV</text>
+    <text class="tm" x="32" y="88">adp-roster/roster_latest.csv</text>
+
+    <rect class="bx bx-src" x="20" y="152" width="182" height="50" rx="8"/>
+    <text class="t"  x="32" y="172">Worker types phone</text>
+    <text class="tm" x="32" y="188">register.html PHONE_FIRST</text>
+
+    <rect class="bx bx-src" x="20" y="252" width="182" height="50" rx="8"/>
+    <text class="t"  x="32" y="272">Twilio Verify (OTP)</text>
+    <text class="tm" x="32" y="288">start / check_verification</text>
+
+    <rect class="bx bx-src" x="20" y="352" width="182" height="50" rx="8"/>
+    <text class="t"  x="32" y="372">Supervisor portal</text>
+    <text class="tm" x="32" y="388">require_portal_auth :1913</text>
+
+    <rect class="bx bx-src" x="20" y="452" width="182" height="50" rx="8"/>
+    <text class="t"  x="32" y="472">supervisors.yaml</text>
+    <text class="tm" x="32" y="488">file edit + redeploy only</text>
+
+    <!-- ═══ col 2 : endpoints ═══ -->
+    <rect class="bx bx-ep" x="238" y="46" width="206" height="52" rx="8"/>
+    <text class="t"  x="250" y="66">POST /api/register-</text>
+    <text class="t"  x="250" y="80">phone-lookup</text>
+    <text class="tm" x="250" y="93">function_app.py:1675</text>
+
+    <rect class="bx bx-ep" x="238" y="152" width="206" height="50" rx="8"/>
+    <text class="t"  x="250" y="172">POST /api/register-start</text>
+    <text class="tm" x="250" y="188">:1461 · flag + pilot allowlist</text>
+
+    <rect class="bx bx-ep" x="238" y="252" width="206" height="50" rx="8"/>
+    <text class="t"  x="250" y="272">POST /api/register-v2</text>
+    <text class="tm" x="250" y="288">:1718 · the V2 bind path</text>
+
+    <rect class="bx bx-ep" x="238" y="352" width="206" height="50" rx="8"/>
+    <text class="t"  x="250" y="372">POST /api/portal-invite</text>
+    <text class="tm" x="250" y="388">:3078 → phone_override</text>
+
+    <rect class="bx bx-ep" x="238" y="452" width="206" height="50" rx="8"/>
+    <text class="t"  x="250" y="472">portal-role / -shift /</text>
+    <text class="t"  x="250" y="486">-phone / -deactivate</text>
+
+    <!-- ═══ col 3 : resolution ═══ -->
+    <rect class="bx bx-bad" x="482" y="46" width="240" height="62" rx="8"/>
+    <text class="tb" x="494" y="63">G-01 · ADP-ONLY LOOKUP</text>
+    <text class="t"  x="494" y="79">lookup_by_phone</text>
+    <text class="tm" x="494" y="94">adp_roster.py:191-194 · last-10</text>
+    <text class="tm" x="494" y="104">never reads WorkerPhones</text>
+
+    <rect class="bx bx-ok" x="482" y="140" width="240" height="52" rx="8"/>
+    <text class="tg" x="494" y="157">FOUND — real ADP identity</text>
+    <text class="tm" x="494" y="172">id_key = person.key</text>
+    <text class="tm" x="494" y="184">wid = pseudonym(position_id)</text>
+
+    <rect class="bx bx-bad" x="482" y="212" width="240" height="62" rx="8"/>
+    <text class="tb" x="494" y="229">NOT FOUND → ORPHAN BRANCH</text>
+    <text class="tm" x="494" y="244">id_key = &quot;&quot;  ·  name = client text</text>
+    <text class="tm" x="494" y="256">wid = pseudonym(PHONE)</text>
+    <text class="tm" x="494" y="268">function_app.py:1772-1776</text>
+
+    <rect class="bx bx-bad" x="482" y="300" width="240" height="60" rx="8"/>
+    <text class="tb" x="494" y="317">G-03 · bind_phone</text>
+    <text class="tm" x="494" y="332">position_id = id_key or &quot;&quot;</text>
+    <text class="tm" x="494" y="344">tagstore.py:1469 · blanks a good</text>
+    <text class="tm" x="494" y="355">stored link on re-registration</text>
+
+    <rect class="bx bx-warn" x="482" y="386" width="240" height="58" rx="8"/>
+    <text class="tw" x="494" y="403">G-09 · phone_override auto-clear</text>
+    <text class="tm" x="494" y="418">fired from a READ (phone_for_key)</text>
+    <text class="tm" x="494" y="430">adp_roster.py:170-173 · no audit row</text>
+
+    <rect class="bx bx-warn" x="482" y="464" width="240" height="58" rx="8"/>
+    <text class="tw" x="494" y="481">G-16 · stub RK collision</text>
+    <text class="tm" x="494" y="496">stub_&lt;position_id&gt; written by two</text>
+    <text class="tm" x="494" y="508">fns with disjoint fields (no worker_id)</text>
+
+    <rect class="bx bx-warn" x="482" y="546" width="240" height="54" rx="8"/>
+    <text class="tw" x="494" y="563">G-13 · 7-day TTL sweep</text>
+    <text class="tm" x="494" y="578">SHIFT_OVERRIDE_TTL_DAYS = 7</text>
+    <text class="tm" x="494" y="590">timer :3924 → clears primary_shift</text>
+
+    <!-- ═══ col 4 : stores ═══ -->
+    <rect class="bx bx-store" x="762" y="46" width="196" height="46" rx="8" stroke="#16c060"/>
+    <text class="t"  x="774" y="65">WorkerPhones</text>
+    <text class="tm" x="774" y="80">RK = safe(phone) | stub_&lt;pid&gt;</text>
+
+    <rect class="bx bx-store" x="762" y="112" width="196" height="46" rx="8" stroke="#a855f7"/>
+    <text class="t"  x="774" y="131">WorkerMap</text>
+    <text class="tm" x="774" y="146">RK = safe(worker_id)</text>
+
+    <rect class="bx bx-store" x="762" y="178" width="196" height="46" rx="8" stroke="#ec4899"/>
+    <text class="t"  x="774" y="197">RegistrationAudit</text>
+    <text class="tm" x="774" y="212">PK yyyymm · append-only</text>
+
+    <rect class="bx bx-store" x="762" y="244" width="196" height="50" rx="8" stroke="#14b8a6"/>
+    <text class="t"  x="774" y="263">ShiftOverrides</text>
+    <text class="tm" x="774" y="278">RK &lt;worker_id&gt;_&lt;plant_date&gt;</text>
+    <text class="tb" x="774" y="290">G-14 · holds cleartext name</text>
+
+    <rect class="bx bx-store" x="762" y="314" width="196" height="46" rx="8" stroke="#f97316"/>
+    <text class="t"  x="774" y="333">WorkerAliases</text>
+    <text class="tm" x="774" y="348">PK canonical pid · RK alias_hash</text>
+
+    <rect class="bx bx-store" x="762" y="380" width="196" height="46" rx="8" stroke="#3b82f6"/>
+    <text class="t"  x="774" y="399">Events (DO-bound)</text>
+    <text class="tm" x="774" y="414">actor = pseudonym ONLY</text>
+
+    <!-- ═══ col 5 : outcomes ═══ -->
+    <rect class="bx bx-bad" x="998" y="46" width="222" height="66" rx="8"/>
+    <text class="tb" x="1010" y="63">G-02 · THE HEADLINE</text>
+    <text class="t"  x="1010" y="79">localStorage hpt.scan.*</text>
+    <text class="tm" x="1010" y="93">operator · worker_id · device_token</text>
+    <text class="tm" x="1010" y="105">position_id NEVER WRITTEN on V2</text>
+
+    <rect class="bx bx-bad" x="998" y="132" width="222" height="62" rx="8"/>
+    <text class="tb" x="1010" y="149">Deactivation gate BYPASSED</text>
+    <text class="tm" x="1010" y="164">/api/scan_event reads body</text>
+    <text class="tm" x="1010" y="176">[position_id] :1261-1268</text>
+    <text class="tm" x="1010" y="188">→ empty → scan allowed</text>
+
+    <rect class="bx bx-bad" x="998" y="214" width="222" height="58" rx="8"/>
+    <text class="tb" x="1010" y="231">G-11 · pseudonym fails OPEN</text>
+    <text class="tm" x="1010" y="246">no WORKER_ID_SALT → returns the</text>
+    <text class="tm" x="1010" y="258">raw name  scan_events.py:33-34</text>
+
+    <rect class="bx bx-warn" x="998" y="292" width="222" height="62" rx="8"/>
+    <text class="tw" x="1010" y="309">reports.attributed_shift</text>
+    <text class="tm" x="1010" y="324">1 per-day override · 2 primary_shift</text>
+    <text class="tm" x="1010" y="336">3 first-scan anchor · 4 wall clock</text>
+    <text class="tm" x="1010" y="348">reports.py:663-668</text>
+
+    <rect class="bx bx-warn" x="998" y="374" width="222" height="58" rx="8"/>
+    <text class="tw" x="1010" y="391">Portal Workers tab</text>
+    <text class="tm" x="1010" y="406">orphan rows fall back to last-4</text>
+    <text class="tm" x="1010" y="418">match :2683-2693 · adp_role blank</text>
+
+    <rect class="bx bx-bad" x="998" y="452" width="222" height="58" rx="8"/>
+    <text class="tb" x="1010" y="469">G-04 / G-10 · split identity</text>
+    <text class="tm" x="1010" y="484">3 readers take a raw first match;</text>
+    <text class="tm" x="1010" y="496">2 live rows per worker is legal</text>
+
+    <!-- ═══ connectors: col1 → col2 ═══ -->
+    <path class="ln" d="M 202 77  H 220 V 72 H 238" marker-end="url(#ah)"/>
+    <path class="ln" d="M 202 177 H 238" marker-end="url(#ah)"/>
+    <path class="ln" d="M 202 177 H 220 V 72 H 238" marker-end="url(#ah)"/>
+    <path class="ln" d="M 202 277 H 220 V 277 H 238" marker-end="url(#ah)"/>
+    <path class="ln" d="M 202 377 H 238" marker-end="url(#ah)"/>
+    <path class="ln" d="M 202 477 H 238" marker-end="url(#ah)"/>
+
+    <!-- col2 → col3 -->
+    <path class="ln-r" d="M 444 72 H 482" marker-end="url(#ahr)"/>
+    <path class="ln-r" d="M 444 277 H 462 V 90 H 482" marker-end="url(#ahr)"/>
+    <text class="elbl" x="448" y="264">re-runs the same ADP-only lookup :1764</text>
+    <path class="ln-a" d="M 444 377 H 462 V 410 H 482" marker-end="url(#aha)"/>
+    <path class="ln-a" d="M 444 390 H 462 V 490 H 482" marker-end="url(#aha)"/>
+    <path class="ln-a" d="M 444 490 H 466 V 570 H 482" marker-end="url(#aha)"/>
+
+    <!-- col3 internal: lookup → found / not found -->
+    <path class="ln-g" d="M 560 108 V 140" marker-end="url(#ahg)"/>
+    <text class="tg" x="566" y="128">found</text>
+    <path class="ln-r" d="M 660 108 V 212" marker-end="url(#ahr)"/>
+    <text class="tb" x="666" y="150">blank ADP</text>
+    <text class="tb" x="666" y="162">phone cell</text>
+    <text class="tb" x="666" y="174">→ orphan</text>
+    <path class="ln-g" d="M 540 192 V 300" marker-end="url(#ahg)"/>
+    <path class="ln-r" d="M 620 274 V 300" marker-end="url(#ahr)"/>
+
+    <!-- col3 → col4 -->
+    <path class="ln-r" d="M 722 330 H 742 V 69 H 762" marker-end="url(#ahr)"/>
+    <path class="ln" d="M 722 340 H 738 V 135 H 762" marker-end="url(#ah)"/>
+    <path class="ln" d="M 722 350 H 734 V 201 H 762" marker-end="url(#ah)"/>
+    <path class="ln-a" d="M 722 570 H 748 V 269 H 762" marker-end="url(#aha)"/>
+    <path class="ln-a" d="M 722 415 H 730 V 337 H 762" marker-end="url(#aha)"/>
+
+    <!-- col4 → col5 -->
+    <path class="ln-r" d="M 958 69 H 978 V 79 H 998" marker-end="url(#ahr)"/>
+    <path class="ln-r" d="M 958 79 H 974 V 163 H 998" marker-end="url(#ahr)"/>
+    <path class="ln-r" d="M 958 403 H 974 V 243 H 998" marker-end="url(#ahr)"/>
+    <path class="ln-a" d="M 958 269 H 984 V 323 H 998" marker-end="url(#aha)"/>
+    <path class="ln-a" d="M 958 88 H 990 V 403 H 998" marker-end="url(#aha)"/>
+    <path class="ln-r" d="M 958 92 H 966 V 481 H 998" marker-end="url(#ahr)"/>
+
+    <!-- V1 comparison strip -->
+    <rect class="bx bx-ok" x="20" y="560" width="440" height="112" rx="8"/>
+    <text class="tg" x="34" y="580">V1 (legacy) — for contrast</text>
+    <text class="tm" x="34" y="598">directory() ships names + Position IDs to the browser,</text>
+    <text class="tm" x="34" y="612">never phones (adp_roster.py:133-139). Worker PICKS a name.</text>
+    <text class="tm" x="34" y="626">→ always has an ADP identity  → pseudonym(position_id)</text>
+    <text class="tm" x="34" y="640">→ writes hpt.scan.position_id (register.html:353) so the</text>
+    <text class="tm" x="34" y="654">   deactivation gate actually works, and passes language_pref.</text>
+    <text class="tm" x="34" y="668">Every V2 gap below descends from that inversion.</text>
+
+    <rect class="bx bx-warn" x="762" y="560" width="458" height="112" rx="8"/>
+    <text class="tw" x="776" y="580">Std 16 (PII pseudonymization) verdict</text>
+    <text class="tm" x="776" y="598">Boundary is CORRECTLY DRAWN: every PII-bearing table is annotated</text>
+    <text class="tm" x="776" y="612">TENANT-ONLY (tagstore.py:67-81); Events.actor carries only the HMAC</text>
+    <text class="tm" x="776" y="626">pseudonym (:1256-1259, :1269); the register page ships names but</text>
+    <text class="tm" x="776" y="640">never phones. No path writes a raw name or phone into Events, Tags,</text>
+    <text class="tm" x="776" y="654">Operations, or anything DO-bound.</text>
+    <text class="tb" x="776" y="668">Two defects: G-11 (fails open, no salt) · G-14 (table annotation is wrong)</text>
+  </svg>
+  </div>
+  <div class="scrollhint">← scroll the diagram horizontally →</div>
+
+  <div class="legend">
+    <span class="k"><span class="sw" style="background:rgba(59,130,246,0.4);border-color:#3b82f6"></span> Source / store</span>
+    <span class="k"><span class="sw" style="background:rgba(255,59,48,0.35);border-color:#ff3b30"></span> Gap — P1 / silent failure</span>
+    <span class="k"><span class="sw" style="background:rgba(255,176,32,0.35);border-color:#ffb020"></span> Conditional / lossy path</span>
+    <span class="k"><span class="sw" style="background:rgba(22,192,96,0.35);border-color:#16c060"></span> Correct path</span>
+  </div>
+</section>
+
+<!-- ═══════════════ 2. STORE INVENTORY ═══════════════ -->
+<section id="stores">
+  <h2><span class="num">02</span> Store inventory — 8 stores</h2>
+  <p class="lede">Every backing store in the worker-identity data plane, with its key scheme and declared residency.</p>
+  <div class="stores-grid" id="storesGrid"></div>
+</section>
+
+<!-- ═══════════════ 3. FIELD MATRIX ═══════════════ -->
+<section id="matrix">
+  <h2><span class="num">03</span> Field-ownership matrix</h2>
+  <p class="lede">
+    Precedence reads <b>highest → lowest</b>. &ldquo;Silent default&rdquo; means the code substitutes a value with
+    no log line and no audit row. Click any column header to sort; rows are colour-coded by store.
+  </p>
+  <div class="controls">
+    <span class="ctl-label">Store</span>
+    <button class="btn on" data-store="all">All</button>
+    <button class="btn" data-store="adp">ADP roster</button>
+    <button class="btn" data-store="wp">WorkerPhones</button>
+    <button class="btn" data-store="wm">WorkerMap</button>
+    <button class="btn" data-store="wa">WorkerAliases</button>
+    <button class="btn" data-store="so">ShiftOverrides</button>
+    <button class="btn" data-store="yml">supervisors.yaml</button>
+    <button class="btn" data-store="ls">localStorage</button>
+    <button class="btn" data-store="der">derived</button>
+    <button class="btn" id="gapOnly">Gaps only</button>
+    <input type="search" id="fSearch" placeholder="Filter fields…" aria-label="Filter fields">
+  </div>
+  <div class="tbl-wrap matrix-wrap">
+    <table class="matrix" id="matrixTbl">
+      <thead>
+        <tr>
+          <th data-k="name">Field <span class="arrow">▼</span></th>
+          <th data-k="storeLabel">Source of truth <span class="arrow">▼</span></th>
+          <th data-k="also">Also stored in <span class="arrow">▼</span></th>
+          <th data-k="writer">Written by <span class="arrow">▼</span></th>
+          <th data-k="reader">Read by <span class="arrow">▼</span></th>
+          <th data-k="prec">Precedence on disagreement <span class="arrow">▼</span></th>
+          <th data-k="ovr">Who can override <span class="arrow">▼</span></th>
+          <th data-k="pii">Std 16 (PII) <span class="arrow">▼</span></th>
+          <th data-k="gapsort">Known gap <span class="arrow">▼</span></th>
+        </tr>
+      </thead>
+      <tbody id="matrixBody"></tbody>
+    </table>
+  </div>
+  <div class="empty" id="matrixEmpty" style="display:none">No fields match that filter.</div>
+</section>
+
+<!-- ═══════════════ 4. GAPS ═══════════════ -->
+<section id="gaps">
+  <h2><span class="num">04</span> Gap list — 18 findings</h2>
+  <p class="lede">
+    <b>🚨 P1</b> = silent data corruption or a bypassed control · <b>⚠️ P2</b> = wrong data surfaced to
+    supervisors · <b>ℹ️ P3</b> = dead field / missing audit.
+  </p>
+  <div class="controls">
+    <span class="ctl-label">Severity</span>
+    <button class="btn on" data-sev="all">All 18</button>
+    <button class="btn p1" data-sev="P1">🚨 P1 · 5</button>
+    <button class="btn p2" data-sev="P2">⚠️ P2 · 8</button>
+    <button class="btn p3" data-sev="P3">ℹ️ P3 · 5</button>
+    <span class="ctl-label" style="margin-left:8px">Sort</span>
+    <button class="btn on" data-gsort="sev">Severity</button>
+    <button class="btn" data-gsort="id">Gap ID</button>
+    <button class="btn" data-gsort="wave">Wave</button>
+  </div>
+  <div class="gaps" id="gapGrid"></div>
+</section>
+
+<!-- ═══════════════ 5. OVERRIDE MATRIX ═══════════════ -->
+<section id="override">
+  <h2><span class="num">05</span> Override matrix — field × role</h2>
+  <p class="lede">
+    <b>Worker</b> = the person registering on their phone. <b>Supervisor</b> = authenticated via
+    <code>require_portal_auth</code> (<code>function_app.py:1913</code>) — Entra SSO <i>or</i> the
+    <code>hpt_sup_session</code> phone cookie. <b>HR / ADP</b> = out-of-band, via the SFTP roster drop.
+    <b>System</b> = automated. &nbsp;<span class="yes">✔</span> can change ·
+    <span class="ind">◐</span> indirect · <span class="no">✗</span> cannot · <span class="dash">—</span> n/a.
+  </p>
+  <div class="ovr-wrap">
+    <table class="ovr">
+      <thead>
+        <tr><th>Field</th><th>Worker</th><th>Supervisor</th><th>HR / ADP</th><th>System</th><th style="text-align:left">Audit trail</th></tr>
+      </thead>
+      <tbody id="ovrBody"></tbody>
+    </table>
+  </div>
+  <div class="verdict" style="margin-top:12px">
+    <h4>Nobody can override, from any interface</h4>
+    <p><code>worker_id</code> · <code>bound_at</code> · <code>first_seen</code>/<code>last_seen</code> ·
+    <code>role_changed_*</code> · <code>phone_override_*</code> timestamps · <code>stub</code></p>
+  </div>
+</section>
+
+<!-- ═══════════════ 6. AUDIT COVERAGE ═══════════════ -->
+<section id="audit">
+  <h2><span class="num">06</span> <code>RegistrationAudit</code> coverage — 4 untracked mutations</h2>
+  <p class="lede">When something looks wrong, these four leave no record of what changed it.</p>
+  <div class="two-col">
+    <div class="tbl-wrap">
+      <table class="audit">
+        <thead><tr><th style="cursor:default">Mutation</th><th style="cursor:default">Function</th><th style="cursor:default">Audited?</th></tr></thead>
+        <tbody id="auditBody"></tbody>
+      </table>
+    </div>
+    <div class="verdict">
+      <h4>Std 16 (PII pseudonymization) verdict</h4>
+      <p>The boundary itself is <b>correctly drawn</b>:</p>
+      <ul>
+        <li>Every PII-bearing table is annotated TENANT-ONLY (<code>tagstore.py:67-81</code>)</li>
+        <li><code>Events.actor</code> carries only the HMAC pseudonym (<code>function_app.py:1256-1259</code>, <code>:1269</code>)</li>
+        <li>The register page ships names but <b>never phones</b> to the browser (<code>adp_roster.py:134-135</code>)</li>
+        <li>No path was found that writes a raw name or phone into <code>Events</code>, <code>Tags</code>, <code>Operations</code>, or anything DO-bound</li>
+      </ul>
+      <p style="margin-top:10px">Two defects: <a class="gapref" href="#G-11">G-11</a> fails open with no salt ·
+      <a class="gapref g2" href="#G-14">G-14</a> a table&rsquo;s own PII annotation is wrong.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 7. WAVES ═══════════════ -->
+<section id="waves">
+  <h2><span class="num">07</span> Recommended remediation sequence</h2>
+  <p class="lede">Three waves, ordered by blast radius and by what can ship without a design decision.</p>
+  <div class="waves">
+
+    <div class="wave w1">
+      <div class="wave-hd"><div class="wave-n">1</div><h3>Stop the bleeding</h3></div>
+      <div class="when">This week · ~40 lines total · the live V2 pilot&rsquo;s blast radius</div>
+      <ol>
+        <li><b><a class="gapref" href="#G-02">G-02</a> — re-key the deactivation gate to <code>worker_id</code></b>
+          (<code>function_app.py:1261-1268</code>). A deactivated worker scanning is a control that silently
+          does not work; it is also the cheapest fix and needs no data migration.</li>
+        <li><b><a class="gapref" href="#G-01">G-01</a> + <a class="gapref" href="#G-03">G-03</a> together</b> —
+          add the <code>WorkerPhones</code> fallback to the V2 lookup and make <code>bind_phone</code> refuse to
+          blank a stored <code>position_id</code>. Fixing G-01 alone still leaves G-03 able to corrupt rows on a
+          re-registration; fixing G-03 alone still orphans first-time V2 registrants. Ship as one change with a
+          test for the blank-ADP-phone shape (ADP row exists, phone cell empty).</li>
+        <li><b>Reconcile before shipping</b> — scan <code>WorkerPhones</code> for rows with an empty
+          <code>position_id</code> and a non-empty phone, and for Position IDs owning &gt;1 non-stub row
+          (<a class="gapref g3" href="#G-10">G-10</a>). Fixing the code does not repair rows already written;
+          <code>scripts/heal_orphaned_workers.py</code> and
+          <code>scripts/backfill_worker_position_ids_2026-07-11.py</code> are the existing precedent.</li>
+      </ol>
+    </div>
+
+    <div class="wave w2">
+      <div class="wave-hd"><div class="wave-n">2</div><h3>Controls and consistency</h3></div>
+      <div class="when">Next sprint · mechanical, no design decisions needed</div>
+      <ol>
+        <li><b><a class="gapref" href="#G-11">G-11</a></b> — make the missing-salt path fail closed or alarm.
+          Independent of everything else and a genuine residency exposure.</li>
+        <li><b><a class="gapref g2" href="#G-04">G-04</a></b> — route the three remaining raw-first-match readers
+          through <code>_worker_row_for_position</code>. Mechanical, and it removes a whole class of read/write
+          divergence.</li>
+        <li><b><a class="gapref g2" href="#G-16">G-16</a></b> — populate <code>worker_id</code> on
+          phone-override-created stubs.</li>
+        <li><b><a class="gapref g3" href="#G-17">G-17</a></b> — pass <code>language_pref</code> through in
+          <code>register_v2</code>. One argument.</li>
+        <li>Add the three missing <code>RegistrationAudit</code> writes: merge
+          (<a class="gapref g3" href="#G-08">G-08</a>), per-day override, phone-override auto-clear
+          (<a class="gapref g2" href="#G-09">G-09</a>).</li>
+      </ol>
+    </div>
+
+    <div class="wave w3">
+      <div class="wave-hd"><div class="wave-n">3</div><h3>Design decisions</h3></div>
+      <div class="when">Needs a product call, not just code</div>
+      <ol>
+        <li><b><a class="gapref" href="#G-13">G-13</a></b> — splitting &ldquo;home shift&rdquo; from
+          &ldquo;temporary override&rdquo; is a product decision about what a supervisor&rsquo;s shift assignment
+          <i>means</i>. Already has a filed proposal; this map is more evidence for it, not a new finding.</li>
+        <li><b><a class="gapref g2" href="#G-12">G-12</a></b> — decide whether ADP should carry a
+          role/department at all. If yes, add the <code>_SYN</code> synonyms and the roster columns; if no,
+          delete the three dead fallbacks so the code stops implying a source that does not exist.</li>
+        <li><b><a class="gapref g2" href="#G-14">G-14</a></b> — drop <code>name</code>/<code>position_id</code>
+          from <code>ShiftOverrides</code> (preferred) or correct the residency comment. Blocks nothing today,
+          but the wrong comment will be read as a migration authorization.</li>
+        <li><b><a class="gapref g2" href="#G-05">G-05</a> / <a class="gapref g3" href="#G-07">G-07</a></b> —
+          self-declared names and nicknames need a supervisor correction path and a provenance flag before V2
+          goes past the pilot allowlist.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="notrec">
+    <b>Explicitly not recommended:</b> do not attempt <a class="gapref g3" href="#G-10">G-10</a>
+    (one row per phone → one row per worker) as a schema change until Waves 1–2 land. The RowKey is the phone
+    across <code>bind_phone</code>, <code>get_binding_by_phone</code>, and every stub convention; re-keying it
+    mid-pilot would land on top of the DO Postgres migration (GA-WIP-062) already in flight.
+  </div>
+</section>
+
+</main>
+
+<a href="#" class="toplink" title="Back to top">↑</a>
+
+<footer>
+  V2 Registration + Worker Data — Field Ownership &amp; Flow Map · 2026-07-27 · read-only analysis, no fixes applied<br>
+  Line citations reference the main working tree; <code>.worktrees/</code> copies are offset (~+146 in <code>function_app.py</code>).<br>
+  Source: <code>outputs/v2-data-flow-map-2026-07-27.md</code> · Worker identifiers in examples are anonymized.
+</footer>
+
+<script>
+/* ═══════════════ DATA ═══════════════ */
+
+var STORES = [
+  {c:"adp", nm:"ADP roster CSV", back:"Azure Blob adp-roster/roster_latest.csv (adp_roster.py:24-25)", key:"none (row order)", res:"Tenant-only, PII (adp_roster.py:6-8)"},
+  {c:"wp",  nm:"WorkerPhones", back:"Azure Table (tagstore.py:71)", key:"PK phone, RK _safe_key(phone) or stub_&lt;position_id&gt; (:1468, :1682)", res:"TENANT-ONLY, never to DO (tagstore.py:70)"},
+  {c:"wm",  nm:"WorkerMap", back:"Azure Table (tagstore.py:69)", key:"PK worker, RK _safe_key(worker_id) (:1268)", res:"TENANT-ONLY (tagstore.py:67-68)"},
+  {c:"wa",  nm:"WorkerAliases", back:"Azure Table (tagstore.py:81)", key:"PK canonical position_id, RK alias_hash (:1350)", res:"TENANT-ONLY, holds cleartext alias (tagstore.py:78-81)"},
+  {c:"so",  nm:"ShiftOverrides", back:"Azure Table (tagstore.py:76)", key:"PK override, RK &lt;worker_id&gt;_&lt;plant_date&gt; (:1782)", res:"TENANT-ONLY (tagstore.py:73-75)"},
+  {c:"ra",  nm:"RegistrationAudit", back:"Azure Table (tagstore.py:72)", key:"PK yyyymm, RK &lt;ts&gt;_&lt;phone&gt;_&lt;action&gt; (:1529-1530)", res:"TENANT-ONLY (tagstore.py:70)"},
+  {c:"yml", nm:"supervisors.yaml", back:"file, Pydantic-validated (supervisor_roster.py:32-49)", key:"phone", res:"Tenant-only config"},
+  {c:"ls",  nm:"Phone localStorage", back:"browser", key:"string keys hpt.scan.* (register.html:350-354)", res:"Device-local"}
+];
+
+var LBL = {adp:"ADP roster", wp:"WorkerPhones", wm:"WorkerMap", wa:"WorkerAliases",
+           so:"ShiftOverrides", ra:"RegistrationAudit", yml:"supervisors.yaml",
+           ls:"localStorage", der:"derived"};
+
+/* g = gap ids ; s = store colour key ; sot = source-of-truth prose */
+var FIELDS = [
+  {name:"key / position_id", store:"adp", sot:"ADP roster CSV (adp_roster.py:74)",
+   also:"WorkerPhones.position_id (:1469); ShiftOverrides.position_id (:1794); WorkerAliases PK (:1350); RegistrationAudit.position_id",
+   writer:"/api/register-check → bind_phone (:1609); /api/register-v2 (:1780); create_stub_for_shift_override (tagstore.py:1684); set_worker_phone_override stub (:1922)",
+   reader:"/api/portal-workers (:2604, :2609); /api/portal-role (:2764); /api/portal-shift (:2855); /api/scan_event active gate (:1261)",
+   prec:"ADP CSV is authoritative for <i>existence</i>; WorkerPhones.position_id is authoritative for <i>joins</i>",
+   ovr:"Supervisor implicitly, via merge (workers_bp.py:95)",
+   pii:"ok|Direct identifier — tenant-only. Never in Events. Compliant.", g:["G-01","G-02","G-03"]},
+
+  {name:"worker_id (pseudonym)", store:"der", sot:"derived: worker_pseudonym(position_id, salt) (scan_events.py:22-36)",
+   also:"WorkerPhones.worker_id (:1469); WorkerMap.worker_id (:1268); ShiftOverrides.worker_id (:1793); Events.actor; localStorage hpt.scan.worker_id (register.html:351)",
+   writer:"/api/register-check (:1553, :1582, :1605); /api/register-v2 (:1769, :1775); /api/portal-shift stub (:2879)",
+   reader:"reports.attributed_shift via ev[actor] (reports.py:681); worker_primary_shift_map (tagstore.py:1749-1761); get_worker_name (:1289)",
+   prec:"Whatever bind_phone last wrote for that phone row wins",
+   ovr:"Nobody directly — derivation only",
+   pii:"bad|This IS the Std 16 pseudonym. HMAC-SHA256, non-reversible with the salt. Compliant <i>when salt is set</i> — returns the RAW NAME if salt is empty (scan_events.py:33-34).", g:["G-02","G-04","G-11"]},
+
+  {name:"full_name / name", store:"adp", sot:"ADP roster CSV — first + &quot; &quot; + last (adp_roster.py:73-75)",
+   also:"WorkerPhones.name (:1469); WorkerMap.name (:1269); ShiftOverrides.name (:1795); WorkerAliases.alias_display (:1352); localStorage hpt.scan.operator (register.html:350)",
+   writer:"bind_phone (tagstore.py:1469); upsert_worker (:1269); create_stub_for_shift_override (:1686)",
+   reader:"/api/portal-workers canonical (:2648); portal_view.py:1479",
+   prec:"ADP full_name wins in /api/portal-workers ONLY if WorkerPhones.name is empty (:2648) — otherwise the stored name wins",
+   ovr:"Supervisor via merge/alias (workers_bp.py:89); worker via V2 name body field (:1744, :1768)",
+   pii:"ok|PII — tenant-only. Correct: never written to Events.", g:["G-05","G-06"]},
+
+  {name:"first, last, middle", store:"adp", sot:"ADP roster CSV (adp_roster.py:74)",
+   also:"nowhere — discarded after full_name is composed",
+   writer:"roster parse only", reader:"parse_roster internal", prec:"n/a", ovr:"n/a",
+   pii:"ok|PII, tenant-only, transient. Compliant.",
+   g:[], gapNote:"<code>middle</code> is parsed (adp_roster.py:31, :72) and never used anywhere — dead field"},
+
+  {name:"display_name (nickname)", store:"wp", sot:"Worker self-entry, V2 only (function_app.py:1743)",
+   also:"WorkerPhones.display_name (:1471); WorkerMap.display_name (:1271)",
+   writer:"/api/register-v2 only (:1781, :1783)",
+   reader:"/api/portal-workers (:2649-2650); get_display_name (tagstore.py:1302)",
+   prec:"The worker&rsquo;s V2 entry always wins — no supervisor write path exists",
+   ovr:"Worker only", pii:"ok|PII (free text). Tenant-only. Compliant.", g:["G-07"]},
+
+  {name:"alias_display / alias_hash", store:"wa", sot:"Supervisor curation (workers_bp.py:89)",
+   also:"WorkerAliases (tagstore.py:1350-1353)",
+   writer:"/api/portal-worker-merge (workers_bp.py:89, :95)",
+   reader:"lookup_by_alias (tagstore.py:1368)",
+   prec:"Multi-canonical conflict → deterministic first-by-PK, logged as a warning (tagstore.py:1380-1385)",
+   ovr:"Supervisor only", pii:"ok|Cleartext name in a tenant-only table — declared (tagstore.py:78-81). Compliant.", g:["G-08"]},
+
+  {name:"sub_id", store:"wp", sot:"Subcontractors table",
+   also:"WorkerPhones.position_id (bare uuid) (function_app.py:2819-2822)",
+   writer:"/api/register-check sub branch (:1586)", reader:"_resolve_worker_key (:2832)",
+   prec:"sub: prefix stripped for storage; the portal sends it prefixed",
+   ovr:"Supervisor", pii:"ok|Tenant-only. Compliant.",
+   g:[], gapNote:"GA-WIP-158 open: sub <code>worker_id</code> derivation unverified (:2826-2830)"},
+
+  {name:"phone (ADP)", store:"adp", sot:"ADP roster CSV (adp_roster.py:75)", also:"—",
+   writer:"ADP SFTP drop only", reader:"phone_for_key (:157-160); lookup_by_phone (:191-194)",
+   prec:"<b>2nd</b> — below phone_override (adp_roster.py:145-149)",
+   ovr:"HR / ADP only (out of band)",
+   pii:"ok|Raw PII. Never leaves the server — directory() explicitly excludes it (adp_roster.py:134-135). Compliant.", g:["G-01"]},
+
+  {name:"phone_override", store:"wp", sot:"Supervisor entry",
+   also:"WorkerPhones.phone_override (tagstore.py:1925)",
+   writer:"/api/portal-phone (:2999); /api/portal-invite (:3108)",
+   reader:"phone_for_key (adp_roster.py:165); /api/portal-workers (:2646)",
+   prec:"<b>1st</b> — beats ADP, <i>unless</i> ADP&rsquo;s last-10 digits now match, in which case it <b>auto-clears itself</b> (adp_roster.py:170-173)",
+   ovr:"Supervisor", pii:"ok|Raw PII, tenant-only. Compliant.", g:["G-09"]},
+
+  {name:"phone (bound, E.164)", store:"wp", sot:"Verified OTP phone",
+   also:"WorkerPhones.phone + RowKey (tagstore.py:1468)",
+   writer:"bind_phone (tagstore.py:1468)",
+   reader:"get_binding_by_phone (:1508); /api/portal-workers (:2647)",
+   prec:"The row <b>is keyed on it</b> — a phone change creates a <i>new row</i>, it does not update",
+   ovr:"Worker (by registering a new number)", pii:"ok|Raw PII, tenant-only. Compliant.", g:["G-10"]},
+
+  {name:"phone_override_by / _at", store:"wp", sot:"Supervisor identity + clock (tagstore.py:1926-1927)",
+   also:"WorkerPhones", writer:"set_worker_phone_override (:1926-1927)", reader:"nothing reads them",
+   prec:"n/a", ovr:"Supervisor", pii:"ok|Tenant-only. Compliant.",
+   g:[], gapNote:"Write-only fields — no reader anywhere"},
+
+  {name:"masked (UI phone)", store:"der", sot:"derived mask_phone (adp_roster.py:198-204)",
+   also:"—", writer:"—", reader:"register UI, portal responses (:1707, :3012)",
+   prec:"n/a", ovr:"n/a", pii:"ok|Last-4 only. Compliant.", g:[], gapNote:"—"},
+
+  {name:"wip_role", store:"wp", sot:"<b>WorkerPhones only</b> (tagstore.py:1584)",
+   also:"localStorage hpt.scan.wip_role (register.html:354)",
+   writer:"/api/portal-role (:2777); sub self-register (:1591)",
+   reader:"get_worker_role (tagstore.py:1892); /api/register-check (:1556, :1616); /api/register-v2 (:1778); /api/portal-workers (:2657)",
+   prec:"The stored value beats the (non-existent) ADP value (:1554-1556)",
+   ovr:"Supervisor (/api/portal-role, validated against config.py:68-76)",
+   pii:"ok|Non-PII. Compliant.", g:["G-12"], gapNote:"the ADP fallback it prefers over is <i>always empty</i>"},
+
+  {name:"role_changed_by / _at", store:"wp", sot:"supervisor + clock (tagstore.py:1585-1586)",
+   also:"WorkerPhones", writer:"set_worker_role (:1585-1586)", reader:"nothing reads them",
+   prec:"n/a", ovr:"Supervisor", pii:"ok|Non-PII (holds a supervisor email).",
+   g:[], gapNote:"Write-only"},
+
+  {name:"primary_shift", store:"wp", sot:"WorkerPhones (tagstore.py:1623)", also:"—",
+   writer:"/api/portal-shift (:2857); create_stub_for_shift_override (tagstore.py:1688); bind_phone stub carry-over (:1484-1489)",
+   reader:"worker_primary_shift_map (tagstore.py:1749-1761) → reports.attributed_shift <b>priority 2</b> (reports.py:688-691); /api/portal-workers (:2658)",
+   prec:"<b>1.</b> per-day ShiftOverrides → <b>2.</b> primary_shift → <b>3.</b> first-scan anchor (12 h cap) → <b>4.</b> wall clock (reports.py:663-668)",
+   ovr:"Supervisor", pii:"ok|Non-PII. Compliant.", g:["G-13"], gapNote:"7-day self-destruct"},
+
+  {name:"primary_shift_override_<br>expires_at_utc", store:"wp",
+   sot:"_shift_override_default_expiry() = now + 7 d (tagstore.py:1594, :1645-1648)",
+   also:"WorkerPhones", writer:"set_worker_primary_shift (:1629-1631); stub create (:1693-1695)",
+   reader:"sweep_expired_shift_overrides (:1704), timer at function_app.py:3924",
+   prec:"The sweep unconditionally wins",
+   ovr:"Supervisor can only push it out by re-setting the shift", pii:"ok|Non-PII.", g:["G-13"]},
+
+  {name:"ShiftOverrides.shift<br>(per-day)", store:"so", sot:"Supervisor (function_app.py:2927)",
+   also:"ShiftOverrides", writer:"/api/portal-shift-override (:2927)",
+   reader:"shift_override_map (tagstore.py:1808) → attributed_shift <b>priority 1</b> (reports.py:683-686)",
+   prec:"Highest of all shift signals", ovr:"Supervisor only",
+   pii:"bad|Keyed on the worker_id pseudonym, but ALSO carries name + position_id for the UI (tagstore.py:1794-1795) — PII in a table documented as &ldquo;no PII beyond the pseudonym&rdquo; (:74-75)", g:["G-14"]},
+
+  {name:"active", store:"wp", sot:"WorkerPhones (tagstore.py:1849)", also:"—",
+   writer:"/api/portal-deactivate (:3062-3064)",
+   reader:"scan gate (:1265); /api/portal-workers (:2663, :2674)",
+   prec:"Defaults to <b>True</b> when absent (:2663)", ovr:"Supervisor", pii:"ok|Non-PII.",
+   g:["G-02","G-15"], gapNote:"the gate is bypassable"},
+
+  {name:"stub", store:"wp", sot:"create_stub_for_shift_override / set_worker_phone_override (tagstore.py:1687, :1923)",
+   also:"—", writer:"those two functions",
+   reader:"_worker_row_for_position (:1568); /api/portal-workers (:2613, :2676)",
+   prec:"A real row beats a stub everywhere it is checked", ovr:"System-derived", pii:"ok|Non-PII.", g:["G-16"]},
+
+  {name:"invite_sent_at", store:"wp", sot:"record_invite_sent (tagstore.py:1884)", also:"—",
+   writer:"/api/portal-invite (:3118)", reader:"/api/portal-workers bucketing (:2666, :2678)",
+   prec:"n/a", ovr:"Supervisor", pii:"ok|Non-PII.",
+   g:[], gapNote:"Never cleared on successful registration — an &ldquo;invited&rdquo; bucket row stays stamped"},
+
+  {name:"language_pref", store:"wp", sot:"Worker self-entry (function_app.py:1528-1530)",
+   also:"WorkerPhones.language_pref (tagstore.py:1472-1473)",
+   writer:"/api/register-check <b>only</b> (:1561, :1586, :1609)",
+   reader:"nothing server-side reads it",
+   prec:"Written only when truthy, so a blank leaves the prior value (tagstore.py:1457-1460)",
+   ovr:"Worker", pii:"ok|Non-PII.", g:["G-17"]},
+
+  {name:"bound_by", store:"wp", sot:"literal &quot;self&quot; on every registration path (:1561, :1586, :1609, :1780)",
+   also:"WorkerPhones", writer:"bind_phone (tagstore.py:1470)", reader:"/api/portal-workers (:2660)",
+   prec:"Constant — never anything but &quot;self&quot; in live code", ovr:"Nobody", pii:"ok|Non-PII.",
+   g:["G-18"], gapNote:"the parameter exists but no caller ever passes a supervisor"},
+
+  {name:"bound_at", store:"wp", sot:"utcnow_iso() at bind (tagstore.py:1467, :1470)",
+   also:"WorkerPhones", writer:"bind_phone", reader:"/api/portal-workers (:2661)",
+   prec:"Overwritten on every re-registration", ovr:"Nobody", pii:"ok|Non-PII.",
+   g:[], gapNote:"Re-registering silently resets first-bind provenance"},
+
+  {name:"first_seen / last_seen", store:"wm", sot:"upsert_worker (tagstore.py:1267-1275)",
+   also:"WorkerMap", writer:"upsert_worker", reader:"nothing reads them",
+   prec:"first_seen preserved on upsert (:1275)", ovr:"Nobody", pii:"ok|Non-PII.",
+   g:[], gapNote:"Write-only"},
+
+  {name:"phone, name, scopes,<br>active, consent_at,<br>notes, email", store:"yml",
+   sot:"supervisors.yaml — hand-edited (supervisor_roster.py:33-42)", also:"—",
+   writer:"file edit + redeploy — <b>no endpoint</b>",
+   reader:"find_by_phone (:188), find_by_phone_hash (:196), find_by_email (:211)",
+   prec:"File only", ovr:"File only",
+   pii:"bad|Raw phone in a config file; phone_hash() (:81) is the pseudonym used in audit rows (auth_bp.py:100)", g:[], gapNote:"—"},
+
+  {name:"is_lead, position_id,<br>canonical_name", store:"yml", sot:"supervisors.yaml (supervisor_roster.py:47-49)",
+   also:"—", writer:"file edit",
+   reader:"lead_keys() (:121-132); /api/portal-workers LEAD pill (:2640, :2667)",
+   prec:"File only", ovr:"File only", pii:"ok|Name in config; tenant-only.", g:[], gapNote:"—"},
+
+  {name:"hpt.scan.worker_id", store:"ls", sot:"register.html:351", also:"—",
+   writer:"both register paths", reader:"scan submit (scan_poc.html:1000)",
+   prec:"Guarded by a device_token HMAC (scan_events.py:39-53)", ovr:"Worker (device-local)",
+   pii:"ok|Pseudonym only.", g:[], gapNote:"—"},
+
+  {name:"hpt.scan.device_token", store:"ls", sot:"register.html:352", also:"—",
+   writer:"both register paths", reader:"scan_poc.html:1001",
+   prec:"Verified via verify_device (scan_events.py:49)", ovr:"Worker (device-local)",
+   pii:"ok|Opaque HMAC.", g:[], gapNote:"—"},
+
+  {name:"hpt.scan.position_id", store:"ls", sot:"register.html:353", also:"—",
+   writer:"<b>V1 path only</b> — guarded by if(payload.position_id)",
+   reader:"/api/scan_event active gate (function_app.py:1261)",
+   prec:"<b>Trusted, unsigned</b>", ovr:"Worker — freely editable",
+   pii:"bad|A direct identifier sitting unsigned in browser storage.", g:["G-02"], gapNote:"the headline finding"},
+
+  {name:"hpt.scan.operator", store:"ls", sot:"register.html:350", also:"—",
+   writer:"both register paths", reader:"scan_poc.html:999, :1012",
+   prec:"Freely editable by the worker", ovr:"Worker", pii:"ok|Name, device-local only.",
+   g:[], gapNote:"Name is a free-text client field"},
+
+  {name:"hpt.scan.wip_role", store:"ls", sot:"register.html:354", also:"—",
+   writer:"both paths, when non-empty", reader:"scanner routing / loader redirect (register.html:369-375)",
+   prec:"Client-side only", ovr:"Worker", pii:"ok|Non-PII.",
+   g:[], gapNote:"Stale after a supervisor role change until re-registration"},
+
+  {name:"hpt.scan.lang", store:"ls", sot:"register.html:130, :163", also:"—",
+   writer:"language toggle", reader:"UI only", prec:"—", ovr:"Worker", pii:"ok|Non-PII.",
+   g:[], gapNote:"Never synced to <code>WorkerPhones.language_pref</code>"},
+
+  {name:"LS_STATION / station", store:"ls", sot:"scan_poc.html:998, :1012", also:"—",
+   writer:"worker free-text", reader:"attached to scans", prec:"Fully client-authored",
+   ovr:"Worker", pii:"ok|Non-PII.", g:[], gapNote:"Not in any server-side worker record"},
+
+  {name:"hpt_sup_session cookie", store:"ls", sot:"auth_bp.py:21, :36-40", also:"—",
+   writer:"portal OTP verify (:264)", reader:"_supervisor() (function_app.py:1826); whoami (auth_bp.py:343)",
+   prec:"HttpOnly / Secure / SameSite=Lax, server-validated (:345)", ovr:"—",
+   pii:"ok|Opaque session token. Compliant.", g:[], gapNote:"—"}
+];
+
+var GAPS = [
+ {id:"G-01", sev:"P1", wave:1, title:"V2 phone lookup reads ADP only; a blank ADP phone silently mints an orphan identity.",
+  body:"<code>register_phone_lookup</code> (function_app.py:1700-1712) and <code>register_v2</code> (:1763-1765) both call <code>adp_roster.lookup_by_phone</code>, which matches only against <code>p[phone]</code> from the CSV (adp_roster.py:191-194). Neither consults <code>WorkerPhones.phone</code> or <code>WorkerPhones.phone_override</code>. A worker whose ADP row exists but has an <b>empty phone cell</b> — the live case observed today — falls to the <code>else</code> branch at :1770-1776: <code>id_key = &quot;&quot;</code> and <code>wid = worker_pseudonym(phone_e164, salt)</code>. That is a <i>different</i> pseudonym from the <code>worker_pseudonym(position_id, salt)</code> all their prior scans, their <code>primary_shift</code>, and their <code>wip_role</code> are keyed to.",
+  refs:["function_app.py:1700-1712","function_app.py:1763-1765","function_app.py:1770-1776","adp_roster.py:191-194"],
+  fix:"Add a <code>WorkerPhones</code> fallback lookup (phone → <code>phone_override</code> → the existing row&rsquo;s <code>position_id</code>) before the orphan branch. ~20 lines in <code>register_v2</code> + a lookup helper in <code>tagstore.py</code>.",
+  deps:"<b>Also fixes G-03.</b> Must ship together with G-03 — fixing this alone still leaves G-03 able to corrupt rows on re-registration."},
+
+ {id:"G-02", sev:"P1", wave:1, title:"V2 registration never writes hpt.scan.position_id, so the deactivated-worker scan gate is silently bypassed.",
+  body:"The scan gate reads <code>body[position_id]</code> (function_app.py:1261-1268), which the client sources from <code>localStorage[hpt.scan.position_id]</code>. <code>register.html:353</code> writes that key only under <code>if(payload.position_id)</code> — and the V2 payload (register.html:334-336) has no <code>position_id</code> field at all, because <code>register-v2</code> deliberately does not accept or return one (:1723-1724, :1804-1808). <b>Every worker who registers via V2 can keep scanning after a supervisor deactivates them.</b> <code>/api/portal-deactivate</code> returns <code>ok:true</code> and the portal shows them as inactive.",
+  refs:["function_app.py:1261-1268","register.html:353","register.html:334-336","function_app.py:1723-1724","function_app.py:1804-1808"],
+  fix:"Return <code>position_id</code> in the <code>register-v2</code> response and store it, <b>or</b> re-key the gate on <code>worker_id</code> (which V2 does write and which is HMAC-guarded by <code>device_token</code>). The second is better — it also closes the &ldquo;worker edits their own localStorage&rdquo; hole. ~10 lines.",
+  deps:"None — independent, cheapest fix on the list, no data migration."},
+
+ {id:"G-03", sev:"P1", wave:1, title:"bind_phone overwrites position_id with an empty string, destroying an existing ADP link.",
+  body:"<code>bind_phone</code> builds <code>ent[position_id] = position_id or &quot;&quot;</code> (tagstore.py:1469) and upserts on <code>RowKey = _safe_key(phone)</code> (:1468, :1501). If a worker already has a <code>WorkerPhones</code> row for that phone carrying a good <code>position_id</code>, and they then re-register through V2 while ADP has no phone for them (G-01), <code>position_id</code> is <b>overwritten with the empty string</b>. The row survives, the name survives, but the ADP join is gone — the row becomes one of the &ldquo;orphan <code>WorkerPhones</code> rows&rdquo; the portal already has defensive last-4 matching for (function_app.py:2683-2693).",
+  refs:["tagstore.py:1468","tagstore.py:1469","tagstore.py:1501","function_app.py:2683-2693"],
+  fix:"Make <code>bind_phone</code> never clear a non-empty stored <code>position_id</code> — read-before-write, and only set when the incoming value is truthy. ~6 lines, but needs a test for the legitimate re-key case.",
+  deps:"Ship with <b>G-01</b>. Fixing G-03 alone still orphans first-time V2 registrants."},
+
+ {id:"G-11", sev:"P1", wave:2, title:"worker_pseudonym returns the raw name when WORKER_ID_SALT is unset.",
+  body:"<code>scan_events.py:33-34</code>: <code>if not norm or not salt: return name</code>. This is documented as a staged rollout, but it means a config regression (an empty app setting, a failed Key Vault reference) turns every <code>Events.actor</code> into a cleartext name — the exact value Std 16 / <code>DATA_RESIDENCY.md:15</code> exists to keep out of the DO-bound store. Fails <b>open</b>, silently.",
+  refs:["scan_events.py:33-34","DATA_RESIDENCY.md:15","DATA_RESIDENCY.md:4"],
+  fix:"Fail closed or alarm — refuse to write an event actor when the salt is absent, or emit a startup-time critical alert. Staging is long over (decision dated 2026-06-11).",
+  deps:"Independent of everything else. A genuine residency exposure."},
+
+ {id:"G-13", sev:"P1", wave:3, title:"primary_shift carries a 7-day self-destruct that erases a supervisor's explicit setting with no notice.",
+  body:"<code>SHIFT_OVERRIDE_TTL_DAYS = 7</code> (tagstore.py:1594) is stamped on <i>every</i> <code>set_worker_primary_shift</code> write (:1629-1631), and the daily sweep (function_app.py:3924 → tagstore.py:1704) clears it. Attribution then drops from priority 2 to priority 3/4 (reports.py:663-668), so the same worker&rsquo;s scans move shift lanes with no event anyone sees. Already filed as a proposal (<code>docs/proposals/gov-row-shift-ttl-mass-clear-2026-07-24.md</code>); listed here because it is a <i>field-level precedence</i> gap, not just an ops incident.",
+  refs:["tagstore.py:1594","tagstore.py:1629-1631","tagstore.py:1704","function_app.py:3924","reports.py:663-668"],
+  fix:"Separate &ldquo;assigned home shift&rdquo; (permanent) from &ldquo;temporary override&rdquo; (TTL&rsquo;d) — two fields, or a nullable expiry. Medium: touches writers, the sweep, and the portal UI.",
+  deps:"<b>Needs a product decision</b>, not just code. Has an existing filed proposal."},
+
+ {id:"G-04", sev:"P2", wave:2, title:"Two rows, one worker: the stub/real duplication is resolved inconsistently.",
+  body:"<code>_worker_row_for_position</code> (tagstore.py:1551-1570) prefers the real row over a stub and is used by <code>set_worker_role</code>, <code>set_worker_primary_shift</code>, <code>set_worker_phone_override</code>, <code>_set_worker_active</code>, <code>record_invite_sent</code>, and <code>get_worker_role</code>. But <b>three readers do not use it</b>: <code>_worker_id_for_position</code> (function_app.py:2806-2812) takes a raw first match, the scan active-gate (:1264) takes a raw first match, and <code>merge_worker_identity</code> (tagstore.py:1430) takes a raw first match. A supervisor&rsquo;s shift write can therefore land on the real row while the per-day-override endpoint resolves the <code>worker_id</code> off the stub.",
+  refs:["tagstore.py:1551-1570","function_app.py:2806-2812","function_app.py:1264","tagstore.py:1430"],
+  fix:"Route all six call sites through <code>_worker_row_for_position</code>. ~12 lines, mechanical.",
+  deps:"None. Removes a whole class of read/write divergence."},
+
+ {id:"G-05", sev:"P2", wave:3, title:"V2 lets the client supply the stored name.",
+  body:"<code>register_v2</code> reads <code>name</code> from the request body (function_app.py:1744) and writes it verbatim to <code>WorkerPhones.name</code> and <code>WorkerMap.name</code> when ADP has no match (:1772, :1780, :1782). It is length-capped at 80 chars and nothing else. <code>register-check</code> never does this — every V1 name comes from ADP or the subcontractor table.",
+  refs:["function_app.py:1744","function_app.py:1772","function_app.py:1780","function_app.py:1782"],
+  fix:"Accept it (it is the only way an off-roster worker can register) but flag the row — e.g. a <code>name_source</code> column — so the portal can show &ldquo;self-declared&rdquo;. ~8 lines.",
+  deps:"Pairs with <b>G-07</b>: both need a supervisor correction path before V2 goes past the pilot allowlist."},
+
+ {id:"G-06", sev:"P2", wave:0, title:"full_name drops the middle name and is composed first+last only.",
+  body:"<code>adp_roster.py:73</code> builds <code>full = first + &quot; &quot; + last</code>; <code>middle</code> is parsed (:31, :72) and discarded. Two employees sharing a first+last collide in <code>build_index</code> with an explicit <b>last-wins</b> rule (adp_roster.py:110-113), silently mapping one person&rsquo;s typed name to the other&rsquo;s Position ID.",
+  refs:["adp_roster.py:73","adp_roster.py:31","adp_roster.py:72","adp_roster.py:110-113"],
+  fix:"Detect duplicate normalized names at roster load and log/alert; the alias table (<code>WorkerAliases</code>) is the intended disambiguator but nothing populates it automatically. ~15 lines.",
+  deps:"Unscheduled — not assigned to a wave in the source analysis."},
+
+ {id:"G-09", sev:"P2", wave:2, title:"The ADP-match auto-clear of phone_override writes no audit row.",
+  body:"<code>adp_roster.py:170-173</code> calls <code>set_worker_phone_override(key, &quot;&quot;, changed_by=adp_sync_auto_clear)</code> from inside a <b>read</b> function (<code>phone_for_key</code>). No <code>log_registration</code> call accompanies it — compare <code>/api/portal-phone</code>, which does audit both set and clear (function_app.py:3004-3011). A supervisor&rsquo;s override vanishes with no trace, triggered by a read.",
+  refs:["adp_roster.py:170-173","function_app.py:3004-3011"],
+  fix:"Add a <code>log_registration({action: phone-override-auto-clear, …})</code> next to the clear, and consider moving the mutation out of the read path into the roster-sync job. ~10 lines.",
+  deps:"Part of the Wave 2 audit-gap batch (with G-08 and the per-day override)."},
+
+ {id:"G-12", sev:"P2", wave:3, title:"wip_role is preferred over an ADP value that does not exist.",
+  body:"<code>function_app.py:1554-1556</code> reads <code>tagstore.get_worker_role(id_key) or data[wip_role]</code>, and <code>_resolve_rt_full</code> populates <code>data[wip_role]</code> from <code>person.get(wip_role, &quot;&quot;)</code> (:1412). <code>adp_roster.parse_roster</code> produces exactly <code>{key, first, last, middle, full_name, phone}</code> (adp_roster.py:74-75) — <b>there is no wip_role key and no synonym for one in _SYN</b> (:28-35). The same applies to <code>user_resolver.py:118</code> and <code>:151</code>, whose <code>&quot;Operator&quot;</code> default is therefore the only value those paths ever return. Related: <code>_adp_role()</code> (function_app.py:2618-2620) reads <code>person[department]</code> / <code>person[job_title]</code>, neither of which is parsed either — so the <b>adp_role column in the Workers tab is always blank</b>.",
+  refs:["function_app.py:1554-1556","function_app.py:1412","function_app.py:2618-2620","adp_roster.py:74-75","adp_roster.py:28-35","user_resolver.py:118","user_resolver.py:151"],
+  fix:"Either add job-title/department synonyms to <code>_SYN</code> and surface them, or delete the dead fallbacks so the code stops implying an ADP role source exists. ~10 lines either way.",
+  deps:"<b>Needs a product decision</b>: should ADP send us job titles at all?"},
+
+ {id:"G-14", sev:"P2", wave:3, title:"ShiftOverrides stores cleartext name in a table documented as pseudonym-only.",
+  body:"<code>tagstore.py:73-75</code> states the table is &ldquo;keyed on <code>worker_id</code>; no PII beyond the pseudonym&rdquo;, but <code>set_shift_override</code> writes <code>position_id</code> and <code>name</code> (:1794-1795), passed straight through from <code>/api/portal-shift-override</code> (function_app.py:2923, :2928). It is tenant-only so nothing leaks to DO, but the comment is wrong and a future &ldquo;this table has no PII, migrate it&rdquo; decision would be taken on false information.",
+  refs:["tagstore.py:73-75","tagstore.py:1794-1795","function_app.py:2923","function_app.py:2928","function_app.py:2948-2954"],
+  fix:"Either drop the two columns and join on <code>WorkerPhones</code> for the UI list (function_app.py:2948-2954), or correct the comment. <b>Prefer dropping.</b> ~10 lines.",
+  deps:"Blocks nothing today, but the wrong comment will be read as a migration authorization."},
+
+ {id:"G-15", sev:"P2", wave:0, title:"active is enforced at exactly one place and defaults to permissive.",
+  body:"The only enforcement is <code>function_app.py:1261-1268</code> (<code>/api/scan_event</code>). <code>/api/register-check</code>, <code>/api/register-v2</code>, <code>/api/register-start</code>, and <code>/api/portal-invite</code> never check it, so a deactivated worker can re-register freely. <code>/api/portal-workers</code> treats a missing <code>active</code> column as <code>True</code> (:2663).",
+  refs:["function_app.py:1261-1268","function_app.py:2663"],
+  fix:"Add the check to the registration entry points; decide whether re-registration should auto-reactivate (it currently does not, but the row&rsquo;s <code>active:false</code> also does not block the bind).",
+  deps:"Unscheduled — interacts with G-02; decide the re-activation semantics first."},
+
+ {id:"G-16", sev:"P2", wave:2, title:"create_stub_for_shift_override and set_worker_phone_override use the same RowKey but write disjoint field sets.",
+  body:"Both key on <code>stub_&lt;position_id&gt;</code> (tagstore.py:1682, :1918). The phone-override version creates a stub with <b>no worker_id</b> (:1919-1924), and a stub with no <code>worker_id</code> is invisible to <code>worker_primary_shift_map</code> (:1757-1760) — the exact failure the shift version&rsquo;s docstring warns about (:1661-1664). Invite-then-assign-shift produces a working stub; assign-shift-then-invite is fine; but a phone-override-created stub that later receives a shift via <code>set_worker_primary_shift</code> keeps its empty <code>worker_id</code> and <b>never attributes</b>.",
+  refs:["tagstore.py:1682","tagstore.py:1918","tagstore.py:1919-1924","tagstore.py:1757-1760","tagstore.py:1661-1664"],
+  fix:"Have <code>set_worker_phone_override</code> populate <code>worker_id</code> when creating a stub, same as <code>create_stub_for_shift_override</code> does. ~6 lines.",
+  deps:"None. Mechanical."},
+
+ {id:"G-07", sev:"P3", wave:3, title:"display_name has no supervisor write path.",
+  body:"Only <code>/api/register-v2</code> writes it (function_app.py:1781, :1783). A worker who types a nickname that is offensive, wrong, or a duplicate can only be corrected by having them re-register. The portal renders it prominently (:2649-2650 → <code>&quot;Nickname (Legal Name)&quot;</code>).",
+  refs:["function_app.py:1781","function_app.py:1783","function_app.py:2649-2650"],
+  fix:"Add a supervisor correction path. Pairs with G-05&rsquo;s provenance flag.",
+  deps:"Needed before V2 goes past the pilot allowlist."},
+
+ {id:"G-08", sev:"P3", wave:2, title:"A supervisor can merge any two Position IDs with no validation and no reversal.",
+  body:"<code>/api/portal-worker-merge</code> (workers_bp.py:44-116) accepts arbitrary <code>canonical_position_id</code> and <code>alias_position_ids</code>, checks only that they are non-empty and unequal (:69-80), and never verifies either exists in ADP. Writes are append-only, so an erroneous merge cannot be undone through any endpoint. There is <b>no log_registration call in this endpoint at all</b> — the only trace is <code>WorkerAliases.created_by</code> (tagstore.py:1353).",
+  refs:["workers_bp.py:44-116","workers_bp.py:69-80","tagstore.py:1353"],
+  fix:"Add the missing <code>log_registration</code> write (Wave 2 audit batch); validate both IDs against ADP; consider a reversal path.",
+  deps:"One of the three missing audit writes in Wave 2."},
+
+ {id:"G-10", sev:"P3", wave:0, title:"Changing a phone creates a second WorkerPhones row rather than updating one.",
+  body:"The RowKey is the phone (tagstore.py:1468). A worker who registers a new number gets a fresh row carrying the same <code>position_id</code>. <code>_worker_row_for_position</code> disambiguates stub-vs-real (:1551-1570) but <b>not real-vs-real</b> — its loop keeps the first non-stub it encounters, in arbitrary table-scan order. Two live rows for one Position ID means writes and reads can diverge non-deterministically.",
+  refs:["tagstore.py:1468","tagstore.py:1551-1570"],
+  fix:"Detect-and-reconcile in Wave 1 (scan for Position IDs owning &gt;1 non-stub row). The schema change itself is deferred.",
+  deps:"<b>Explicitly NOT recommended as a schema change</b> until Waves 1–2 land — re-keying the RowKey mid-pilot would collide with the DO Postgres migration (GA-WIP-062) already in flight."},
+
+ {id:"G-17", sev:"P3", wave:2, title:"V2 silently drops language_pref.",
+  body:"<code>register_v2</code> parses and validates it (function_app.py:1745-1747) and echoes it in the response (:1808), but the <code>bind_phone</code> call at :1780-1781 <b>omits the language_pref= argument</b> that all three V1 call sites pass (:1561, :1586, :1609). The worker&rsquo;s Spanish preference is never persisted. Nothing server-side reads the column today, so the impact is latent — but the field looks stored and is not.",
+  refs:["function_app.py:1745-1747","function_app.py:1808","function_app.py:1780-1781","function_app.py:1561","function_app.py:1586","function_app.py:1609"],
+  fix:"Pass <code>language_pref</code> through in <code>register_v2</code>. One argument.",
+  deps:"None."},
+
+ {id:"G-18", sev:"P3", wave:0, title:"bound_by is a constant.",
+  body:"Every live caller passes <code>bound_by=&quot;self&quot;</code> (function_app.py:1561, :1586, :1609, :1780). The parameter (tagstore.py:1453) and the portal column (:2660) imply a supervisor-assisted binding mode that no endpoint implements.",
+  refs:["function_app.py:1561","function_app.py:1586","function_app.py:1609","function_app.py:1780","tagstore.py:1453","function_app.py:2660"],
+  fix:"Either implement supervisor-assisted binding or drop the parameter and the portal column.",
+  deps:"Unscheduled — cosmetic / dead-code cleanup."}
+];
+
+var OVERRIDE = [
+ {f:"position_id", w:["no",""], s:["ind","merge (workers_bp.py:95)"], h:["yes","authoritative (CSV)"], y:["yes","cleared by bind_phone (G-03)"], a:["none","Merge: WorkerAliases.created_by only"]},
+ {f:"worker_id", w:["no",""], s:["no",""], h:["no",""], y:["yes","derived"], a:["yes","RegistrationAudit.worker_id"]},
+ {f:"name", w:["yes","V2 fallback only (:1744)"], s:["ind","alias (workers_bp.py:89)"], h:["yes","authoritative"], y:["no",""], a:["yes","RegistrationAudit.name"]},
+ {f:"display_name", w:["yes","EXCLUSIVELY (:1743)"], s:["no","G-07"], h:["no",""], y:["no",""], a:["yes","RegistrationAudit.display_name (:1787)"]},
+ {f:"phone (bound)", w:["yes","by re-registering"], s:["no","not directly"], h:["no",""], y:["no",""], a:["yes","RegistrationAudit bind row"]},
+ {f:"phone_override", w:["no",""], s:["yes","/api/portal-phone (:2999), /api/portal-invite (:3108)"], h:["ind","a matching ADP phone auto-clears it"], y:["yes","auto-clear"], a:["part","Set/clear: yes. Auto-clear: NO (G-09)"]},
+ {f:"wip_role", w:["no","sub self-register hardcodes it (:1591)"], s:["yes","/api/portal-role (:2777)"], h:["no","G-12"], y:["no",""], a:["yes","role-change / role-preset (:2781, :2792)"]},
+ {f:"primary_shift", w:["no",""], s:["yes","/api/portal-shift (:2857)"], h:["no",""], y:["yes","7-day sweep clears it (:3924)"], a:["part","Set: yes (:2891). Sweep: NO (G-13)"]},
+ {f:"per-day shift override", w:["no",""], s:["yes","/api/portal-shift-override (:2927)"], h:["no",""], y:["no",""], a:["none","None"]},
+ {f:"active", w:["no",""], s:["yes","/api/portal-deactivate (:3062-3064)"], h:["no",""], y:["no",""], a:["yes","deactivate / reactivate (:3067)"]},
+ {f:"language_pref", w:["yes","V1 only (:1528) — V2 drops it (G-17)"], s:["no",""], h:["no",""], y:["no",""], a:["none","Not in the audit payload"]},
+ {f:"alias mapping", w:["no",""], s:["yes","/api/portal-worker-merge (workers_bp.py:89)"], h:["no",""], y:["no",""], a:["none","WorkerAliases.created_by only (G-08)"]},
+ {f:"bound_by", w:["dash","always &quot;self&quot;"], s:["no","G-18"], h:["no",""], y:["no",""], a:["dash","n/a"]},
+ {f:"is_lead", w:["no",""], s:["no","YAML file edit + redeploy (supervisor_roster.py:47)"], h:["no",""], y:["no",""], a:["yes","Git history"]},
+ {f:"supervisor roster", w:["no",""], s:["no","YAML file only"], h:["no",""], y:["no",""], a:["yes","Git history"]},
+ {f:"hpt.scan.* localStorage", w:["yes","fully editable"], s:["no",""], h:["no",""], y:["no",""], a:["none","worker_id is HMAC-guarded; position_id is NOT (G-02)"]}
+];
+
+var AUDIT = [
+ {m:"Alias merge", fn:"/api/portal-worker-merge (workers_bp.py:86-101)", ok:0, note:"G-08"},
+ {m:"Per-day shift override set/clear", fn:"/api/portal-shift-override (function_app.py:2927)", ok:0, note:""},
+ {m:"phone_override auto-clear on ADP match", fn:"adp_roster.py:172", ok:0, note:"G-09"},
+ {m:"TTL sweep clearing primary_shift", fn:"tagstore.py:1704, timer function_app.py:3924", ok:0, note:"G-13"},
+ {m:"invite_sent_at stamp", fn:"tagstore.py:1884", ok:2, note:"the invite-sent row precedes it (:3112)"},
+ {m:"Role change", fn:"/api/portal-role (:2792-2799)", ok:1, note:""},
+ {m:"Shift change", fn:"/api/portal-shift (:2891-2895)", ok:1, note:""},
+ {m:"Phone override set/clear", fn:"/api/portal-phone (:3005-3011)", ok:1, note:""},
+ {m:"Deactivate / reactivate", fn:"/api/portal-deactivate (:3067-3071)", ok:1, note:""},
+ {m:"All registration binds", fn:":1563, :1588, :1611, :1784", ok:1, note:""}
+];
+
+/* ═══════════════ RENDER ═══════════════ */
+var SEVMAP = {P1:"🚨", P2:"⚠️", P3:"ℹ️"};
+
+function sevClass(id){
+  var g = GAPS.filter(function(x){return x.id===id;})[0];
+  if(!g) return "";
+  return g.sev==="P1" ? "" : (g.sev==="P2" ? " g2" : " g3");
+}
+
+/* --- stores --- */
+(function(){
+  var h = "";
+  for(var i=0;i<STORES.length;i++){
+    var s = STORES[i];
+    h += '<div class="store-card c-'+s.c+'">'
+      +  '<span class="nm">'+s.nm+'</span>'
+      +  '<div class="rw">Backing: <span>'+s.back+'</span></div>'
+      +  '<div class="rw">Key: <span>'+s.key+'</span></div>'
+      +  '<div class="rw">Residency: <span>'+s.res+'</span></div>'
+      +  '</div>';
+  }
+  document.getElementById("storesGrid").innerHTML = h;
+})();
+
+/* --- field matrix --- */
+var mState = {store:"all", sort:null, dir:1, q:"", gapOnly:false};
+
+function gapChips(f){
+  if(f.g && f.g.length){
+    var out = f.g.map(function(id){
+      return '<a class="gapref'+sevClass(id)+'" href="#'+id+'">'+id+'</a>';
+    }).join(" ");
+    if(f.gapNote) out += ' <span class="nogap">— '+f.gapNote+'</span>';
+    return out;
+  }
+  if(f.gapNote && f.gapNote !== "—") return '<span class="nogap">'+f.gapNote+'</span>';
+  return '<span class="nogap">—</span>';
+}
+
+function renderMatrix(){
+  var rows = FIELDS.slice();
+  if(mState.store !== "all") rows = rows.filter(function(f){return f.store===mState.store;});
+  if(mState.gapOnly) rows = rows.filter(function(f){return f.g && f.g.length;});
+  if(mState.q){
+    var q = mState.q.toLowerCase();
+    rows = rows.filter(function(f){
+      return (f.name+" "+f.sot+" "+f.also+" "+f.writer+" "+f.reader+" "+f.prec+" "+f.ovr+" "+f.pii+" "+(f.g||[]).join(" ")+" "+(f.gapNote||"")).toLowerCase().indexOf(q) > -1;
+    });
+  }
+  if(mState.sort){
+    var k = mState.sort, d = mState.dir;
+    rows.sort(function(a,b){
+      var va = (k==="storeLabel") ? LBL[a.store] : (k==="gapsort" ? ((a.g&&a.g[0])||"zz") : (a[k]||""));
+      var vb = (k==="storeLabel") ? LBL[b.store] : (k==="gapsort" ? ((b.g&&b.g[0])||"zz") : (b[k]||""));
+      va = String(va).replace(/<[^>]+>/g,"").toLowerCase();
+      vb = String(vb).replace(/<[^>]+>/g,"").toLowerCase();
+      return va < vb ? -d : (va > vb ? d : 0);
+    });
+  }
+  var h = "";
+  for(var i=0;i<rows.length;i++){
+    var f = rows[i];
+    var piiParts = f.pii.split("|");
+    var piiCls = piiParts[0]==="bad" ? "pii-bad" : "pii-ok";
+    h += '<tr class="row-'+f.store+'">'
+      + '<td class="f-name" data-l="Field">'+f.name+'</td>'
+      + '<td class="f-store" data-l="Source of truth"><span class="store-tag st-'+f.store+'">'+LBL[f.store]+'</span><div style="margin-top:4px">'+f.sot+'</div></td>'
+      + '<td data-l="Also stored in">'+f.also+'</td>'
+      + '<td data-l="Written by">'+f.writer+'</td>'
+      + '<td data-l="Read by">'+f.reader+'</td>'
+      + '<td data-l="Precedence">'+f.prec+'</td>'
+      + '<td data-l="Who can override">'+f.ovr+'</td>'
+      + '<td data-l="Std 16 (PII)" class="'+piiCls+'">'+piiParts[1]+'</td>'
+      + '<td data-l="Known gap">'+gapChips(f)+'</td>'
+      + '</tr>';
+  }
+  document.getElementById("matrixBody").innerHTML = h;
+  document.getElementById("matrixEmpty").style.display = rows.length ? "none" : "block";
+}
+
+document.querySelectorAll("[data-store]").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("[data-store]").forEach(function(x){x.classList.remove("on");});
+    b.classList.add("on");
+    mState.store = b.getAttribute("data-store");
+    renderMatrix();
+  });
+});
+document.getElementById("gapOnly").addEventListener("click", function(){
+  mState.gapOnly = !mState.gapOnly;
+  this.classList.toggle("on", mState.gapOnly);
+  renderMatrix();
+});
+document.getElementById("fSearch").addEventListener("input", function(){
+  mState.q = this.value; renderMatrix();
+});
+document.querySelectorAll("#matrixTbl thead th").forEach(function(th){
+  th.addEventListener("click", function(){
+    var k = th.getAttribute("data-k");
+    if(!k) return;
+    if(mState.sort === k){ mState.dir = -mState.dir; } else { mState.sort = k; mState.dir = 1; }
+    document.querySelectorAll("#matrixTbl thead th").forEach(function(x){x.classList.remove("sorted");});
+    th.classList.add("sorted");
+    th.querySelector(".arrow").textContent = mState.dir === 1 ? "▼" : "▲";
+    renderMatrix();
+  });
+});
+renderMatrix();
+
+/* --- gap cards --- */
+var gState = {sev:"all", sort:"sev"};
+var SEVRANK = {P1:0, P2:1, P3:2};
+
+function renderGaps(){
+  var rows = GAPS.slice();
+  if(gState.sev !== "all") rows = rows.filter(function(g){return g.sev===gState.sev;});
+  if(gState.sort === "sev"){
+    rows.sort(function(a,b){ return SEVRANK[a.sev]-SEVRANK[b.sev] || a.id.localeCompare(b.id); });
+  } else if(gState.sort === "id"){
+    rows.sort(function(a,b){ return a.id.localeCompare(b.id); });
+  } else {
+    rows.sort(function(a,b){
+      var wa = a.wave===0 ? 99 : a.wave, wb = b.wave===0 ? 99 : b.wave;
+      return wa-wb || SEVRANK[a.sev]-SEVRANK[b.sev] || a.id.localeCompare(b.id);
+    });
+  }
+  var h = "";
+  for(var i=0;i<rows.length;i++){
+    var g = rows[i];
+    var refs = g.refs.map(function(r){return '<span class="ref">'+r+'</span>';}).join("");
+    var wave = g.wave===0 ? '<span class="wave-chip">UNSCHEDULED</span>' : '<span class="wave-chip">WAVE '+g.wave+'</span>';
+    h += '<article class="gap sev-'+g.sev+'" id="'+g.id+'">'
+      + '<div class="gap-hd"><span class="gap-id">'+g.id+'</span>'
+      + '<span class="sev sev-badge-'+g.sev+'">'+SEVMAP[g.sev]+' '+g.sev+'</span>'+wave+'</div>'
+      + '<h4>'+g.title+'</h4>'
+      + '<p>'+g.body+'</p>'
+      + '<span class="lbl">Root cause — file : line</span><div class="refs">'+refs+'</div>'
+      + '<div class="fixbox"><span class="lbl">Proposed fix scope</span>'+g.fix+'</div>'
+      + '<div class="deps"><b>Dependencies:</b> '+g.deps+'</div>'
+      + '</article>';
+  }
+  document.getElementById("gapGrid").innerHTML = h;
+}
+document.querySelectorAll("[data-sev]").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("[data-sev]").forEach(function(x){x.classList.remove("on");});
+    b.classList.add("on");
+    gState.sev = b.getAttribute("data-sev");
+    renderGaps();
+  });
+});
+document.querySelectorAll("[data-gsort]").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("[data-gsort]").forEach(function(x){x.classList.remove("on");});
+    b.classList.add("on");
+    gState.sort = b.getAttribute("data-gsort");
+    renderGaps();
+  });
+});
+renderGaps();
+
+/* --- override matrix --- */
+(function(){
+  var GLYPH = {yes:'<span class="yes">✔</span>', no:'<span class="no">✗</span>',
+               ind:'<span class="ind">◐</span>', dash:'<span class="dash">—</span>'};
+  function cell(pair){
+    var g = GLYPH[pair[0]] || GLYPH.dash;
+    return '<td>'+g+(pair[1] ? '<span class="cellnote">'+pair[1]+'</span>' : '')+'</td>';
+  }
+  var h = "";
+  for(var i=0;i<OVERRIDE.length;i++){
+    var r = OVERRIDE[i];
+    var acls = r.a[0]==="none" ? "audit-none" : (r.a[0]==="yes" ? "audit-yes" : "");
+    h += '<tr><td class="f">'+r.f+'</td>'
+      + cell(r.w) + cell(r.s) + cell(r.h) + cell(r.y)
+      + '<td class="note '+acls+'">'+r.a[1]+'</td></tr>';
+  }
+  document.getElementById("ovrBody").innerHTML = h;
+})();
+
+/* --- audit table --- */
+(function(){
+  var h = "";
+  for(var i=0;i<AUDIT.length;i++){
+    var a = AUDIT[i];
+    var v = a.ok===1 ? '<span class="audit-yes">Yes</span>'
+          : (a.ok===2 ? '<span style="color:var(--warn)">Indirect</span>'
+                      : '<span class="audit-none">NO</span>');
+    if(a.note) v += ' <span style="color:var(--mute);font-size:11px">'+a.note+'</span>';
+    h += '<tr><td>'+a.m+'</td><td><code>'+a.fn+'</code></td><td>'+v+'</td></tr>';
+  }
+  document.getElementById("auditBody").innerHTML = h;
+})();
+
+/* --- highlight a gap card when linked to --- */
+window.addEventListener("hashchange", function(){
+  var el = document.querySelector(location.hash);
+  if(el && el.classList.contains("gap")){
+    el.style.transition = "box-shadow .25s";
+    el.style.boxShadow = "0 0 0 2px rgba(59,130,246,0.75)";
+    setTimeout(function(){ el.style.boxShadow = "none"; }, 1600);
+  }
+});
+</script>
+
+</body>
+</html>
