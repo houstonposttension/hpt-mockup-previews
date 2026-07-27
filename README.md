@@ -14,7 +14,7 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ### HPT Portfolio (dated 2026-07-27)
 
-- [HPT Portfolio — portfolio overview + command surface, Cards + Timeline views (mobile)](https://houstonposttension.github.io/hpt-mockup-previews/vp-dashboard-portfolio-2026-07-27/index.html)
+- [HPT Portfolio — portfolio overview + command surface, Cards + Timeline + Activity views (mobile)](https://houstonposttension.github.io/hpt-mockup-previews/vp-dashboard-portfolio-2026-07-27/index.html)
 
 One mobile surface that answers *what is in flight everywhere* **and** lets the VP push priority from
 inside it — replacing the scatter of status docs, the governance ledger view, and the dispatch console's
@@ -27,6 +27,8 @@ instead of asking per-PR. Filter by system or state, sort by priority / risk / r
 real in-flight work as of 2026-07-27; nothing is wired to a live system and worker names are anonymized.
 
 **rev 2 (2026-07-27):** renamed from *Dispatch Console* to **HPT Portfolio**; added a per-card **effort chip** (4h / 1d / 1w) on the card face, an in-drawer **release track** showing the multi-version sequence a feature sits inside (ADP alignment W0→W5, the Table Storage exit, phone-first identity, the hourly view, HPT Portfolio itself), and a full **Timeline view** — horizontal bars per feature, version-train milestones (1.32.2 / 1.33.0 / 1.34.0 / 2.0 / 3.0), today anchored at the left edge, hard external dates as red rules, and bars that reflow when priority changes. A deadlines + availability strip sits under the atmosphere tiles. All dates and effort figures are placeholders to be corrected.
+
+**rev 3 (2026-07-27):** **attention notifications** — red dots on the cards that need a decision, a tap-to-jump "N need your attention" banner listing each one with its reason, and a **notification-preferences panel** (morning digest, in-app dots, push for P1 blockers, quiet hours; only the dots toggle is live). An **Activity view** — 25-entry reverse-chron change log with timestamp, actor and action, tappable through to the feature it touched; each card's own activity strip is that same feed filtered to it. And a **📎 Related** chip list per card linking the mockups, spec docs, governance rows, PRs and memory files behind it — mockup chips open for real, the rest show where they would go. A feature with nothing filed says so.
 
 ### HPT Cloud — Dispatch Command Center (dated 2026-07-26)
 
