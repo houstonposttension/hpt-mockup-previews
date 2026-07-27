@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>VP Portfolio Command · everything in flight, one surface · 2026-07-27</title>
-<!-- VP Dashboard — portfolio overview + command surface (CONCEPT MOCKUP, 2026-07-27).
+<title>HPT Portfolio · everything in flight, one surface · 2026-07-27</title>
+<!-- HPT Portfolio — portfolio overview + command surface (CONCEPT MOCKUP, 2026-07-27).
+     rev 2 (2026-07-27): renamed "Dispatch Console" → "HPT Portfolio" per naming decision;
+     added per-card effort chips, in-drawer release tracks, and a full Timeline view.
      One screen that answers "what is in flight everywhere" AND lets the VP push priority
      without opening GitHub. Feature-level approval replaces per-PR approval theater.
      All data is real in-flight work as of 2026-07-27; employee names are anonymized
-     (Operator 1 / Operator 2). Nothing here is wired to a live system. -->
+     (Operator 1 / Operator 2). Dates and hard deadlines are PLACEHOLDERS to react to.
+     Nothing here is wired to a live system. -->
 <style>
   :root{
     /* ramp 1 — surface / neutral */
@@ -212,6 +215,108 @@
     text-align:center; }
   .approve-note b{ color:#5ce08d; }
 
+  /* ── view toggle (Cards | Timeline) ── */
+  .viewseg{ display:flex; background:#0e1217; border:1px solid var(--line);
+    border-radius:10px; overflow:hidden; margin:0 0 4px; }
+  .viewseg button{ flex:1; font:inherit; font-size:11.5px; font-weight:800; color:var(--dim);
+    background:transparent; border:none; padding:9px 8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:6px; }
+  .viewseg button.on{ background:var(--acc-dim); color:#9ccbff; }
+
+  /* ── hard dates + availability strip ── */
+  .dates{ display:flex; gap:5px; overflow-x:auto; padding:7px 1px 2px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .dates::-webkit-scrollbar{ display:none; }
+  .dpill{ flex:0 0 auto; display:flex; align-items:center; gap:6px; background:var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--line2); border-radius:8px;
+    padding:6px 9px; white-space:nowrap; }
+  .dpill.bad{ border-left-color:var(--bad); } .dpill.warn{ border-left-color:var(--warn); }
+  .dpill.info{ border-left-color:var(--acc); }
+  .dpill .dd{ font-size:10px; font-weight:900; color:#cfe0f5; font-variant-numeric:tabular-nums; }
+  .dpill .dl{ font-size:9.5px; font-weight:700; color:var(--dim); }
+
+  /* ── effort chip ── */
+  .eff{ font-size:9.5px; font-weight:900; color:#cfe0f5; background:#0e1217;
+    border:1px solid var(--line); border-radius:6px; padding:3px 6px;
+    font-variant-numeric:tabular-nums; }
+  .eff.none{ color:var(--faint); }
+
+  /* ── in-drawer release track ── */
+  .trk{ display:flex; gap:0; overflow-x:auto; padding:2px 1px 8px; margin-bottom:11px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .trk::-webkit-scrollbar{ display:none; }
+  .tstep{ flex:0 0 auto; width:86px; position:relative; padding-top:15px; }
+  .tstep::before{ content:""; position:absolute; top:5px; left:0; right:0; height:2px;
+    background:var(--line); }
+  .tstep:first-child::before{ left:50%; }
+  .tstep:last-child::before{ right:50%; }
+  .tstep i{ position:absolute; top:0; left:50%; margin-left:-6px; width:12px; height:12px;
+    border-radius:50%; background:#0e1217; border:2px solid var(--line2); }
+  .tstep.done::before{ background:rgba(22,192,96,.45); }
+  .tstep.done i{ background:var(--ok); border-color:var(--ok); }
+  .tstep.now i{ background:var(--acc); border-color:var(--acc);
+    box-shadow:0 0 0 4px var(--acc-dim); }
+  .tstep .tn{ font-size:9px; font-weight:900; letter-spacing:.4px; color:var(--faint);
+    text-align:center; }
+  .tstep.now .tn{ color:#9ccbff; }
+  .tstep .tl{ font-size:10px; font-weight:700; color:var(--dim); text-align:center;
+    line-height:1.3; margin-top:2px; padding:0 3px; }
+  .tstep.now .tl{ color:var(--txt); }
+  .tstep .tv{ font-size:9px; font-weight:800; color:var(--faint); text-align:center;
+    margin-top:3px; font-variant-numeric:tabular-nums; }
+  .trkone{ font-size:10.5px; color:var(--dim); margin-bottom:11px; }
+  .trkone b{ color:#cfe0f5; font-weight:700; }
+
+  /* ── timeline view ── */
+  .tlwrap{ display:none; } .tlwrap.on{ display:block; }
+  .tlaxis{ position:relative; height:34px; margin:2px 0 4px; border-bottom:1px solid var(--line); }
+  .tlaxis .mo{ position:absolute; bottom:3px; font-size:9px; font-weight:900; color:var(--faint);
+    letter-spacing:.4px; transform:translateX(-50%); }
+  .tlaxis .ver{ position:absolute; top:0; font-size:8.5px; font-weight:900; color:#9ccbff;
+    background:var(--acc-dim); border:1px solid var(--acc-line); border-radius:4px;
+    padding:1px 4px; transform:translateX(-50%); white-space:nowrap;
+    font-variant-numeric:tabular-nums; }
+  .tlaxis .now{ position:absolute; top:0; bottom:0; width:2px; background:var(--acc); }
+  .tlaxis .nowlbl{ position:absolute; top:0; left:3px; font-size:8.5px; font-weight:900;
+    color:#9ccbff; letter-spacing:.4px; }
+
+  .tlrow{ padding:7px 0 9px; border-bottom:1px solid rgba(42,48,56,.6); cursor:pointer; }
+  .tlrow:last-child{ border-bottom:none; }
+  .tlhead{ display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+  .tlrank{ font-size:9px; font-weight:900; color:var(--faint); background:#0e1217;
+    border:1px solid var(--line); border-radius:5px; padding:2px 5px;
+    font-variant-numeric:tabular-nums; flex:0 0 auto; }
+  .tlrank.top{ color:#9ccbff; border-color:var(--acc-line); background:var(--acc-dim); }
+  .tln{ font-size:11.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap; min-width:0; }
+  .tlmeta{ margin-left:auto; display:flex; align-items:center; gap:5px; flex:0 0 auto; }
+  .tlmeta .tlv{ font-size:9px; font-weight:800; color:var(--faint);
+    font-variant-numeric:tabular-nums; }
+  .tlarr{ display:flex; gap:2px; }
+  .tlarr button{ font:inherit; font-size:8px; line-height:1; color:var(--dim); background:#0e1217;
+    border:1px solid var(--line); border-radius:4px; padding:3px 4px; cursor:pointer; }
+  .tlarr button:active{ background:var(--acc-dim); color:#9ccbff; }
+
+  .tltrack{ position:relative; height:16px; background:#0e1217; border-radius:5px; overflow:hidden; }
+  .tltrack .gl{ position:absolute; top:0; bottom:0; width:1px; background:rgba(122,134,150,.22); }
+  .tltrack .gl.ver{ background:rgba(59,130,246,.35); }
+  .tltrack .gl.dl{ background:rgba(255,59,48,.4); }
+  .tltrack .gl.band{ width:auto; background:rgba(255,176,32,.12); }
+  .tlbar{ position:absolute; top:3px; height:10px; border-radius:4px; min-width:8px;
+    background:var(--acc); }
+  .tlbar.progress, .tlbar.approved{ background:var(--acc); }
+  .tlbar.review, .tlbar.shipping{ background:var(--warn); }
+  .tlbar.live{ background:var(--ok); }
+  .tlbar.blocked{ background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 3px,
+    rgba(255,176,32,.35) 3px,rgba(255,176,32,.35) 6px); }
+  .tlbar.broken{ background:var(--bad); }
+  .tlbar.proposed{ background:#39424e; }
+  .tlbar.paused{ background:#2a3038; border:1px dashed var(--line2); }
+  .tllegend{ display:flex; flex-wrap:wrap; gap:9px; padding:9px 2px 2px; font-size:9.5px;
+    color:var(--faint); }
+  .tllegend span{ display:inline-flex; align-items:center; gap:5px; }
+  .tllegend i{ width:11px; height:7px; border-radius:3px; display:inline-block; }
+
   /* ── toast ── */
   .toast{ position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px);
     background:var(--panel3); border:1px solid var(--line2); border-radius:12px;
@@ -237,12 +342,13 @@
 <body>
 
 <div class="pagehead">
-  <h1>VP Portfolio Command — concept mockup</h1>
+  <h1>HPT Portfolio — concept mockup <span style="color:var(--faint);font-weight:700;font-size:13px">rev 2</span></h1>
   <p>One surface that answers <b>"what is in flight, everywhere"</b> and lets you <b>push priority from inside it</b>.
-     Every card is real work as of <b>2026-07-27</b>. Tap a card to expand; the priority arrows, pause toggle
-     and feature-level approve all respond.</p>
+     Two views over the same data: <b>Cards</b> for the pulse and the levers, <b>Timeline</b> for when things land.
+     Every item is real work as of <b>2026-07-27</b>.</p>
   <div class="wipnote"><b>Mockup only.</b> Nothing is wired to a live system — no PR is approved, no priority is
-    stored. Employee names are anonymized. This is the <b>shape</b> to react to, not the build.</div>
+    stored. Employee names are anonymized. <b>Every date, effort estimate and hard deadline is a placeholder</b>
+    put there for you to correct — that's the fastest way to tell me what the real ones are.</div>
 </div>
 
 <div class="stage">
@@ -250,7 +356,7 @@
 
   <div class="appbar">
     <div>
-      <div class="nm">Portfolio Command</div>
+      <div class="nm">HPT Portfolio</div>
       <div class="sub">All systems · 20 in flight</div>
     </div>
     <span class="rolepill">VP</span>
@@ -269,6 +375,8 @@
     <div class="pcard warm"   onclick="openAtmo()"><div class="pv">2</div><div class="pk">Waiting<br>on HR</div></div>
     <div class="pcard"        onclick="openAtmo()"><div class="pv">3</div><div class="pk">Agents<br>running</div></div>
   </div>
+
+  <div class="dates" id="dates"></div>
 
   <div class="atmo" id="atmo">
     <div class="atrow bad">
@@ -321,6 +429,10 @@
   <!-- ── FILTERS ── -->
   <div class="sectlbl">In flight <span class="n" id="countLbl">20 features</span></div>
   <div class="filterbar">
+    <div class="viewseg" id="viewSeg">
+      <button data-view="cards" class="on">▤ Cards</button>
+      <button data-view="timeline">▭ Timeline</button>
+    </div>
     <div class="chips" id="sysChips"></div>
     <div class="chips" id="stateChips"></div>
     <div class="sortbar">
@@ -335,8 +447,26 @@
 
   <div id="list"></div>
 
+  <div class="tlwrap" id="tlwrap">
+    <div class="tlaxis" id="tlaxis"></div>
+    <div id="tlbody"></div>
+    <div class="tllegend">
+      <span><i style="background:var(--acc)"></i>In progress</span>
+      <span><i style="background:var(--warn)"></i>In review / shipping</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#ffb020,#ffb020 3px,rgba(255,176,32,.35) 3px,rgba(255,176,32,.35) 6px)"></i>Blocked</span>
+      <span><i style="background:var(--bad)"></i>Broken</span>
+      <span><i style="background:var(--ok)"></i>Live</span>
+      <span><i style="background:#39424e"></i>Proposed</span>
+      <span><i style="background:rgba(255,59,48,.5)"></i>Hard date</span>
+    </div>
+    <div class="footnote" style="margin-top:12px">
+      Tap any bar to jump to its card. Bars reflow when you change priority — raise something and
+      everything downstream of it moves with it.
+    </div>
+  </div>
+
   <div class="footnote">
-    <b>What this replaces:</b> the governance ledger, the dispatch console's PR queue, the open-PR list,
+    <b>What this replaces:</b> the governance ledger, the old dispatch-console PR queue, the open-PR list,
     and four status docs. Approval happens once per <b>feature</b> — not once per pull request.
   </div>
 
@@ -350,7 +480,7 @@
 const SYS = {
   wip:  "WIP Processor",
   cloud:"HPT Cloud",
-  disp: "Dispatch Console",
+  disp: "HPT Portfolio",
   gov:  "HPT Governance",
   mem:  "HPT Memory",
   gh:   "HPT-GitHub",
@@ -424,10 +554,10 @@ let F = [
     ref:"PR #160 · GA-WIP-236",
     acts:[["today","Phase 2 opened, flag OFF"],["today","scan_stations registry added"]] },
 
-  { id:"disp-v2", sys:"disp", name:"Dispatch Console v2", ver:"2.0",
+  { id:"disp-v2", sys:"disp", name:"HPT Portfolio v2 — hosted console", ver:"2.0",
     state:"progress", risk:2, prog:70, approved:false, paused:false, age:1,
-    why:"Private authenticated review dashboard on DigitalOcean. Duplicates GitHub's approval flow — if this portfolio surface owns approval, the console's queue becomes redundant and should be dropped rather than finished.",
-    deps:{ blocks:[], blockedBy:["Deploy-drift guardrails"] },
+    why:"Private authenticated dashboard on DigitalOcean — the surface this mockup becomes. Its original PR-review queue duplicated GitHub's approval flow; with feature-level approval owned here, that queue should be dropped rather than finished.",
+    deps:{ blocks:["Portfolio command surface"], blockedBy:["Deploy-drift guardrails"] },
     hardBlock:null,
     ref:"PR #117 · GA-WIP-203",
     acts:[["1d","Deploy guardrails A–D opened (PR #155)"],["1d","Drift: app builds from a feature branch, not master"]] },
@@ -435,7 +565,7 @@ let F = [
   { id:"disp-guard", sys:"disp", name:"Deploy-drift guardrails", ver:"2.0",
     state:"review", risk:2, prog:80, approved:false, paused:false, age:1,
     why:"The deployed console builds from a feature branch while master has none of the code. Guardrails A–D make that state impossible to reach silently.",
-    deps:{ blocks:["Dispatch Console v2"], blockedBy:[] },
+    deps:{ blocks:["HPT Portfolio v2"], blockedBy:[] },
     hardBlock:null,
     ref:"PR #155 · GA-WIP-243",
     acts:[["1d","Opened for review"]] },
@@ -521,6 +651,78 @@ let F = [
     acts:[["9d","Discussed, nothing filed"]] }
 ];
 
+/* ─────────── schedule layer (ALL DATES ARE PLACEHOLDERS) ───────────
+   day 0 = today, Mon 27 Jul 2026.  horizon = 126 days → 30 Nov.        */
+const HORIZON = 126;
+
+/* release tracks — multi-version sequences a card belongs to */
+const TRACKS = {
+  adp: { name:"ADP-as-master alignment", steps:[
+    {n:"W0", l:"Roster validation",  v:"1.33", d:"Aug 3"},
+    {n:"W1", l:"Provenance schema",  v:"1.33", d:"Aug 5"},
+    {n:"W2", l:"Read alignment",     v:"1.34", d:"Sep 1"},
+    {n:"W3", l:"Write alignment",    v:"1.34", d:"Sep 22"},
+    {n:"W4", l:"Reconciliation",     v:"2.0",  d:"Oct 27"},
+    {n:"W5", l:"HR digest",          v:"2.0",  d:"Nov 10"} ]},
+  pg: { name:"Data layer — Table Storage exit", steps:[
+    {n:"1", l:"Pool-latch fix",      v:"1.32.2", d:"Jul 29"},
+    {n:"2", l:"Parity soak",         v:"1.32.x", d:"Aug 8"},
+    {n:"3", l:"Postgres cutover",    v:"2.0",    d:"Sep 15"},
+    {n:"4", l:"Table Storage off",   v:"2.0",    d:"Oct 6"},
+    {n:"5", l:"Azure → DO Apps",     v:"3.0",    d:"Nov 25"} ]},
+  reg: { name:"Identity — phone-first registration", steps:[
+    {n:"1", l:"Easy Auth allow-list", v:"1.32.x", d:"Jul 28"},
+    {n:"2", l:"Hardware pilot live",  v:"1.32.x", d:"Aug 1"},
+    {n:"3", l:"Plant-wide rollout",   v:"1.33",   d:"Aug 19"},
+    {n:"4", l:"Deactivation gate",    v:"1.34",   d:"Sep 9"} ]},
+  hourly: { name:"Hourly production view", steps:[
+    {n:"1", l:"Continuous scroll",   v:"1.33", d:"Aug 12"},
+    {n:"2", l:"Bar-size drill-down", v:"1.34", d:"Sep 2"},
+    {n:"3", l:"Station rollup",      v:"1.34", d:"Sep 16"} ]},
+  port: { name:"HPT Portfolio", steps:[
+    {n:"1", l:"Deploy guardrails",   v:"2.0", d:"Aug 4"},
+    {n:"2", l:"Hosted console",      v:"2.0", d:"Sep 8"},
+    {n:"3", l:"Command surface",     v:"2.0", d:"Oct 1"} ]}
+};
+
+/* per-feature: effort chip · track+step · [start,end] day offsets · target ship */
+const META = {
+  "pg-latch":      {eff:"4h", track:"pg",     step:0, t:[0,3],     ship:"Jul 29"},
+  "v2-pilot":      {eff:"1d", track:"reg",    step:0, t:[0,10],    ship:"Aug 1"},
+  "adp-w0":        {eff:"1w", track:"adp",    step:0, t:[0,14],    ship:"Aug 3"},
+  "adp-w1":        {eff:"4d", track:"adp",    step:1, t:[0,9],     ship:"Aug 5"},
+  "adp-w2":        {eff:"2w", track:"adp",    step:2, t:[14,36],   ship:"Sep 1"},
+  "do-pg":         {eff:"1w", track:"pg",     step:2, t:[5,50],    ship:"Sep 15"},
+  "hourly-scroll": {eff:"3d", track:"hourly", step:0, t:[0,16],    ship:"Aug 12"},
+  "drilldown":     {eff:"4d", track:"hourly", step:1, t:[16,37],   ship:"Sep 2"},
+  "disp-v2":       {eff:"2w", track:"port",   step:1, t:[3,43],    ship:"Sep 8"},
+  "disp-guard":    {eff:"1d", track:"port",   step:0, t:[1,8],     ship:"Aug 4"},
+  "hw-qr":         {eff:"1h", track:null,     step:0, t:[0,2],     ship:"live"},
+  "gov-ledger":    {eff:"2h", track:null,     step:0, t:[0,3],     ship:"Jul 30"},
+  "tag-search":    {eff:"1d", track:null,     step:0, t:[0,9],     ship:"Aug 5"},
+  "notify":        {eff:"1w", track:null,     step:0, t:[0,18],    ship:"Aug 14"},
+  "secret-gate":   {eff:"2h", track:null,     step:0, t:[0,5],     ship:"Aug 1"},
+  "test-iso":      {eff:"1d", track:null,     step:0, t:[0,7],     ship:"Aug 3"},
+  "az-do":         {eff:"3w", track:"pg",     step:4, t:[66,121],  ship:"Nov 25"},
+  "sh97":          {eff:"1w", track:null,     step:0, t:[30,60],   ship:"Sep 25"},
+  "mem":           {eff:"—",  track:null,     step:0, t:[0,126],   ship:"ongoing"},
+  "ext":           {eff:"2w", track:null,     step:0, t:[90,120],  ship:"Nov 24"}
+};
+F.forEach(f => Object.assign(f, META[f.id]));
+
+/* version milestones + hard external dates — PLACEHOLDERS, correct these */
+const MILES = [
+  {d:2,   v:"1.32.2"}, {d:16, v:"1.33.0"}, {d:37, v:"1.34.0"},
+  {d:72,  v:"2.0"},    {d:121,v:"3.0"}
+];
+const DEADLINES = [
+  {d:5,   l:"HR: ADP phone numbers due back", when:"Aug 1",       kind:"bad"},
+  {d:33,  d2:38, l:"Deploy freeze — shutdown week", when:"Aug 29 – Sep 2", kind:"warn"},
+  {d:50,  l:"Board meeting",                  when:"Sep 15",      kind:"warn"},
+  {d:106, l:"ISO 9001 surveillance audit",    when:"Nov 10",      kind:"warn"}
+];
+const AVAIL = { when:"now", l:"3 agents running · ~40 min committed", kind:"info" };
+
 /* priority = array order */
 F.forEach((f,i)=> f.p = i+1);
 
@@ -529,7 +731,7 @@ const STATE_LBL = { proposed:"Proposed", approved:"Approved", progress:"In progr
 const RISK_LBL = { 1:"low", 2:"med", 3:"high" };
 const PROG_CLS = { broken:"dead", blocked:"stall", live:"done", shipping:"done" };
 
-let sysFilter = "all", stateFilter = "all", sortBy = "priority", openId = null;
+let sysFilter = "all", stateFilter = "all", sortBy = "priority", openId = null, view = "cards";
 
 /* ─────────── chips ─────────── */
 function buildChips(){
@@ -553,6 +755,13 @@ function buildChips(){
 }
 function setSys(k){ sysFilter = k; render(); }
 function setState(k){ stateFilter = k; render(); }
+
+document.getElementById("viewSeg").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  view = b.dataset.view;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  render();
+});
 
 document.getElementById("sortSeg").addEventListener("click", e=>{
   const b = e.target.closest("button"); if(!b) return;
@@ -594,10 +803,31 @@ function card(f){
 
     const acts = f.acts.map((a,i)=>`<div class="act ${i===0&&f.age===0?'new':''}"><span class="d">${a[0]}</span>${a[1]}</div>`).join("");
 
+    /* release track — the multi-version sequence this feature sits inside */
+    let track = "";
+    if(f.track){
+      const T = TRACKS[f.track];
+      const steps = T.steps.map((s,i)=>`
+        <div class="tstep ${i<f.step?'done':''} ${i===f.step?'now':''}">
+          <i></i>
+          <div class="tn">${s.n}</div>
+          <div class="tl">${s.l}</div>
+          <div class="tv">${s.v} · ${s.d}</div>
+        </div>`).join("");
+      track = `<div class="dlbl">Release track — ${T.name} · step ${f.step+1} of ${T.steps.length}</div>
+        <div class="trk">${steps}</div>`;
+    } else {
+      track = `<div class="dlbl">Release</div>
+        <div class="trkone">Single step — targets <b>${f.ver==="—"?"no version train":"v"+f.ver}</b>,
+          est. ships <b>${f.ship}</b>. Effort <b>${f.eff}</b>.</div>`;
+    }
+
     drawer = `
       <div class="drawer" onclick="event.stopPropagation()">
         <div class="dlbl">Why it matters</div>
         <div class="why">${f.why}</div>
+
+        ${track}
 
         <div class="dlbl">Dependencies</div>
         <div class="depgrid">${depItems}</div>
@@ -626,6 +856,7 @@ function card(f){
       <span class="systag">${SYS[f.sys]}</span>
       <span class="vtag">${f.ver==="—"?"":"v"+f.ver}</span>
       <div class="prio" onclick="event.stopPropagation()">
+        <span class="eff ${f.eff==='—'?'none':''}" title="estimated effort">${f.eff}</span>
         <span class="rank ${f.p<=3?'top':''}">P${f.p}</span>
         <span class="arrows">
           <button onclick="bump('${f.id}',-1)">▲</button>
@@ -646,11 +877,85 @@ function card(f){
   </div>`;
 }
 
+/* ─────────── timeline view ─────────── */
+const pct = d => (Math.max(0, Math.min(HORIZON, d)) / HORIZON) * 100;
+
+/* the vertical rules drawn behind every bar: version trains + hard dates */
+function gridHTML(){
+  let g = DEADLINES.map(x => x.d2
+    ? `<span class="gl band" style="left:${pct(x.d)}%;width:${pct(x.d2)-pct(x.d)}%"></span>`
+    : `<span class="gl dl" style="left:${pct(x.d)}%"></span>`).join("");
+  g += MILES.map(m => `<span class="gl ver" style="left:${pct(m.d)}%"></span>`).join("");
+  return g;
+}
+
+function renderTimeline(){
+  const axis = [`<span class="now" style="left:0"></span>`,
+                `<span class="nowlbl">TODAY</span>`];
+  [{d:5,l:"AUG"},{d:36,l:"SEP"},{d:66,l:"OCT"},{d:97,l:"NOV"}].forEach(m=>
+    axis.push(`<span class="mo" style="left:${pct(m.d)}%">${m.l}</span>`));
+  MILES.forEach(m=>
+    axis.push(`<span class="ver" style="left:${pct(m.d)}%">${m.v}</span>`));
+  document.getElementById("tlaxis").innerHTML = axis.join("");
+
+  const v = visible();
+  const grid = gridHTML();
+  document.getElementById("tlbody").innerHTML = v.length ? v.map(f=>{
+    const st = f.paused ? "paused" : f.state;
+    const left = pct(f.t[0]), right = pct(f.t[1]);
+    return `
+    <div class="tlrow" onclick="fromTimeline('${f.id}')">
+      <div class="tlhead">
+        <span class="tlrank ${f.p<=3?'top':''}">P${f.p}</span>
+        <span class="tln">${f.name}</span>
+        <span class="tlmeta" onclick="event.stopPropagation()">
+          <span class="eff ${f.eff==='—'?'none':''}">${f.eff}</span>
+          <span class="tlv">${f.ver==="—"?"":"v"+f.ver}</span>
+          <span class="tlarr">
+            <button onclick="bump('${f.id}',-1)">▲</button>
+            <button onclick="bump('${f.id}',1)">▼</button>
+          </span>
+        </span>
+      </div>
+      <div class="tltrack">${grid}
+        <span class="tlbar ${st}" style="left:${left}%;width:${Math.max(right-left,2)}%"
+              title="${f.ship}"></span>
+      </div>
+    </div>`;
+  }).join("") : `<div class="empty">Nothing matches that filter.</div>`;
+}
+
+function fromTimeline(id){
+  view = "cards"; openId = id;
+  [...document.getElementById("viewSeg").children]
+    .forEach(b => b.classList.toggle("on", b.dataset.view === "cards"));
+  render();
+  const el = [...document.querySelectorAll("#list .fcard")]
+    .find(c => c.classList.contains("open"));
+  if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function renderDates(){
+  const items = [AVAIL, ...DEADLINES];
+  document.getElementById("dates").innerHTML = items.map(x=>
+    `<div class="dpill ${x.kind}">
+       <span class="dd">${x.when}</span><span class="dl">${x.l}</span>
+     </div>`).join("");
+}
+
 function render(){
   const v = visible();
-  document.getElementById("list").innerHTML = v.length
-    ? v.map(card).join("")
-    : `<div class="empty">Nothing matches that filter.</div>`;
+  const cards = view === "cards";
+  document.getElementById("list").style.display = cards ? "" : "none";
+  document.getElementById("tlwrap").classList.toggle("on", !cards);
+
+  if(cards){
+    document.getElementById("list").innerHTML = v.length
+      ? v.map(card).join("")
+      : `<div class="empty">Nothing matches that filter.</div>`;
+  } else {
+    renderTimeline();
+  }
   document.getElementById("countLbl").textContent =
     v.length === F.length ? `${F.length} features` : `${v.length} of ${F.length}`;
   buildChips();
@@ -729,6 +1034,7 @@ function openAtmo(){
 }
 document.getElementById("atmoToggle").addEventListener("click", openAtmo);
 
+renderDates();
 render();
 </script>
 </body>
