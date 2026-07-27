@@ -7,6 +7,9 @@
 <!-- HPT Portfolio — portfolio overview + command surface (CONCEPT MOCKUP, 2026-07-27).
      rev 2 (2026-07-27): renamed "Dispatch Console" → "HPT Portfolio" per naming decision;
      added per-card effort chips, in-drawer release tracks, and a full Timeline view.
+     rev 3 (2026-07-27): attention red-dots + banner + notification preferences panel;
+     an Activity view (reverse-chron change log) that also feeds each card's own strip;
+     and a "Related" chip list per card linking mockups, specs, gov rows, PRs and memory.
      One screen that answers "what is in flight everywhere" AND lets the VP push priority
      without opening GitHub. Feature-level approval replaces per-PR approval theater.
      All data is real in-flight work as of 2026-07-27; employee names are anonymized
@@ -317,6 +320,96 @@
   .tllegend span{ display:inline-flex; align-items:center; gap:5px; }
   .tllegend i{ width:11px; height:7px; border-radius:3px; display:inline-block; }
 
+  /* ── attention: red dots, banner, preferences ── */
+  .gear{ font:inherit; font-size:15px; line-height:1; color:var(--dim); background:#0e1217;
+    border:1px solid var(--line); border-radius:8px; padding:7px 9px; cursor:pointer;
+    position:relative; flex:0 0 auto; }
+  .gear.on{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .gear .gdot{ position:absolute; top:-3px; right:-3px; width:8px; height:8px; border-radius:50%;
+    background:var(--bad); border:1.5px solid var(--bg); }
+
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--bad); flex:0 0 auto;
+    box-shadow:0 0 0 3px rgba(255,59,48,.16); }
+  .dot.sm{ width:7px; height:7px; box-shadow:0 0 0 2px rgba(255,59,48,.16); }
+
+  .attnbar{ background:linear-gradient(180deg,rgba(255,59,48,.12),rgba(255,59,48,.04));
+    border:1px solid rgba(255,59,48,.4); border-radius:12px; padding:10px 12px;
+    margin-bottom:11px; cursor:pointer; }
+  .attnbar .abrow{ display:flex; align-items:center; gap:9px; }
+  .attnbar .abt{ font-size:13px; font-weight:800; color:#ff9b94; }
+  .attnbar .abc{ margin-left:auto; font-size:10px; font-weight:900; color:var(--dim); }
+  .attnlist{ display:none; margin-top:9px; padding-top:9px; border-top:1px solid rgba(255,59,48,.25); }
+  .attnbar.open .attnlist{ display:block; }
+  .ai2{ display:flex; gap:8px; align-items:flex-start; padding:7px 8px; background:#0e1217;
+    border:1px solid var(--line); border-radius:9px; margin-bottom:5px; }
+  .ai2 .k{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.4px;
+    border-radius:4px; padding:2px 5px; flex:0 0 auto; margin-top:1px; }
+  .k.incident{ background:var(--bad-dim); color:#ff7b73; }
+  .k.blocker{ background:var(--warn-dim); color:var(--warn); }
+  .k.overdue{ background:var(--warn-dim); color:var(--warn); }
+  .k.decision{ background:var(--acc-dim); color:#9ccbff; }
+  .k.reply{ background:var(--ok-dim); color:#46d684; }
+  .ai2 .n2{ font-size:11.5px; font-weight:700; line-height:1.35; }
+  .ai2 .r2{ font-size:10px; color:var(--dim); margin-top:2px; line-height:1.45; }
+  .ai2 .go{ margin-left:auto; font-size:12px; color:var(--faint); flex:0 0 auto; align-self:center; }
+
+  .attnline{ display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700;
+    color:#ff9b94; margin:-1px 0 6px; line-height:1.4; }
+
+  .prefs{ display:none; background:var(--panel2); border:1px solid var(--line2);
+    border-radius:12px; padding:12px 13px; margin-bottom:11px; }
+  .prefs.open{ display:block; }
+  .prefs h4{ margin:0 0 3px; font-size:12.5px; font-weight:800; }
+  .prefs .ph{ font-size:10.5px; color:var(--dim); line-height:1.5; margin-bottom:10px; }
+  .prow{ display:flex; align-items:flex-start; gap:9px; padding:8px 0;
+    border-top:1px solid var(--line); cursor:pointer; }
+  .prow:first-of-type{ border-top:none; }
+  .box{ width:17px; height:17px; border-radius:5px; border:1.5px solid var(--line2);
+    background:#0e1217; flex:0 0 auto; margin-top:1px; display:flex; align-items:center;
+    justify-content:center; font-size:11px; font-weight:900; color:transparent; }
+  .prow.on .box{ background:var(--acc); border-color:var(--acc); color:#08111d; }
+  .prow .pl{ font-size:12px; font-weight:700; line-height:1.35; }
+  .prow .pd2{ font-size:10px; color:var(--faint); margin-top:2px; line-height:1.45; }
+  .prow .tagx{ font-size:8px; font-weight:900; letter-spacing:.4px; color:var(--faint);
+    border:1px solid var(--line); border-radius:4px; padding:1px 4px; margin-left:6px;
+    text-transform:uppercase; }
+
+  /* ── activity feed ── */
+  .fdwrap{ display:none; } .fdwrap.on{ display:block; }
+  .fdday{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+    color:#5a6470; margin:13px 2px 7px; }
+  .fdday:first-child{ margin-top:4px; }
+  .fitem{ display:flex; gap:9px; padding:8px 9px; background:var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--line2);
+    border-radius:10px; margin-bottom:5px; }
+  .fitem.tapme{ cursor:pointer; }
+  .fitem.k-incident{ border-left-color:var(--bad); }
+  .fitem.k-reply{ border-left-color:var(--ok); }
+  .fitem.k-you{ border-left-color:var(--acc); }
+  .fitem .ft{ font-size:10px; font-weight:900; color:var(--faint); flex:0 0 40px;
+    font-variant-numeric:tabular-nums; padding-top:1px; }
+  .fitem .fw{ font-size:12px; line-height:1.45; min-width:0; }
+  .fitem .fw b{ font-weight:800; }
+  .fitem .who{ font-size:9px; font-weight:900; letter-spacing:.4px; text-transform:uppercase;
+    border-radius:4px; padding:1px 5px; margin-right:6px; background:#0e1217;
+    border:1px solid var(--line); color:var(--dim); }
+  .who.james{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .who.hr{ background:var(--ok-dim); border-color:rgba(22,192,96,.4); color:#46d684; }
+  .who.system, .who.floor{ background:var(--bad-dim); border-color:rgba(255,59,48,.35); color:#ff7b73; }
+  .fitem .fref{ font-size:9.5px; color:var(--faint); font-weight:700; margin-top:3px; }
+
+  /* ── related links ── */
+  .links{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:11px; }
+  .lchip{ display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700;
+    color:var(--dim); background:#0e1217; border:1px solid var(--line); border-radius:16px;
+    padding:5px 9px; cursor:pointer; text-decoration:none; max-width:100%; }
+  .lchip:active{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .lchip .lk{ font-size:8px; font-weight:900; letter-spacing:.4px; text-transform:uppercase;
+    color:var(--faint); }
+  .lchip.live{ border-color:var(--acc-line); color:#9ccbff; }
+  .lchip.live .lk{ color:#7da2c9; }
+  .lnone{ font-size:10.5px; color:var(--faint); margin-bottom:11px; font-style:italic; }
+
   /* ── toast ── */
   .toast{ position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px);
     background:var(--panel3); border:1px solid var(--line2); border-radius:12px;
@@ -342,9 +435,10 @@
 <body>
 
 <div class="pagehead">
-  <h1>HPT Portfolio — concept mockup <span style="color:var(--faint);font-weight:700;font-size:13px">rev 2</span></h1>
+  <h1>HPT Portfolio — concept mockup <span style="color:var(--faint);font-weight:700;font-size:13px">rev 3</span></h1>
   <p>One surface that answers <b>"what is in flight, everywhere"</b> and lets you <b>push priority from inside it</b>.
-     Two views over the same data: <b>Cards</b> for the pulse and the levers, <b>Timeline</b> for when things land.
+     Three views over the same data: <b>Cards</b> for the pulse and the levers, <b>Timeline</b> for when things land,
+     <b>Activity</b> for what changed and who changed it. Red dots mark what needs you; the ⚙ sets how you get told.
      Every item is real work as of <b>2026-07-27</b>.</p>
   <div class="wipnote"><b>Mockup only.</b> Nothing is wired to a live system — no PR is approved, no priority is
     stored. Employee names are anonymized. <b>Every date, effort estimate and hard deadline is a placeholder</b>
@@ -364,6 +458,33 @@
       <div class="k">Mon 27 Jul</div>
       <div class="v">2nd shift · 14:20</div>
     </div>
+    <button class="gear" id="gearBtn" title="Notification preferences">⚙<span class="gdot"></span></button>
+  </div>
+
+  <div class="prefs" id="prefs">
+    <h4>Notification preferences</h4>
+    <div class="ph">How this surface reaches you when something needs a decision.</div>
+    <div class="prow on" data-pref="digest"><span class="box">✓</span>
+      <div><div class="pl">Morning digest email <span class="tagx">not wired</span></div>
+        <div class="pd2">06:30 — everything that changed overnight, plus anything aging past its due-by.</div></div></div>
+    <div class="prow on" data-pref="dots"><span class="box">✓</span>
+      <div><div class="pl">In-app red dots</div>
+        <div class="pd2">Mark cards that need you. This one is live in the mockup — untick it and the dots go.</div></div></div>
+    <div class="prow on" data-pref="push"><span class="box">✓</span>
+      <div><div class="pl">Push for P1 blockers <span class="tagx">not wired</span></div>
+        <div class="pd2">Phone notification the moment something at P1 goes blocked or broken. Nothing below P1.</div></div></div>
+    <div class="prow" data-pref="quiet"><span class="box">✓</span>
+      <div><div class="pl">Quiet outside 06:00–18:00 <span class="tagx">not wired</span></div>
+        <div class="pd2">Hold everything except incidents until the next morning.</div></div></div>
+  </div>
+
+  <div class="attnbar" id="attnBar" onclick="toggleAttn()">
+    <div class="abrow">
+      <span class="dot"></span>
+      <span class="abt" id="attnTitle">4 need your attention</span>
+      <span class="abc" id="attnHint">tap ▾</span>
+    </div>
+    <div class="attnlist" id="attnList"></div>
   </div>
 
   <!-- ── ATMOSPHERE ── -->
@@ -432,6 +553,7 @@
     <div class="viewseg" id="viewSeg">
       <button data-view="cards" class="on">▤ Cards</button>
       <button data-view="timeline">▭ Timeline</button>
+      <button data-view="activity">≡ Activity</button>
     </div>
     <div class="chips" id="sysChips"></div>
     <div class="chips" id="stateChips"></div>
@@ -462,6 +584,14 @@
     <div class="footnote" style="margin-top:12px">
       Tap any bar to jump to its card. Bars reflow when you change priority — raise something and
       everything downstream of it moves with it.
+    </div>
+  </div>
+
+  <div class="fdwrap" id="fdwrap">
+    <div id="fdbody"></div>
+    <div class="footnote" style="margin-top:12px">
+      Every entry is something that actually happened. Tap one to open the feature it touched.
+      A card's own strip is this same feed, filtered to that feature.
     </div>
   </div>
 
@@ -710,6 +840,89 @@ const META = {
 };
 F.forEach(f => Object.assign(f, META[f.id]));
 
+/* ─────────── attention — what has a red dot and why ─────────── */
+const ATTN = {
+  "pg-latch":   [{k:"incident", r:"Writes have been dropping since the 06:12 host restart."}],
+  "v2-pilot":   [{k:"blocker",  r:"One app-setting change needs your OK before the pilot can start."},
+                 {k:"reply",    r:"HR replied — 12 of 33 numbers supplied, 21 still outstanding."}],
+  "az-do":      [{k:"overdue",  r:"Target date passed 2 days ago. Needs a new date or an explicit park."}],
+  "gov-ledger": [{k:"decision", r:"22 ledger rows are waiting on your call."}]
+};
+F.forEach(f => f.attn = ATTN[f.id] || []);
+
+/* ─────────── activity feed — today's real work, reverse chron ─────────── */
+const ACT = [
+ {d:"Today", t:"14:02", w:"Claude", x:"Published <b>HPT Portfolio</b> mockup rev 2 — timeline view, effort estimates, release tracks", fid:"disp-v2"},
+ {d:"Today", t:"13:40", w:"James",  x:"Renamed <b>Dispatch Console → HPT Portfolio</b>", fid:"disp-v2", k:"you"},
+ {d:"Today", t:"13:05", w:"James",  x:"Approved three additions to the portfolio surface", fid:"disp-v2", k:"you"},
+ {d:"Today", t:"12:38", w:"HR",     x:"Replied on the mobile-numbers ask — <b>12 of 33 supplied</b>, 21 outstanding", fid:"v2-pilot", k:"reply"},
+ {d:"Today", t:"11:40", w:"Floor",  x:"Reported the shear-line <b>tag printer down</b> — tag pilot paused", fid:null, k:"incident"},
+ {d:"Today", t:"11:12", w:"Claude", x:"Opened <b>PR #168</b> — ADP roster SFTP sanity check, 10 checks, shadow mode", fid:"adp-w0"},
+ {d:"Today", t:"11:08", w:"Claude", x:"Opened <b>PR #167</b> — WorkerOverrides provenance + request-state schema", fid:"adp-w1"},
+ {d:"Today", t:"10:55", w:"Claude", x:"Opened <b>PR #166</b> — Postgres pool-latch fix", fid:"pg-latch"},
+ {d:"Today", t:"10:31", w:"Claude", x:"Root cause confirmed — pool init latched <b>None</b> and never retried", fid:"pg-latch", k:"incident"},
+ {d:"Today", t:"10:02", w:"Claude", x:"Delivered <b>ADP alignment plan v2</b> — 6 waves, 3 decisions needed", fid:"adp-w2"},
+ {d:"Today", t:"09:48", w:"James",  x:"Ruled that an override is a <b>request to HR</b>, not a competing truth", fid:"adp-w1", k:"you"},
+ {d:"Today", t:"09:26", w:"Claude", x:"Reproduced the <b>Easy Auth login bounce</b> on both V2 register routes", fid:"v2-pilot", k:"incident"},
+ {d:"Today", t:"09:10", w:"James",  x:"Sent the ADP mobile-numbers request to HR", fid:"v2-pilot", k:"you"},
+ {d:"Today", t:"08:47", w:"Claude", x:"Delivered the <b>hardware pilot runbook</b> — Operator 1 + Operator 2 staged", fid:"v2-pilot"},
+ {d:"Today", t:"08:31", w:"Claude", x:"HPT Cloud QR format confirmed compatible — flag still <b>OFF</b> in prod", fid:"hw-qr"},
+ {d:"Today", t:"07:55", w:"Claude", x:"Tagged <b>110 governance rows</b> across six dimensions", fid:"gov-ledger"},
+ {d:"Today", t:"07:20", w:"Claude", x:"Governance triage — <b>22 rows need your decision</b>", fid:"gov-ledger"},
+ {d:"Today", t:"06:12", w:"System", x:"Host restart — Postgres writes stopped landing, <b>no alert fired</b>", fid:"pg-latch", k:"incident"},
+ {d:"Yesterday", t:"22:15", w:"Claude", x:"Locked the hourly nav-arrow position across at-now / off-now", fid:"hourly-scroll"},
+ {d:"Yesterday", t:"19:40", w:"Claude", x:"Opened <b>PR #160</b> — bar-size drill-down phase 2, flag OFF", fid:"drilldown"},
+ {d:"Yesterday", t:"18:02", w:"CI",     x:"Deploy #412 to hpt-wip-agent <b>succeeded</b> — app 1.32.0 / scanner 1.14.0", fid:null},
+ {d:"Yesterday", t:"16:30", w:"Claude", x:"Opened <b>PR #155</b> — deploy-drift guardrails A–D", fid:"disp-guard"},
+ {d:"Yesterday", t:"14:55", w:"Claude", x:"Found the console deploys from a feature branch — <b>master has none of the code</b>", fid:"disp-v2", k:"incident"},
+ {d:"Fri 24 Jul", t:"17:20", w:"James", x:"Set the Azure → DO target date — now <b>2 days past</b>", fid:"az-do", k:"you"},
+ {d:"Fri 24 Jul", t:"11:05", w:"Claude", x:"Opened <b>PR #124</b> — Tag Search v2, multi-field + shared scan engine", fid:"tag-search"}
+];
+
+/* ─────────── related artifacts per feature ─────────── */
+const MK = "https://houstonposttension.github.io/hpt-mockup-previews/";
+const LINKS = {
+  "v2-pilot": [ {k:"mockup", l:"v2-data-flow-2026-07-27", u:MK+"v2-data-flow-2026-07-27/"},
+                {k:"doc", l:"hr-mobile-phone-request-2026-07-27.md"},
+                {k:"doc", l:"hardware-pilot-runbook-2026-07-27.md"},
+                {k:"gov", l:"GA-WIP-246"}, {k:"memory", l:"v2-registration-data-flow-gaps"} ],
+  "adp-w0":   [ {k:"pr", l:"PR #168"}, {k:"gov", l:"GA-WIP-249"},
+                {k:"doc", l:"adp-master-plan-alignment-v2-2026-07-27.md"},
+                {k:"memory", l:"ga-wip-249-roster-promote-on-validate"} ],
+  "adp-w1":   [ {k:"pr", l:"PR #167"}, {k:"gov", l:"GA-WIP-248"},
+                {k:"doc", l:"adp-master-plan-alignment-v2-2026-07-27.md §C"},
+                {k:"memory", l:"ga-wip-248-worker-overrides-wave1"} ],
+  "adp-w2":   [ {k:"doc", l:"adp-master-plan-alignment-v2-2026-07-27.md §C"},
+                {k:"doc", l:"ADR-006-worker-adp-linkage-and-overrides.md"} ],
+  "pg-latch": [ {k:"pr", l:"PR #166"}, {k:"gov", l:"GA-WIP-062"},
+                {k:"memory", l:"dual-write-pool-init-holes"} ],
+  "do-pg":    [ {k:"gov", l:"GA-WIP-062"}, {k:"doc", l:"do-postgres-readiness-2026-07-09.md"},
+                {k:"memory", l:"ga-wip-062-postgres-zero-rows"} ],
+  "hourly-scroll":[ {k:"mockup", l:"continuous-scroll-hourly-2026-07-21", u:MK+"continuous-scroll-hourly-2026-07-21/"},
+                {k:"pr", l:"PR #108"}, {k:"memory", l:"a-plus-rolling-hourly-pr108"} ],
+  "drilldown":[ {k:"pr", l:"PR #160"}, {k:"gov", l:"GA-WIP-236"},
+                {k:"doc", l:"docs/spec/hourly-drilldown-2026-07-21.md"},
+                {k:"memory", l:"ga-wip-192-hourly-drilldown"} ],
+  "disp-v2":  [ {k:"mockup", l:"vp-dashboard-portfolio-2026-07-27 (this)", u:MK+"vp-dashboard-portfolio-2026-07-27/"},
+                {k:"pr", l:"PR #117"}, {k:"gov", l:"GA-WIP-203"},
+                {k:"memory", l:"dispatch-console-portfolio-stranded"} ],
+  "disp-guard":[ {k:"pr", l:"PR #155"}, {k:"gov", l:"GA-WIP-243"} ],
+  "hw-qr":    [ {k:"doc", l:"hardware-pilot-qr-and-roster-2026-07-27.md"}, {k:"gov", l:"GA-WIP-179"} ],
+  "gov-ledger":[ {k:"pr", l:"PR #165"}, {k:"doc", l:"governance-triage-2026-07-27.md"},
+                {k:"memory", l:"gov-ledger-tagging-backfill"} ],
+  "tag-search":[ {k:"pr", l:"PR #124"}, {k:"gov", l:"GA-WIP-217"},
+                {k:"memory", l:"ga-wip-217-tag-search-v2"} ],
+  "notify":   [ {k:"pr", l:"PR #119"}, {k:"gov", l:"GA-WIP-180"} ],
+  "secret-gate":[ {k:"gov", l:"GA-WIP-167"}, {k:"memory", l:"ga-wip-167-secret-scan-gate"} ],
+  "test-iso": [ {k:"pr", l:"PR #106"}, {k:"memory", l:"pytest-playwright-asyncio-conflict"} ],
+  "az-do":    [ {k:"gov", l:"GA-WIP-099"}, {k:"doc", l:"docs/deploy-migration-2026-07-04.md"},
+                {k:"memory", l:"compute-migration-eval-2026-07-03"} ],
+  "sh97":     [ {k:"gov", l:"GA-SH97-001 / 002 / 003"}, {k:"memory", l:"ga-wip-085-phase1-landed"} ],
+  "mem":      [ {k:"memory", l:"MEMORY.md — 48 facts"} ],
+  "ext":      []
+};
+F.forEach(f => f.links = LINKS[f.id] || []);
+
 /* version milestones + hard external dates — PLACEHOLDERS, correct these */
 const MILES = [
   {d:2,   v:"1.32.2"}, {d:16, v:"1.33.0"}, {d:37, v:"1.34.0"},
@@ -801,7 +1014,22 @@ function card(f){
       ...f.deps.blocks.map(d=>`<div class="depitem"><span class="ar">→</span><span class="dn">${d}</span><span class="ds">waits on this</span></div>`)
     ].join("") || `<div class="depitem"><span class="dn" style="color:var(--faint);font-weight:600">Nothing depends on this, and it waits on nothing.</span></div>`;
 
-    const acts = f.acts.map((a,i)=>`<div class="act ${i===0&&f.age===0?'new':''}"><span class="d">${a[0]}</span>${a[1]}</div>`).join("");
+    /* the card's own strip is the global feed, filtered to this feature */
+    const mine = ACT.filter(a=>a.fid===f.id).slice(0,5);
+    const acts = mine.length
+      ? mine.map((a,i)=>`<div class="act ${i===0&&a.d==="Today"?'new':''}">
+           <span class="d">${a.d==="Today"?a.t:a.d+" "+a.t}</span>
+           <span class="who ${a.w.toLowerCase()}">${a.w}</span>${a.x}</div>`).join("")
+      : f.acts.map((a,i)=>`<div class="act ${i===0&&f.age===0?'new':''}"><span class="d">${a[0]}</span>${a[1]}</div>`).join("");
+
+    /* related artifacts */
+    const links = f.links.length
+      ? `<div class="links">` + f.links.map(l => l.u
+          ? `<a class="lchip live" href="${l.u}" target="_blank" rel="noopener"
+               onclick="event.stopPropagation()"><span class="lk">${l.k}</span>${l.l} ↗</a>`
+          : `<span class="lchip" onclick="openLink('${l.k}','${l.l.replace(/'/g,"&#39;")}')">
+               <span class="lk">${l.k}</span>${l.l}</span>`).join("") + `</div>`
+      : `<div class="lnone">Nothing filed — no spec, no governance row, no PR. That is the finding.</div>`;
 
     /* release track — the multi-version sequence this feature sits inside */
     let track = "";
@@ -832,6 +1060,9 @@ function card(f){
         <div class="dlbl">Dependencies</div>
         <div class="depgrid">${depItems}</div>
 
+        <div class="dlbl">📎 Related</div>
+        ${links}
+
         <div class="dlbl">Recent activity</div>
         ${acts}
 
@@ -853,6 +1084,7 @@ function card(f){
   return `
   <div class="fcard st-${st} ${f.paused?'paused':''} ${isOpen?'open':''}" onclick="toggle('${f.id}')">
     <div class="fr1">
+      ${flagged(f) ? '<span class="dot"></span>' : ''}
       <span class="systag">${SYS[f.sys]}</span>
       <span class="vtag">${f.ver==="—"?"":"v"+f.ver}</span>
       <div class="prio" onclick="event.stopPropagation()">
@@ -865,6 +1097,7 @@ function card(f){
       </div>
     </div>
     <div class="fname">${f.name}</div>
+    ${flagged(f) ? `<div class="attnline"><span class="dot sm"></span>${f.attn[0].r}</div>` : ''}
     <div class="fr2">
       <span class="state ${st}">${stLbl}</span>
       <span class="risk r${f.risk}"><i></i>${RISK_LBL[f.risk]} risk</span>
@@ -906,6 +1139,7 @@ function renderTimeline(){
     return `
     <div class="tlrow" onclick="fromTimeline('${f.id}')">
       <div class="tlhead">
+        ${flagged(f) ? '<span class="dot sm"></span>' : ''}
         <span class="tlrank ${f.p<=3?'top':''}">P${f.p}</span>
         <span class="tln">${f.name}</span>
         <span class="tlmeta" onclick="event.stopPropagation()">
@@ -925,14 +1159,93 @@ function renderTimeline(){
   }).join("") : `<div class="empty">Nothing matches that filter.</div>`;
 }
 
-function fromTimeline(id){
-  view = "cards"; openId = id;
+/* jump to a feature's card from anywhere — timeline bar, feed entry, attention list */
+function jumpTo(id){
+  if(!id) return;
+  view = "cards"; openId = id; sysFilter = "all"; stateFilter = "all";
   [...document.getElementById("viewSeg").children]
     .forEach(b => b.classList.toggle("on", b.dataset.view === "cards"));
   render();
-  const el = [...document.querySelectorAll("#list .fcard")]
-    .find(c => c.classList.contains("open"));
+  const el = document.querySelector("#list .fcard.open");
   if(el) el.scrollIntoView({behavior:"smooth", block:"center"});
+}
+const fromTimeline = jumpTo;
+
+/* ─────────── attention ─────────── */
+const flagged = f => prefs.dots && f.attn.length > 0;
+
+function renderAttn(){
+  const hits = F.filter(f => f.attn.length);
+  const bar = document.getElementById("attnBar");
+  if(!prefs.dots || !hits.length){ bar.style.display = "none"; return; }
+  bar.style.display = "";
+  const n = hits.length;
+  document.getElementById("attnTitle").textContent =
+    `${n} need${n===1?"s":""} your attention`;
+  document.getElementById("attnList").innerHTML = hits.map(f =>
+    f.attn.map(a=>`
+      <div class="ai2" onclick="event.stopPropagation();jumpTo('${f.id}')">
+        <span class="k ${a.k}">${a.k}</span>
+        <div><div class="n2">${f.name}</div><div class="r2">${a.r}</div></div>
+        <span class="go">›</span>
+      </div>`).join("")).join("");
+}
+
+function toggleAttn(){
+  const b = document.getElementById("attnBar");
+  const on = b.classList.toggle("open");
+  document.getElementById("attnHint").textContent = on ? "tap ▴" : "tap ▾";
+}
+
+/* ─────────── notification preferences (mocked; only `dots` is live) ─────────── */
+const prefs = { digest:true, dots:true, push:true, quiet:false };
+
+document.getElementById("gearBtn").addEventListener("click", ()=>{
+  const p = document.getElementById("prefs");
+  const on = p.classList.toggle("open");
+  document.getElementById("gearBtn").classList.toggle("on", on);
+});
+
+document.querySelectorAll(".prow").forEach(row=>{
+  row.addEventListener("click", ()=>{
+    const key = row.dataset.pref;
+    prefs[key] = !prefs[key];
+    row.classList.toggle("on", prefs[key]);
+    if(key === "dots"){
+      renderAttn(); render();
+      toast("acc", prefs.dots ? "Red dots on" : "Red dots off",
+        prefs.dots ? "Cards needing a decision are marked again."
+                   : "Nothing is marked now — the items are still there, you just won't see them.");
+    } else {
+      toast("acc", `${prefs[key]?"On":"Off"} — ${row.querySelector(".pl").firstChild.textContent.trim()}`,
+        "Mockup only — this preference isn't wired to anything yet.");
+    }
+  });
+});
+
+/* ─────────── activity view ─────────── */
+function renderFeed(){
+  let out = "", day = "";
+  ACT.forEach(a=>{
+    if(a.d !== day){ day = a.d; out += `<div class="fdday">${day}</div>`; }
+    const k = a.k ? `k-${a.k}` : "";
+    const f = a.fid ? F.find(x=>x.id===a.fid) : null;
+    out += `
+      <div class="fitem ${k} ${f?"tapme":""}" ${f?`onclick="jumpTo('${a.fid}')"`:""}>
+        <span class="ft">${a.t}</span>
+        <div class="fw"><span class="who ${a.w.toLowerCase()}">${a.w}</span>${a.x}
+          ${f?`<div class="fref">${SYS[f.sys]} · ${f.name} ›</div>`:""}</div>
+      </div>`;
+  });
+  document.getElementById("fdbody").innerHTML = out;
+}
+
+function openLink(kind, label){
+  event.stopPropagation();
+  const where = { pr:"GitHub", gov:"the governance ledger", doc:"the repo",
+                  memory:"session memory", mockup:"the preview host" }[kind] || "its source";
+  toast("acc", `Would open ${label}`,
+    `Deep-links straight into <b>${where}</b>. Mockup — only the mockup links are live.`);
 }
 
 function renderDates(){
@@ -945,19 +1258,26 @@ function renderDates(){
 
 function render(){
   const v = visible();
-  const cards = view === "cards";
-  document.getElementById("list").style.display = cards ? "" : "none";
-  document.getElementById("tlwrap").classList.toggle("on", !cards);
+  document.getElementById("list").style.display = view==="cards" ? "" : "none";
+  document.getElementById("tlwrap").classList.toggle("on", view==="timeline");
+  document.getElementById("fdwrap").classList.toggle("on", view==="activity");
+  /* filters and sort are meaningless against a chronological log */
+  document.querySelector(".sortbar").style.display = view==="activity" ? "none" : "";
+  document.getElementById("sysChips").style.display = view==="activity" ? "none" : "";
+  document.getElementById("stateChips").style.display = view==="activity" ? "none" : "";
 
-  if(cards){
+  if(view === "cards"){
     document.getElementById("list").innerHTML = v.length
       ? v.map(card).join("")
       : `<div class="empty">Nothing matches that filter.</div>`;
-  } else {
+  } else if(view === "timeline"){
     renderTimeline();
+  } else {
+    renderFeed();
   }
   document.getElementById("countLbl").textContent =
-    v.length === F.length ? `${F.length} features` : `${v.length} of ${F.length}`;
+    view === "activity" ? `${ACT.length} events`
+      : (v.length === F.length ? `${F.length} features` : `${v.length} of ${F.length}`);
   buildChips();
 }
 
@@ -1035,6 +1355,7 @@ function openAtmo(){
 document.getElementById("atmoToggle").addEventListener("click", openAtmo);
 
 renderDates();
+renderAttn();
 render();
 </script>
 </body>
