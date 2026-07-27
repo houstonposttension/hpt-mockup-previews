@@ -12,6 +12,20 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ## Current mockups
 
+### VP Portfolio Command (dated 2026-07-27)
+
+- [VP Portfolio Command — portfolio overview + command surface (mobile)](https://houstonposttension.github.io/hpt-mockup-previews/vp-dashboard-portfolio-2026-07-27/index.html)
+
+One mobile surface that answers *what is in flight everywhere* **and** lets the VP push priority from
+inside it — replacing the scatter of status docs, the governance ledger view, and the dispatch console's
+PR queue. Top section is an **atmosphere strip** (today's incident, blockers, what's waiting on HR,
+agent capacity). Below it, every feature in flight as a card carrying system, feature, target version,
+lifecycle state, risk and dependencies. Tap a card to expand: why it matters, what it blocks and what
+blocks it, recent activity, and the levers — raise/lower priority (with downstream reflow), pause/resume
+(cascades to dependents), and **approve once at the feature level**, which carries to every PR under it
+instead of asking per-PR. Filter by system or state, sort by priority / risk / recency. All cards are
+real in-flight work as of 2026-07-27; nothing is wired to a live system and worker names are anonymized.
+
 ### HPT Cloud — Dispatch Command Center (dated 2026-07-26)
 
 - [Dispatch Command Center — 10 frames (AI-assisted stressing sub dispatch)](https://houstonposttension.github.io/hpt-mockup-previews/dispatch-command-center-2026-07-26/index.html)
