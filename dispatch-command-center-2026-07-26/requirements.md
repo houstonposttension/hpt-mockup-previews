@@ -1,6 +1,6 @@
 # HPT Cloud — Dispatch Requirements
-**Version 0.2** · 2026-07-26 · Owner: James Brady (HPT), for external consultant build.
-Visual reference: [`index.html`](./index.html) (10-frame mockup) in this same folder.
+**Version 0.3** · 2026-07-26 · Owner: James Brady (HPT), for external consultant build.
+Visual reference: [`index.html`](./index.html) (10-frame mockup) + [`weather-reschedule-email.md`](./weather-reschedule-email.md) in this same folder.
 
 ---
 
@@ -11,252 +11,253 @@ The Dispatch surface at `cloud.houstonposttension.com/dispatch/*` lets an intern
 **Out of scope (v1):** any sub-facing self-service app. All external events (subcontractor unavailability, weather delays, site delays) enter the system through the dispatcher.
 
 **Users (v1):**
-- **Dispatcher** (primary) — currently Maria Juarez. Lives in Command Center all day.
+- **Dispatcher** (primary) — Alexandra Euyoque (real user; earlier draft called her "Maria Juarez" as illustrative). Lives in Command Center all day.
 - **Ops admin** — sets up sub profiles, capacity, zones, and edits AI rules; not a daily user.
 - **Read-only** (VP / GM) — dashboards + drill-down + rule change history.
 
-**Non-users (v1):** subcontractors themselves. They receive the nightly PDF; nothing else.
+**Non-users (v1):** subcontractors themselves. They receive the nightly PDF (see §6). A sub-facing photo-capture app is a v2 target (see §11).
+
+**Customer feedback integrated in this version (from 2026-07-26 call with Alexandra):**
+- Weather email notification wanted; goes to superintendents, **never to engineers**.
+- Nightly PDF format: **do not** reorder by subdivision — keep by day. Field issues / any stop with notes color-coded red.
+- Apartment stress rate confirmed at 3 min/cable (2× base). Other task types use base rate; no other job-type overrides for v1.
+- **New business rule surfaced** (informational — not v1 UI): if crew is dispatched despite weather advice from HPT and finds the site too wet to work, HPT charges a **$100 dry-trip fee**. This is billing-side, out of scope for the Dispatch surface but noted for future integration.
 
 ---
 
-## Section 1 — Manager AI Interaction (v1 priority)
+## Section 1 — Manager AI Interaction (v1 priority) — *unchanged from v0.2*
 
-The dispatcher is the sole intake for external events that affect scheduling. She needs three complementary intake modes, each shown in the mockup:
-
-### 1.1 Natural language event input · **frame 7**
-
-- A persistent chat-style input anchored at the bottom of the Command Center viewport (dictation supported via device mic).
-- Free-text messages parsed by an LLM into structured events with these fields:
-  - `sub_id` (identified from natural mention, disambiguated if needed)
-  - `event_type` (unavailability, weather delay, site delay, sick, incident, other)
-  - `date_range` (from / through, in local Houston time)
-  - `reason` (equipment, vehicle, personal, other with free-text)
-  - `confidence` (0.00–1.00)
-  - `raw_text` (the original user input, preserved for audit)
-- A parse-preview card renders below the input as she types (debounced) or after speech-to-text completes.
-- The card shows detected fields + a computed impact preview (stops affected, hours displaced, nearest available subs).
-- Primary action button: **Preview proposed changes** (opens frame 3 side-by-side pattern). Secondary: **Edit fields**, **Apply**.
-
-**Acceptance criteria:**
-- **AC-NL-1**: Parse preview renders within **500 ms** of typing pause (300 ms input debounce) or 800 ms after mic-release.
-- **AC-NL-2**: When any parsed field has confidence < 75%, that field renders with a "Please confirm" warning and the **Apply** button is disabled until confirmed or edited.
-- **AC-NL-3**: When a sub name is ambiguous (e.g., "Julio" matches multiple), preview shows a chooser rather than guessing.
-- **AC-NL-4**: `raw_text` is stored alongside the structured event and viewable in the audit log.
-- **AC-NL-5**: Impact preview (stops affected, hours displaced, nearest subs) computes in a single roundtrip and renders in the same card within 800 ms of the parse completing.
-- **AC-NL-6**: **Apply** is idempotent — clicking twice does not create duplicate unavailability records.
-
-### 1.2 Quick actions with structured forms · **frame 8**
-
-- A "Quick Actions" bar above the Command Center content with **5 buttons** for the highest-frequency event types:
-  1. 🔧 **Sub unavailable** — equipment / vehicle / personal
-  2. ☁️ **Weather delay** — routes to weather-flag flow (frame 4)
-  3. 🤒 **Sub sick** — one-off unavailability, single day default
-  4. 🚫 **Site not ready** — flags a specific site, not a sub
-  5. 🚗 **Traffic / incident** — same-day disruption, one sub
-- Tapping a button opens a **structured form** with fields specific to that event type.
-- "Sub unavailable" form fields: sub (searchable dropdown), date range (from / through), reason (equipment / vehicle / personal / other + free-text if other), optional notes.
-- **Impact preview** computes live as fields fill: number of impacted stops, hours displaced, nearest subs with available capacity.
-- Primary action: **Preview reassignment** (opens frame 3 side-by-side).
-
-**Acceptance criteria:**
-- **AC-QA-1**: Every quick-action form completes to **Preview reassignment** in ≤ 4 keyboard-focused inputs from a Tab-navigating user.
-- **AC-QA-2**: Impact preview recomputes within **300 ms** of any field change.
-- **AC-QA-3**: The structured event payload written to the DB matches the schema produced by the natural-language parser (§1.1) — the two intake paths must be interchangeable downstream.
-- **AC-QA-4**: If a form is opened via a quick-action button, the source is tagged (`intake_source = "quick_action"`) in the audit log; natural-language intake is tagged `"nl_input"`; AI-initiated alerts are tagged `"ai_alert"`.
-
-### 1.3 AI-initiated alerts · **frame 9**
-
-- An **Alerts** section at the top of the Command Center home, **above** the AI Suggestion Queue.
-- Alerts are generated by scheduled signals the system monitors:
-  - **Weather forecast** (external API — NOAA or equivalent). Trigger: adverse-weather day within 5-day horizon that overlaps a zone with scheduled outdoor stops.
-  - **GPS-lag** (sub-truck telematics — integration TBD). Trigger: sub hasn't moved from an assigned stop for > 150% of estimated stop time.
-  - **Site-ready signal** (external — GC portal or CWT integration where available). Trigger: flagged blocker or ready-status change.
-  - **Overdue thresholds** (internal). Trigger: task > 3 days past expected date.
-- Each alert card shows: title, source with detection timestamp and provider name, contextual data, suggested action with reasoning, action buttons specific to the alert type (not generic Approve/Reject).
-- **Every alert card MUST cite the rule that triggered it** (see §2.3). Small text at the bottom of the card: `Triggered by rule ALERT-WEATHER-01 (v1.2)` — links to the rule detail in the AI Rules Registry (frame 10).
-
-**Acceptance criteria:**
-- **AC-AL-1**: Alerts are audit-logged whether approved, snoozed, or dismissed — immutable log with dispatcher identity + timestamp + optional reason.
-- **AC-AL-2**: Snooze options: 1h, 4h, 24h, until tomorrow, custom.
-- **AC-AL-3**: An **Alert Log** view accessible from the alerts header shows all alerts (active + resolved) with filter/search over the last 90 days.
-- **AC-AL-4**: Dismissing an alert accepts an optional 1-line reason.
-- **AC-AL-5**: Alert source configuration (which sources are enabled, thresholds per source) is admin-editable via a **Configure sources** modal — but the *sources themselves* are AI-rule–driven (§2), not a separate configuration surface.
-
-### 1.4 Cross-cutting AI principles (apply to §1.1, §1.2, §1.3, and the AI Suggestion Queue)
-
-- **No black-box actions.** Every AI proposal shows: (a) data source / signal that triggered it, (b) the reasoning (why this proposal), (c) the before/after visual of the impact, (d) the **rule that generated it** (§2.3).
-- **Every AI action is human-approved in v1.** No auto-apply.
-- **Every proposal is traceable.** Approved, rejected, snoozed, and dismissed proposals are all logged with dispatcher identity, timestamp, and any note.
-- **Rejection captures a reason** (optional 1-line note) that feeds back to weight future proposals of the same type.
-- **Future graduation path** (v2 or later, gated behind a per-rule configuration toggle): low-risk rule categories (`AutoApply`) may be flagged for auto-apply with post-hoc notification once dispatcher trust is established. Governed by rule status transitions in §2.
+See prior v0.2. §1.1 natural language input · §1.2 quick actions · §1.3 AI-initiated alerts · §1.4 cross-cutting AI principles. All acceptance criteria (AC-NL-*, AC-QA-*, AC-AL-*) remain.
 
 ---
 
-## Section 2 — AI Rules Registry (v1 priority)
+## Section 2 — AI Rules Registry (v1 priority) — *carried forward, with 2 updates*
 
-### 2.1 Purpose
+Full spec unchanged from v0.2 (data model, API contract, rule categories, governance, ISO 9001 alignment).
 
-Every AI action in the system — optimizer proposals, alerts, constraints — is generated by an explicit **rule** stored in the AI Rules Registry. The registry is a first-class, versioned, auditable surface with two audiences:
+**Updates to seed rules:**
 
-- **Developer side**: structured schema the consultant implements; the AI reads all Active rules on every optimization pass.
-- **User side** (dispatcher + ops admin): browsable, filterable UI (frame 10) showing which rules are currently active, what they do, who enabled them and when, and every change ever made.
+- **`ALERT-GPS-STALL-01`** — source changed from truck telematics to **sub-app photo metadata (GPS + EXIF timestamp)**. Trigger condition rewrites: "sub has not uploaded a geotagged photo from the assigned stop within 150% of estimated stop time." Rationale: HPT does not have telematics access on sub trucks; the practical GPS source is the mandatory job-photo-capture flow in the sub-facing app (v2). For v1, this rule remains in **Draft** status until the sub app ships. Existing rule definition in the registry updated; version bumped to v1.1 (draft).
+- **New rule `NOTIFY-WEATHER-EMAIL-01`** — category: `Alert` (follow-on action). Governs the customer email notification triggered by dispatcher approval of a weather reschedule. Full spec: see [`weather-reschedule-email.md`](./weather-reschedule-email.md) in this folder. Parameters (debounce, business-hours window, engineer-role filter, max hold) are all in this rule's `params_current` and follow standard change-history discipline.
 
-This is the audit trail that satisfies both internal governance and **ISO 9001 alignment** — the rules registry IS the auditable record of AI decision-making inside HPT operations.
+---
 
-### 2.2 Data model
+## Section 3 — Capacity Model (v1 priority — NEW)
+
+The optimizer's core currency is *hours*. All capacity decisions flow from three tables.
+
+### 3.1 Per-sub daily working hours matrix
+
+Working hours **vary per sub per weekday**. Not a single "8 hrs/day" number. Julio may work 6 hours Monday but 10 hours Saturday.
+
+**Schema:**
 
 ```
-Rule {
-  rule_id            string    // kebab-case, category-prefixed, e.g. "ALERT-WEATHER-01"
-  category           enum      // Optimization | Alert | AutoApply | Constraint
-  name               string    // Short human-readable, ~60 chars
-  description_plain  text      // Plain-English "what this rule does" (dispatcher-readable)
-  trigger_definition text      // Condition spec (structured pseudo-code or DSL — see 2.4)
-  action_definition  text      // What the AI proposes when the rule fires
-  params_schema      json      // JSON Schema for tunable parameters (draft-07)
-  params_current     json      // The actual current values matching params_schema
-  version            string    // semver-ish, e.g. "1.2" or "0.3" (drafts start at 0.x)
-  status             enum      // Active | Draft | Retired
-  activated_by       string    // User ID that most recently activated
-  activated_at       timestamp
-  edit_history       EditRecord[]   // Append-only, see below
-  created_by         string
-  created_at         timestamp
-}
-
-EditRecord {
-  actor              string    // User ID
-  actor_role         enum      // dispatcher | ops_admin | consultant | system
-  timestamp          timestamp
-  change_summary     string    // Machine-readable diff summary
-  change_reason      text      // Human-provided rationale (required)
-  reviewer           string    // For material changes, a second identity
-  rollback_plan      text      // Required on Active→Active edits
-  previous_version   string
-  new_version        string
+SubWorkingHours {
+  sub_id       string
+  weekday      enum   // Sun | Mon | Tue | Wed | Thu | Fri | Sat
+  hours        decimal(4,2)   // 0.00 to 24.00; 0 means not working that day
 }
 ```
 
-### 2.3 Rendering rule — every AI proposal cites its source rule
+- Primary key: `(sub_id, weekday)`.
+- Editable in Frame 6 (Capacity setup).
+- The optimizer treats these as *available* hours — actual capacity for a given date = `hours` for that weekday, minus any weather flags, unavailability events, or other overrides.
 
-**Every AI-generated card in the UI MUST render a citation line at the bottom:**
+### 3.2 Task-type rates
 
-```
-Triggered by rule ALERT-WEATHER-01 (v1.2)
-```
+Every task has an execution rate. Rates are keyed by task type; unit is "each" (a single cable, a single strand, etc.).
 
-Tapping the rule ID navigates to that rule's detail view in the AI Rules Registry (frame 10). This applies to:
-- Every card in the AI Suggestion Queue (Command Center, frame 1)
-- Every card in the AI Alerts inbox (frame 9)
-- The detailed proposal in the Approval Queue (frame 3)
-- Any inline AI recommendation embedded in other views (e.g., over-cap warning in frame 2)
-
-Cards where multiple rules combined to produce a proposal cite each — most-primary rule first, chained (e.g., `OPT-CAP-01 (v1.3) + ALERT-EQUIPMENT-01 (v1.0)`).
-
-### 2.4 API contract
-
-**Runtime read (AI-side):**
+**Schema:**
 
 ```
-GET /api/rules?status=Active
-→ returns array of Rule objects
+TaskTypeRate {
+  task_type_id     string   // e.g., "strands.stress"
+  task_type_label  string   // e.g., "Strands — Stress (L)"
+  base_minutes_per_unit  decimal(6,2)
+  unit             string   // "each"
+}
 ```
 
-- The AI reads all Active rules on **every optimization pass** (typically nightly + on-demand).
-- Rules are combined by category: Optimization + Constraint rules feed the OR-Tools objective function; Alert rules run as scheduled monitors; AutoApply rules (v2+) execute their action directly.
-- Draft and Retired rules are visible in the registry UI but never affect AI behavior.
+**Seed rows (from the current Stressing Report labor items; consultant to fill in from full task-type catalog):**
 
-**Governance write (admin/dispatcher-side) — proposal-review-activate flow:**
+| task_type_id | Label | base_minutes_per_unit |
+|---|---|---|
+| `strands.cut` | Strands — Cut | 1.0 |
+| `strands.grout` | Strands — Grout | 1.5 |
+| `strands.stress` | Strands — Stress (L) | 1.5 |
+| `strands.paint` | Strands — Paint | 1.0 |
+| `strands.field_issues` | Strands — Field Issues | — (variable; est per site, not per unit) |
+| `strands.engineer_letter` | Strands — Engineer Letter | — (no unit; admin task) |
+
+**Note:** Field Issues and Engineer Letter are non-unit tasks; capacity math treats them as flat `estimated_minutes` on the SiteVisit rather than `cables × rate`.
+
+**Task type catalog:** the seed list above is drawn from the Stressing Report PDF. Full task catalog lives in HPT's master Excel spreadsheet — placeholders here to be replaced when the consultant is given access. All non-Strands task types (e.g., Bins, Deliver, Rebar-related tasks) follow the same schema.
+
+### 3.3 Task-type × job-type rate overrides
+
+Some job types execute a task differently. Only combinations that differ from the base rate need an override row.
+
+**Schema:**
 
 ```
-POST /api/rules                                    // create Draft
-PATCH /api/rules/{id}?action=edit                  // edit Draft (versions to 0.x+1)
-PATCH /api/rules/{id}?action=submit_for_activation // Draft → pending review
-PATCH /api/rules/{id}?action=activate              // pending review → Active (requires reviewer identity)
-PATCH /api/rules/{id}?action=retire                // Active → Retired
+JobTypeRateOverride {
+  task_type_id     string
+  job_type         enum   // "Apartment" | "Residential"
+  minutes_per_unit decimal(6,2)   // overrides base_minutes_per_unit for this combination
+}
 ```
 
-- Every write **appends** to `edit_history`; the history is **immutable** (never destructive).
-- Active → Active edits (e.g., tuning `probability_threshold` from 60% → 70%) also write to `edit_history` and require `change_reason` and `rollback_plan`.
-- Activation of a new rule (Draft → Active) requires a reviewer identity distinct from the creator, and a summary of the shadow-mode observation period (recommended 2 weeks minimum for Alert rules).
+**Seed rows (v1):**
 
-**History read:**
-
-```
-GET /api/rules/{id}/history            // full edit_history for one rule
-GET /api/rules/history?since=...       // system-wide change stream (for VP/audit view)
-```
-
-### 2.5 Rule categories
-
-- **Optimization** — feeds weights into the optimizer's objective function. Fires on every optimizer pass.
-- **Alert** — scheduled monitor that generates alert cards for the dispatcher. Fires on its own schedule (typically every 4h).
-- **Constraint** — hard rule the optimizer must respect. Violating a Constraint blocks the optimizer from producing that assignment.
-- **AutoApply** — v2+ only. Fires and applies action directly without dispatcher approval. Post-hoc notification only. **No AutoApply rules ship in v1.**
-
-### 2.6 Seed rules for v1 (concrete examples the consultant implements)
-
-| rule_id | Category | Name | Status |
+| task_type_id | job_type | minutes_per_unit | Note |
 |---|---|---|---|
-| `OPT-DRIVE-01` | Optimization | Minimize daily drive time (weight in objective function) | Active |
-| `OPT-ZONE-01` | Optimization | Prefer subs' assigned zones (penalty for out-of-zone) | Active |
-| `OPT-CAP-01` | Optimization | Never exceed sub's weekly capacity (hard constraint) | Active |
-| `ALERT-WEATHER-01` | Alert | Rain forecast in sub's zone → propose light day | Active |
-| `ALERT-GPS-STALL-01` | Alert | Sub GPS unchanged > 2h → propose check-in + redistribute | Active |
-| `ALERT-PAST-DUE-01` | Alert | Sub late > 20% this week → propose 30% capacity cut | Draft (activate after 2-week shadow) |
-| `CONSTRAINT-MIN-VISITS-01` | Constraint | Every sub gets ≥ 3 stops/week (retention floor) | Active |
+| `strands.stress` | Apartment | 3.0 | 2× base — apartments have denser cable layouts and access constraints (confirmed with Alexandra 2026-07-26) |
 
-Each seed rule ships with:
-- Full `description_plain`, `trigger_definition`, `action_definition`
-- A `params_schema` + reasonable `params_current` defaults
-- Initial `edit_history` entry documenting shadow-mode observation and activation reasoning
+Only one override for v1. Residential = base rate for everything. Other task types have no apartment override.
 
-### 2.7 Governance & change process (mini-ADR discipline)
+### 3.4 Effective per-site duration formula
 
-Rule additions and changes follow a lightweight ADR (Architecture Decision Record) discipline:
+For a SiteVisit with `n` tasks:
 
-1. **Draft** the rule (or edit) with `change_reason` and `rollback_plan` filled in.
-2. **Shadow-mode** period (Alert rules): rule fires but generates no dispatcher-visible action for a configured window (default 2 weeks). System logs what it would have proposed. Ops admin reviews.
-3. **Reviewer** activation: a second identity (typically ops-admin for dispatcher edits, or VP for ops-admin edits) approves activation. Recorded in `edit_history`.
-4. **Post-activation monitoring**: for the first 30 days after Active, the rule is flagged in the registry UI and any anomalies (spike in dismissals, drop in approval rate) generate a "Rule performance" alert to ops-admin.
-5. **Manager notification**: when the consultant or ops-admin changes a rule, the dispatcher sees a **Rule change** alert in her inbox with the summary + `change_reason`.
+```
+site_duration_minutes =
+    setup_minutes_per_site
+    +  Σ over tasks t at this site:
+       ( t.units × rate_for(t.task_type_id, site.job_type) )
+```
 
-### 2.8 ISO 9001 alignment
+Where `rate_for(task_type_id, job_type)` returns the override if one exists, else the base rate.
 
-The rules registry, edit history, and per-proposal rule citations together satisfy ISO 9001 clause 7.1.6 (organizational knowledge) and clause 8.5.1 (control of production and service provision) for AI-driven decision-making:
+### 3.5 Daily capacity check
 
-- Every AI decision is traceable to a versioned, human-authored rule.
-- Every rule change carries actor identity, timestamp, rationale, reviewer, and rollback plan.
-- The change log is append-only (immutable).
-- Dispatcher decisions on AI proposals are separately logged (§1.4), giving a full audit chain from AI signal → AI proposal → human decision → operational outcome.
+For a given sub on a given date:
 
-### 2.9 Acceptance criteria
+```
+daily_load_minutes =
+    Σ over assigned_site_visits:
+       site_duration_minutes(sv)
+    +  Σ over consecutive_stop_pairs:
+       drive_time_minutes(from_sv, to_sv)     // see §4
 
-- **AC-RR-1**: Registry list view (frame 10) loads all rules within 200 ms.
-- **AC-RR-2**: Every AI proposal card in the app renders a citation line linking to its source rule; no AI proposal card ships without one.
-- **AC-RR-3**: Editing a param on an Active rule is blocked until `change_reason` and `rollback_plan` are provided.
-- **AC-RR-4**: Draft → Active transition is blocked until a reviewer identity distinct from the creator confirms.
-- **AC-RR-5**: `edit_history` is append-only enforced at the DB level (no update / delete permission on the history table for any application role).
-- **AC-RR-6**: A rule detail view shows the last N=20 proposals the rule generated, with each proposal's approve / reject / dismiss status.
-- **AC-RR-7**: Disabling an Active rule (toggle off) requires a confirmation dialog citing the number of proposals the rule generated in the last 30 days.
-- **AC-RR-8**: The rules registry API supports read-only export of the full ruleset (JSON) for external audit review.
+daily_capacity_minutes = SubWorkingHours(sub_id, weekday_of(date)) * 60
+                       - weather_flag_reduction(sub_id, date)
+                       - unavailability_reduction(sub_id, date)
 
----
+sub_is_over_capacity = daily_load_minutes > daily_capacity_minutes
+```
 
-## Sections still to draft (v0.3 target)
+The optimizer rejects assignments that would push `daily_load_minutes > daily_capacity_minutes` (hard constraint, per rule `OPT-CAP-01`).
 
-- **Section 3 — Data model.** Entities: `Sub`, `SubCompany`, `Task`, `SiteVisit`, `Zone`, `WeatherFlag`, `Assignment`, `OptimizerRun`, `Alert`, `Event`, `AuditLog`. Field-by-field.
-- **Section 4 — Optimizer objective and constraints.** Formal statement suitable for OR-Tools or equivalent. Objective composed from active `Optimization` rules; hard constraints from active `Constraint` rules.
-- **Section 5 — Capacity profile schema and math.** Per frame 6.
-- **Section 6 — Nightly PDF generation spec.** Per frame 5.
-- **Section 7 — Command Center primary view spec.** Per frame 1.
-- **Section 8 — Approval queue spec.** Per frame 3.
-- **Section 9 — Weather flagging spec.** Per frame 4.
-- **Section 10 — Sub detail view spec.** Per frame 2.
-- **Section 11 — Roles and permissions.** Dispatcher, ops admin, read-only.
-- **Section 12 — Audit log spec.** Retention, viewer UI, export.
-- **Section 13 — Integration points.** External systems: GC portals, telematics, weather API, HPT WIP scanner / ADP / ClickUp (integration boundaries only).
+### 3.6 Acceptance criteria
+
+- **AC-CAP-1**: Frame 6 renders a 7-cell weekday hours matrix per sub; each cell is inline-editable and validates 0.00 ≤ hours ≤ 24.00.
+- **AC-CAP-2**: Frame 6 renders the task-type rate table with per-row edit; changes require confirmation and write to the `TaskTypeRate` history log.
+- **AC-CAP-3**: The task-type × job-type override table is a separate list; adding a new override requires selecting an existing `task_type_id` and `job_type` (no free-text).
+- **AC-CAP-4**: When a rate changes, all future optimizer runs use the new rate; past assignments' recorded durations are not retroactively rewritten (auditability).
+- **AC-CAP-5**: Capacity strips in Frame 1 (Command Center) render `daily_load_minutes / daily_capacity_minutes` using the formula in §3.5, including drive time from §4.
 
 ---
 
-*Version 0.2 hand-off — §1 Manager AI Interaction and §2 AI Rules Registry are complete for consultant build. Remaining sections are stubbed and will be drafted in follow-up passes.*
+## Section 4 — Drive Time (v1 priority — NEW)
+
+Drive time between consecutive stops on a sub's route must count toward `daily_load_minutes` (§3.5). Currently the mockup's capacity math ignores drive time — this must be fixed for the numbers to reflect reality.
+
+### 4.1 Provider
+
+**Google Maps Distance Matrix API.** HPT already uses the Google stack; Distance Matrix is the mature product for driving-time lookups between address pairs.
+
+- API: `distancematrix.googleapis.com/maps/api/distancematrix/json`
+- Auth: API key stored in secrets manager (rotate quarterly).
+- Cost model: ~$5 per 1000 element lookups. Aggressive caching (§4.3) targets < 200 lookups per full optimizer run.
+
+### 4.2 When to compute
+
+Only compute drive time when a route actually changes. Never poll.
+
+**Trigger events:**
+
+1. Optimizer proposes a new route for a sub-day (compute drive time for each proposed consecutive-stop pair in that day).
+2. Dispatcher approves an AI proposal that changes assignments on any sub-day (recompute for affected days).
+3. Manual override from the dispatcher (drag-drop reorder in Frame 2).
+4. Nightly full recomputation (safety net — catches any stale routes for the next 7-day window).
+
+**Never compute:** on load, on hover, on filter change, on tab switch. Cache-only reads for display.
+
+### 4.3 Caching strategy
+
+**Two-tier cache:**
+
+- **L1 — computed route cache** (`RouteDriveTime`): keyed by `(sub_id, date)`. Stores the ordered list of stops + drive-time between each consecutive pair. Invalidated on any assignment change touching that sub-day.
+- **L2 — pairwise leg cache** (`AddressPairDriveTime`): keyed by `(from_lat_lng, to_lat_lng, time_of_day_bucket)`. TTL = 30 days. Time-of-day buckets: `morning_peak` (07:00–09:30), `midday` (09:30–15:30), `evening_peak` (15:30–19:00), `off_peak` (else). Traffic pattern changes slowly; a 30-day TTL keeps cost bounded.
+
+Before firing a Distance Matrix request, always check L2 first. Only fetch pairs not in cache. On a typical optimizer pass, we expect 80%+ cache hit rate.
+
+### 4.4 Traffic buffer
+
+**Configurable percentage buffer** (not hardcoded). Stored as a parameter on rule `OPT-DRIVE-01` in the AI Rules Registry.
+
+```
+padded_drive_minutes = raw_drive_minutes * (1 + traffic_buffer_pct)
+
+Default: traffic_buffer_pct = 0.15  (15%)
+Range: 0.0 to 0.5
+```
+
+Rationale: 15% is a modest cushion for typical traffic variance. Extreme-weather days may warrant temporary increase (weather flag can bump this).
+
+### 4.5 Impact on capacity math
+
+The `daily_load_minutes` formula in §3.5 already includes the drive-time summation. Implementation note: `drive_time_minutes(from_sv, to_sv)` returns `padded_drive_minutes` from the cache; only invokes the Distance Matrix API on a cache miss.
+
+### 4.6 Acceptance criteria
+
+- **AC-DR-1**: Every optimizer run summary reports: total Distance Matrix API calls, cache hit rate, and total drive-time minutes computed.
+- **AC-DR-2**: L2 cache TTL is 30 days by default; configurable via admin.
+- **AC-DR-3**: A route with no cache hits (worst case) for a sub-day with 8 stops fires ≤ 7 API calls (n-1 consecutive pairs).
+- **AC-DR-4**: The `traffic_buffer_pct` parameter is editable via the AI Rules Registry (rule `OPT-DRIVE-01`) and requires a `change_reason`.
+- **AC-DR-5**: Frame 2 (Sub detail) shows drive-time minutes between consecutive stops in the day view.
+- **AC-DR-6**: Cost monitoring dashboard exists showing daily API spend; alert if spend > $10/day for > 3 consecutive days.
+
+---
+
+## Section 5 — Weather Delay Customer Notifications (v1 priority — NEW)
+
+Governed by rule `NOTIFY-WEATHER-EMAIL-01` in the AI Rules Registry. Full email templates, batching mechanics, and engineer-role filter are in the companion doc [`weather-reschedule-email.md`](./weather-reschedule-email.md).
+
+### 5.1 Summary
+
+- **Trigger:** Dispatcher approves a weather-reschedule proposal.
+- **Recipients:** The order's contact person. Filtered — never engineers (Alexandra's requirement).
+- **Delivery:** Microsoft Graph API from `dispatch@houstonposttension.com` shared mailbox.
+- **Batching:** One email per contact per 10-minute debounce window, listing all affected orders in a table.
+- **UI:** Frame 4 (Weather Impact) shows a preview of what will be sent, count of orders and contacts, and count of engineer-filtered skips.
+
+### 5.2 Acceptance criteria
+
+- **AC-NW-1**: An approval of a weather reschedule affecting N orders across M distinct contacts produces at most M emails (never N).
+- **AC-NW-2**: Contacts with `role = "Engineer"` are excluded from the recipient list; skip is logged with reason `engineer_role_filter`.
+- **AC-NW-3**: The batching debounce is 10 minutes by default; configurable per rule `NOTIFY-WEATHER-EMAIL-01`.
+- **AC-NW-4**: If a batch is queued outside business hours (default 07:00–19:00 CT), it holds until 07:00 next business day.
+- **AC-NW-5**: Frame 4 preview shows the exact rendered email (single or batched template) before dispatcher clicks Save + run optimizer.
+- **AC-NW-6**: Every send and every skip writes an `AuditLog` entry with `event_type = "customer_notification"`.
+- **AC-NW-7**: On Graph API 5xx, the system retries with exponential backoff (30s, 2min, 10min, 60min); after 4 failures, alerts the dispatcher inbox.
+
+---
+
+## Sections still to draft (v0.4 target)
+
+- **Section 6 — Data model** (full entity list beyond what appears in §3, §4, §5). Entities: `Sub`, `SubCompany`, `Task`, `SiteVisit`, `Zone`, `WeatherFlag`, `Assignment`, `OptimizerRun`, `Alert`, `Event`, `AuditLog`, `Order`, `Contact`, `RouteDriveTime`, `AddressPairDriveTime`, `EmailIntent`, `TaskTypeRate`, `JobTypeRateOverride`, `SubWorkingHours`.
+- **Section 7 — Optimizer objective and constraints** (formal OR-Tools style, drawing on `Optimization` + `Constraint` rules from the registry).
+- **Section 8 — Nightly PDF generation spec** — per Frame 5. **Explicit non-goal (per Alexandra 2026-07-26):** do NOT reorder by subdivision. Keep day-grouped. Anything with notes → RED highlight.
+- **Section 9 — Command Center primary view spec** — per Frame 1.
+- **Section 10 — Approval queue spec** — per Frame 3.
+- **Section 11 — Sub-facing photo-capture app (v2 target)** — provides the GPS + timestamp data that `ALERT-GPS-STALL-01` depends on. Out of scope for v1 build but the consultant should know it is coming.
+- **Section 12 — Roles and permissions**.
+- **Section 13 — Audit log spec**.
+- **Section 14 — Integration points**: Google Maps Distance Matrix API (§4), Microsoft Graph API for email (§5, `weather-reschedule-email.md`), NOAA weather API (§1.3), plus internal-HPT boundaries (WIP scanner, ADP, ClickUp) which are not the consultant's concern.
+- **Section 15 — Business rules noted but out of v1 scope**: $100 dry-trip fee (billing-side, integrates with a separate billing surface later).
+
+---
+
+*Version 0.3 hand-off — §1 Manager AI Interaction, §2 AI Rules Registry, §3 Capacity Model, §4 Drive Time, §5 Weather Notifications are complete for consultant build. Remaining sections are stubbed and will be drafted in follow-up passes.*
