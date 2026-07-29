@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440, initial-scale=1">
+<title>HPT Dispatch - Frame 11: Zone Weather Config (mockup)</title>
+<style>
+  :root {
+    --bg: #0a1628;
+    --panel: #0f2547;
+    --panel-2: #142d55;
+    --panel-3: #1b3866;
+    --border: #223f6e;
+    --text: #e7edf7;
+    --muted: #93a3bd;
+    --accent: #4ea1ff;
+    --accent-2: #7dd3fc;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --chip: #1f3a63;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; line-height: 1.5; }
+  body { padding: 24px; max-width: 1440px; margin: 0 auto; }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1 { font-size: 24px; margin: 0 0 8px 0; }
+  h2 { font-size: 18px; margin: 0; font-weight: 600; }
+  h3 { font-size: 15px; margin: 0 0 8px 0; font-weight: 600; color: var(--accent-2); }
+  code { background: #12213b; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--accent-2); }
+
+  .mockup-note { background: var(--panel); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; color: var(--muted); }
+  .mockup-note strong { color: var(--text); }
+
+  .frame { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 24px; overflow: hidden; }
+  .frame-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--panel-2); border-bottom: 1px solid var(--border); }
+  .frame-num { color: var(--muted); font-size: 12px; }
+  .frame-body { padding: 20px; }
+  .app { background: var(--bg); border-radius: 6px; padding: 16px; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--panel-2); border-radius: 6px; margin-bottom: 14px; border: 1px solid var(--border); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { background: var(--accent); color: #052041; font-weight: 700; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+  .logo-txt { font-weight: 600; font-size: 13px; }
+  .logo-sub { font-size: 11px; color: var(--muted); }
+  .navpath { color: var(--muted); font-size: 12px; }
+  .navpath strong { color: var(--text); }
+  .userchip { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #052041; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; }
+
+  .two-col { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+  .zone-list { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+  .zone-list h3 { padding: 4px 6px 8px 6px; margin: 0 0 6px 0; border-bottom: 1px solid var(--border); }
+  .zone-row { padding: 10px 8px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; }
+  .zone-row + .zone-row { margin-top: 4px; }
+  .zone-row.selected { background: var(--panel-3); border-color: var(--accent); }
+  .zone-row:hover { background: var(--panel-3); }
+  .zone-row-name { font-weight: 600; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+  .zone-row-meta { color: var(--muted); font-size: 11px; margin-top: 3px; display: flex; justify-content: space-between; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .dot.ok { background: var(--ok); }
+  .dot.warn { background: var(--warn); }
+  .dot.bad { background: var(--bad); }
+  .dot.muted { background: var(--muted); }
+
+  .zone-detail { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; }
+  .detail-hd { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .detail-hd h3 { color: var(--text); font-size: 16px; margin: 0 0 4px 0; }
+  .detail-sub { color: var(--muted); font-size: 12px; }
+  .btn { background: var(--accent); color: #052041; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--accent-2); border: 1px solid var(--border); }
+  .btn.warn { background: var(--warn); color: #3a2b00; }
+  .btn.small { padding: 4px 8px; font-size: 11px; }
+  .btn + .btn { margin-left: 6px; }
+
+  .section-block { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  .kv { display: grid; grid-template-columns: 180px 1fr; gap: 8px; font-size: 13px; }
+  .kv .k { color: var(--muted); }
+  .kv .v { color: var(--text); }
+
+  .picker { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .picker .pill { padding: 4px 10px; border-radius: 999px; background: var(--chip); font-size: 11px; border: 1px solid var(--border); cursor: pointer; }
+  .picker .pill.on { background: var(--accent); color: #052041; border-color: var(--accent); font-weight: 600; }
+
+  table.matrix { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  table.matrix th, table.matrix td { padding: 6px 8px; border: 1px solid var(--border); text-align: center; }
+  table.matrix th { background: var(--panel-3); font-weight: 600; color: var(--accent-2); }
+  table.matrix td.phen { text-align: left; background: var(--panel-3); font-weight: 500; }
+  table.matrix td.override { background: rgba(78, 161, 255, 0.15); border-color: var(--accent); }
+  table.matrix td.na { color: var(--muted); font-style: italic; }
+
+  .snooze-panel { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .snooze-panel input[type="text"] { flex: 1; min-width: 220px; padding: 6px 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; }
+
+  .log-list { margin-top: 8px; }
+  .log-row { display: grid; grid-template-columns: 130px 1fr 100px; gap: 12px; padding: 8px 6px; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .log-row:last-child { border-bottom: none; }
+  .log-time { color: var(--muted); }
+  .log-status.ok { color: var(--ok); }
+  .log-status.warn { color: var(--warn); }
+  .log-status.bad { color: var(--bad); }
+
+  .ai-card { background: rgba(78, 161, 255, 0.08); border: 1px solid var(--accent); border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 13px; }
+  .ai-card-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .ai-badge { background: var(--accent); color: #052041; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+  .rule-cite { color: var(--muted); font-size: 11px; margin-top: 6px; }
+  .rule-cite a { color: var(--accent-2); }
+
+  .banner { padding: 10px 14px; border-radius: 6px; margin: 12px 0; font-size: 13px; }
+  .banner.info { background: rgba(78, 161, 255, 0.1); border-left: 3px solid var(--accent); }
+  .banner.warn { background: rgba(251, 191, 36, 0.1); border-left: 3px solid var(--warn); }
+
+  .status-live { color: var(--ok); font-weight: 600; }
+  .status-stale { color: var(--warn); font-weight: 600; }
+  .status-snooze { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+  <h1>HPT Dispatch — Frame 11 wireframe (standalone)</h1>
+  <div class="mockup-note">
+    <strong>Zone Weather Configuration</strong> — standalone wireframe delivered in requirements v0.5 (2026-07-29).
+    Companion to the main 10-frame mockup at
+    <a href="./index.html">index.html</a>.
+    Frame 11 will fold into the main mockup on the next visual pass; delivered separately here so the dev team can start building against it now.
+    Visual DNA (dark navy, panel/border palette, AI-card + rule-citation convention) mirrors the main mockup.
+    Specs: <code>requirements.md</code> v0.5 §6.7 + §6.8 · <code>weather-reschedule-email.md</code> (batched customer notify, engineer-role filter).
+  </div>
+
+  <div class="frame" id="f11">
+    <div class="frame-head">
+      <h2>11 &middot; Zone Weather Configuration</h2>
+      <span class="frame-num">Frame 11 of 11</span>
+    </div>
+    <div class="frame-body">
+      <div class="app">
+
+        <div class="topbar">
+          <div class="logo">
+            <div class="logo-mark">HPT</div>
+            <div>
+              <div class="logo-txt">HPT Cloud</div>
+              <div class="logo-sub">Dispatch</div>
+            </div>
+          </div>
+          <div class="navpath">Dispatch &middot; <strong>Zone Weather Config</strong></div>
+          <div class="userchip"><span class="avatar">AE</span> Alexandra Euyoque &middot; Dispatch</div>
+        </div>
+
+        <div class="banner info">
+          <strong>Per-zone weather auto-detection.</strong> NWS default (free, US-only, NOAA-backed).
+          Adaptive poll: hourly baseline &rarr; 30 min with outdoor stops in 24 h &rarr; 15 min when any Watch/Warning/Advisory is active.
+          Every threshold change and snooze is audit-logged (ISO 9001 &sect;8.5.4).
+        </div>
+
+        <div class="two-col">
+
+          <!-- LEFT: zone list -->
+          <div class="zone-list">
+            <h3>Zones &middot; 7</h3>
+
+            <div class="zone-row selected">
+              <div class="zone-row-name"><span><span class="dot warn"></span>Crosby / Dayton</span> <span class="status-live">live</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; last polled 4 min ago</span> <span>2 active</span></div>
+            </div>
+
+            <div class="zone-row">
+              <div class="zone-row-name"><span><span class="dot ok"></span>North / Woodlands</span> <span class="status-live">live</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; last polled 12 min ago</span> <span>0 active</span></div>
+            </div>
+
+            <div class="zone-row">
+              <div class="zone-row-name"><span><span class="dot ok"></span>Fulshear / Katy</span> <span class="status-live">live</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; last polled 8 min ago</span> <span>0 active</span></div>
+            </div>
+
+            <div class="zone-row">
+              <div class="zone-row-name"><span><span class="dot muted"></span>Richmond / Rosenberg</span> <span class="status-snooze">snoozed</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; snoozed 42 min &middot; 3h 18m left</span> <span>0 active</span></div>
+            </div>
+
+            <div class="zone-row">
+              <div class="zone-row-name"><span><span class="dot ok"></span>South / Alvin / Pearland</span> <span class="status-live">live</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; last polled 6 min ago</span> <span>0 active</span></div>
+            </div>
+
+            <div class="zone-row">
+              <div class="zone-row-name"><span><span class="dot bad"></span>East Houston / Baytown</span> <span class="status-stale">stale 33 min</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; last polled 33 min ago</span> <span>1 active</span></div>
+            </div>
+
+            <div class="zone-row">
+              <div class="zone-row-name"><span><span class="dot ok"></span>Montgomery / Conroe</span> <span class="status-live">live</span></div>
+              <div class="zone-row-meta"><span>NWS &middot; last polled 5 min ago</span> <span>0 active</span></div>
+            </div>
+
+            <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:flex; gap:6px;">
+              <button class="btn small ghost">+ Add zone</button>
+              <button class="btn small ghost">Edit polygons</button>
+            </div>
+          </div>
+
+          <!-- RIGHT: selected zone detail -->
+          <div class="zone-detail">
+            <div class="detail-hd">
+              <div>
+                <h3>Crosby / Dayton</h3>
+                <div class="detail-sub">Centroid <code>29.9127, -95.0611</code> &middot; polygon <a href="#">edit on map</a> &middot; NWS gridpoint <code>HGX 68,101</code></div>
+              </div>
+              <div>
+                <button class="btn ghost small">Test / fetch now</button>
+                <button class="btn small">Save</button>
+              </div>
+            </div>
+
+            <div class="banner warn">
+              <strong>&#9888; 2 active conditions.</strong>
+              Heavy rain forecast Mon-Wed (78% prob) fired <code>ALERT-WEATHER-RAIN-01</code>.
+              Sustained wind 27 mph forecast Tue 14:00-18:00 fired <code>ALERT-WEATHER-WIND-01</code>.
+              Composite <code>ALERT-WEATHER-01</code> is active. See <a href="./index.html#f4">Frame 4</a> for the flag &amp; notify preview.
+            </div>
+
+            <!-- Data source picker -->
+            <div class="section-block">
+              <h3>Data source</h3>
+              <div class="kv">
+                <div class="k">Provider</div>
+                <div class="v">
+                  <div class="picker">
+                    <div class="pill on">NWS (api.weather.gov)</div>
+                    <div class="pill">OpenWeather (paid)</div>
+                    <div class="pill">Custom feed</div>
+                  </div>
+                </div>
+                <div class="k">Poll cadence (adaptive)</div>
+                <div class="v">
+                  <span class="status-live">every 15 min</span>
+                  &middot; upgraded from 30-min baseline because an NWS Advisory is active.
+                  <span style="color:var(--muted); font-size:12px;">(auto-computed per req &sect;6.3 &mdash; read-only)</span>
+                </div>
+                <div class="k">Last poll</div>
+                <div class="v">4 min ago &middot; next in ~11 min &middot; 168 requests today (baseline budget 168-672)</div>
+                <div class="k">Auth</div>
+                <div class="v"><em>none required</em> &middot; NWS is public.</div>
+              </div>
+            </div>
+
+            <!-- Threshold matrix -->
+            <div class="section-block">
+              <h3>Active thresholds &mdash; per phenomenon &times; per task type</h3>
+              <div style="color:var(--muted); font-size:12px; margin-bottom:4px;">
+                Blue-highlighted cells are per-zone overrides of the base rule default.
+                Click any cell to edit &mdash; a confirmation modal will cite the rule ID + zone before writing.
+                Rules: <code>ALERT-WEATHER-RAIN-01</code> &middot; <code>-WIND-01</code> &middot; <code>-FREEZE-01</code> &middot; <code>-LIGHTNING-01</code> &middot; <code>-SNOW-01</code>.
+              </div>
+              <table class="matrix">
+                <thead>
+                  <tr>
+                    <th style="text-align:left;">Phenomenon</th>
+                    <th>strands.stress</th>
+                    <th>strands.grout</th>
+                    <th>strands.cut</th>
+                    <th>strands.paint</th>
+                    <th>strands.field_issues</th>
+                    <th>strands.engineer_letter</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="phen">Rain (in/hr)</td>              <td>&ge; 0.05</td> <td>&ge; 0.10</td> <td>&ge; 0.10</td> <td>&ge; 0.05</td> <td>&ge; 0.15</td> <td class="na">n/a</td></tr>
+                  <tr><td class="phen">Rain probability (%)</td>      <td>&ge; 60%</td>  <td>&ge; 70%</td>  <td>&ge; 70%</td>  <td>&ge; 60%</td>  <td>&ge; 75%</td>  <td class="na">n/a</td></tr>
+                  <tr><td class="phen">Wind sustained (mph)</td>      <td class="override">&ge; 22 <span style="font-size:9px; color:var(--accent-2);">zone override</span></td> <td>&ge; 30</td> <td>&ge; 30</td> <td>&ge; 25</td> <td>&ge; 35</td> <td class="na">n/a</td></tr>
+                  <tr><td class="phen">Wind gusts (mph)</td>          <td>&ge; 35</td>   <td>&ge; 40</td>   <td>&ge; 40</td>   <td>&ge; 35</td>   <td>&ge; 45</td>   <td class="na">n/a</td></tr>
+                  <tr><td class="phen">Freeze (forecast low &deg;F)</td> <td>&le; 32</td> <td>&le; 32</td> <td>&le; 34</td> <td>&le; 34</td> <td>&le; 32</td> <td class="na">n/a</td></tr>
+                  <tr><td class="phen">Lightning (miles)</td>         <td>&le; 10</td>   <td>&le; 10</td>   <td>&le; 10</td>   <td>&le; 10</td>   <td>&le; 10</td>   <td class="na">n/a</td></tr>
+                  <tr><td class="phen">Snow / ice (in accum.)</td>    <td>any</td>       <td>any</td>       <td>any</td>       <td>any</td>       <td>any</td>       <td class="na">n/a</td></tr>
+                </tbody>
+              </table>
+              <div style="color:var(--muted); font-size:11px; margin-top:6px;">
+                One override active for this zone: Wind sustained &rarr; 22 mph for stress (base 25).
+                Set by <strong>ops-admin</strong> on 2026-07-22 &middot; reason "Coastal gust profile hits stress ops sooner".
+              </div>
+            </div>
+
+            <!-- Snooze -->
+            <div class="section-block">
+              <h3>Dispatcher snooze</h3>
+              <div style="color:var(--muted); font-size:12px; margin-bottom:8px;">
+                Suppresses <em>new</em> auto-flags for this zone.
+                Existing flags stay until dispatcher clears them.
+                <strong>NWS Watch/Warning/Advisory at severity &ge; Moderate overrides any active snooze.</strong>
+              </div>
+              <div class="snooze-panel">
+                <div class="picker">
+                  <div class="pill">1 h</div>
+                  <div class="pill">4 h</div>
+                  <div class="pill">12 h</div>
+                  <div class="pill">24 h</div>
+                  <div class="pill">custom</div>
+                </div>
+                <input type="text" placeholder="Snooze reason (required, 1-200 chars)">
+                <button class="btn warn">Snooze zone</button>
+              </div>
+              <div style="color:var(--muted); font-size:11px; margin-top:6px;">
+                Current snooze: <em>none</em>.
+                Last snooze on this zone: 2026-07-24 &middot; 12 h &middot; reason "API false-positive, sky clear" &middot; auto-expired.
+              </div>
+            </div>
+
+            <!-- AI proposal card (matches Frame 4/10 pattern; every card cites its source rule) -->
+            <div class="section-block">
+              <h3>AI proposals &middot; this zone</h3>
+
+              <div class="ai-card">
+                <div class="ai-card-hd">
+                  <div><span class="ai-badge">AI proposal</span> &nbsp; Reduce wind-gust threshold for stress ops (30 &rarr; 27 mph)</div>
+                  <div>
+                    <button class="btn small ghost">Review</button>
+                    <button class="btn small">Approve</button>
+                  </div>
+                </div>
+                <div>
+                  Last 4 weeks: 3 wind flags at 27-29 mph triggered dispatcher-manual snooze because gust was in operational range.
+                  Suggest lowering per-zone override to 27 mph for stress to remove noise.
+                </div>
+                <div class="rule-cite">
+                  &#9881; Triggered by rule <a href="./index.html#f10"><code>ALERT-WEATHER-WIND-01</code></a> (v1.0) &middot; feedback pattern from Alert Log
+                </div>
+              </div>
+
+              <div class="ai-card">
+                <div class="ai-card-hd">
+                  <div><span class="ai-badge">AI proposal</span> &nbsp; Auto-clear snooze on Richmond / Rosenberg &mdash; forecast just cleared</div>
+                  <div>
+                    <button class="btn small ghost">Review</button>
+                    <button class="btn small">Approve</button>
+                  </div>
+                </div>
+                <div>
+                  Richmond / Rosenberg was snoozed 42 min ago (reason "API false-positive").
+                  NWS just refreshed &mdash; probability dropped from 68% to 12%, no forecast condition breaches thresholds.
+                  Recommend clearing the snooze so live auto-detection resumes.
+                </div>
+                <div class="rule-cite">
+                  &#9881; Triggered by rule <a href="./index.html#f10"><code>ALERT-WEATHER-01</code></a> composite (v1.2) &middot; NWS clear-signal detection
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent auto-flag log for this zone -->
+            <div class="section-block">
+              <h3>Recent auto-flag log &middot; this zone (14 days)</h3>
+              <div class="log-list">
+                <div class="log-row">
+                  <div class="log-time">2026-07-29 06:12</div>
+                  <div>Sustained wind 27 mph forecast Tue 14:00-18:00 &middot; <code>ALERT-WEATHER-WIND-01</code></div>
+                  <div class="log-status warn">active</div>
+                </div>
+                <div class="log-row">
+                  <div class="log-time">2026-07-29 05:48</div>
+                  <div>Heavy rain forecast Mon-Wed (78% prob) &middot; <code>ALERT-WEATHER-RAIN-01</code></div>
+                  <div class="log-status warn">active</div>
+                </div>
+                <div class="log-row">
+                  <div class="log-time">2026-07-24 14:22</div>
+                  <div>Rain forecast Thu (66% prob) &middot; <code>ALERT-WEATHER-RAIN-01</code></div>
+                  <div class="log-status ok">cleared</div>
+                </div>
+                <div class="log-row">
+                  <div class="log-time">2026-07-22 09:15</div>
+                  <div>Wind sustained 24 mph Sat AM &middot; <code>ALERT-WEATHER-WIND-01</code></div>
+                  <div class="log-status ok">cleared</div>
+                </div>
+                <div class="log-row">
+                  <div class="log-time">2026-07-18 11:03</div>
+                  <div>Rain forecast Fri (81% prob) &middot; <code>ALERT-WEATHER-RAIN-01</code></div>
+                  <div class="log-status ok">approved &rarr; reschedule</div>
+                </div>
+              </div>
+              <div style="margin-top:8px;">
+                <a href="./index.html#f10">View full alert log for this zone &rarr;</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup-note" style="margin-top: 32px;">
+    <strong>Companion specs:</strong>
+    <code>requirements.md</code> v0.5 (Auth &sect;9 + Multi-dispatcher &sect;8 + Per-zone weather &sect;6 + Rules Registry &sect;2 rebreak to 11 rules) &middot;
+    <code>weather-reschedule-email.md</code> (templates + batching + engineer-role filter) &middot;
+    <code>index.html</code> (Frames 1-10).
+    Frame 11 will inline into <code>index.html</code> on the next mockup pass.
+  </div>
+
+</body>
+</html>
