@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WIP Processor — Portfolio Snapshot (Persona View, REV 3.1)</title>
+<title>WIP Processor — Portfolio Snapshot (Persona View, REV 3.2)</title>
 <style>
   :root {
     --bg-app: #0e1217;
@@ -11,6 +11,7 @@
     --bg-panel-2: #1a1f26;
     --bg-card: #242b34;
     --bg-card-hover: #2a3038;
+    --bg-child-card: #1e242c;
     --border-soft: #39424e;
     --text-primary: #cfe0f5;
     --text-mid: #7da2c9;
@@ -23,6 +24,7 @@
     --accent-warn: #ffcf6b;
     --accent-danger: #ff7b73;
     --accent-danger-mid: #ff9b94;
+    --accent-purple: #cba6ff;
     --shadow-card: 0 1px 2px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.25);
   }
   * { box-sizing: border-box; }
@@ -202,6 +204,30 @@
     cursor: pointer;
   }
   select.surface-select:focus { outline: 1px solid var(--accent-blue); border-color: var(--accent-blue); }
+  .toggle-group {
+    display: inline-flex;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-left: 6px;
+  }
+  .toggle-group button {
+    background: transparent;
+    color: var(--text-mid);
+    border: none;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .toggle-group button + button { border-left: 1px solid var(--border-soft); }
+  .toggle-group button:hover { color: var(--text-primary); background: var(--bg-card); }
+  .toggle-group button.active {
+    background: var(--accent-blue);
+    color: #0a0d12;
+    font-weight: 600;
+  }
   .clear-btn {
     background: transparent;
     border: 1px solid var(--border-soft);
@@ -248,7 +274,6 @@
     margin-left: auto;
     font-style: italic;
   }
-  /* Softer accent for cross-cutting */
   section.persona[data-persona="Cross-cutting / Infra"] h2 {
     color: var(--text-mid);
     border-left-color: var(--text-dim);
@@ -269,13 +294,29 @@
     border-radius: 8px;
     padding: 14px 16px;
     box-shadow: var(--shadow-card);
-    transition: background 0.12s ease;
+    transition: background 0.12s ease, outline 0.2s ease;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
   }
   .card.hidden { display: none; }
   .card:hover { background: var(--bg-card-hover); }
+  .card.is-child {
+    background: var(--bg-child-card);
+    margin-left: 20px;
+    border-left: 2px solid var(--accent-purple);
+    padding-left: 14px;
+  }
+  .card.is-child .card-title { font-size: 12.5px; }
+  .card.is-child .risk-line { font-size: 11px; }
+  .card.is-parent {
+    border-top: 2px solid var(--accent-blue);
+  }
+  @media (min-width: 900px) {
+    .cards .card.is-child { grid-column: 1 / -1; }
+  }
+
   .card-head {
     display: flex;
     justify-content: space-between;
@@ -330,6 +371,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
+    align-items: center;
   }
   .surface-chip {
     background: rgba(125, 162, 201, 0.08);
@@ -353,6 +395,59 @@
     text-decoration: line-through;
     opacity: 0.85;
   }
+  .mockup-chip {
+    background: rgba(203, 166, 255, 0.10);
+    color: var(--accent-purple);
+    border: 1px solid rgba(203, 166, 255, 0.30);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.12s ease;
+  }
+  .mockup-chip:hover { background: rgba(203, 166, 255, 0.22); text-decoration: none; color: var(--accent-purple); }
+  .mockup-chip::before { content: "\25E7"; font-size: 11px; opacity: 0.9; }
+  .parent-chip {
+    background: rgba(156, 203, 255, 0.10);
+    color: var(--accent-blue);
+    border: 1px solid rgba(156, 203, 255, 0.30);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .parent-chip:hover { background: rgba(156, 203, 255, 0.22); }
+  .parent-chip .caret {
+    display: inline-block;
+    transition: transform 0.12s ease;
+    font-size: 9px;
+  }
+  .parent-chip.expanded .caret { transform: rotate(90deg); }
+  .child-of-chip {
+    background: rgba(203, 166, 255, 0.06);
+    color: var(--accent-purple);
+    border: 1px solid rgba(203, 166, 255, 0.22);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    user-select: none;
+  }
+  .child-of-chip:hover { background: rgba(203, 166, 255, 0.14); }
+  .child-of-chip::before { content: "\21B3  "; opacity: 0.7; }
 
   .risk-line {
     font-size: 11.5px;
@@ -396,7 +491,6 @@
   }
   .no-results.hidden { display: none; }
 
-  /* Recently shipped + backlog */
   .shipped-row {
     display: grid;
     grid-template-columns: 60px 80px 1fr 100px;
@@ -428,53 +522,53 @@
 <div class="page">
 
 <header class="top">
-  <h1>WIP Processor — Portfolio Snapshot <span class="rev">REV 3.1 · Persona View</span></h1>
+  <h1>WIP Processor — Portfolio Snapshot <span class="rev">REV 3.2 · Persona + Hierarchy View</span></h1>
   <div class="sub">
-    Generated 2026-07-28 EOD (Central) · Source: <code>houstonposttension/wip-processor</code> @ master ·
-    25 feature cards, grouped by who uses them.
+    Generated 2026-07-28 EOD (Central) · Hierarchy + mockups added 2026-07-29 · Source: <code>houstonposttension/wip-processor</code> @ master ·
+    25 feature cards (5 parents / 11 children / 9 standalone), grouped by who uses them.
   </div>
 </header>
 
 <!-- Atmosphere -->
 <details class="panel" open>
-  <summary>Atmosphere · live incidents, blockers, waiting-on-external <span class="caret">&#9654;</span></summary>
+  <summary>Atmosphere &middot; live incidents, blockers, waiting-on-external <span class="caret">&#9654;</span></summary>
   <div class="body">
     <div class="atm-grid">
       <div class="atm-section">
         <h3>Live Incidents</h3>
         <div class="atm-row">
           <span class="sev sev-HIGH">HIGH</span>
-          <div><strong>OptimoRoute API key in Log Analytics</strong> — <span class="note">Cleartext key still in shared Log Analytics; GA-WIP-245 approved but not remediated</span></div>
+          <div><strong>OptimoRoute API key in Log Analytics</strong> &mdash; <span class="note">Cleartext key still in shared Log Analytics; GA-WIP-245 approved but not remediated</span></div>
         </div>
         <div class="atm-row">
           <span class="sev sev-HIGH">HIGH</span>
-          <div><strong>Ops alerts silent</strong> — <span class="note">Since ~2026-05-18, every alert has gone nowhere; GA-WIP-180 PR #119 still DRAFT</span></div>
+          <div><strong>Ops alerts silent</strong> &mdash; <span class="note">Since ~2026-05-18, every alert has gone nowhere; GA-WIP-180 PR #119 still DRAFT</span></div>
         </div>
         <div class="atm-row">
           <span class="sev sev-MED">MED</span>
-          <div><strong>Std 68 drift alert will page red</strong> — <span class="note">TEAMS_WEBHOOK_URL secret not set; PR #178 designed to fail loudly until then</span></div>
+          <div><strong>Std 68 drift alert will page red</strong> &mdash; <span class="note">TEAMS_WEBHOOK_URL secret not set; PR #178 designed to fail loudly until then</span></div>
         </div>
         <div class="atm-row">
           <span class="sev sev-LOW">LOW</span>
-          <div><strong>WIP_TAG_HISTORY_V1 inert in prod</strong> — <span class="note">Missing FEATURE_ prefix on app setting; PR #182 documents the fix</span></div>
+          <div><strong>WIP_TAG_HISTORY_V1 inert in prod</strong> &mdash; <span class="note">Missing FEATURE_ prefix on app setting; PR #182 documents the fix</span></div>
         </div>
         <div class="atm-row">
           <span class="sev sev-LOW">LOW</span>
-          <div><strong>HIGH_RISK deploy Teams card is a no-op</strong> — <span class="note">Reads a webhook secret that never existed; deploy pipeline has been announcing "Teams alerted" while posting nothing</span></div>
+          <div><strong>HIGH_RISK deploy Teams card is a no-op</strong> &mdash; <span class="note">Reads a webhook secret that never existed; deploy pipeline has been announcing "Teams alerted" while posting nothing</span></div>
         </div>
       </div>
       <div class="atm-section">
         <h3>Blockers</h3>
-        <div class="atm-row"><div><strong>DO Postgres backfill</strong> — <span class="note">PR-DP4 (timestamptz binding) unshipped; backfill would still write 0 rows to 3/4 tables</span></div></div>
-        <div class="atm-row"><div><strong>Shift TTL cleanup (GA-WIP-212)</strong> — <span class="note">28 workers waiting on audit run</span></div></div>
-        <div class="atm-row"><div><strong>Dispatch Console v2 sunset</strong> — <span class="note">PR #117 must close per HPT Portfolio SC-3; 4 dependent PRs need keep/close</span></div></div>
-        <div class="atm-row"><div><strong>Driver-summary build</strong> — <span class="note">Q10 home-screen decision awaiting James</span></div></div>
+        <div class="atm-row"><div><strong>DO Postgres backfill</strong> &mdash; <span class="note">PR-DP4 (timestamptz binding) unshipped; backfill would still write 0 rows to 3/4 tables</span></div></div>
+        <div class="atm-row"><div><strong>Shift TTL cleanup (GA-WIP-212)</strong> &mdash; <span class="note">28 workers waiting on audit run</span></div></div>
+        <div class="atm-row"><div><strong>Dispatch Console v2 sunset</strong> &mdash; <span class="note">PR #117 must close per HPT Portfolio SC-3; 4 dependent PRs need keep/close</span></div></div>
+        <div class="atm-row"><div><strong>Driver-summary build</strong> &mdash; <span class="note">Q10 home-screen decision awaiting James</span></div></div>
       </div>
       <div class="atm-section">
         <h3>Waiting on External</h3>
-        <div class="atm-row"><div><strong>ADP threshold calibration</strong> — <span class="note">Needs a week of real ADP files + delivery-calendar confirm (since 2026-07-27)</span></div></div>
-        <div class="atm-row"><div><strong>Twilio A2P 10DLC + Mail.Send</strong> — <span class="note">A2P campaign scope + Exchange ApplicationAccessPolicy (since 2026-07-22)</span></div></div>
-        <div class="atm-row"><div><strong>Standards library teams-card deprecation</strong> — <span class="note">Library edit goes through governance project (since 2026-07-22)</span></div></div>
+        <div class="atm-row"><div><strong>ADP threshold calibration</strong> &mdash; <span class="note">Needs a week of real ADP files + delivery-calendar confirm (since 2026-07-27)</span></div></div>
+        <div class="atm-row"><div><strong>Twilio A2P 10DLC + Mail.Send</strong> &mdash; <span class="note">A2P campaign scope + Exchange ApplicationAccessPolicy (since 2026-07-22)</span></div></div>
+        <div class="atm-row"><div><strong>Standards library teams-card deprecation</strong> &mdash; <span class="note">Library edit goes through governance project (since 2026-07-22)</span></div></div>
       </div>
     </div>
   </div>
@@ -484,21 +578,23 @@
 <div class="filters" id="filterBar">
   <div class="filter-row" id="personaPills">
     <span class="filter-label">Persona</span>
-    <!-- pills injected by JS -->
   </div>
   <div class="filter-row">
     <span class="filter-label">Surface</span>
     <select id="surfaceSelect" class="surface-select">
       <option value="">All surfaces</option>
     </select>
-    <button id="clearBtn" class="clear-btn" type="button">Clear filters</button>
+    <span class="filter-label" style="margin-left:14px;">Hierarchy</span>
+    <div class="toggle-group" id="hierarchyToggle" role="tablist" aria-label="Hierarchy view">
+      <button type="button" data-mode="rollup" class="active" title="Hide children whose parent is already in view">Roll up</button>
+      <button type="button" data-mode="expand" title="Show every card in every persona it touches">Expand all</button>
+    </div>
+    <button id="clearBtn" class="clear-btn" type="button" style="margin-left:10px;">Clear filters</button>
     <span class="result-count" id="resultCount"></span>
   </div>
 </div>
 
-<div id="personaSections">
-  <!-- persona sections injected by JS -->
-</div>
+<div id="personaSections"></div>
 <div class="no-results hidden" id="noResults">No features match the current filter combination.</div>
 
 <!-- Recently Shipped -->
@@ -508,15 +604,15 @@
     <div class="shipped-row" style="font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; font-size:10.5px; border-bottom:1px solid var(--border-soft);">
       <div>PR</div><div>GA-WIP</div><div>Title</div><div>Merged</div>
     </div>
-    <div class="shipped-row"><div class="col-mid">#175</div><div class="col-mid">256</div><div>Sync auth_v2.json to prod's live authsettingsV2 (Std 68 §2 baseline)</div><div class="col-dim">2026-07-28 07:33</div></div>
+    <div class="shipped-row"><div class="col-mid">#175</div><div class="col-mid">256</div><div>Sync auth_v2.json to prod's live authsettingsV2 (Std 68 &sect;2 baseline)</div><div class="col-dim">2026-07-28 07:33</div></div>
     <div class="shipped-row"><div class="col-mid">#176</div><div class="col-mid">253</div><div>Governed-config drift gate + removal of two manual-apply traps</div><div class="col-dim">2026-07-28 08:01</div></div>
-    <div class="shipped-row"><div class="col-mid">#178</div><div class="col-mid">254</div><div>Daily governed-config drift alert to Teams (Std 68 §3)</div><div class="col-dim">2026-07-28 19:55</div></div>
-    <div class="shipped-row"><div class="col-mid">—</div><div class="col-mid">246</div><div>Easy Auth 5-min bounce — diag logs + pin encryption key</div><div class="col-dim">2026-07-27</div></div>
-    <div class="shipped-row"><div class="col-mid">—</div><div class="col-mid">247</div><div>Easy Auth nonceExpirationInterval differential probe (5m→15m)</div><div class="col-dim">2026-07-28</div></div>
-    <div class="shipped-row"><div class="col-mid">—</div><div class="col-mid">240</div><div>Rolling 24h Hourly chart y-axis auto-scale</div><div class="col-dim">2026-07-26</div></div>
-    <div class="shipped-row"><div class="col-mid">—</div><div class="col-mid">235</div><div>recreate-on-b1.ps1 CWD publish trap — silent prod rollback</div><div class="col-dim">2026-07-26</div></div>
-    <div class="shipped-row"><div class="col-mid">—</div><div class="col-mid">211</div><div>tagstore.get_tag_by_id() read path missing _safe_key()</div><div class="col-dim">2026-07-24</div></div>
-    <div class="shipped-row"><div class="col-mid">—</div><div class="col-mid">204</div><div>pg-bridge daemon-thread logging gap</div><div class="col-dim">2026-07-22</div></div>
+    <div class="shipped-row"><div class="col-mid">#178</div><div class="col-mid">254</div><div>Daily governed-config drift alert to Teams (Std 68 &sect;3)</div><div class="col-dim">2026-07-28 19:55</div></div>
+    <div class="shipped-row"><div class="col-mid">&mdash;</div><div class="col-mid">246</div><div>Easy Auth 5-min bounce &mdash; diag logs + pin encryption key</div><div class="col-dim">2026-07-27</div></div>
+    <div class="shipped-row"><div class="col-mid">&mdash;</div><div class="col-mid">247</div><div>Easy Auth nonceExpirationInterval differential probe (5m&rarr;15m)</div><div class="col-dim">2026-07-28</div></div>
+    <div class="shipped-row"><div class="col-mid">&mdash;</div><div class="col-mid">240</div><div>Rolling 24h Hourly chart y-axis auto-scale</div><div class="col-dim">2026-07-26</div></div>
+    <div class="shipped-row"><div class="col-mid">&mdash;</div><div class="col-mid">235</div><div>recreate-on-b1.ps1 CWD publish trap &mdash; silent prod rollback</div><div class="col-dim">2026-07-26</div></div>
+    <div class="shipped-row"><div class="col-mid">&mdash;</div><div class="col-mid">211</div><div>tagstore.get_tag_by_id() read path missing _safe_key()</div><div class="col-dim">2026-07-24</div></div>
+    <div class="shipped-row"><div class="col-mid">&mdash;</div><div class="col-mid">204</div><div>pg-bridge daemon-thread logging gap</div><div class="col-dim">2026-07-22</div></div>
   </div>
 </details>
 
@@ -527,26 +623,26 @@
     <div class="shipped-row" style="font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; font-size:10.5px; border-bottom:1px solid var(--border-soft); grid-template-columns:60px 220px 1fr 80px;">
       <div>PR</div><div>Type</div><div>Why not shipping</div><div>Owner</div>
     </div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#117</div><div class="col-mid">DRAFT — Dispatch Console v2</div><div>Superseded by HPT Portfolio (SC-3). Close by 2026-08-05.</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#119</div><div class="col-mid">DRAFT — Notify PR 1/2</div><div>Blocked on Twilio A2P scope check + Mail.Send Exchange policy</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#153</div><div class="col-mid">NOT FOR MERGE — dispatch-console deploy-drift filing</div><div>Ledger filing only; sunset sibling of Dispatch Console v2</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#155</div><div class="col-mid">Dispatch-console guardrails A–D</div><div>Base is feature/dispatch-console-v2, being retired; keep-or-close call</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#160</div><div class="col-mid">NOT FOR MERGE — GA-WIP-236 drill-down Phase 2</div><div>Awaiting James's review of design decisions</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#167</div><div class="col-mid">NOT FOR MERGE — WorkerOverrides schema</div><div>Schema-only; nothing reads/writes it until Wave 2</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#168</div><div class="col-mid">DO NOT MERGE — ADP roster SFTP sanity check</div><div>Ships in SHADOW mode; needs a week of real files to calibrate</div><div class="col-dim">James</div></div>
-    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#182</div><div class="col-mid">Docs-only — FEATURE_ prefix fix</div><div>Base is feature/dispatch-console-v2; couples to sunset call</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#117</div><div class="col-mid">DRAFT &mdash; Dispatch Console v2</div><div>Superseded by HPT Portfolio (SC-3). Close by 2026-08-05.</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#119</div><div class="col-mid">DRAFT &mdash; Notify PR 1/2</div><div>Blocked on Twilio A2P scope check + Mail.Send Exchange policy</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#153</div><div class="col-mid">NOT FOR MERGE &mdash; dispatch-console deploy-drift filing</div><div>Ledger filing only; sunset sibling of Dispatch Console v2</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#155</div><div class="col-mid">Dispatch-console guardrails A&ndash;D</div><div>Base is feature/dispatch-console-v2, being retired; keep-or-close call</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#160</div><div class="col-mid">NOT FOR MERGE &mdash; GA-WIP-236 drill-down Phase 2</div><div>Awaiting James's review of design decisions</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#167</div><div class="col-mid">NOT FOR MERGE &mdash; WorkerOverrides schema</div><div>Schema-only; nothing reads/writes it until Wave 2</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#168</div><div class="col-mid">DO NOT MERGE &mdash; ADP roster SFTP sanity check</div><div>Ships in SHADOW mode; needs a week of real files to calibrate</div><div class="col-dim">James</div></div>
+    <div class="shipped-row" style="grid-template-columns:60px 220px 1fr 80px;"><div class="col-mid">#182</div><div class="col-mid">Docs-only &mdash; FEATURE_ prefix fix</div><div>Base is feature/dispatch-console-v2; couples to sunset call</div><div class="col-dim">James</div></div>
   </div>
 </details>
 
 <footer>
-  WIP Processor Portfolio Snapshot · REV 3.1 (persona view) · Generated 2026-07-28 · <a href="https://github.com/houstonposttension/wip-processor" style="color: var(--accent-blue); text-decoration:none;">wip-processor @ master</a>
+  WIP Processor Portfolio Snapshot &middot; REV 3.2 (persona + hierarchy view) &middot; Generated 2026-07-28, hierarchy added 2026-07-29 &middot; <a href="https://github.com/houstonposttension/wip-processor" style="color: var(--accent-blue); text-decoration:none;">wip-processor @ master</a>
 </footer>
 
 </div>
 
 <script>
 // ==============================================
-// DATA — 25 feature cards, enriched with personas + surfaces
+// DATA - 25 feature cards, enriched with personas, surfaces, parent/child, mockups
 // ==============================================
 const PERSONA_ORDER = [
   "VP / Ops",
@@ -575,35 +671,54 @@ const PERSONA_HINTS = {
 };
 
 const FEATURES = [
-  { id:"do-postgres-migration", title:"DO Managed Postgres migration (GA-WIP-062)", state:"In Review", pri:1, priLabel:"P0", risk:"HIGH", riskReason:"Postgres has held 0 rows for ~2 weeks; PR #88 fixes the STORE_BACKEND fail-open trap but PR-DP4 (timestamptz string-binding) is unshipped, so the backfill would still write 0 rows to 3 of 4 tables.", effort:"weeks", prs:[88,89], gov:"GA-WIP-062", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
-  { id:"std-68-config-drift", title:"Std 68 governed-config drift enforcement + deploy identity", state:"Live", pri:2, priLabel:"P1", risk:"MEDIUM", riskReason:"Wave 1 (baseline sync + PR-time drift gate + daily Azure-side alert) shipped today; drift-alert PR #178 will fire red until a TEAMS_WEBHOOK_URL secret is set, and the HIGH_RISK deploy notification has been a no-op since inception.", effort:"days", prs:[175,176,178], gov:"GA-WIP-253", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra","Governance"] },
-  { id:"adp-master-alignment", title:"ADP-as-master alignment (SFTP sanity + WorkerOverrides)", state:"In Review", pri:3, priLabel:"P1", risk:"HIGH", riskReason:"Roster follows presence=active, absence=terminated. Today a truncated CSV would read as mass termination; today there is no validation at all. Both PRs marked NOT FOR MERGE pending James.", effort:"weeks", prs:[167,168], gov:"GA-WIP-248", personas:["HR / Admin","Supervisor"], surfaces:["Portal","Deploy / Infra"] },
-  { id:"notify-teams-replacement", title:"Notify: Twilio SMS + Graph email replacing dead Teams webhooks", state:"In Review", pri:4, priLabel:"P1", risk:"HIGH", riskReason:"Ops alerting has been dead since ~2026-05-18 (O365 connectors disabled). Every device-health, orphan-linker, lockout, and parser alert has silently gone nowhere for ~2 months. PR #119 is DRAFT; needs Twilio A2P 10DLC + Mail.Send grant before it can ship.", effort:"days", prs:[119], gov:"GA-WIP-180", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
-  { id:"hourly-continuous-drilldown", title:"Hourly continuous-scroll + bar-size drill-down", state:"In Progress", pri:5, priLabel:"P2", risk:"MEDIUM", riskReason:"MVP live; A+Rolling hybrid (PR #108) awaiting design confirmation; drill-down Phase 2 (PR #160) marked NOT FOR MERGE pending review; two of Small Single Bender / Radius Bender still have no expected rate.", effort:"weeks", prs:[108,160], gov:"GA-WIP-237", personas:["VP / Ops","Supervisor","Lead"], surfaces:["Hourly Dashboard"] },
-  { id:"phone-first-workers-bridge", title:"Phone-first gate reads live Workers table + portal error handling", state:"In Review", pri:6, priLabel:"P2", risk:"MEDIUM", riskReason:"Rebase of #125 (byte-identical code). Post-merge needs pilot roster app-settings + one-shift soak; digest fallback retired in a follow-up PR.", effort:"days", prs:[135], gov:"GA-WIP-165", personas:["Worker","HR / Admin"], surfaces:["Register / Auth","Portal","Scanner"] },
-  { id:"worker-feedback-in-app", title:"In-app worker feedback → GitHub Issues", state:"In Review", pri:7, priLabel:"P2", risk:"MEDIUM", riskReason:"Rescued from a stale worktree; base is 201 commits behind master, expect a 3-way merge in scan_poc.html (master extracted the scan engine to static/js/scan_engine.js). Flag default OFF so ship-day risk is low.", effort:"hours", prs:[181], gov:"GA-WIP-264", personas:["Worker"], surfaces:["Scanner"] },
-  { id:"shift-ttl-primary-shift-loss", title:"Supervisor-set primary_shift 7-day TTL data loss", state:"In Progress", pri:8, priLabel:"P1", risk:"MEDIUM", riskReason:"28 workers already lost their supervisor-assigned primary_shift. Steps 1/4/5 (audit, unit test, monitoring) still owed after fix landed.", effort:"hours", prs:[], gov:"GA-WIP-212", personas:["Supervisor","HR / Admin"], surfaces:["Portal"] },
-  { id:"optimoroute-key-log-leak", title:"OptimoRoute API key written to shared Log Analytics", state:"Approved", pri:9, priLabel:"P1", risk:"HIGH", riskReason:"Cleartext API key in every hourly poll's httpx URL log. Live in shared Log Analytics until remediated.", effort:"hours", prs:[], gov:"GA-WIP-245", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
-  { id:"postgres-cold-pool-race", title:"Postgres dual-write cold-pool race", state:"Approved", pri:10, priLabel:"P1", risk:"MEDIUM", riskReason:"First ~5s of writes after a worker cold-start silently drop from Postgres. Compounds with GA-WIP-062 zero-rows finding; needs to land before/with the backfill.", effort:"hours", prs:[], gov:"GA-WIP-252", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
-  { id:"dispatch-collector-restart", title:"Dispatch-console collector S4U 0x8007052F restart guard", state:"Approved", pri:11, priLabel:"P2", risk:"MEDIUM", riskReason:"Collector stopped silently while every health signal stayed green — same false-assurance class Std 68 exists to remove.", effort:"hours", prs:[], gov:"GA-WIP-251", personas:["Cross-cutting / Infra"], surfaces:["Dispatch Console","Deploy / Infra"] },
-  { id:"dispatch-console-v2-sunset", title:"Dispatch Console v2 — SUPERSEDED by HPT Portfolio", state:"Blocked", pri:12, priLabel:"P3", risk:"MEDIUM", riskReason:"HPT Portfolio PRD SC-3 states PR #117 must close as superseded. Open PRs #137, #153, #155, #182 all target a base being retired — each needs an individual keep/close call. Console itself stays running as the live app until Portfolio Wave 1 replaces it.", effort:"days", prs:[117,137,153,155,182], gov:"GA-WIP-203", personas:["VP / Ops","Supervisor","Project Manager"], surfaces:["Dispatch Console","HPT Portfolio"] },
-  { id:"driver-summary", title:"Driver pre-departure readiness view", state:"In Review", pri:13, priLabel:"P3", risk:"LOW", riskReason:"Docs-only PR (#180). Scope is bounded to pre-departure; OptimoRoute keeps route/nav/POD from departure onward. Q10 (home-screen decision) still open with James.", effort:"hours", prs:[180], gov:"GA-WIP-220", personas:["Driver"], surfaces:["Scanner"] },
-  { id:"test-isolation-xdist", title:"Re-enable pytest-xdist after sys.modules-leak fix", state:"In Review", pri:14, priLabel:"P2", risk:"LOW", riskReason:"Would return CI Test stage from ~30 min sequential back to 5–10 min parallel; no behaviour change.", effort:"hours", prs:[106], gov:"—", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
-  { id:"ledger-housekeeping-p3", title:"GA-WIP-221 local-repo cleanup filing + GA-WIP-217/218 collision fix", state:"In Review", pri:15, priLabel:"P3", risk:"LOW", riskReason:"Ledger diff is +1/-0; the four draft docs are byte-identical to the reviewed state on the superseded #134. Actual cleanup is NOT executed here — filing only.", effort:"hours", prs:[136], gov:"GA-WIP-221", personas:["Cross-cutting / Infra"], surfaces:["Governance"] },
-  { id:"tag-search-v2", title:"Tag Search v2 rewrite — multi-field/prefix search + shared scan engine", state:"Live", pri:16, priLabel:"P2", risk:"LOW", riskReason:"PR #124 shipped: multi-field/prefix search, shared scanner engine extraction to static/js/scan_engine.js, full audit trail. Flag WIP_TAG_HISTORY_V1 set 2026-07-24 was inert (missing FEATURE_ prefix — PR #182 documents the fix); once prefix is corrected the surface is live.", effort:"days", prs:[124,182], gov:"GA-WIP-217", personas:["Supervisor","Lead","Worker"], surfaces:["Tag Search","Scanner"] },
-  { id:"bins-compact-redesign", title:"Bins page compact redesign + unified active/historical search", state:"In Review", pri:17, priLabel:"P3", risk:"MEDIUM", riskReason:"James's called-out 'Bins rework'. Mockup + design note (2026-07-23) delivered; governance row GA-WIP-219 is DRAFT, not filed. Phase 1 buildable today; Phases 2/3 require new backend that does NOT exist. 8 open questions still owed by James.", effort:"weeks", prs:[], gov:"GA-WIP-219", personas:["Supervisor","Loader","Lead"], surfaces:["Bins Page","Portal"] },
-  { id:"supervisor-portal-dashboard", title:"Supervisor portal — role-based routing + production charts dashboard", state:"Proposed", pri:18, priLabel:"P2", risk:"MEDIUM", riskReason:"James's called-out 'Supervisor/Lead dashboard'. Sits on roadmap since 2026-06-15: supervisor SSO landing, 7 charts, role-based routing table. Hourly drilldown is one facet already shipped; the broader dashboard + routing is not. Blocks/overlaps with HPT Portfolio Wave 1 direction — needs scoping decision.", effort:"weeks", prs:[107], gov:"— (needs filing)", personas:["Supervisor","Lead","VP / Ops"], surfaces:["Portal","Hourly Dashboard","Register / Auth"] },
-  { id:"hpt-cloud-tag-integration", title:"HPT Cloud GUID tag scan + CSV enrichment bridge", state:"In Progress", pri:19, priLabel:"P2", risk:"MEDIUM", riskReason:"Skeleton shipped in PR #113 — GUID-only tags now become first-class 'HPT Cloud tag — details pending' entries rather than RAW orphans. CSV enrichment bridge is spec'd but that side is out of our control. Until CSV lands, every HPT Cloud tag counts as production with no property detail.", effort:"weeks", prs:[113], gov:"GA-WIP-179", personas:["Loader","Supervisor","Worker"], surfaces:["Scanner","Loader Review","Bins Page"] },
-  { id:"loader-category-status", title:"Loader screen — status by category + close-out gate (LEAN variant)", state:"In Review", pri:20, priLabel:"P2", risk:"MEDIUM", riskReason:"Variant C LEAN LOCKED at rev 15 (2026-07-24). Nine frames spec'd. Product goal is 'eliminate secondary delivery runs' via a close-out gate — the ROI, not another browse view. Rev 15 replaced OTP with in-app approval queue → spawned reusable hpt-approvals primitive. Not built; awaiting James's build-or-hold call.", effort:"weeks", prs:[], gov:"GA-WIP-193", personas:["Loader","Lead","Supervisor","Manager / Approver"], surfaces:["Loader Review","Portal"] },
-  { id:"hpt-approvals-service", title:"hpt-approvals — reusable approval queue primitive", state:"Proposed", pri:21, priLabel:"P2", risk:"MEDIUM", riskReason:"Spawned from loader design rev 15 — replaces OTP with an in-app approval inbox for lead/supervisor. Explicitly framed as REUSABLE: 'split close-out' is the first request_kind; scrap/void/price-override are later kinds. First real appearance of a supervisor/lead approvals dashboard.", effort:"weeks", prs:[], gov:"— (needs filing)", personas:["Lead","Supervisor","Manager / Approver"], surfaces:["Portal","Loader Review"] },
-  { id:"tag-history-v1", title:"Tag History Phase 1 — exact-ID lookup + business summary", state:"Live", pri:22, priLabel:"P2", risk:"LOW", riskReason:"PR #54 merged 2026-07-23. Feature-flagged WIP_TAG_HISTORY_V1 (default OFF). Prod app-setting was set 2026-07-24 without the FEATURE_ prefix so feature_enabled() never sees it — surface silently OFF in prod (PR #182 documents the fix).", effort:"days", prs:[54,182], gov:"GA-WIP-108", personas:["Supervisor","Lead","Worker"], surfaces:["Tag Search"] },
-  { id:"worker-field-gap-notifications", title:"Worker-field-gap notifications — HR + supervisor digest", state:"Proposed", pri:23, priLabel:"P3", risk:"MEDIUM", riskReason:"Backlog since 2026-07-13. Three gap types: ADP-side, portal-override, registration. Discovered via 2026-07-13 backfill where Bastidas silently skipped. Explicitly a downstream consumer of ADP roster runbook Phase 2 + Rebar Phase 1 solver dependency.", effort:"weeks", prs:[], gov:"— (needs filing)", personas:["HR / Admin","Supervisor"], surfaces:["Portal","Deploy / Infra"] },
-  { id:"table-storage-backup-gap", title:"Table Storage has no PITR/backup — scheduled export of mutable tables", state:"Approved", pri:24, priLabel:"P2", risk:"MEDIUM", riskReason:"Surfaced 2026-07-24 alongside GA-WIP-212 recovery — the only reason 28 shifts were recoverable was an unrelated audit table happening to retain them. Table Storage has no PITR/soft-delete/versioning at any tier. Bounded by GA-WIP-062 Postgres cutover.", effort:"hours", prs:[], gov:"GA-WIP-215", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
-  { id:"dual-write-to-do-postgres", title:"Dual Write to DO Managed Postgres (GA-WIP-062)", state:"In Progress", pri:25, priLabel:"P1", risk:"HIGH", riskReason:"Foundational fixes shipped 2026-07-22 – 07-28 (DP4 timestamptz binding PR #92, pool init race PR #166, auth baseline PR #175, drift gate PR #176); 1.32.4 five-layer probe showed dual-write healthy on both workers in prod. Remaining risk: PR #88 (fail-closed STORE_BACKEND) and PR #89 (schema drift reconciliation) still In Review — the last known-broken items before dual-write can be declared stable. GA-WIP-252 cold-pool race still drops a few writes/day during the 5s init window.", effort:"Ongoing — foundational work done; #88/#89 remaining ~2 days", prs:[88,89,92,166], gov:"GA-WIP-062", personas:["Cross-cutting / Infra","VP / Ops"], surfaces:["Deploy / Infra"] }
+  { id:"do-postgres-migration", title:"DO Managed Postgres migration (GA-WIP-062)", state:"In Review", pri:1, priLabel:"P0", risk:"HIGH", riskReason:"Postgres has held 0 rows for ~2 weeks; PR #88 fixes the STORE_BACKEND fail-open trap but PR-DP4 (timestamptz string-binding) is unshipped, so the backfill would still write 0 rows to 3 of 4 tables.", effort:"weeks", prs:[88,89], gov:"GA-WIP-062", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"], parentId:null, mockups:[] },
+  { id:"std-68-config-drift", title:"Std 68 governed-config drift enforcement + deploy identity", state:"Live", pri:2, priLabel:"P1", risk:"MEDIUM", riskReason:"Wave 1 (baseline sync + PR-time drift gate + daily Azure-side alert) shipped today; drift-alert PR #178 will fire red until a TEAMS_WEBHOOK_URL secret is set, and the HIGH_RISK deploy notification has been a no-op since inception.", effort:"days", prs:[175,176,178], gov:"GA-WIP-253", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra","Governance"], parentId:null, mockups:[] },
+  { id:"adp-master-alignment", title:"ADP-as-master alignment (SFTP sanity + WorkerOverrides)", state:"In Review", pri:3, priLabel:"P1", risk:"HIGH", riskReason:"Roster follows presence=active, absence=terminated. Today a truncated CSV would read as mass termination; today there is no validation at all. Both PRs marked NOT FOR MERGE pending James.", effort:"weeks", prs:[167,168], gov:"GA-WIP-248", personas:["HR / Admin","Supervisor"], surfaces:["Portal","Deploy / Infra"], parentId:null, mockups:[] },
+  { id:"notify-teams-replacement", title:"Notify: Twilio SMS + Graph email replacing dead Teams webhooks", state:"In Review", pri:4, priLabel:"P1", risk:"HIGH", riskReason:"Ops alerting has been dead since ~2026-05-18 (O365 connectors disabled). Every device-health, orphan-linker, lockout, and parser alert has silently gone nowhere for ~2 months. PR #119 is DRAFT; needs Twilio A2P 10DLC + Mail.Send grant before it can ship.", effort:"days", prs:[119], gov:"GA-WIP-180", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"], parentId:null, mockups:[] },
+  { id:"hourly-continuous-drilldown", title:"Hourly continuous-scroll + bar-size drill-down", state:"In Progress", pri:5, priLabel:"P2", risk:"MEDIUM", riskReason:"MVP live; A+Rolling hybrid (PR #108) awaiting design confirmation; drill-down Phase 2 (PR #160) marked NOT FOR MERGE pending review; two of Small Single Bender / Radius Bender still have no expected rate.", effort:"weeks", prs:[108,160], gov:"GA-WIP-237", personas:["VP / Ops","Supervisor","Lead"], surfaces:["Hourly Dashboard"], parentId:"supervisor-portal-dashboard", mockups:[
+    {label:"Continuous-scroll hourly", url:"https://houstonposttension.github.io/hpt-mockup-previews/continuous-scroll-hourly-2026-07-21/"},
+    {label:"Variant A + rolling chart", url:"https://houstonposttension.github.io/hpt-mockup-previews/variant-a-plus-rolling-chart-2026-07-20/"}
+  ] },
+  { id:"phone-first-workers-bridge", title:"Phone-first gate reads live Workers table + portal error handling", state:"In Review", pri:6, priLabel:"P2", risk:"MEDIUM", riskReason:"Rebase of #125 (byte-identical code). Post-merge needs pilot roster app-settings + one-shift soak; digest fallback retired in a follow-up PR.", effort:"days", prs:[135], gov:"GA-WIP-165", personas:["Worker","HR / Admin"], surfaces:["Register / Auth","Portal","Scanner"], parentId:"adp-master-alignment", mockups:[] },
+  { id:"worker-feedback-in-app", title:"In-app worker feedback into GitHub Issues", state:"In Review", pri:7, priLabel:"P2", risk:"MEDIUM", riskReason:"Rescued from a stale worktree; base is 201 commits behind master, expect a 3-way merge in scan_poc.html (master extracted the scan engine to static/js/scan_engine.js). Flag default OFF so ship-day risk is low.", effort:"hours", prs:[181], gov:"GA-WIP-264", personas:["Worker"], surfaces:["Scanner"], parentId:null, mockups:[] },
+  { id:"shift-ttl-primary-shift-loss", title:"Supervisor-set primary_shift 7-day TTL data loss", state:"In Progress", pri:8, priLabel:"P1", risk:"MEDIUM", riskReason:"28 workers already lost their supervisor-assigned primary_shift. Steps 1/4/5 (audit, unit test, monitoring) still owed after fix landed.", effort:"hours", prs:[], gov:"GA-WIP-212", personas:["Supervisor","HR / Admin"], surfaces:["Portal"], parentId:null, mockups:[] },
+  { id:"optimoroute-key-log-leak", title:"OptimoRoute API key written to shared Log Analytics", state:"Approved", pri:9, priLabel:"P1", risk:"HIGH", riskReason:"Cleartext API key in every hourly poll's httpx URL log. Live in shared Log Analytics until remediated.", effort:"hours", prs:[], gov:"GA-WIP-245", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"], parentId:null, mockups:[] },
+  { id:"postgres-cold-pool-race", title:"Postgres dual-write cold-pool race", state:"Approved", pri:10, priLabel:"P1", risk:"MEDIUM", riskReason:"First ~5s of writes after a worker cold-start silently drop from Postgres. Compounds with GA-WIP-062 zero-rows finding; needs to land before/with the backfill.", effort:"hours", prs:[], gov:"GA-WIP-252", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"], parentId:"do-postgres-migration", mockups:[] },
+  { id:"dispatch-collector-restart", title:"Dispatch-console collector S4U 0x8007052F restart guard", state:"Approved", pri:11, priLabel:"P2", risk:"MEDIUM", riskReason:"Collector stopped silently while every health signal stayed green - same false-assurance class Std 68 exists to remove.", effort:"hours", prs:[], gov:"GA-WIP-251", personas:["Cross-cutting / Infra"], surfaces:["Dispatch Console","Deploy / Infra"], parentId:"dispatch-console-v2-sunset", mockups:[] },
+  { id:"dispatch-console-v2-sunset", title:"Dispatch Console v2 - SUPERSEDED by HPT Portfolio", state:"Blocked", pri:12, priLabel:"P3", risk:"MEDIUM", riskReason:"HPT Portfolio PRD SC-3 states PR #117 must close as superseded. Open PRs #137, #153, #155, #182 all target a base being retired - each needs an individual keep/close call. Console itself stays running as the live app until Portfolio Wave 1 replaces it.", effort:"days", prs:[117,137,153,155,182], gov:"GA-WIP-203", personas:["VP / Ops","Supervisor","Project Manager"], surfaces:["Dispatch Console","HPT Portfolio"], parentId:null, mockups:[
+    {label:"Dispatch command center", url:"https://houstonposttension.github.io/hpt-mockup-previews/dispatch-command-center-2026-07-26/"},
+    {label:"V2 data flow", url:"https://houstonposttension.github.io/hpt-mockup-previews/v2-data-flow-2026-07-27/"}
+  ] },
+  { id:"driver-summary", title:"Driver pre-departure readiness view", state:"In Review", pri:13, priLabel:"P3", risk:"LOW", riskReason:"Docs-only PR (#180). Scope is bounded to pre-departure; OptimoRoute keeps route/nav/POD from departure onward. Q10 (home-screen decision) still open with James.", effort:"hours", prs:[180], gov:"GA-WIP-220", personas:["Driver"], surfaces:["Scanner"], parentId:null, mockups:[
+    {label:"Driver pre-departure summary", url:"https://houstonposttension.github.io/hpt-mockup-previews/driver-summary-2026-07-23/"}
+  ] },
+  { id:"test-isolation-xdist", title:"Re-enable pytest-xdist after sys.modules-leak fix", state:"In Review", pri:14, priLabel:"P2", risk:"LOW", riskReason:"Would return CI Test stage from ~30 min sequential back to 5-10 min parallel; no behaviour change.", effort:"hours", prs:[106], gov:"-", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"], parentId:null, mockups:[] },
+  { id:"ledger-housekeeping-p3", title:"GA-WIP-221 local-repo cleanup filing + GA-WIP-217/218 collision fix", state:"In Review", pri:15, priLabel:"P3", risk:"LOW", riskReason:"Ledger diff is +1/-0; the four draft docs are byte-identical to the reviewed state on the superseded #134. Actual cleanup is NOT executed here - filing only.", effort:"hours", prs:[136], gov:"GA-WIP-221", personas:["Cross-cutting / Infra"], surfaces:["Governance"], parentId:null, mockups:[] },
+  { id:"tag-search-v2", title:"Tag Search v2 rewrite - multi-field/prefix search + shared scan engine", state:"Live", pri:16, priLabel:"P2", risk:"LOW", riskReason:"PR #124 shipped: multi-field/prefix search, shared scanner engine extraction to static/js/scan_engine.js, full audit trail. Flag WIP_TAG_HISTORY_V1 set 2026-07-24 was inert (missing FEATURE_ prefix - PR #182 documents the fix); once prefix is corrected the surface is live.", effort:"days", prs:[124,182], gov:"GA-WIP-217", personas:["Supervisor","Lead","Worker"], surfaces:["Tag Search","Scanner"], parentId:"supervisor-portal-dashboard", mockups:[] },
+  { id:"bins-compact-redesign", title:"Bins page compact redesign + unified active/historical search", state:"In Review", pri:17, priLabel:"P3", risk:"MEDIUM", riskReason:"James's called-out 'Bins rework'. Mockup + design note (2026-07-23) delivered; governance row GA-WIP-219 is DRAFT, not filed. Phase 1 buildable today; Phases 2/3 require new backend that does NOT exist. 8 open questions still owed by James.", effort:"weeks", prs:[], gov:"GA-WIP-219", personas:["Supervisor","Loader","Lead"], surfaces:["Bins Page","Portal"], parentId:"supervisor-portal-dashboard", mockups:[
+    {label:"Bins page - compact redesign", url:"https://houstonposttension.github.io/hpt-mockup-previews/bins-page-compact-2026-07-23/"}
+  ] },
+  { id:"supervisor-portal-dashboard", title:"Supervisor portal - role-based routing + production charts dashboard", state:"Proposed", pri:18, priLabel:"P2", risk:"MEDIUM", riskReason:"James's called-out 'Supervisor/Lead dashboard'. Sits on roadmap since 2026-06-15: supervisor SSO landing, 7 charts, role-based routing table. Hourly drilldown is one facet already shipped; the broader dashboard + routing is not. Blocks/overlaps with HPT Portfolio Wave 1 direction - needs scoping decision.", effort:"weeks", prs:[107], gov:"- (needs filing)", personas:["Supervisor","Lead","VP / Ops"], surfaces:["Portal","Hourly Dashboard","Register / Auth"], parentId:null, mockups:[
+    {label:"Supervisor / Lead mobile", url:"https://houstonposttension.github.io/hpt-mockup-previews/supervisor-lead-mobile-2026-07-24/"},
+    {label:"VP dashboard portfolio (related)", url:"https://houstonposttension.github.io/hpt-mockup-previews/vp-dashboard-portfolio-2026-07-27/"}
+  ] },
+  { id:"hpt-cloud-tag-integration", title:"HPT Cloud GUID tag scan + CSV enrichment bridge", state:"In Progress", pri:19, priLabel:"P2", risk:"MEDIUM", riskReason:"Skeleton shipped in PR #113 - GUID-only tags now become first-class 'HPT Cloud tag - details pending' entries rather than RAW orphans. CSV enrichment bridge is spec'd but that side is out of our control. Until CSV lands, every HPT Cloud tag counts as production with no property detail.", effort:"weeks", prs:[113], gov:"GA-WIP-179", personas:["Loader","Supervisor","Worker"], surfaces:["Scanner","Loader Review","Bins Page"], parentId:null, mockups:[] },
+  { id:"loader-category-status", title:"Loader screen - status by category + close-out gate (LEAN variant)", state:"In Review", pri:20, priLabel:"P2", risk:"MEDIUM", riskReason:"Variant C LEAN LOCKED at rev 15 (2026-07-24). Nine frames spec'd. Product goal is 'eliminate secondary delivery runs' via a close-out gate - the ROI, not another browse view. Rev 15 replaced OTP with in-app approval queue - spawned reusable hpt-approvals primitive. Not built; awaiting James's build-or-hold call.", effort:"weeks", prs:[], gov:"GA-WIP-193", personas:["Loader","Lead","Supervisor","Manager / Approver"], surfaces:["Loader Review","Portal"], parentId:null, mockups:[
+    {label:"Loader - category / status variants", url:"https://houstonposttension.github.io/hpt-mockup-previews/loader-category-status-2026-07-21/"}
+  ] },
+  { id:"hpt-approvals-service", title:"hpt-approvals - reusable approval queue primitive", state:"Proposed", pri:21, priLabel:"P2", risk:"MEDIUM", riskReason:"Spawned from loader design rev 15 - replaces OTP with an in-app approval inbox for lead/supervisor. Explicitly framed as REUSABLE: 'split close-out' is the first request_kind; scrap/void/price-override are later kinds. First real appearance of a supervisor/lead approvals dashboard.", effort:"weeks", prs:[], gov:"- (needs filing)", personas:["Lead","Supervisor","Manager / Approver"], surfaces:["Portal","Loader Review"], parentId:"loader-category-status", mockups:[] },
+  { id:"tag-history-v1", title:"Tag History Phase 1 - exact-ID lookup + business summary", state:"Live", pri:22, priLabel:"P2", risk:"LOW", riskReason:"PR #54 merged 2026-07-23. Feature-flagged WIP_TAG_HISTORY_V1 (default OFF). Prod app-setting was set 2026-07-24 without the FEATURE_ prefix so feature_enabled() never sees it - surface silently OFF in prod (PR #182 documents the fix).", effort:"days", prs:[54,182], gov:"GA-WIP-108", personas:["Supervisor","Lead","Worker"], surfaces:["Tag Search"], parentId:"supervisor-portal-dashboard", mockups:[] },
+  { id:"worker-field-gap-notifications", title:"Worker-field-gap notifications - HR + supervisor digest", state:"Proposed", pri:23, priLabel:"P3", risk:"MEDIUM", riskReason:"Backlog since 2026-07-13. Three gap types: ADP-side, portal-override, registration. Discovered via 2026-07-13 backfill where Bastidas silently skipped. Explicitly a downstream consumer of ADP roster runbook Phase 2 + Rebar Phase 1 solver dependency.", effort:"weeks", prs:[], gov:"- (needs filing)", personas:["HR / Admin","Supervisor"], surfaces:["Portal","Deploy / Infra"], parentId:"adp-master-alignment", mockups:[] },
+  { id:"table-storage-backup-gap", title:"Table Storage has no PITR/backup - scheduled export of mutable tables", state:"Approved", pri:24, priLabel:"P2", risk:"MEDIUM", riskReason:"Surfaced 2026-07-24 alongside GA-WIP-212 recovery - the only reason 28 shifts were recoverable was an unrelated audit table happening to retain them. Table Storage has no PITR/soft-delete/versioning at any tier. Bounded by GA-WIP-062 Postgres cutover.", effort:"hours", prs:[], gov:"GA-WIP-215", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"], parentId:"do-postgres-migration", mockups:[] },
+  { id:"dual-write-to-do-postgres", title:"Dual Write to DO Managed Postgres (GA-WIP-062)", state:"In Progress", pri:25, priLabel:"P1", risk:"HIGH", riskReason:"Foundational fixes shipped 2026-07-22 - 07-28 (DP4 timestamptz binding PR #92, pool init race PR #166, auth baseline PR #175, drift gate PR #176); 1.32.4 five-layer probe showed dual-write healthy on both workers in prod. Remaining risk: PR #88 (fail-closed STORE_BACKEND) and PR #89 (schema drift reconciliation) still In Review - the last known-broken items before dual-write can be declared stable. GA-WIP-252 cold-pool race still drops a few writes/day during the 5s init window.", effort:"Ongoing - foundational work done; #88/#89 remaining ~2 days", prs:[88,89,92,166], gov:"GA-WIP-062", personas:["Cross-cutting / Infra","VP / Ops"], surfaces:["Deploy / Infra"], parentId:"do-postgres-migration", mockups:[] }
 ];
 
-// Sort by priority (already in order but explicit)
 FEATURES.sort((a, b) => a.pri - b.pri);
+
+const BY_ID = Object.fromEntries(FEATURES.map(f => [f.id, f]));
+FEATURES.forEach(f => {
+  f.children = FEATURES.filter(c => c.parentId === f.id).map(c => c.id);
+});
 
 // ==============================================
 // RENDER
@@ -627,22 +742,58 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function renderCard(f) {
+function shortTitle(f) {
+  return f.title.replace(/\s*\((?:GA-WIP-[0-9]+(?:\/[0-9]+)*|PR #[0-9]+)\)$/, "");
+}
+
+function renderCard(f, opts) {
+  opts = opts || {};
+  const isChild = !!opts.isChild;
+  const isParent = f.children && f.children.length > 0;
+
   const surfChips = f.surfaces.map(s => `<span class="surface-chip ${surfaceClass(s)}">${esc(s)}</span>`).join('');
-  const prsStr = f.prs.length ? f.prs.map(p => `<a href="https://github.com/houstonposttension/wip-processor/pull/${p}" target="_blank" rel="noopener">#${p}</a>`).join(' · ') : '—';
+  const mockupChips = (f.mockups || []).map(m =>
+    `<a class="mockup-chip" href="${esc(m.url)}" target="_blank" rel="noopener" title="${esc(m.url)}">${esc(m.label)}</a>`
+  ).join('');
+
+  let parentChip = "";
+  if (isParent) {
+    parentChip = `<span class="parent-chip" data-parent-id="${esc(f.id)}" role="button" tabindex="0" title="Toggle child features"><span class="caret">&#9654;</span> ${f.children.length} child${f.children.length !== 1 ? 'ren' : ''}</span>`;
+  }
+  let childOfChip = "";
+  if (f.parentId && BY_ID[f.parentId]) {
+    childOfChip = `<span class="child-of-chip" data-jump-to="${esc(f.parentId)}" role="button" tabindex="0" title="Jump to parent: ${esc(BY_ID[f.parentId].title)}">child of ${esc(shortTitle(BY_ID[f.parentId]))}</span>`;
+  }
+
+  const prsStr = f.prs.length ? f.prs.map(p => `<a href="https://github.com/houstonposttension/wip-processor/pull/${p}" target="_blank" rel="noopener">#${p}</a>`).join(' &middot; ') : '&mdash;';
   const stateCls = STATE_CLASS[f.state] || 'badge-state';
   const dataPersonas = f.personas.join('|');
   const dataSurfaces = f.surfaces.join('|');
+  const classes = ["card"];
+  if (isChild) classes.push("is-child");
+  if (isParent) classes.push("is-parent");
+
   return `
-    <div class="card" data-personas="${esc(dataPersonas)}" data-surfaces="${esc(dataSurfaces)}" data-id="${esc(f.id)}">
+    <div class="${classes.join(' ')}"
+         data-personas="${esc(dataPersonas)}"
+         data-surfaces="${esc(dataSurfaces)}"
+         data-id="${esc(f.id)}"
+         data-parent-id="${esc(f.parentId || '')}"
+         data-is-parent="${isParent ? '1' : '0'}"
+         data-is-child="${isChild ? '1' : '0'}">
       <div class="card-head">
         <div class="card-title">${esc(f.title)}</div>
         <div class="card-meta">
-          <span class="badge badge-${f.priLabel}">${esc(f.priLabel)} · pri ${f.pri}</span>
+          <span class="badge badge-${f.priLabel}">${esc(f.priLabel)} &middot; pri ${f.pri}</span>
           <span class="badge ${stateCls}">${esc(f.state)}</span>
         </div>
       </div>
-      <div class="surfaces-row">${surfChips}</div>
+      <div class="surfaces-row">
+        ${surfChips}
+        ${parentChip}
+        ${childOfChip}
+        ${mockupChips}
+      </div>
       <div class="risk-line">
         <span class="lvl ${f.risk}">${esc(f.risk)}</span>
         <span class="reason">${esc(f.riskReason)}</span>
@@ -670,6 +821,21 @@ function renderPersonaSections() {
   PERSONA_ORDER.forEach(persona => {
     const feats = byPersona[persona];
     if (!feats || feats.length === 0) return;
+
+    const pieces = [];
+    feats.forEach(f => {
+      pieces.push(renderCard(f, {isChild: false}));
+      if (f.children && f.children.length > 0) {
+        f.children.forEach(cid => {
+          const cf = BY_ID[cid];
+          if (!cf) return;
+          if (cf.personas.includes(persona)) {
+            pieces.push(renderCard(cf, {isChild: true}));
+          }
+        });
+      }
+    });
+
     html += `
       <section class="persona" data-persona="${esc(persona)}">
         <h2>
@@ -678,7 +844,7 @@ function renderPersonaSections() {
           <span class="persona-hint">${esc(PERSONA_HINTS[persona] || '')}</span>
         </h2>
         <div class="cards">
-          ${feats.map(renderCard).join('')}
+          ${pieces.join('')}
         </div>
       </section>
     `;
@@ -692,14 +858,11 @@ function renderPersonaPills() {
   PERSONA_ORDER.forEach(p => counts[p] = 0);
   FEATURES.forEach(f => f.personas.forEach(p => { if (counts[p] !== undefined) counts[p]++; }));
 
-  // "All" pill
   let html = `<span class="pill active" data-persona="__ALL__">All <span class="count">${FEATURES.length}</span></span>`;
   PERSONA_ORDER.forEach(p => {
     if (counts[p] === 0) return;
     html += `<span class="pill" data-persona="${esc(p)}">${esc(p)} <span class="count">${counts[p]}</span></span>`;
   });
-  // Append pills after the label
-  const label = pillsRow.querySelector('.filter-label');
   const frag = document.createRange().createContextualFragment(html);
   pillsRow.appendChild(frag);
 }
@@ -718,41 +881,69 @@ function populateSurfaceSelect() {
 }
 
 // ==============================================
-// FILTER
+// FILTER + HIERARCHY MODE
 // ==============================================
 let activePersona = "__ALL__";
 let activeSurface = "";
+let hierarchyMode = "rollup";
+const expandedParents = new Set();
 
 function applyFilters() {
   const sections = document.querySelectorAll('section.persona');
   let visibleTotal = 0;
+  const uniqueIds = new Set();
 
   sections.forEach(section => {
     const personaName = section.dataset.persona;
     const personaMatch = (activePersona === "__ALL__" || activePersona === personaName);
 
+    const parentSurvives = new Map();
+    section.querySelectorAll('.card[data-is-parent="1"][data-is-child="0"]').forEach(c => {
+      const surf = c.dataset.surfaces.split('|');
+      const survives = personaMatch && (!activeSurface || surf.includes(activeSurface));
+      parentSurvives.set(c.dataset.id, survives);
+    });
+
     let sectionVisibleCards = 0;
     section.querySelectorAll('.card').forEach(card => {
-      const cardPersonas = card.dataset.personas.split('|');
+      const cardId = card.dataset.id;
+      const cardParentId = card.dataset.parentId;
+      const isChildRow = card.dataset.isChild === "1";
       const cardSurfaces = card.dataset.surfaces.split('|');
       const surfaceMatch = (!activeSurface || cardSurfaces.includes(activeSurface));
-      // When filtering by persona, only show the card in that section (persona name matches section).
-      // But cards can appear in multiple sections — respect surface filter always.
-      const showInThisSection = personaMatch && surfaceMatch;
-      card.classList.toggle('hidden', !showInThisSection);
-      if (showInThisSection) sectionVisibleCards++;
+
+      let show = personaMatch && surfaceMatch;
+
+      if (show) {
+        if (isChildRow) {
+          const parentExpanded = (hierarchyMode === "expand") || expandedParents.has(cardParentId);
+          if (!parentExpanded) show = false;
+        } else if (cardParentId) {
+          if (hierarchyMode === "rollup" && parentSurvives.get(cardParentId)) {
+            show = false;
+          }
+        }
+      }
+
+      card.classList.toggle('hidden', !show);
+      if (show) {
+        sectionVisibleCards++;
+        uniqueIds.add(cardId);
+      }
     });
 
     section.classList.toggle('hidden', sectionVisibleCards === 0);
     visibleTotal += sectionVisibleCards;
+
+    section.querySelectorAll('.parent-chip').forEach(chip => {
+      const pid = chip.dataset.parentId;
+      const expanded = (hierarchyMode === "expand") || expandedParents.has(pid);
+      chip.classList.toggle('expanded', expanded);
+    });
   });
 
-  const noRes = document.getElementById('noResults');
-  noRes.classList.toggle('hidden', visibleTotal > 0);
-
+  document.getElementById('noResults').classList.toggle('hidden', visibleTotal > 0);
   const rc = document.getElementById('resultCount');
-  const uniqueIds = new Set();
-  document.querySelectorAll('.card:not(.hidden)').forEach(c => uniqueIds.add(c.dataset.id));
   rc.textContent = `${uniqueIds.size} unique feature${uniqueIds.size !== 1 ? 's' : ''} shown (${visibleTotal} card${visibleTotal !== 1 ? 's' : ''} across sections)`;
 }
 
@@ -769,20 +960,56 @@ function wireFilters() {
     activeSurface = e.target.value;
     applyFilters();
   });
+  document.getElementById('hierarchyToggle').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-mode]');
+    if (!btn) return;
+    document.querySelectorAll('#hierarchyToggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    hierarchyMode = btn.dataset.mode;
+    expandedParents.clear();
+    applyFilters();
+  });
   document.getElementById('clearBtn').addEventListener('click', () => {
     activePersona = "__ALL__";
     activeSurface = "";
+    hierarchyMode = "rollup";
+    expandedParents.clear();
     document.getElementById('surfaceSelect').value = "";
     document.querySelectorAll('#personaPills .pill').forEach(p => p.classList.remove('active'));
     const allPill = document.querySelector('#personaPills .pill[data-persona="__ALL__"]');
     if (allPill) allPill.classList.add('active');
+    document.querySelectorAll('#hierarchyToggle button').forEach(b => b.classList.remove('active'));
+    const rollBtn = document.querySelector('#hierarchyToggle button[data-mode="rollup"]');
+    if (rollBtn) rollBtn.classList.add('active');
     applyFilters();
+  });
+
+  document.getElementById('personaSections').addEventListener('click', e => {
+    const chip = e.target.closest('.parent-chip');
+    if (chip) {
+      e.preventDefault();
+      const pid = chip.dataset.parentId;
+      if (!pid) return;
+      if (expandedParents.has(pid)) expandedParents.delete(pid);
+      else expandedParents.add(pid);
+      applyFilters();
+      return;
+    }
+    const jump = e.target.closest('.child-of-chip');
+    if (jump) {
+      e.preventDefault();
+      const targetId = jump.dataset.jumpTo;
+      if (!targetId) return;
+      const target = document.querySelector(`.card[data-id="${CSS.escape(targetId)}"][data-is-child="0"]:not(.hidden)`);
+      if (target) {
+        target.scrollIntoView({behavior: "smooth", block: "center"});
+        target.style.outline = "2px solid var(--accent-blue)";
+        setTimeout(() => { target.style.outline = ""; }, 1200);
+      }
+    }
   });
 }
 
-// ==============================================
-// BOOT
-// ==============================================
 renderPersonaSections();
 renderPersonaPills();
 populateSurfaceSelect();
