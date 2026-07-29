@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WIP Processor — Portfolio Snapshot (Persona View, REV 3)</title>
+<title>WIP Processor — Portfolio Snapshot (Persona View, REV 3.1)</title>
 <style>
   :root {
     --bg-app: #0e1217;
@@ -428,10 +428,10 @@
 <div class="page">
 
 <header class="top">
-  <h1>WIP Processor — Portfolio Snapshot <span class="rev">REV 3 · Persona View</span></h1>
+  <h1>WIP Processor — Portfolio Snapshot <span class="rev">REV 3.1 · Persona View</span></h1>
   <div class="sub">
     Generated 2026-07-28 EOD (Central) · Source: <code>houstonposttension/wip-processor</code> @ master ·
-    24 feature cards, grouped by who uses them.
+    25 feature cards, grouped by who uses them.
   </div>
 </header>
 
@@ -539,14 +539,14 @@
 </details>
 
 <footer>
-  WIP Processor Portfolio Snapshot · REV 3 (persona view) · Generated 2026-07-28 · <a href="https://github.com/houstonposttension/wip-processor" style="color: var(--accent-blue); text-decoration:none;">wip-processor @ master</a>
+  WIP Processor Portfolio Snapshot · REV 3.1 (persona view) · Generated 2026-07-28 · <a href="https://github.com/houstonposttension/wip-processor" style="color: var(--accent-blue); text-decoration:none;">wip-processor @ master</a>
 </footer>
 
 </div>
 
 <script>
 // ==============================================
-// DATA — 24 feature cards, enriched with personas + surfaces
+// DATA — 25 feature cards, enriched with personas + surfaces
 // ==============================================
 const PERSONA_ORDER = [
   "VP / Ops",
@@ -598,7 +598,8 @@ const FEATURES = [
   { id:"hpt-approvals-service", title:"hpt-approvals — reusable approval queue primitive", state:"Proposed", pri:21, priLabel:"P2", risk:"MEDIUM", riskReason:"Spawned from loader design rev 15 — replaces OTP with an in-app approval inbox for lead/supervisor. Explicitly framed as REUSABLE: 'split close-out' is the first request_kind; scrap/void/price-override are later kinds. First real appearance of a supervisor/lead approvals dashboard.", effort:"weeks", prs:[], gov:"— (needs filing)", personas:["Lead","Supervisor","Manager / Approver"], surfaces:["Portal","Loader Review"] },
   { id:"tag-history-v1", title:"Tag History Phase 1 — exact-ID lookup + business summary", state:"Live", pri:22, priLabel:"P2", risk:"LOW", riskReason:"PR #54 merged 2026-07-23. Feature-flagged WIP_TAG_HISTORY_V1 (default OFF). Prod app-setting was set 2026-07-24 without the FEATURE_ prefix so feature_enabled() never sees it — surface silently OFF in prod (PR #182 documents the fix).", effort:"days", prs:[54,182], gov:"GA-WIP-108", personas:["Supervisor","Lead","Worker"], surfaces:["Tag Search"] },
   { id:"worker-field-gap-notifications", title:"Worker-field-gap notifications — HR + supervisor digest", state:"Proposed", pri:23, priLabel:"P3", risk:"MEDIUM", riskReason:"Backlog since 2026-07-13. Three gap types: ADP-side, portal-override, registration. Discovered via 2026-07-13 backfill where Bastidas silently skipped. Explicitly a downstream consumer of ADP roster runbook Phase 2 + Rebar Phase 1 solver dependency.", effort:"weeks", prs:[], gov:"— (needs filing)", personas:["HR / Admin","Supervisor"], surfaces:["Portal","Deploy / Infra"] },
-  { id:"table-storage-backup-gap", title:"Table Storage has no PITR/backup — scheduled export of mutable tables", state:"Approved", pri:24, priLabel:"P2", risk:"MEDIUM", riskReason:"Surfaced 2026-07-24 alongside GA-WIP-212 recovery — the only reason 28 shifts were recoverable was an unrelated audit table happening to retain them. Table Storage has no PITR/soft-delete/versioning at any tier. Bounded by GA-WIP-062 Postgres cutover.", effort:"hours", prs:[], gov:"GA-WIP-215", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] }
+  { id:"table-storage-backup-gap", title:"Table Storage has no PITR/backup — scheduled export of mutable tables", state:"Approved", pri:24, priLabel:"P2", risk:"MEDIUM", riskReason:"Surfaced 2026-07-24 alongside GA-WIP-212 recovery — the only reason 28 shifts were recoverable was an unrelated audit table happening to retain them. Table Storage has no PITR/soft-delete/versioning at any tier. Bounded by GA-WIP-062 Postgres cutover.", effort:"hours", prs:[], gov:"GA-WIP-215", personas:["Cross-cutting / Infra"], surfaces:["Deploy / Infra"] },
+  { id:"dual-write-to-do-postgres", title:"Dual Write to DO Managed Postgres (GA-WIP-062)", state:"In Progress", pri:25, priLabel:"P1", risk:"HIGH", riskReason:"Foundational fixes shipped 2026-07-22 – 07-28 (DP4 timestamptz binding PR #92, pool init race PR #166, auth baseline PR #175, drift gate PR #176); 1.32.4 five-layer probe showed dual-write healthy on both workers in prod. Remaining risk: PR #88 (fail-closed STORE_BACKEND) and PR #89 (schema drift reconciliation) still In Review — the last known-broken items before dual-write can be declared stable. GA-WIP-252 cold-pool race still drops a few writes/day during the 5s init window.", effort:"Ongoing — foundational work done; #88/#89 remaining ~2 days", prs:[88,89,92,166], gov:"GA-WIP-062", personas:["Cross-cutting / Infra","VP / Ops"], surfaces:["Deploy / Infra"] }
 ];
 
 // Sort by priority (already in order but explicit)
@@ -697,6 +698,8 @@ function renderPersonaPills() {
     if (counts[p] === 0) return;
     html += `<span class="pill" data-persona="${esc(p)}">${esc(p)} <span class="count">${counts[p]}</span></span>`;
   });
+  // Append pills after the label
+  const label = pillsRow.querySelector('.filter-label');
   const frag = document.createRange().createContextualFragment(html);
   pillsRow.appendChild(frag);
 }
@@ -730,8 +733,11 @@ function applyFilters() {
 
     let sectionVisibleCards = 0;
     section.querySelectorAll('.card').forEach(card => {
+      const cardPersonas = card.dataset.personas.split('|');
       const cardSurfaces = card.dataset.surfaces.split('|');
       const surfaceMatch = (!activeSurface || cardSurfaces.includes(activeSurface));
+      // When filtering by persona, only show the card in that section (persona name matches section).
+      // But cards can appear in multiple sections — respect surface filter always.
       const showInThisSection = personaMatch && surfaceMatch;
       card.classList.toggle('hidden', !showInThisSection);
       if (showInThisSection) sectionVisibleCards++;
@@ -774,7 +780,9 @@ function wireFilters() {
   });
 }
 
+// ==============================================
 // BOOT
+// ==============================================
 renderPersonaSections();
 renderPersonaPills();
 populateSurfaceSelect();
