@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WIP Processor Portfolio &mdash; snapshot 2026-07-28</title>
+<style>
+:root{
+  --bg:#14171c;
+  --panel:#0e1217;
+  --panel-2:#1a1f26;
+  --raised:#242b34;
+  --raised-2:#2a3038;
+  --border:#39424e;
+  --border-soft:#242b34;
+  --text:#cfe0f5;
+  --text-mid:#7da2c9;
+  --text-dim:#5a6470;
+  --link:#9ccbff;
+  --warm:#ffd98a;
+  --warm-2:#e8d4a8;
+  --good:#46d684;
+  --good-2:#5ce08d;
+  --warn:#ffcf6b;
+  --bad:#ff7b73;
+  --bad-2:#ff9b94;
+  --ink-on-warm:#08111d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-size:14px;line-height:1.45;padding:16px 14px 40px;max-width:1120px;margin:0 auto}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---------- header ---------- */
+.pagehead{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;padding:14px 16px;background:var(--panel);border:1px solid var(--border-soft);border-radius:13px}
+.pagehead h1{margin:0;font-size:17px;font-weight:600;letter-spacing:.1px;color:var(--text)}
+.pagehead .sub{font-size:12px;color:var(--text-mid);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.pagehead .sub .dot{width:5px;height:5px;border-radius:50%;background:var(--good);display:inline-block}
+.pagehead .sub a{color:var(--link)}
+
+/* ---------- section label ---------- */
+.sectlbl{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 8px;padding:0 4px}
+.sectlbl .n{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid);font-weight:600}
+.sectlbl .meta{font-size:11px;color:var(--text-dim)}
+
+/* ---------- atmosphere ---------- */
+.atmo{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:var(--panel);border:1px solid var(--border-soft);border-radius:13px;padding:12px}
+.atmo .lane{background:var(--panel-2);border:1px solid var(--border-soft);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.atmo .lane h3{margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-mid);font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.atmo .lane h3 .cnt{background:var(--raised);color:var(--text);border-radius:9px;font-size:10.5px;padding:2px 7px;letter-spacing:0;text-transform:none;font-weight:600}
+.atmo .lane .items{display:flex;flex-direction:column;gap:6px}
+.atrow{display:flex;gap:8px;padding:7px 8px;border-radius:8px;background:#0a0d12;border:1px solid transparent;font-size:12px;line-height:1.35}
+.atrow.bad{border-color:rgba(255,123,115,.35);background:rgba(255,123,115,.06)}
+.atrow.warn{border-color:rgba(255,207,107,.28);background:rgba(255,207,107,.05)}
+.atrow.info{border-color:rgba(156,203,255,.22);background:rgba(156,203,255,.04)}
+.atrow.good{border-color:rgba(70,214,132,.25);background:rgba(70,214,132,.05)}
+.atrow .ic{width:6px;flex:0 0 6px;border-radius:3px;background:var(--text-dim)}
+.atrow.bad .ic{background:var(--bad)}
+.atrow.warn .ic{background:var(--warn)}
+.atrow.info .ic{background:var(--link)}
+.atrow.good .ic{background:var(--good)}
+.atrow .body{min-width:0;display:flex;flex-direction:column;gap:2px}
+.atrow .t{font-weight:600;color:var(--text);font-size:12px}
+.atrow .m{color:var(--text-mid);font-size:11.5px}
+.atrow .src{color:var(--text-dim);font-size:10.5px;letter-spacing:.02em}
+
+/* ---------- portfolio grid ---------- */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.pcard{background:var(--panel);border:1px solid var(--border-soft);border-radius:12px;padding:12px;cursor:pointer;position:relative;transition:border-color .12s,background .12s;min-width:0}
+.pcard:hover{border-color:var(--border);background:#101419}
+.pcard.hot{border-left:3px solid var(--bad)}
+.pcard.warm{border-left:3px solid var(--warn)}
+.pcard.cool{border-left:3px solid var(--good)}
+.pcard.sleep{border-left:3px solid var(--text-dim)}
+.pcard .top{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.pcard .top .left{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pcard .title{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.3;overflow-wrap:anywhere}
+.pcard .fid{font-size:10.5px;color:var(--text-dim);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.01em}
+.pcard .prio{flex:0 0 auto;background:var(--raised);color:var(--text);border-radius:6px;padding:3px 8px;font-size:10.5px;font-weight:700;letter-spacing:.04em}
+.pcard .prio.p0{background:var(--bad);color:var(--ink-on-warm)}
+.pcard .prio.p1{background:var(--warm);color:var(--ink-on-warm)}
+.pcard .prio.p2{background:var(--raised-2);color:var(--text)}
+.pcard .prio.p3{background:var(--raised);color:var(--text-mid)}
+.pcard .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:#0a0d12;border:1px solid var(--border-soft);color:var(--text);border-radius:5px;padding:2px 7px;font-size:10.5px;line-height:1.4;font-weight:500;white-space:nowrap}
+.chip .k{color:var(--text-dim);font-weight:500}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);display:inline-block}
+.chip.state-live{border-color:rgba(70,214,132,.4)}
+.chip.state-live .dot{background:var(--good)}
+.chip.state-inprogress{border-color:rgba(156,203,255,.35)}
+.chip.state-inprogress .dot{background:var(--link)}
+.chip.state-inreview{border-color:rgba(255,207,107,.35)}
+.chip.state-inreview .dot{background:var(--warn)}
+.chip.state-approved{border-color:rgba(156,203,255,.35)}
+.chip.state-approved .dot{background:var(--link)}
+.chip.state-shipping{border-color:rgba(70,214,132,.4)}
+.chip.state-shipping .dot{background:var(--good-2)}
+.chip.state-proposed{border-color:rgba(125,162,201,.3)}
+.chip.state-proposed .dot{background:var(--text-mid)}
+.chip.state-blocked{border-color:rgba(255,123,115,.4)}
+.chip.state-blocked .dot{background:var(--bad)}
+.chip.state-broken{border-color:rgba(255,123,115,.55);background:rgba(255,123,115,.08)}
+.chip.state-broken .dot{background:var(--bad)}
+.chip.risk-HIGH{color:var(--bad-2);border-color:rgba(255,123,115,.4)}
+.chip.risk-MEDIUM{color:var(--warn);border-color:rgba(255,207,107,.32)}
+.chip.risk-LOW{color:var(--good-2);border-color:rgba(70,214,132,.32)}
+.chip.gov{color:var(--warm);border-color:rgba(255,217,138,.32)}
+.chip.pr{color:var(--link);border-color:rgba(156,203,255,.32)}
+.chip.pr a,.chip.gov a{color:inherit}
+
+.pcard .risk{margin-top:9px;font-size:11.5px;color:var(--text-mid);line-height:1.42;display:none}
+.pcard.open .risk{display:block}
+.pcard .risk .lbl{color:var(--text-dim);text-transform:uppercase;font-size:10px;letter-spacing:.12em;margin-right:6px}
+.pcard .risk b{color:var(--text)}
+
+.pcard .expand{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-soft);flex-direction:column;gap:10px}
+.pcard.open .expand{display:flex}
+
+.pcard .exp-sec h4{margin:0 0 5px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);font-weight:600}
+.tl{display:flex;flex-direction:column;gap:5px}
+.tl .step{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;background:#0a0d12;border:1px solid var(--border-soft);border-radius:6px;font-size:11.5px}
+.tl .step .dot{flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:var(--text-dim);margin-top:5px}
+.tl .step.st-Live .dot{background:var(--good)}
+.tl .step.st-InProgress .dot{background:var(--link)}
+.tl .step.st-InReview .dot{background:var(--warn)}
+.tl .step.st-Approved .dot{background:var(--link)}
+.tl .step.st-Proposed .dot{background:var(--text-mid)}
+.tl .step.st-Blocked .dot{background:var(--bad)}
+.tl .step .body{flex:1;min-width:0;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tl .step .txt{color:var(--text);overflow-wrap:anywhere}
+.tl .step .tgt{color:var(--text-dim);font-size:10.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:nowrap}
+.tl .step.st-Blocked .tgt{color:var(--bad-2)}
+
+.deps{display:flex;flex-direction:column;gap:4px}
+.deps .row{display:flex;gap:6px;font-size:11.5px;flex-wrap:wrap;align-items:center}
+.deps .row .k{color:var(--text-dim);text-transform:uppercase;font-size:10px;letter-spacing:.12em;min-width:70px}
+.deps .row .v{color:var(--text)}
+.deps .row .v .d{background:#0a0d12;border:1px solid var(--border-soft);border-radius:5px;padding:2px 7px;font-size:10.5px;margin-right:4px;display:inline-block}
+
+.docs{display:flex;flex-wrap:wrap;gap:5px}
+.docs .d{background:#0a0d12;border:1px solid var(--border-soft);border-radius:5px;padding:3px 7px;font-size:10.5px;color:var(--text-mid);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+
+.pcard .caret{position:absolute;top:12px;right:12px;color:var(--text-dim);font-size:11px;transition:transform .15s}
+.pcard.open .caret{transform:rotate(180deg);color:var(--link)}
+
+/* ---------- collapsible sections ---------- */
+details.collapse{background:var(--panel);border:1px solid var(--border-soft);border-radius:12px;padding:0;margin-top:10px;overflow:hidden}
+details.collapse>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;user-select:none}
+details.collapse>summary::-webkit-details-marker{display:none}
+details.collapse>summary .h{font-size:12px;color:var(--text);font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+details.collapse>summary .h .cnt{background:var(--raised);border-radius:9px;padding:2px 8px;font-size:11px;color:var(--text);font-weight:600}
+details.collapse>summary .car{color:var(--text-dim);font-size:11px;transition:transform .15s}
+details.collapse[open]>summary .car{transform:rotate(180deg);color:var(--link)}
+details.collapse .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:6px}
+.shipitem{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;background:var(--panel-2);border:1px solid var(--border-soft);border-radius:8px;font-size:12px}
+.shipitem .dot{flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:var(--good);margin-top:5px}
+.shipitem .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.shipitem .info .t{color:var(--text);font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.shipitem .info .m{color:var(--text-dim);font-size:10.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- footer ---------- */
+.foot{margin-top:22px;padding:14px 16px;background:var(--panel);border:1px solid var(--border-soft);border-radius:12px;color:var(--text-dim);font-size:11px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+.foot .links{display:flex;gap:14px;flex-wrap:wrap}
+.foot a{color:var(--link)}
+
+/* ---------- mobile ---------- */
+@media (max-width:820px){
+  body{padding:12px 10px 32px}
+  .atmo{grid-template-columns:1fr 1fr;gap:8px}
+  .grid{grid-template-columns:1fr;gap:8px}
+  .pcard .title{font-size:13px}
+  .pagehead h1{font-size:15px}
+}
+@media (max-width:460px){
+  .atmo{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="pagehead">
+  <h1>WIP Processor Portfolio &mdash; snapshot 2026-07-28</h1>
+  <div class="sub">
+    <span><span class="dot"></span> generated 2026-07-28 20:15 CT</span>
+    <span>source: <a href="https://github.com/houstonposttension/wip-processor" target="_blank" rel="noopener">wip-processor @ master</a></span>
+    <span>16 features &middot; 9 shipped in 48h</span>
+  </div>
+</div>
+
+<div class="sectlbl"><span class="n">Atmosphere</span><span class="meta">portfolio pulse &middot; live signal</span></div>
+<div class="atmo" id="atmo"></div>
+
+<div class="sectlbl"><span class="n">Features</span><span class="meta">sorted by priority + risk &middot; tap card to expand</span></div>
+<div class="grid" id="grid"></div>
+
+<details class="collapse" id="backlog-sec">
+  <summary><span class="h">Backlog / NOT FOR MERGE <span class="cnt" id="backlog-cnt">0</span></span><span class="car">&#9662;</span></summary>
+  <div class="body" id="backlog-body"></div>
+</details>
+
+<details class="collapse" id="ship-sec">
+  <summary><span class="h">Recently Shipped (48h) <span class="cnt" id="ship-cnt">0</span></span><span class="car">&#9662;</span></summary>
+  <div class="body" id="ship-body"></div>
+</details>
+
+<div class="foot">
+  <span>generated by wip-portfolio-snapshot task &middot; 2026-07-28</span>
+  <div class="links">
+    <a href="https://github.com/houstonposttension/hpt-mockup-previews/blob/main/wip-portfolio-snapshot-2026-07-28/index.html" target="_blank" rel="noopener">source</a>
+    <a href="https://github.com/houstonposttension/hpt-mockup-previews/tree/main/vp-dashboard-portfolio-2026-07-27" target="_blank" rel="noopener">sibling: HPT Portfolio mockup</a>
+    <a href="../" target="_blank" rel="noopener">all previews</a>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  "generated_at": "2026-07-28T20:15:00-05:00",
+  "generated_by": "wip-portfolio-snapshot task (Dispatch)",
+  "source_of_truth": "houstonposttension/wip-processor @ master",
+  "features": [
+    {
+      "id": "do-postgres-migration",
+      "system": "WIP Processor",
+      "title": "DO Managed Postgres migration (GA-WIP-062)",
+      "version": "wip-processor@wave-0-writable",
+      "state": "In Review",
+      "priority": 1,
+      "priority_label": "P0",
+      "risk": {"level": "HIGH", "reason": "Postgres has held 0 rows for ~2 weeks; PR #88 fixes the STORE_BACKEND fail-open trap but PR-DP4 (timestamptz string-binding) is unshipped, so the backfill would still write 0 rows to 3 of 4 tables."},
+      "effort": "weeks",
+      "dependencies": {"blocks": ["azure-to-do-app-platform"], "waits_on": ["cosmos-phase-1"]},
+      "release_timeline": [
+        {"step": "PR-DP1 write-canary + scripts/assert_pg_ready.py", "state": "In Review", "target": "2026-08-01"},
+        {"step": "PR-DP2 STORE_BACKEND fail-closed (PR #88)", "state": "In Review", "target": "2026-08-01"},
+        {"step": "PR-DP3 schema-drift reconciliation (PR #89)", "state": "In Review", "target": "2026-08-01"},
+        {"step": "PR-DP4 timestamptz binding fix + validator gate", "state": "Proposed", "target": "2026-08-04"},
+        {"step": "Wave 1 backfill of tags/operations/events/imports off Azure Table Storage", "state": "Proposed", "target": "2026-08-15"}
+      ],
+      "linked_prs": [88, 89],
+      "governance_row": "GA-WIP-062",
+      "related_governance": ["GA-WIP-204", "GA-WIP-205", "GA-WIP-207", "GA-WIP-208", "GA-WIP-252"],
+      "docs": ["docs/prs/PR-DP2-flag-validation.md", "docs/prs/PR-DP3-schema-drift.md", "docs/runbooks/do-postgres-readiness-2026-07-15.md", "docs/migrations/do-postgres/"],
+      "approved_by": null, "approved_at": null, "github_label": "feature/do-postgres-migration"
+    },
+    {
+      "id": "std-68-config-drift",
+      "system": "WIP Processor",
+      "title": "Std 68 governed-config drift enforcement + deploy identity",
+      "version": "wip-processor@1.32.4-wave1",
+      "state": "Live",
+      "priority": 2, "priority_label": "P1",
+      "risk": {"level": "MEDIUM", "reason": "Wave 1 (baseline sync + PR-time drift gate + daily Azure-side alert) shipped today; but drift-alert PR #178 will fire red until a TEAMS_WEBHOOK_URL secret is set, and the HIGH_RISK deploy notification has been a no-op since inception."},
+      "effort": "days",
+      "dependencies": {"blocks": ["portfolio-approval-bot"], "waits_on": []},
+      "release_timeline": [
+        {"step": "PR #175 GA-WIP-256 auth_v2.json baseline sync", "state": "Live", "target": "2026-07-28"},
+        {"step": "PR #176 GA-WIP-253 governed-config PR-time drift gate", "state": "Live", "target": "2026-07-28"},
+        {"step": "PR #178 GA-WIP-254 daily Azure-side drift alert (12:30 UTC)", "state": "Live", "target": "2026-07-28"},
+        {"step": "Set TEAMS_WEBHOOK_URL secret so drift alert can deliver", "state": "Proposed", "target": "2026-07-29"},
+        {"step": "Wave 2 followups GA-WIP-257-261 (dispatch-bot identity GA-WIP-262 among them)", "state": "Proposed", "target": "2026-08-11"}
+      ],
+      "linked_prs": [175, 176, 178],
+      "governance_row": "GA-WIP-253",
+      "related_governance": ["GA-WIP-254", "GA-WIP-255", "GA-WIP-256", "GA-WIP-088"],
+      "docs": ["docs/audits/config-drift-log.md", "docs/pending-enables.md"],
+      "approved_by": "jbrady21", "approved_at": "2026-07-28", "github_label": "feature/std-68-config-drift"
+    },
+    {
+      "id": "adp-master-alignment",
+      "system": "WIP Processor",
+      "title": "ADP-as-master alignment (SFTP sanity + WorkerOverrides)",
+      "version": "wip-processor@1.33.0 (Wave 0) → @1.34.0 (Wave 1)",
+      "state": "In Review",
+      "priority": 3, "priority_label": "P1",
+      "risk": {"level": "HIGH", "reason": "Roster follows `presence = active, absence = terminated`. Today a truncated CSV would read as mass termination; today there is no validation at all. Both PRs marked NOT FOR MERGE pending James."},
+      "effort": "weeks",
+      "dependencies": {"blocks": ["do-postgres-migration"], "waits_on": []},
+      "release_timeline": [
+        {"step": "Wave 0: SFTP promote-on-validate + 11 sanity checks (PR #168, GA-WIP-249)", "state": "In Review", "target": "2026-08-01"},
+        {"step": "Wave 1: WorkerOverrides provenance + request-state schema (PR #167, GA-WIP-248)", "state": "In Review", "target": "2026-08-04"},
+        {"step": "Wave 2: read alignment (resolve_field on every read path)", "state": "Proposed", "target": "2026-08-11"},
+        {"step": "Wave 3: write alignment (portal writes go through override table)", "state": "Proposed", "target": "2026-08-18"},
+        {"step": "Wave 4: nightly reconciler (2-week report-only soak first)", "state": "Proposed", "target": "2026-09-01"},
+        {"step": "Wave 5: HR notification/digest surface", "state": "Proposed", "target": "2026-09-15"}
+      ],
+      "linked_prs": [167, 168],
+      "governance_row": "GA-WIP-248",
+      "related_governance": ["GA-WIP-249", "GA-WIP-166", "GA-WIP-180"],
+      "docs": ["outputs/adp-master-plan-alignment-v2-2026-07-27.md"],
+      "approved_by": "jbrady21", "approved_at": "2026-07-27", "github_label": "feature/adp-master-alignment"
+    },
+    {
+      "id": "notify-teams-replacement",
+      "system": "WIP Processor",
+      "title": "Notify: Twilio SMS + Graph email replacing dead Teams webhooks (GA-WIP-180)",
+      "version": "wip-processor@pending",
+      "state": "In Review",
+      "priority": 4, "priority_label": "P1",
+      "risk": {"level": "HIGH", "reason": "Ops alerting has been dead since ~2026-05-18 (O365 connectors disabled). Every device-health, orphan-linker, lockout, and parser alert has silently gone nowhere for ~2 months. PR #119 is DRAFT (PR 1/2); needs Twilio A2P 10DLC + Mail.Send grant before it can ship."},
+      "effort": "days",
+      "dependencies": {"blocks": ["adp-master-alignment"], "waits_on": []},
+      "release_timeline": [
+        {"step": "PR 1/2 additive notify.py + Twilio + Graph channels (PR #119)", "state": "In Review", "target": "2026-08-01"},
+        {"step": "Verify TWILIO_PHONE_NUMBER can send outbound SMS + A2P 10DLC campaign scope", "state": "Proposed", "target": "2026-07-30"},
+        {"step": "Mail.Send grant + Exchange ApplicationAccessPolicy (james@)", "state": "Proposed", "target": "2026-07-30"},
+        {"step": "PR 2/2 call-site migration + teams_client.py retirement", "state": "Proposed", "target": "2026-08-08"},
+        {"step": "Standards library edit deprecating teams-card-client contract", "state": "Blocked", "target": "TBD"}
+      ],
+      "linked_prs": [119],
+      "governance_row": "GA-WIP-180",
+      "related_governance": [],
+      "docs": ["docs/alert-catalog.md", "docs/notify-prep-2026-07-22.md", "docs/ga-wip-180-expansion-2026-07-22.md"],
+      "approved_by": "jbrady21", "approved_at": "2026-07-22", "github_label": "feature/notify-teams-replacement"
+    },
+    {
+      "id": "hourly-continuous-drilldown",
+      "system": "WIP Processor",
+      "title": "Hourly continuous-scroll + bar-size drill-down (GA-WIP-235/236/237/242/244)",
+      "version": "wip-processor@1.32.x",
+      "state": "In Progress",
+      "priority": 5, "priority_label": "P2",
+      "risk": {"level": "MEDIUM", "reason": "MVP (GA-WIP-235/237) live; A+Rolling hybrid (PR #108) awaiting design confirmation; drill-down Phase 2 (PR #160) marked NOT FOR MERGE pending review; two of Small Single Bender / Radius Bender still have no expected rate (pinned by test)."},
+      "effort": "weeks",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "GA-WIP-235 continuous-scroll MVP", "state": "Live", "target": "2026-07-26"},
+        {"step": "GA-WIP-240 rolling chart y-axis auto-scale fix", "state": "Live", "target": "2026-07-26"},
+        {"step": "GA-WIP-244 dead inline <script> repair on /api/hourly", "state": "Approved", "target": "2026-08-02"},
+        {"step": "PR #108 A+Rolling hybrid + MES/OEE hybrid page", "state": "In Review", "target": "2026-08-04"},
+        {"step": "PR #160 GA-WIP-236 lbs-per-bar-size drill-down (flag OFF)", "state": "In Review", "target": "2026-08-04"},
+        {"step": "GA-WIP-242 timer async-loop head-of-line stall fix", "state": "Approved", "target": "2026-08-02"},
+        {"step": "GA-WIP-238/239 scan-station registry deploy-artifact fix", "state": "Approved", "target": "2026-08-03"}
+      ],
+      "linked_prs": [108, 160],
+      "governance_row": "GA-WIP-237",
+      "related_governance": ["GA-WIP-235", "GA-WIP-236", "GA-WIP-238", "GA-WIP-239", "GA-WIP-240", "GA-WIP-242", "GA-WIP-244"],
+      "docs": ["docs/spec/continuous-scroll-hourly-drilldown-IMPL-PLAN-2026-07-21.md"],
+      "approved_by": "jbrady21", "approved_at": "2026-07-26", "github_label": "feature/hourly-continuous-drilldown"
+    },
+    {
+      "id": "phone-first-workers-bridge",
+      "system": "WIP Processor",
+      "title": "Phone-first gate reads live Workers table + portal error handling (GA-WIP-165/218)",
+      "version": "wip-processor@pending",
+      "state": "In Review",
+      "priority": 6, "priority_label": "P2",
+      "risk": {"level": "MEDIUM", "reason": "Rebase of #125 (byte-identical code). Post-merge needs pilot roster app-settings + one-shift soak; digest fallback retired in a follow-up PR."},
+      "effort": "days",
+      "dependencies": {"blocks": [], "waits_on": ["adp-master-alignment"]},
+      "release_timeline": [
+        {"step": "PR #135 rebased replacement for #125 — tri-state gate + register-v2 enumeration fix + portal 401 handling", "state": "In Review", "target": "2026-08-01"},
+        {"step": "One-shift soak + follow-up PR retiring digest fallback", "state": "Proposed", "target": "2026-08-08"}
+      ],
+      "linked_prs": [135],
+      "governance_row": "GA-WIP-165",
+      "related_governance": ["GA-WIP-218"],
+      "docs": [],
+      "approved_by": null, "approved_at": null, "github_label": "feature/phone-first-workers-bridge"
+    },
+    {
+      "id": "worker-feedback-in-app",
+      "system": "WIP Processor",
+      "title": "In-app worker feedback → GitHub Issues (GA-WIP-264)",
+      "version": "wip-processor@1.33.0 (scanner@1.16.0)",
+      "state": "In Review",
+      "priority": 7, "priority_label": "P2",
+      "risk": {"level": "MEDIUM", "reason": "Rescued from a stale worktree; base is 201 commits behind master, expect a 3-way merge in scan_poc.html (master extracted the scan engine to static/js/scan_engine.js). Flag default OFF so ship-day risk is low."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "PR #181 blueprint + tests + ADR-0005 (flag default OFF)", "state": "In Review", "target": "2026-08-01"},
+        {"step": "Provision GITHUB_FEEDBACK_PAT in hpt-wip-vault", "state": "Proposed", "target": "2026-08-01"},
+        {"step": "Flip FEATURE_WIP_USER_FEEDBACK_V1 on for pilot workers", "state": "Proposed", "target": "2026-08-04"}
+      ],
+      "linked_prs": [181],
+      "governance_row": "GA-WIP-264",
+      "related_governance": [],
+      "docs": ["docs/adr/0005-in-app-feedback-github-issues.md"],
+      "approved_by": null, "approved_at": null, "github_label": "feature/worker-feedback-in-app"
+    },
+    {
+      "id": "shift-ttl-primary-shift-loss",
+      "system": "WIP Processor",
+      "title": "Supervisor-set primary_shift 7-day TTL data loss (GA-WIP-212)",
+      "version": "wip-processor@pending",
+      "state": "In Progress",
+      "priority": 8, "priority_label": "P1",
+      "risk": {"level": "MEDIUM", "reason": "28 workers already lost their supervisor-assigned primary_shift. Steps 1/4/5 (audit, unit test, monitoring) still owed after fix landed."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "Fix code path so supervisor override does not decay", "state": "Live", "target": "2026-07-27"},
+        {"step": "Step 1 — audit run to restore lost shifts", "state": "Proposed", "target": "2026-07-31"},
+        {"step": "Step 4 — regression test pinning override persistence", "state": "Proposed", "target": "2026-07-31"},
+        {"step": "Step 5 — monitoring alert on TTL-driven shift clear", "state": "Proposed", "target": "2026-07-31"}
+      ],
+      "linked_prs": [],
+      "governance_row": "GA-WIP-212",
+      "related_governance": [], "docs": [],
+      "approved_by": "jbrady21", "approved_at": "2026-07-24", "github_label": "feature/shift-ttl-primary-shift-loss"
+    },
+    {
+      "id": "optimoroute-key-log-leak",
+      "system": "WIP Processor",
+      "title": "OptimoRoute API key written to shared Log Analytics (GA-WIP-245)",
+      "version": "wip-processor@pending",
+      "state": "Approved",
+      "priority": 9, "priority_label": "P1",
+      "risk": {"level": "HIGH", "reason": "Cleartext API key in every hourly poll's httpx URL log. Live in shared Log Analytics until remediated."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "Move key to header or redact URL logger; scrub existing Log Analytics", "state": "Approved", "target": "2026-08-02"},
+        {"step": "Rotate the key on OptimoRoute side", "state": "Proposed", "target": "2026-08-02"}
+      ],
+      "linked_prs": [],
+      "governance_row": "GA-WIP-245",
+      "related_governance": [], "docs": [],
+      "approved_by": "jbrady21", "approved_at": "2026-07-26", "github_label": "feature/optimoroute-key-log-leak"
+    },
+    {
+      "id": "postgres-cold-pool-race",
+      "system": "WIP Processor",
+      "title": "Postgres dual-write cold-pool race (GA-WIP-252)",
+      "version": "wip-processor@pending",
+      "state": "Approved",
+      "priority": 10, "priority_label": "P1",
+      "risk": {"level": "MEDIUM", "reason": "First ~5s of writes after a worker cold-start silently drop from Postgres. Compounds with GA-WIP-062 zero-rows finding; needs to land before/with the backfill."},
+      "effort": "hours",
+      "dependencies": {"blocks": ["do-postgres-migration"], "waits_on": []},
+      "release_timeline": [
+        {"step": "Pool warmup + write-canary at handler init", "state": "Approved", "target": "2026-08-04"}
+      ],
+      "linked_prs": [],
+      "governance_row": "GA-WIP-252",
+      "related_governance": ["GA-WIP-062"], "docs": [],
+      "approved_by": "jbrady21", "approved_at": "2026-07-28", "github_label": "feature/postgres-cold-pool-race"
+    },
+    {
+      "id": "dispatch-collector-restart",
+      "system": "WIP Processor",
+      "title": "Dispatch-console collector S4U 0x8007052F restart guard (GA-WIP-251)",
+      "version": "wip-processor@pending",
+      "state": "Approved",
+      "priority": 11, "priority_label": "P2",
+      "risk": {"level": "MEDIUM", "reason": "Collector stopped silently while every health signal stayed green — same false-assurance class Std 68 exists to remove."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "Add liveness assertion that fails when the S4U logon fails, not just when the process exits", "state": "Approved", "target": "2026-08-04"}
+      ],
+      "linked_prs": [],
+      "governance_row": "GA-WIP-251",
+      "related_governance": [], "docs": [],
+      "approved_by": "jbrady21", "approved_at": "2026-07-28", "github_label": "feature/dispatch-collector-restart"
+    },
+    {
+      "id": "dispatch-console-v2-sunset",
+      "system": "WIP Processor",
+      "title": "Dispatch Console v2 (GA-WIP-203) — SUPERSEDED by HPT Portfolio",
+      "version": "wip-processor@sunset",
+      "state": "Blocked",
+      "priority": 12, "priority_label": "P3",
+      "risk": {"level": "MEDIUM", "reason": "HPT Portfolio PRD SC-3 states PR #117 must close as superseded. Open PRs #137, #153, #155, #182 all target a base being retired — each needs an individual keep/close call. Console itself stays running as the live app until Portfolio Wave 1 replaces it."},
+      "effort": "days",
+      "dependencies": {"blocks": [], "waits_on": ["hpt-portfolio-wave-1"]},
+      "release_timeline": [
+        {"step": "Individual evaluation of #137 (ledger rows), #153 (guardrails filing), #155 (guardrails A-D), #182 (feature-prefix doc)", "state": "Proposed", "target": "2026-07-30"},
+        {"step": "Close PR #117 as superseded", "state": "Proposed", "target": "2026-08-05"},
+        {"step": "Decommission apps/dispatch-console/ from feature/dispatch-console-v2 branch once HPT Portfolio Wave 1 is live", "state": "Blocked", "target": "2026-08-15"}
+      ],
+      "linked_prs": [117, 137, 153, 155, 182],
+      "governance_row": "GA-WIP-203",
+      "related_governance": ["GA-WIP-209", "GA-WIP-243", "GA-WIP-088"],
+      "docs": ["docs/dispatch-console-prep-2026-07-22.md", "docs/pending-enables.md"],
+      "approved_by": null, "approved_at": null, "github_label": "feature/dispatch-console-v2-sunset"
+    },
+    {
+      "id": "driver-summary",
+      "system": "WIP Processor",
+      "title": "Driver pre-departure readiness view (GA-WIP-220)",
+      "version": "wip-processor@design",
+      "state": "In Review",
+      "priority": 13, "priority_label": "P3",
+      "risk": {"level": "LOW", "reason": "Docs-only PR (#180). Scope is bounded to pre-departure; OptimoRoute keeps route/nav/POD from departure onward. Q10 (home-screen decision) still open with James."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "PR #180 design note + mockup + gov-row proposal", "state": "In Review", "target": "2026-08-01"},
+        {"step": "Q10 home-screen decision from James", "state": "Blocked", "target": "TBD"},
+        {"step": "Build the feature", "state": "Proposed", "target": "TBD"}
+      ],
+      "linked_prs": [180],
+      "governance_row": "GA-WIP-220",
+      "related_governance": [],
+      "docs": ["docs/spec/driver-summary-design-2026-07-23.md", "docs/proposals/gov-row-driver-summary-2026-07-23.md"],
+      "approved_by": null, "approved_at": null, "github_label": "feature/driver-summary"
+    },
+    {
+      "id": "test-isolation-xdist",
+      "system": "WIP Processor",
+      "title": "Re-enable pytest-xdist after sys.modules-leak fix (PR #106)",
+      "version": "wip-processor@ci",
+      "state": "In Review",
+      "priority": 14, "priority_label": "P2",
+      "risk": {"level": "LOW", "reason": "Would return CI Test stage from ~30 min sequential back to 5-10 min parallel; no behaviour change."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "Merge PR #106", "state": "In Review", "target": "2026-07-30"}
+      ],
+      "linked_prs": [106],
+      "governance_row": null, "related_governance": [], "docs": [],
+      "approved_by": null, "approved_at": null, "github_label": "chore/test-isolation-xdist"
+    },
+    {
+      "id": "ledger-housekeeping-p3",
+      "system": "WIP Processor",
+      "title": "GA-WIP-221 local-repo cleanup filing + GA-WIP-217/218 collision fix (PR #136)",
+      "version": "wip-processor@ledger",
+      "state": "In Review",
+      "priority": 15, "priority_label": "P3",
+      "risk": {"level": "LOW", "reason": "Ledger diff is +1/-0; the four draft docs are byte-identical to the reviewed state on the superseded #134. Actual cleanup is NOT executed here — filing only."},
+      "effort": "hours",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "Merge PR #136 (files GA-WIP-221 as PROPOSED, renumbers three draft rows)", "state": "In Review", "target": "2026-07-30"},
+        {"step": "Execute the 3 cleanup steps under James's supervision", "state": "Proposed", "target": "2026-08-15"}
+      ],
+      "linked_prs": [136],
+      "governance_row": "GA-WIP-221",
+      "related_governance": ["GA-WIP-217", "GA-WIP-218"],
+      "docs": ["docs/proposals/gov-row-wip-processor-cleanup-2026-07-22.md"],
+      "approved_by": null, "approved_at": null, "github_label": "chore/ledger-housekeeping-p3"
+    },
+    {
+      "id": "tag-search-v2-parser-fix",
+      "system": "WIP Processor",
+      "title": "Tag Search v2 parser fix (queued)",
+      "version": "wip-processor@pending",
+      "state": "Proposed",
+      "priority": 16, "priority_label": "P2",
+      "risk": {"level": "MEDIUM", "reason": "unclassified — named in task brief but no open PR or filed row on master. Needs James to point at the parser defect + confirm scope. Placeholder card so it doesn't fall off the board."},
+      "effort": "TBD",
+      "dependencies": {"blocks": [], "waits_on": []},
+      "release_timeline": [
+        {"step": "James clarifies which parser bug and against what PR/branch", "state": "Blocked", "target": "TBD"}
+      ],
+      "linked_prs": [],
+      "governance_row": null, "related_governance": ["GA-WIP-217"], "docs": [],
+      "approved_by": null, "approved_at": null, "github_label": "unclassified"
+    }
+  ],
+  "recently_shipped_48h": [
+    {"pr": 175, "governance_row": "GA-WIP-256", "title": "Sync auth_v2.json to prod's live authsettingsV2 (Std 68 §2 baseline)", "merged_at": "2026-07-28T12:33Z"},
+    {"pr": 176, "governance_row": "GA-WIP-253", "title": "Governed-config drift gate + removal of two manual-apply traps (Std 68 §2)", "merged_at": "2026-07-28T13:01Z"},
+    {"pr": 178, "governance_row": "GA-WIP-254", "title": "Daily governed-config drift alert to Teams (Std 68 §3)", "merged_at": "2026-07-29T00:55Z"},
+    {"pr": null, "governance_row": "GA-WIP-246", "title": "Easy Auth bounces — diag logs + pin encryption key", "merged_at": "2026-07-27"},
+    {"pr": null, "governance_row": "GA-WIP-247", "title": "Easy Auth nonceExpirationInterval differential probe (5m→15m)", "merged_at": "2026-07-28"},
+    {"pr": null, "governance_row": "GA-WIP-211", "title": "tagstore.get_tag_by_id read path missing _safe_key()", "merged_at": "2026-07-24"},
+    {"pr": null, "governance_row": "GA-WIP-235", "title": "recreate-on-b1.ps1 CWD publish trap — silent prod rollback", "merged_at": "2026-07-26"},
+    {"pr": null, "governance_row": "GA-WIP-240", "title": "Rolling 24h Hourly chart y-axis auto-scale", "merged_at": "2026-07-26"},
+    {"pr": null, "governance_row": "GA-WIP-204", "title": "pg-bridge daemon-thread logging gap", "merged_at": "2026-07-22"}
+  ],
+  "atmosphere": {
+    "live_incidents": [
+      {"id": "optimoroute-key-log-leak", "severity": "HIGH", "note": "OptimoRoute API key still in shared Log Analytics; GA-WIP-245 approved but not remediated"},
+      {"id": "notify-teams-replacement", "severity": "HIGH", "note": "Ops alerts have gone nowhere since ~2026-05-18; GA-WIP-180 PR #119 still DRAFT"},
+      {"id": "std-68-config-drift", "severity": "MEDIUM", "note": "New drift alert (PR #178) will exit red daily until TEAMS_WEBHOOK_URL secret is set — designed behaviour, not a bug"},
+      {"id": "wip_tag_history_flag_inert", "severity": "LOW", "note": "Prod app setting WIP_TAG_HISTORY_V1 (set 2026-07-24) is inert — missing FEATURE_ prefix; PR #182 documents the fix"},
+      {"id": "high_risk_deploy_notify_noop", "severity": "LOW", "note": "HIGH_RISK deploy card 'Teams notification' branch has been a no-op for its entire life (no webhook secret)"}
+    ],
+    "blockers": [
+      {"id": "do-postgres-migration", "note": "PR-DP4 (timestamptz string binding) unshipped — Postgres backfill would still write 0 rows to 3 of 4 tables"},
+      {"id": "shift-ttl-primary-shift-loss", "note": "Steps 1/4/5 owed on GA-WIP-212 — 28 workers waiting on the audit run to restore lost shifts"},
+      {"id": "dispatch-console-v2-sunset", "note": "PR #117 must close per HPT Portfolio SC-3; four dependent PRs need individual keep/close calls"},
+      {"id": "driver-summary", "note": "Q10 home-screen decision awaiting James"}
+    ],
+    "waiting_on_external": [
+      {"id": "adp-master-alignment", "since": "2026-07-27", "note": "Threshold calibration needs a week of real ADP files + delivery-calendar confirmation"},
+      {"id": "notify-teams-replacement", "since": "2026-07-22", "note": "Twilio A2P 10DLC campaign scope check + Mail.Send Exchange ApplicationAccessPolicy (james@)"},
+      {"id": "standards-library-teams-deprecation", "since": "2026-07-22", "note": "Standards library edit deprecating teams-card-client contract — goes through governance project, blocks notify PR 2/2"}
+    ],
+    "resource_load": [
+      {"session": "Weekly standards audit", "state": "running"},
+      {"session": "Wip deploy reminder", "state": "running"}
+    ]
+  }
+};
+
+const REPO = "houstonposttension/wip-processor";
+
+function h(tag, attrs, children){
+  const el = document.createElement(tag);
+  if(attrs){ for(const k in attrs){ if(k==="class") el.className=attrs[k]; else if(k==="html") el.innerHTML=attrs[k]; else el.setAttribute(k, attrs[k]); } }
+  if(children){ (Array.isArray(children)?children:[children]).forEach(c=>{ if(c==null||c===false) return; el.appendChild(typeof c==="string"?document.createTextNode(c):c); }); }
+  return el;
+}
+function chip(cls, text, href){
+  const c = h(href ? "a" : "span", {class:"chip "+cls, ...(href?{href,target:"_blank",rel:"noopener"}:{})}, [
+    h("span",{class:"dot"}), text
+  ]);
+  return c;
+}
+function stateClass(state){ return "state-"+(state||"").replace(/\s+/g,"").toLowerCase(); }
+function stateStepClass(state){ return "st-"+(state||"").replace(/\s+/g,""); }
+function prioClass(p){ return "p"+(p||"3").replace(/[^0-9]/g,""); }
+function heat(feat){
+  const r = (feat.risk && feat.risk.level) || "LOW";
+  const state = feat.state || "";
+  if(state==="Blocked" || state==="Broken") return "hot";
+  if(r==="HIGH") return "hot";
+  if(r==="MEDIUM") return "warm";
+  if(state==="Live") return "cool";
+  return "sleep";
+}
+
+/* ---- atmosphere ---- */
+function renderAtmo(){
+  const atmo = DATA.atmosphere || {};
+  const container = document.getElementById("atmo");
+  const lanes = [
+    {key:"live_incidents", title:"Live incidents", empty:"None active", fmt:(x)=>({
+      tone: (x.severity==="HIGH"?"bad":x.severity==="MEDIUM"?"warn":"info"),
+      title: x.id, msg: x.note, src: x.severity||""
+    })},
+    {key:"blockers", title:"Blockers", empty:"None", fmt:(x)=>({
+      tone:"warn", title: x.id, msg: x.note, src:""
+    })},
+    {key:"waiting_on_external", title:"Waiting external", empty:"None", fmt:(x)=>({
+      tone:"info", title: x.id, msg: x.note, src: x.since?("since "+x.since):""
+    })},
+    {key:"resource_load", title:"Resource load", empty:"Idle", fmt:(x)=>({
+      tone: x.state==="running"?"good":"info", title: x.session||x.id||"session", msg: x.state||"", src:""
+    })}
+  ];
+  lanes.forEach(lane=>{
+    const arr = atmo[lane.key] || [];
+    const laneEl = h("div",{class:"lane"});
+    laneEl.appendChild(h("h3",null,[lane.title, h("span",{class:"cnt"}, String(arr.length))]));
+    const items = h("div",{class:"items"});
+    if(arr.length===0){
+      items.appendChild(h("div",{class:"atrow info"},[
+        h("div",{class:"ic"}),
+        h("div",{class:"body"},[ h("div",{class:"m"}, lane.empty) ])
+      ]));
+    }else{
+      arr.forEach(raw=>{
+        const x = lane.fmt(raw);
+        items.appendChild(h("div",{class:"atrow "+x.tone},[
+          h("div",{class:"ic"}),
+          h("div",{class:"body"},[
+            x.title ? h("div",{class:"t"}, x.title) : null,
+            x.msg ? h("div",{class:"m"}, x.msg) : null,
+            x.src ? h("div",{class:"src"}, x.src) : null
+          ])
+        ]));
+      });
+    }
+    laneEl.appendChild(items);
+    container.appendChild(laneEl);
+  });
+}
+
+/* ---- feature card ---- */
+function renderCard(feat){
+  const st = feat.state || "Proposed";
+  const risk = (feat.risk && feat.risk.level) || "LOW";
+  const card = h("div",{class:"pcard "+heat(feat), "data-id": feat.id||""});
+  card.appendChild(h("div",{class:"caret", html:"&#9662;"}));
+  card.appendChild(h("div",{class:"top"},[
+    h("div",{class:"left"},[
+      h("div",{class:"title"}, feat.title || "(untitled)"),
+      h("div",{class:"fid", html: (feat.id||"—") + " &middot; " + (feat.system||"—") })
+    ]),
+    h("div",{class:"prio "+prioClass(feat.priority_label||"P3")}, feat.priority_label || "P?")
+  ]));
+
+  /* chip row */
+  const chips = h("div",{class:"chips"});
+  chips.appendChild(chip("state "+stateClass(st), st));
+  chips.appendChild(chip("risk risk-"+risk, "risk: "+risk));
+  if(feat.effort) chips.appendChild(chip("", "effort: "+feat.effort));
+  if(feat.version) chips.appendChild(chip("", feat.version));
+  if(feat.governance_row) chips.appendChild(chip("gov", feat.governance_row));
+  (feat.linked_prs||[]).slice(0,4).forEach(pr=>{
+    chips.appendChild(chip("pr","PR #"+pr,"https://github.com/"+REPO+"/pull/"+pr));
+  });
+  card.appendChild(chips);
+
+  /* risk reason — only visible when expanded */
+  if(feat.risk && feat.risk.reason){
+    card.appendChild(h("div",{class:"risk"},[
+      h("span",{class:"lbl"}, "why "+risk+":"), feat.risk.reason
+    ]));
+  }
+
+  /* expandable */
+  const exp = h("div",{class:"expand"});
+
+  /* timeline */
+  if(feat.release_timeline && feat.release_timeline.length){
+    const sec = h("div",{class:"exp-sec"});
+    sec.appendChild(h("h4",null,"Release timeline"));
+    const tl = h("div",{class:"tl"});
+    feat.release_timeline.forEach(step=>{
+      tl.appendChild(h("div",{class:"step "+stateStepClass(step.state)},[
+        h("span",{class:"dot"}),
+        h("div",{class:"body"},[
+          h("div",{class:"txt"}, step.step||""),
+          h("div",{class:"tgt", html: (step.state||"") + " &middot; " + (step.target||"TBD")})
+        ])
+      ]));
+    });
+    sec.appendChild(tl);
+    exp.appendChild(sec);
+  }
+
+  /* dependencies */
+  const deps = feat.dependencies || {};
+  const bl = deps.blocks || [];
+  const wt = deps.waits_on || [];
+  if(bl.length || wt.length){
+    const sec = h("div",{class:"exp-sec"});
+    sec.appendChild(h("h4",null,"Dependencies"));
+    const rows = h("div",{class:"deps"});
+    const mkRow = (k,arr)=>{
+      if(!arr.length) return null;
+      const v = h("span",{class:"v"});
+      arr.forEach(id=> v.appendChild(h("span",{class:"d"}, id)));
+      return h("div",{class:"row"},[ h("span",{class:"k"}, k), v ]);
+    };
+    const r1 = mkRow("blocks", bl); if(r1) rows.appendChild(r1);
+    const r2 = mkRow("waits on", wt); if(r2) rows.appendChild(r2);
+    sec.appendChild(rows);
+    exp.appendChild(sec);
+  }
+
+  /* related governance */
+  if((feat.related_governance||[]).length){
+    const sec = h("div",{class:"exp-sec"});
+    sec.appendChild(h("h4",null,"Related governance"));
+    const row = h("div",{class:"chips"});
+    feat.related_governance.forEach(id=> row.appendChild(chip("gov", id)));
+    sec.appendChild(row);
+    exp.appendChild(sec);
+  }
+
+  /* docs */
+  if((feat.docs||[]).length){
+    const sec = h("div",{class:"exp-sec"});
+    sec.appendChild(h("h4",null,"Docs"));
+    const list = h("div",{class:"docs"});
+    feat.docs.forEach(d=>{
+      list.appendChild(h("a",{class:"d",href:"https://github.com/"+REPO+"/blob/master/"+d,target:"_blank",rel:"noopener"}, d));
+    });
+    sec.appendChild(list);
+    exp.appendChild(sec);
+  }
+
+  /* label + approval */
+  const meta = h("div",{class:"exp-sec"});
+  meta.appendChild(h("h4",null,"Meta"));
+  const metaRow = h("div",{class:"chips"});
+  if(feat.github_label) metaRow.appendChild(chip("","label: "+feat.github_label));
+  if(feat.approved_by) metaRow.appendChild(chip("","approved by "+feat.approved_by+(feat.approved_at?" · "+feat.approved_at:"")));
+  else metaRow.appendChild(chip("","not yet approved"));
+  meta.appendChild(metaRow);
+  exp.appendChild(meta);
+
+  card.appendChild(exp);
+
+  card.addEventListener("click", (e)=>{
+    if(e.target.tagName==="A") return;
+    card.classList.toggle("open");
+  });
+  return card;
+}
+
+/* ---- render feature grid ---- */
+function renderGrid(){
+  const grid = document.getElementById("grid");
+  const back = document.getElementById("backlog-body");
+  const feats = (DATA.features||[]).slice().sort((a,b)=>{
+    const rank = {HIGH:0, MEDIUM:1, LOW:2};
+    const ra = rank[(a.risk&&a.risk.level)||"LOW"];
+    const rb = rank[(b.risk&&b.risk.level)||"LOW"];
+    if((a.priority||99)!==(b.priority||99)) return (a.priority||99)-(b.priority||99);
+    return ra - rb;
+  });
+  let backCount=0;
+  feats.forEach(f=>{
+    const isBacklog = (f.state==="Blocked") || (f.state==="Proposed" && (!f.linked_prs || !f.linked_prs.length));
+    if(isBacklog){ back.appendChild(renderCard(f)); backCount++; }
+    else { grid.appendChild(renderCard(f)); }
+  });
+  document.getElementById("backlog-cnt").textContent = String(backCount);
+}
+
+/* ---- recently shipped ---- */
+function renderShipped(){
+  const arr = DATA.recently_shipped_48h || [];
+  const body = document.getElementById("ship-body");
+  document.getElementById("ship-cnt").textContent = String(arr.length);
+  arr.slice().sort((a,b)=> (b.merged_at||"").localeCompare(a.merged_at||"")).forEach(s=>{
+    const meta = h("div",{class:"m"});
+    if(s.pr) meta.appendChild(h("a",{href:"https://github.com/"+REPO+"/pull/"+s.pr,target:"_blank",rel:"noopener"},"PR #"+s.pr));
+    if(s.governance_row) meta.appendChild(h("span",null, s.governance_row));
+    if(s.merged_at) meta.appendChild(h("span",null, "merged "+s.merged_at));
+    body.appendChild(h("div",{class:"shipitem"},[
+      h("span",{class:"dot"}),
+      h("div",{class:"info"},[
+        h("div",{class:"t"}, s.title||""),
+        meta
+      ])
+    ]));
+  });
+}
+
+renderAtmo();
+renderGrid();
+renderShipped();
+</script>
+</body>
+</html>
