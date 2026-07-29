@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inventory Count · Worker (phone) · MOCKUP 2026-07-29</title>
+<!-- HPT Inventory Count Tool — WORKER surface (CONCEPT MOCKUP, 2026-07-29, Wave 0a).
+     Validates the shape of the locked 11-block spec (A–K, locked 2026-07-03, revised 2026-07-09)
+     before the Wave 1 scaffold on 2026-08-11.
+     Spec hooks on this screen: A.3 (2 workers/cell, own phones) · B.4 (dual UOM, rebar pc→lb)
+     C.1 (pre-assigned + add-on-the-fly) · C.2 (scan preferred) · C.3 (unknown barcode logged)
+     C.4 (both UOMs real-time, multi-UOM per line) · C.5 (BLIND — never shows expected)
+     D (rebar 3 count categories) · E.2/E.3/E.4 (Cell→Rack→Bin, sparse, split counts)
+     H.1 (phone → SHA256 → worker_id, WIP session shared) · I.1 (read-online / write-offline)
+     K.3/K.4/K.8/K.9 (consignment, customer-owned, missing tag, unknown barcode).
+     Std 17 (Mobile Web App UI): 44px+ targets, dark tokens, no live data.
+     Nothing here is wired to a live system. All SKUs/names/quantities are placeholders. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932; --inset:#0e1217;
+    --line:#2a3038; --line2:#39424e;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+    --ok:#16c060; --ok-dim:rgba(22,192,96,.15); --ok-line:rgba(22,192,96,.45);
+    --warn:#ffb020; --warn-dim:rgba(255,176,32,.15); --warn-line:rgba(255,176,32,.4);
+    --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15); --bad-line:rgba(255,59,48,.4);
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:20px 16px 70px; }
+
+  .pagehead{ max-width:860px; margin:0 auto 16px; }
+  .pagehead h1{ font-size:19px; font-weight:800; margin:0 0 6px; }
+  .pagehead p{ font-size:12.5px; color:var(--dim); line-height:1.6; margin:0 0 8px; }
+  .pagehead b{ color:#cfe0f5; }
+  .pagehead a{ color:var(--acc-soft); }
+  .wipnote{ border-left:3px solid var(--warn); background:rgba(255,176,32,.07); padding:9px 13px;
+    margin:10px 0 4px; font-size:12px; color:#e8d4a8; line-height:1.6; border-radius:0 8px 8px 0; }
+  .wipnote b{ color:#ffd98a; }
+
+  .stage{ display:flex; justify-content:center; }
+  .phone{ width:414px; border-radius:24px; overflow:hidden; border:2px solid var(--line);
+    background:var(--bg); box-shadow:0 16px 50px rgba(0,0,0,.55); }
+  .scr{ padding:12px 11px 26px; min-height:820px; }
+  @media (max-width:520px){
+    body{ padding:12px 0 40px; }
+    .pagehead{ padding:0 12px; }
+    .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+    .scr{ padding:10px 9px 24px; }
+  }
+
+  /* app bar */
+  .appbar{ display:flex; align-items:center; gap:9px; padding:2px 2px 11px;
+    border-bottom:1px solid var(--line); margin-bottom:11px; }
+  .appbar .nm{ font-size:16px; font-weight:800; letter-spacing:-.2px; }
+  .appbar .sub{ font-size:10.5px; color:var(--dim); margin-top:2px; }
+  .rolepill{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    border-radius:6px; padding:3px 8px; background:var(--acc-dim); color:var(--acc-soft);
+    border:1px solid var(--acc-line); }
+  .spacer{ flex:1; }
+
+  /* sync chip (I.1) */
+  .syncchip{ display:inline-flex; align-items:center; gap:6px; font-size:9.5px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.4px; border-radius:999px; padding:5px 10px;
+    background:var(--ok-dim); border:1px solid var(--ok-line); color:#5ce08d; cursor:pointer; }
+  .syncchip .dot{ width:6px; height:6px; border-radius:50%; background:var(--ok); }
+  .syncchip.off{ background:var(--warn-dim); border-color:var(--warn-line); color:#ffcf6b; }
+  .syncchip.off .dot{ background:var(--warn); }
+
+  .sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+    color:#5a6470; margin:15px 2px 8px; display:flex; align-items:center; gap:7px; }
+  .sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:12px 13px; margin-bottom:8px; }
+  .card.tap{ cursor:pointer; }
+  .card.tap:active{ transform:translateY(1px); }
+
+  /* banners */
+  .banner{ border-radius:10px; padding:10px 12px; font-size:11.5px; line-height:1.55;
+    margin-bottom:9px; border:1px solid var(--line); background:var(--panel); }
+  .banner b{ font-weight:800; }
+  .banner.blind{ background:rgba(59,130,246,.08); border-color:var(--acc-line); color:#bcd8ff; }
+  .banner.warn{ background:rgba(255,176,32,.08); border-color:var(--warn-line); color:#e8d4a8; }
+  .banner.bad{ background:rgba(255,59,48,.08); border-color:var(--bad-line); color:#ffb3ae; }
+  .banner.ok{ background:rgba(22,192,96,.08); border-color:var(--ok-line); color:#a8e8c4; }
+
+  /* buttons — Std 17: 44px+ targets */
+  .btn{ font:inherit; font-size:13px; font-weight:800; color:var(--txt); background:var(--panel3);
+    border:1px solid var(--line2); border-radius:11px; padding:13px 16px; min-height:46px;
+    cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn:active{ transform:translateY(1px); }
+  .btn.primary{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .btn.go{ background:rgba(22,192,96,.14); border-color:var(--ok-line); color:#5ce08d; }
+  .btn.ghost{ background:var(--inset); border-color:var(--line); color:var(--dim); }
+  .btn.sm{ font-size:11.5px; padding:9px 12px; min-height:40px; width:auto; }
+  .btnrow{ display:flex; gap:7px; margin-top:9px; }
+  .btnrow .btn{ flex:1; }
+
+  /* the big scan button (C.2) */
+  .scanbtn{ width:100%; min-height:128px; border-radius:18px; border:2px solid var(--acc-line);
+    background:linear-gradient(180deg,rgba(59,130,246,.18),rgba(59,130,246,.06));
+    color:#cfe4ff; font:inherit; font-weight:900; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .scanbtn .ic{ font-size:38px; line-height:1; }
+  .scanbtn .t{ font-size:18px; letter-spacing:-.2px; }
+  .scanbtn .s{ font-size:10.5px; font-weight:700; color:var(--acc-soft); text-transform:uppercase; letter-spacing:.6px; }
+  .scanbtn:active{ transform:scale(.985); }
+
+  /* assignment rows */
+  .arow{ display:flex; gap:10px; align-items:center; background:var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--line2);
+    border-radius:10px; padding:11px 12px; margin-bottom:6px; cursor:pointer; min-height:56px; }
+  .arow.done{ border-left-color:var(--ok); }
+  .arow.part{ border-left-color:var(--warn); }
+  .arow .body{ flex:1; min-width:0; }
+  .arow .t{ font-size:13px; font-weight:800; line-height:1.3; }
+  .arow .m{ font-size:10.5px; color:var(--dim); margin-top:3px; line-height:1.45; }
+  .arow .m b{ color:#cfe0f5; }
+  .arow .st{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.4px;
+    border-radius:6px; padding:4px 8px; white-space:nowrap; }
+  .st.pend{ background:var(--inset); border:1px solid var(--line); color:var(--faint); }
+  .st.done{ background:var(--ok-dim); border:1px solid var(--ok-line); color:#5ce08d; }
+  .st.part{ background:var(--warn-dim); border:1px solid var(--warn-line); color:#ffcf6b; }
+
+  /* progress */
+  .prog{ height:7px; border-radius:99px; background:var(--inset); border:1px solid var(--line);
+    overflow:hidden; }
+  .prog i{ display:block; height:100%; background:var(--acc); }
+  .prog i.ok{ background:var(--ok); }
+
+  /* form bits */
+  label.f{ display:block; font-size:9.5px; font-weight:900; text-transform:uppercase;
+    letter-spacing:.6px; color:var(--faint); margin:13px 2px 6px; }
+  input.i, select.i, textarea.i{ font:inherit; font-size:15px; font-weight:700; color:var(--txt);
+    background:var(--inset); border:1px solid var(--line); border-radius:11px;
+    padding:13px 13px; width:100%; min-height:48px; }
+  input.i:focus, select.i:focus, textarea.i:focus{ outline:none; border-color:var(--acc-line); }
+  input.qty{ font-size:30px; font-weight:900; text-align:center; letter-spacing:1px; min-height:64px; }
+  .hint{ font-size:10.5px; color:var(--faint); margin-top:6px; line-height:1.5; }
+
+  /* dual-UOM live readout (C.4) */
+  .uom{ background:var(--inset); border:1px solid var(--acc-line); border-radius:12px;
+    padding:12px 13px; margin-top:9px; }
+  .uom .row{ display:flex; align-items:baseline; gap:8px; }
+  .uom .a{ font-size:22px; font-weight:900; color:#cfe4ff; }
+  .uom .eq{ font-size:16px; color:var(--faint); font-weight:800; }
+  .uom .b{ font-size:22px; font-weight:900; color:#5ce08d; }
+  .uom .lbl{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--faint); margin-top:7px; }
+  .uom .conv{ font-size:10.5px; color:var(--dim); margin-top:5px; line-height:1.5; }
+  .uom .conv b{ color:#cfe0f5; }
+
+  /* multi-UOM extra lines (C.4) + split-location lines (E.4) */
+  .line{ display:flex; gap:8px; align-items:center; background:var(--panel2);
+    border:1px solid var(--line); border-radius:10px; padding:9px 11px; margin-top:6px; }
+  .line .t{ font-size:11.5px; font-weight:700; flex:1; }
+  .line .v{ font-size:11.5px; font-weight:900; color:#cfe4ff; }
+  .line .x{ font-size:14px; color:var(--faint); cursor:pointer; padding:0 3px; }
+
+  /* rebar category tabs (Block D) */
+  .seg{ display:flex; background:var(--inset); border:1px solid var(--line);
+    border-radius:11px; overflow:hidden; margin-top:4px; }
+  .seg button{ font:inherit; flex:1; font-size:11px; font-weight:800; color:var(--dim);
+    background:transparent; border:none; padding:12px 6px; min-height:48px; cursor:pointer; line-height:1.3; }
+  .seg button.on{ background:var(--acc-dim); color:#9ccbff; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+
+  /* flags (K.3/K.4) */
+  .flags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .flag{ font-size:10px; font-weight:800; color:var(--dim); background:var(--inset);
+    border:1px solid var(--line); border-radius:999px; padding:8px 12px; cursor:pointer; min-height:36px;
+    display:flex; align-items:center; }
+  .flag.on{ background:var(--warn-dim); border-color:var(--warn-line); color:#ffcf6b; }
+
+  .kv{ display:flex; justify-content:space-between; gap:10px; font-size:11.5px; padding:6px 0;
+    border-bottom:1px solid var(--line); }
+  .kv:last-child{ border-bottom:none; }
+  .kv .k{ color:var(--dim); }
+  .kv .v{ font-weight:800; text-align:right; }
+
+  .screen{ display:none; }
+  .screen.on{ display:block; }
+
+  .backlink{ font-size:11.5px; color:var(--acc-soft); font-weight:800; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; padding:10px 2px; min-height:40px; }
+
+  .foot{ max-width:860px; margin:22px auto 0; font-size:11px; color:var(--faint); line-height:1.7; }
+  .foot a{ color:var(--acc-soft); }
+  .foot code{ background:var(--inset); border:1px solid var(--line); border-radius:4px; padding:1px 5px; }
+
+  /* toast */
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:50;
+    background:var(--panel3); border:1px solid var(--ok-line); color:#5ce08d;
+    font-size:12.5px; font-weight:800; padding:12px 18px; border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .18s; }
+  .toast.on{ opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="pagehead">
+  <h1>Inventory Count Tool — Worker surface</h1>
+  <p>Phone-first counting flow for the <b>2 workers per work cell</b> (A.3) who count on their own phones.
+     Tap through: sign in → today's assignments → scan → count → submit cell.
+     Standard SKU and the <b>rebar 3-category</b> path (Block D) are both wired.
+     <a href="index.html">← all four surfaces</a></p>
+  <div class="wipnote"><b>CONCEPT MOCKUP — 2026-07-29 (Wave 0a).</b> Shape validation ahead of the Wave 1 scaffold
+     (2026-08-11). Nothing is wired to NetSuite or to any HPT service. Every SKU, worker name, quantity and
+     location below is a placeholder. Built against the spec locked 2026-07-03 / revised 2026-07-09.</div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+<!-- ══════════════ S1 — LOGIN (H.1) ══════════════ -->
+<div class="screen on" id="s-login">
+  <div class="appbar">
+    <div><div class="nm">HPT Count</div><div class="sub">Q3 2026 Full Count · 2026-07-29</div></div>
+    <div class="spacer"></div>
+    <div class="rolepill">Worker</div>
+  </div>
+
+  <div style="text-align:center; padding:34px 0 18px;">
+    <div style="font-size:44px;">📋</div>
+    <div style="font-size:20px; font-weight:900; margin-top:10px;">Sign in to count</div>
+    <div style="font-size:11.5px; color:var(--dim); margin-top:6px; line-height:1.6;">
+      Same phone sign-in as WIP.<br>Your session carries across both apps.</div>
+  </div>
+
+  <!-- one-tap returning worker -->
+  <div class="sectlbl">Returning on this phone</div>
+  <div class="card tap" onclick="go('s-assign');flash(this)" style="display:flex; align-items:center; gap:12px; min-height:64px;">
+    <div style="width:42px;height:42px;border-radius:50%;background:var(--acc-dim);border:1px solid var(--acc-line);
+      display:flex;align-items:center;justify-content:center;font-weight:900;color:#9ccbff;font-size:14px;">M4</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:800;">Operator 4</div>
+      <div style="font-size:10.5px;color:var(--dim);margin-top:2px;">(713) •••‑4417 · Cell 3 — Rebar Fab</div>
+    </div>
+    <div style="font-size:11.5px;font-weight:900;color:#9ccbff;">Tap to sign in →</div>
+  </div>
+  <div class="hint">Device already trusted. Nothing is stored on the phone but the hash and the session token
+    — the number itself is never written to disk (H.1).</div>
+
+  <div class="sectlbl">Or enter your phone number</div>
+  <input class="i" inputmode="tel" placeholder="(713) 555‑0142" value="">
+  <div class="hint">Phone → SHA256 → <code style="font-size:10px;">worker_id</code>. Fail-closed allowlist —
+    a number not on the roster can't sign in, and there is no self-registration (H.1, universal auth model).</div>
+  <div style="margin-top:12px;"><button class="btn primary" onclick="go('s-assign')">Sign in</button></div>
+
+  <div class="banner warn" style="margin-top:16px;">
+    <b>No kiosk.</b> Workers count on their own phones (A.3). Supervisor assigns the cell — workers can't
+    pick their own assignment, and there are no external or temp counters in MVP.
+  </div>
+</div>
+
+<!-- ══════════════ S2 — TODAY'S ASSIGNMENTS (C.1) ══════════════ -->
+<div class="screen" id="s-assign">
+  <div class="appbar">
+    <div><div class="nm">Cell 3 — Rebar Fab</div><div class="sub">Operator 4 · Q3 Full Count</div></div>
+    <div class="spacer"></div>
+    <div class="syncchip" id="chip1" onclick="toggleSync()"><span class="dot"></span><span id="chiptxt1">Online</span></div>
+  </div>
+
+  <div class="banner blind">
+    <b>Blind count.</b> You will never see what the system expects — enter what you actually see on the floor.
+    A number that disagrees with NetSuite is useful information, not a mistake. (C.5)
+  </div>
+
+  <div class="card">
+    <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:9px;">
+      <div style="font-size:12.5px; font-weight:800;">Your progress</div>
+      <div style="margin-left:auto; font-size:12.5px; font-weight:900; color:#9ccbff;">7 of 18</div>
+    </div>
+    <div class="prog"><i style="width:39%"></i></div>
+    <div style="display:flex; gap:14px; margin-top:10px;">
+      <div><div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);">Scans</div>
+        <div style="font-size:15px;font-weight:900;margin-top:2px;">41</div></div>
+      <div><div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);">Queued offline</div>
+        <div style="font-size:15px;font-weight:900;margin-top:2px;" id="qcount">0</div></div>
+      <div><div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);">Partner</div>
+        <div style="font-size:15px;font-weight:900;margin-top:2px;">Operator 7</div></div>
+    </div>
+  </div>
+
+  <button class="scanbtn" onclick="go('s-scan')" style="margin:12px 0 4px;">
+    <div class="ic">⬛</div>
+    <div class="t">Scan an item</div>
+    <div class="s">Fastest way to count</div>
+  </button>
+
+  <div class="btnrow">
+    <button class="btn ghost sm" style="flex:1" onclick="toast('Search — SKU, description or vendor code (C.2)')">🔍 Search</button>
+    <button class="btn ghost sm" style="flex:1" onclick="toast('Add missing item — off-assignment count (C.1)')">＋ Add item</button>
+  </div>
+  <div class="hint">Scan is preferred; search and this assigned list are the fallbacks (C.2). Missing tag → pick
+    from the list (K.8). You can add an item the supervisor didn't assign (C.1).</div>
+
+  <div class="sectlbl">Assigned to you <span class="n">18 items</span></div>
+
+  <div class="arow" onclick="go('s-rebar')">
+    <div class="body">
+      <div class="t">#5 Rebar · Gr60 · 40′ · Domestic</div>
+      <div class="m">SKU <b>RB-05-40-60-D</b> · Rack A2 · 3 count categories</div>
+    </div><div class="st pend">To count</div>
+  </div>
+
+  <div class="arow" onclick="go('s-item')">
+    <div class="body">
+      <div class="t">0.600″ 270k Strand — 7‑wire</div>
+      <div class="m">SKU <b>ST-600-270</b> · Rack C1 / Bin 4 · <b>pieces + lbs</b></div>
+    </div><div class="st pend">To count</div>
+  </div>
+
+  <div class="arow part" onclick="go('s-item')">
+    <div class="body">
+      <div class="t">Monostrand Anchor — 0.600″</div>
+      <div class="m">SKU <b>AN-600-M</b> · <b>2 locations</b> — Rack B1 done, Yard pending (E.4)</div>
+    </div><div class="st part">Partial</div>
+  </div>
+
+  <div class="arow done" onclick="toast('Counted 09:41 — tap to amend before cell submit')">
+    <div class="body">
+      <div class="t">Pocket Former — 0.500″</div>
+      <div class="m">SKU <b>PF-500</b> · Rack B3 / Bin 2 · counted <b>09:41</b></div>
+    </div><div class="st done">Counted</div>
+  </div>
+
+  <div class="arow done" onclick="toast('Counted 09:52 — tap to amend before cell submit')">
+    <div class="body">
+      <div class="t">Wedge — 0.600″ 2‑piece</div>
+      <div class="m">SKU <b>WD-600-2</b> · Rack B3 / Bin 5 · counted <b>09:52</b></div>
+    </div><div class="st done">Counted</div>
+  </div>
+
+  <div class="arow" style="border-left-color:var(--bad);" onclick="go('s-unknown')">
+    <div class="body">
+      <div class="t">Unrecognized barcode</div>
+      <div class="m" style="color:#ffb3ae;">Scanned <b>7 891234 000219</b> · not in the SKU dictionary yet (C.3)</div>
+    </div><div class="st" style="background:var(--bad-dim);border:1px solid var(--bad-line);color:#ff9d96;">Needs SKU</div>
+  </div>
+
+  <div class="arow" style="border-left-color:var(--warn);" onclick="toast('Consignment — counted for the record, excluded from HPT totals (K.3)')">
+    <div class="body">
+      <div class="t">Coupler — 0.600″ <span style="font-size:9px;font-weight:900;color:#ffcf6b;">NOT OWNED</span></div>
+      <div class="m">SKU <b>CP-600</b> · consignment, supplier‑owned · excluded from totals (K.3)</div>
+    </div><div class="st pend">To count</div>
+  </div>
+
+  <div class="sectlbl">When your cell is done</div>
+  <button class="btn go" onclick="go('s-submit')">Submit Cell 3 for supervisor review</button>
+  <div class="hint">Counts batch at the end of the cell — the supervisor reviews and resolves every variance
+    before anything moves (C.6). You are not the last stop.</div>
+</div>
+
+<!-- ══════════════ S3 — SCAN (C.2 / C.3) ══════════════ -->
+<div class="screen" id="s-scan">
+  <div class="appbar">
+    <div><div class="nm">Scan</div><div class="sub">Cell 3 · point at the package tag</div></div>
+    <div class="spacer"></div>
+    <div class="syncchip" id="chip2" onclick="toggleSync()"><span class="dot"></span><span id="chiptxt2">Online</span></div>
+  </div>
+  <div class="backlink" onclick="go('s-assign')">← Assignments</div>
+
+  <div style="background:var(--inset); border:1px solid var(--line); border-radius:16px;
+      height:290px; display:flex; align-items:center; justify-content:center; position:relative; margin-top:6px;">
+    <div style="width:74%; height:44%; border:2px solid var(--acc); border-radius:12px;
+      box-shadow:0 0 0 2000px rgba(0,0,0,.32);"></div>
+    <div style="position:absolute; bottom:14px; font-size:10.5px; color:var(--faint); font-weight:700;">
+      Camera viewfinder — simulated</div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button class="btn primary" onclick="toast('Scanned RB‑05‑40‑60‑D');setTimeout(function(){go('s-rebar')},420)">
+      Simulate scan → #5 Rebar (rebar path)</button>
+  </div>
+  <div style="margin-top:7px;">
+    <button class="btn primary" onclick="toast('Scanned ST‑600‑270');setTimeout(function(){go('s-item')},420)">
+      Simulate scan → Strand (standard path)</button>
+  </div>
+  <div style="margin-top:7px;">
+    <button class="btn ghost" onclick="toast('Barcode not in dictionary');setTimeout(function(){go('s-unknown')},420)">
+      Simulate scan → unknown barcode</button>
+  </div>
+
+  <div class="banner warn" style="margin-top:14px;">
+    <b>Barcodes are on packaging only.</b> There are no bin barcodes today (B.5) — location is picked from the
+    Cell → Rack → Bin dropdown on the next screen, and any rack that <i>is</i> labelled can be scanned instead (E.3).
+  </div>
+  <div class="banner" style="margin-top:0;">
+    The vendor package SKU → NetSuite item dictionary <b>starts empty and learns during the count</b> (D.1).
+    Early in a count you'll hit more unknown barcodes than late.
+  </div>
+</div>
+
+<!-- ══════════════ S4 — ITEM DETAIL, STANDARD SKU ══════════════ -->
+<div class="screen" id="s-item">
+  <div class="appbar">
+    <div><div class="nm">Count item</div><div class="sub">Cell 3 · scanned 10:14</div></div>
+    <div class="spacer"></div>
+    <div class="syncchip off" id="chip3" onclick="toggleSync()"><span class="dot"></span><span id="chiptxt3">Offline — queued</span></div>
+  </div>
+  <div class="backlink" onclick="go('s-assign')">← Assignments</div>
+
+  <div class="card" style="margin-top:4px;">
+    <div style="font-size:15px; font-weight:900; line-height:1.3;">0.600″ 270k Strand — 7‑wire</div>
+    <div style="font-size:11px; color:var(--dim); margin-top:5px;">
+      SKU <b style="color:#cfe0f5;">ST-600-270</b> · NetSuite item <b style="color:#cfe0f5;">12841</b>
+      · vendor code <b style="color:#cfe0f5;">SUM-600-270-LR</b></div>
+  </div>
+
+  <div class="banner blind">Expected on-hand is <b>hidden</b> — count what you see (C.5).</div>
+
+  <label class="f">Quantity counted</label>
+  <input class="i qty" id="q" inputmode="numeric" pattern="[0-9]*" value="20" oninput="conv()">
+  <div class="hint">Numeric keypad on mobile. Gloved-hand target sizing per Std 17.</div>
+
+  <!-- C.4 dual UOM, live -->
+  <div class="uom">
+    <div class="row">
+      <div class="a"><span id="uA">20</span> pieces</div>
+      <div class="eq">=</div>
+      <div class="b"><span id="uB">4.0</span> lbs</div>
+    </div>
+    <div class="lbl">You count in · NetSuite receives</div>
+    <div class="conv">Conversion <b>0.200 lb/piece</b> — from the item's NetSuite UOM schedule (B.4).
+      NetSuite owns item + UOM; HPT never invents a conversion (B.1).</div>
+  </div>
+
+  <!-- C.4 multi-UOM per line -->
+  <label class="f">Other UOMs on this line (C.4)</label>
+  <div class="line"><div class="t">Partial reel — 1 reel</div><div class="v">≈ 940 lbs</div><div class="x" onclick="toast('Line removed')">✕</div></div>
+  <button class="btn ghost sm" style="width:100%; margin-top:7px;" onclick="toast('Add a second UOM line to this SKU (C.4 / K.7)')">＋ Add another UOM line</button>
+
+  <label class="f">Location</label>
+  <select class="i">
+    <option>Cell 3 → Rack C1 → Bin 4</option>
+    <option>Cell 3 → Rack C1 → (no bin)</option>
+    <option>Cell 3 → (no rack)</option>
+    <option>Cell 5 → Yard → Row 2</option>
+  </select>
+  <div class="hint">3-level hierarchy, sparse paths allowed — a rack with no bins is a valid stop (E.1, E.2).
+    Scan the rack tag if it has one, otherwise pick (E.3).</div>
+
+  <!-- E.4 split counts -->
+  <div class="line" style="margin-top:9px;">
+    <div class="t">Also at <b>Cell 5 → Yard → Row 2</b></div><div class="v">6 pcs</div>
+    <div class="x" onclick="toast('Split location removed')">✕</div></div>
+  <button class="btn ghost sm" style="width:100%; margin-top:7px;" onclick="toast('Split count — summed server-side, per-location detail kept in the HPT audit (E.4)')">
+    ＋ This item is in another location</button>
+  <div class="hint">About 2% of items sit in more than one place (A.4/B.3). Split counts are summed server-side;
+    the per-location breakdown stays in the HPT audit record (E.4).</div>
+
+  <label class="f">Photo (optional)</label>
+  <button class="btn ghost" onclick="toast('Camera — photo attaches to the count event in the audit trail (H.3)')">📷 Add photo</button>
+  <div class="hint">Attaches to the count event. Supervisors lean on this when a variance goes to write-off.</div>
+
+  <label class="f">Flags</label>
+  <div class="flags">
+    <div class="flag" onclick="this.classList.toggle('on')">Damaged (K.1)</div>
+    <div class="flag" onclick="this.classList.toggle('on')">Consignment — not owned (K.3)</div>
+    <div class="flag" onclick="this.classList.toggle('on')">Customer-owned (K.4)</div>
+    <div class="flag" onclick="this.classList.toggle('on')">Loaner from other yard (K.6)</div>
+    <div class="flag" onclick="this.classList.toggle('on')">Cut short / off-spec (K.5)</div>
+  </div>
+  <div class="hint">Flagged items are counted for the record but excluded from HPT on-hand totals.
+    Customer-owned also captures which customer, for per-customer reporting (K.4).</div>
+
+  <label class="f">Note (optional)</label>
+  <textarea class="i" rows="2" placeholder="Anything the supervisor should know"></textarea>
+
+  <div style="margin-top:14px;">
+    <button class="btn go" onclick="saveCount()">Save count → next item</button>
+  </div>
+  <div class="hint" id="offhint">Offline right now — this count is written to the local queue and syncs when
+    you're back on signal. Keep counting (I.1).</div>
+</div>
+
+<!-- ══════════════ S5 — REBAR (Block D) ══════════════ -->
+<div class="screen" id="s-rebar">
+  <div class="appbar">
+    <div><div class="nm">Count rebar</div><div class="sub">Cell 3 · #5 Gr60 · scanned 10:22</div></div>
+    <div class="spacer"></div>
+    <div class="syncchip" id="chip4" onclick="toggleSync()"><span class="dot"></span><span id="chiptxt4">Online</span></div>
+  </div>
+  <div class="backlink" onclick="go('s-assign')">← Assignments</div>
+
+  <div class="card" style="margin-top:4px;">
+    <div style="font-size:15px; font-weight:900; line-height:1.3;">#5 Rebar · Grade 60 · Domestic</div>
+    <div style="font-size:11px; color:var(--dim); margin-top:5px;">
+      Axes: <b style="color:#cfe0f5;">size × length × grade × source</b> — one NetSuite SKU per combination (D.3, Option 1).</div>
+  </div>
+
+  <div class="banner warn">
+    <b>Rebar counts in three categories.</b> Pick the one in front of you — the form changes. You count in
+    <b>pieces</b>; NetSuite receives <b>pounds</b> (B.4).
+  </div>
+
+  <div class="seg">
+    <button class="on" id="tb1" onclick="reb(1)">Full bundles<br><span style="font-weight:600;font-size:9.5px;">unused</span></button>
+    <button id="tb2" onclick="reb(2)">Drops<br><span style="font-weight:600;font-size:9.5px;">short / leftover</span></button>
+    <button id="tb3" onclick="reb(3)">Premade<br><span style="font-weight:600;font-size:9.5px;">shapes</span></button>
+  </div>
+
+  <!-- D.1 full bundles -->
+  <div id="r1">
+    <div class="grid2">
+      <div><label class="f">Bar size</label><select class="i"><option>#5</option><option>#3</option><option>#4</option><option>#6</option><option>#8</option></select></div>
+      <div><label class="f">Grade</label><select class="i"><option>Gr 60</option><option>Gr 40</option><option>Gr 75</option></select></div>
+    </div>
+    <div class="grid2">
+      <div><label class="f">Length</label><select class="i"><option>40′</option><option>20′</option><option>30′</option><option>60′</option></select></div>
+      <div><label class="f">Source</label><select class="i"><option>Domestic</option><option>Import</option></select></div>
+    </div>
+    <div class="grid2">
+      <div><label class="f">Pieces per bundle</label><input class="i" inputmode="numeric" value="50" oninput="rconv()"></div>
+      <div><label class="f"># of bundles</label><input class="i qty" style="font-size:22px;min-height:52px;" id="rb" inputmode="numeric" value="6" oninput="rconv()"></div>
+    </div>
+    <div class="uom">
+      <div class="row"><div class="a"><span id="rA">300</span> pcs</div><div class="eq">=</div><div class="b"><span id="rB">12,528</span> lbs</div></div>
+      <div class="lbl">6 bundles × 50 pcs × 40′ · NetSuite receives pounds</div>
+      <div class="conv">#5 = <b>1.043 lb/ft</b> (ASTM A615) × 40 ft = <b>41.76 lb/piece</b>.
+        Table reused from Shear97 <b>LB_PER_FT</b> — not re-keyed (D.2).</div>
+    </div>
+    <label class="f">Location</label>
+    <select class="i"><option>Cell 3 → Rack A2 → (no bin)</option><option>Cell 3 → Rack A1 → (no bin)</option><option>Cell 5 → Yard → Row 4</option></select>
+  </div>
+
+  <!-- D.2 drops -->
+  <div id="r2" style="display:none;">
+    <div class="banner">Source is <b>not</b> tracked per drop. Management decides the domestic / import bucket
+      at NetSuite entry — drops push as an <b>Inventory Adjustment</b>, not a worksheet line (D, G.2).</div>
+    <div class="grid2">
+      <div><label class="f">Bar size</label><select class="i"><option>#5</option><option>#4</option><option>#6</option></select></div>
+      <div><label class="f">Length (ft)</label><input class="i" inputmode="decimal" value="12.5"></div>
+    </div>
+    <label class="f">Quantity (pieces at this length)</label>
+    <input class="i qty" inputmode="numeric" value="14">
+    <div class="uom">
+      <div class="row"><div class="a">14 pcs</div><div class="eq">=</div><div class="b">182.5 lbs</div></div>
+      <div class="lbl">14 × 12.5 ft × 1.043 lb/ft</div>
+      <div class="conv">No source field — deliberate. A drop's origin isn't knowable on the floor, and guessing
+        it would put bad data into a financial record.</div>
+    </div>
+    <button class="btn ghost sm" style="width:100%;margin-top:9px;" onclick="toast('Add another drop length for #5')">＋ Add another length</button>
+    <label class="f">Location</label>
+    <select class="i"><option>Cell 3 → Drop rack → Bin 2</option><option>Cell 3 → Drop rack → Bin 1</option></select>
+  </div>
+
+  <!-- D.3 premade shapes -->
+  <div id="r3" style="display:none;">
+    <div class="grid2">
+      <div><label class="f">Bar size</label><select class="i"><option>#3</option><option>#4</option><option>#5</option></select></div>
+      <div><label class="f">Shape</label><select class="i"><option>Stirrup</option><option>Circle</option><option>Corner bar</option><option>Hook</option></select></div>
+    </div>
+    <label class="f">Dimensions</label>
+    <div class="grid2">
+      <div><input class="i" placeholder="A (in)" value="12"></div>
+      <div><input class="i" placeholder="B (in)" value="18"></div>
+    </div>
+    <div class="hint">Shape + dimensions are extra inventory axes on top of size × length × grade × source (D).</div>
+    <label class="f">Quantity</label>
+    <input class="i qty" inputmode="numeric" value="240">
+    <div class="uom">
+      <div class="row"><div class="a">240 pcs</div><div class="eq">=</div><div class="b">318.4 lbs</div></div>
+      <div class="lbl">Developed length 5.0 ft × 0.376 lb/ft (#3)</div>
+      <div class="conv">Premade shapes push on the <b>Inventory Worksheet</b> alongside full bundles (G.2).</div>
+    </div>
+    <label class="f">Location</label>
+    <select class="i"><option>Cell 3 → Shape rack → Bin 6</option><option>Cell 3 → Shape rack → Bin 5</option></select>
+  </div>
+
+  <label class="f">Photo (optional)</label>
+  <button class="btn ghost" onclick="toast('Camera — attaches to the count event (H.3)')">📷 Add photo</button>
+
+  <div style="margin-top:14px;"><button class="btn go" onclick="saveCount()">Save count → next item</button></div>
+</div>
+
+<!-- ══════════════ S6 — UNKNOWN BARCODE (C.3 / K.9) ══════════════ -->
+<div class="screen" id="s-unknown">
+  <div class="appbar">
+    <div><div class="nm">Unknown barcode</div><div class="sub">Cell 3 · 10:31</div></div>
+    <div class="spacer"></div>
+    <div class="syncchip" id="chip5" onclick="toggleSync()"><span class="dot"></span><span id="chiptxt5">Online</span></div>
+  </div>
+  <div class="backlink" onclick="go('s-assign')">← Assignments</div>
+
+  <div class="banner bad">
+    <b>7 891234 000219</b> isn't in the vendor SKU dictionary. That's expected — the dictionary starts empty
+    and learns during the count (D.1). <b>Keep counting.</b>
+  </div>
+
+  <div class="card">
+    <div style="font-size:12.5px; font-weight:800; margin-bottom:7px;">What happens next</div>
+    <div class="kv"><div class="k">Barcode logged for mapping</div><div class="v" style="color:#5ce08d;">✓ queued</div></div>
+    <div class="kv"><div class="k">Goes to</div><div class="v">Supervisor · unmapped queue</div></div>
+    <div class="kv"><div class="k">Your count</div><div class="v">Proceeds via search / list</div></div>
+    <div class="kv"><div class="k">Next scan of this code</div><div class="v">Resolves automatically</div></div>
+  </div>
+  <div class="hint">The tool never blocks a count on a missing mapping (C.3). One supervisor mapping fixes it for
+    everyone, permanently.</div>
+
+  <label class="f">Pick the item by hand</label>
+  <input class="i" placeholder="Search SKU or description…" value="anchor">
+  <div class="arow" style="margin-top:8px;" onclick="go('s-item')">
+    <div class="body"><div class="t">Monostrand Anchor — 0.600″</div><div class="m">SKU <b>AN-600-M</b> · assigned to Cell 3</div></div>
+    <div class="st pend">Pick</div></div>
+  <div class="arow" onclick="go('s-item')">
+    <div class="body"><div class="t">Monostrand Anchor — 0.500″</div><div class="m">SKU <b>AN-500-M</b> · not assigned — adds on the fly (C.1)</div></div>
+    <div class="st pend">Pick</div></div>
+
+  <label class="f">Photo of the tag (helps the supervisor map it)</label>
+  <button class="btn ghost" onclick="toast('Camera — photo rides with the unmapped-barcode record')">📷 Photograph the tag</button>
+
+  <div style="margin-top:14px;"><button class="btn primary" onclick="go('s-item')">Continue with the picked item</button></div>
+</div>
+
+<!-- ══════════════ S7 — SUBMIT CELL (C.6) ══════════════ -->
+<div class="screen" id="s-submit">
+  <div class="appbar">
+    <div><div class="nm">Submit Cell 3</div><div class="sub">Operator 4 · Q3 Full Count</div></div>
+    <div class="spacer"></div>
+    <div class="syncchip" id="chip6" onclick="toggleSync()"><span class="dot"></span><span id="chiptxt6">Online</span></div>
+  </div>
+  <div class="backlink" onclick="go('s-assign')">← Assignments</div>
+
+  <div class="banner ok"><b>All 18 assigned items counted.</b> 2 items added on the fly, 1 barcode sent for mapping.</div>
+
+  <div class="card">
+    <div class="kv"><div class="k">Cell</div><div class="v">Cell 3 — Rebar Fab</div></div>
+    <div class="kv"><div class="k">Counters</div><div class="v">Operator 4 + Operator 7</div></div>
+    <div class="kv"><div class="k">SKU lines</div><div class="v">20 (18 assigned + 2 added)</div></div>
+    <div class="kv"><div class="k">Split-location lines</div><div class="v">3</div></div>
+    <div class="kv"><div class="k">Flagged / excluded</div><div class="v">1 consignment</div></div>
+    <div class="kv"><div class="k">Unmapped barcodes</div><div class="v" style="color:var(--warn);">1 → supervisor</div></div>
+    <div class="kv"><div class="k">Queued offline</div><div class="v" style="color:#5ce08d;">0 — all synced</div></div>
+    <div class="kv"><div class="k">Elapsed</div><div class="v">1 h 12 m</div></div>
+  </div>
+
+  <div class="banner blind">You still don't see expected-vs-counted. Variances are the supervisor's screen,
+    not yours (C.5, F).</div>
+
+  <button class="btn go" onclick="toast('Cell 3 submitted for supervisor review');setTimeout(function(){go('s-done')},500)">
+    Submit for supervisor review</button>
+  <div class="hint">Batch at end of cell → supervisor reviews → manager approves → NetSuite (C.6, G.2a).
+    A supervisor may send items back to you for recount (F.2).</div>
+</div>
+
+<!-- ══════════════ S8 — SUBMITTED ══════════════ -->
+<div class="screen" id="s-done">
+  <div class="appbar"><div><div class="nm">Submitted</div><div class="sub">Cell 3 · 11:34</div></div>
+    <div class="spacer"></div><div class="rolepill">Worker</div></div>
+
+  <div style="text-align:center; padding:44px 0 20px;">
+    <div style="font-size:52px;">✅</div>
+    <div style="font-size:19px; font-weight:900; margin-top:12px;">Cell 3 is with the supervisor</div>
+    <div style="font-size:11.5px; color:var(--dim); margin-top:8px; line-height:1.7;">
+      Nothing else is needed from you unless a recount comes back.<br>
+      You'll get a notification if it does.</div>
+  </div>
+
+  <div class="card">
+    <div class="kv"><div class="k">Audit event written</div><div class="v" style="color:#5ce08d;">cell_submitted</div></div>
+    <div class="kv"><div class="k">Retained</div><div class="v">7 years (ISO 9001 · CFR)</div></div>
+    <div class="kv"><div class="k">Immutable</div><div class="v">append-only + object-locked archive</div></div>
+  </div>
+  <div class="hint">Every count, edit, recount and approval is an append-only event with actor, role, timestamp
+    and context — the ISO 9001 §8.5.4 traceability record (H.3).</div>
+
+  <div class="btnrow">
+    <button class="btn ghost" onclick="go('s-assign')">Back to assignments</button>
+    <button class="btn primary" onclick="location.href='supervisor-review.html'">Supervisor view →</button>
+  </div>
+</div>
+
+</div></div></div>
+
+<div class="foot">
+  <b>Block coverage on this surface —</b>
+  A.3 workers/phones · A.4 multi-location · B.1 NetSuite owns UOM · B.4 dual UOM + rebar pc→lb · B.5 package barcodes only ·
+  C.1 pre-assign + add on the fly · C.2 scan-preferred · C.3 unknown barcode logged · C.4 multi-UOM live ·
+  C.5 blind · C.6 batch at cell end · D.1 dictionary learns · D.2 Shear97 LB_PER_FT · D.3 SKU per combination ·
+  D rebar 3 categories · E.1–E.4 hierarchy, sparse, mixed pick/scan, split counts ·
+  H.1 phone→SHA256 · H.3 audit fields · I.1 read-online/write-offline · K.1/K.3/K.4/K.5/K.6/K.7/K.8/K.9 edge cases.<br><br>
+  <a href="index.html">Index</a> · <a href="supervisor-review.html">Supervisor</a> · <a href="manager-approve.html">Manager</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function go(id){
+  var a=document.querySelectorAll('.screen');
+  for(var i=0;i<a.length;i++) a[i].classList.remove('on');
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+var tt;
+function toast(m){
+  var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('on');},1700);
+}
+function flash(el){ el.style.borderColor='#16c060'; setTimeout(function(){el.style.borderColor='';},450); }
+
+/* I.1 — offline/online sync chip */
+var online=true, queued=0;
+function toggleSync(){
+  online=!online;
+  var chips=document.querySelectorAll('.syncchip');
+  for(var i=0;i<chips.length;i++){
+    if(online){ chips[i].classList.remove('off'); chips[i].querySelector('span:last-child').textContent='Online'; }
+    else{ chips[i].classList.add('off'); chips[i].querySelector('span:last-child').textContent='Offline — queued'; }
+  }
+  var h=document.getElementById('offhint');
+  if(h) h.textContent = online
+    ? 'Online — counts post immediately. SKU list and assignments were cached when you signed in (I.1).'
+    : 'Offline right now — this count is written to the local queue and syncs when you’re back on signal. Keep counting (I.1).';
+  toast(online ? 'Back online — 0 queued, all synced' : 'Offline — writes go to the local queue (I.1)');
+}
+function saveCount(){
+  if(!online){ queued++; document.getElementById('qcount').textContent=queued;
+    toast('Saved offline — '+queued+' queued for sync'); }
+  else toast('Count saved · audit event written');
+  setTimeout(function(){go('s-assign')},600);
+}
+
+/* C.4 live dual-UOM */
+function conv(){
+  var v=parseFloat(document.getElementById('q').value)||0;
+  document.getElementById('uA').textContent=v;
+  document.getElementById('uB').textContent=(v*0.2).toFixed(1);
+}
+/* D — rebar category switch */
+function reb(n){
+  for(var i=1;i<=3;i++){
+    document.getElementById('r'+i).style.display = (i===n?'block':'none');
+    document.getElementById('tb'+i).className = (i===n?'on':'');
+  }
+}
+function rconv(){
+  var b=parseFloat(document.getElementById('rb').value)||0;
+  var pcs=b*50;
+  document.getElementById('rA').textContent=pcs.toLocaleString();
+  document.getElementById('rB').textContent=Math.round(pcs*41.76).toLocaleString();
+}
+</script>
+</body>
+</html>

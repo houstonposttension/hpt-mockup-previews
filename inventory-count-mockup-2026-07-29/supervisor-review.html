@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory Count · Supervisor review · MOCKUP 2026-07-29</title>
+<!-- HPT Inventory Count Tool — SUPERVISOR surface (CONCEPT MOCKUP, 2026-07-29, Wave 0a).
+     Tier 1 of the 3-tier flow. Reviews cell counts, resolves every variance, bundles for the manager.
+     NO NetSuite push happens here — the manager is the only trigger (G.2a, ADDED 2026-07-09).
+     Spec hooks: I.2 (live progress dashboard, per-cell bars, per-worker scans, 30-sec refresh)
+     F.1/F.1a (hybrid threshold: 5% OR 10 units, whichever is smaller)
+     F.2 (5-action menu) · F.3 REVISED 2026-07-09 (recount: same team OR reassign, supervisor picks per case)
+     F.4 REVISED 2026-07-09 (8 write-off reason codes + Other, ISO 9001 §8.3 alignment)
+     F.5 (recount cap 2, then executive escalation) · C.3 (unmapped barcode queue)
+     Std 40 (Manufacturing Dashboard) surface. All data is placeholder. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932; --inset:#0e1217;
+    --line:#2a3038; --line2:#39424e;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+    --ok:#16c060; --ok-dim:rgba(22,192,96,.15); --ok-line:rgba(22,192,96,.45);
+    --warn:#ffb020; --warn-dim:rgba(255,176,32,.15); --warn-line:rgba(255,176,32,.4);
+    --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15); --bad-line:rgba(255,59,48,.4);
+    --purple:#a78bfa; --purple-dim:rgba(167,139,250,.14); --purple-line:rgba(167,139,250,.4);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:20px 18px 80px; }
+  .wrap{ max-width:1380px; margin:0 auto; }
+
+  .pagehead h1{ font-size:19px; font-weight:800; margin:0 0 6px; }
+  .pagehead p{ font-size:12.5px; color:var(--dim); line-height:1.6; margin:0 0 8px; }
+  .pagehead b{ color:#cfe0f5; }
+  .pagehead a{ color:var(--acc-soft); }
+  .wipnote{ border-left:3px solid var(--warn); background:rgba(255,176,32,.07); padding:9px 13px;
+    margin:10px 0 18px; font-size:12px; color:#e8d4a8; line-height:1.6; border-radius:0 8px 8px 0; }
+  .wipnote b{ color:#ffd98a; }
+
+  /* app chrome */
+  .appbar{ display:flex; align-items:center; gap:12px; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-bottom:12px; }
+  .appbar .nm{ font-size:15px; font-weight:800; }
+  .appbar .sub{ font-size:10.5px; color:var(--dim); margin-top:2px; }
+  .rolepill{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    border-radius:6px; padding:4px 9px; background:var(--acc-dim); color:var(--acc-soft);
+    border:1px solid var(--acc-line); }
+  .spacer{ flex:1; }
+  .live{ display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.5px; color:#5ce08d; background:var(--ok-dim);
+    border:1px solid var(--ok-line); border-radius:999px; padding:5px 11px; }
+  .live .dot{ width:6px; height:6px; border-radius:50%; background:var(--ok);
+    animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.28} }
+
+  .sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+    color:#5a6470; margin:20px 2px 9px; display:flex; align-items:center; gap:8px; }
+  .sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; text-transform:none; letter-spacing:0; font-size:10.5px; }
+
+  /* KPI tiles (Std 40 §5c) */
+  .kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:9px; }
+  .kpi{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 13px; }
+  .kpi .v{ font-size:25px; font-weight:900; line-height:1; }
+  .kpi .k{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.45px;
+    color:var(--faint); margin-top:7px; line-height:1.35; }
+  .kpi .d{ font-size:10px; color:var(--dim); margin-top:5px; }
+  .kpi.hot{ border-color:var(--bad-line); background:linear-gradient(180deg,rgba(255,59,48,.08),transparent); }
+  .kpi.hot .v{ color:#ff7b73; }
+  .kpi.warm{ border-color:var(--warn-line); background:linear-gradient(180deg,rgba(255,176,32,.07),transparent); }
+  .kpi.warm .v{ color:var(--warn); }
+  .kpi.good .v{ color:#5ce08d; }
+  @media (max-width:1100px){ .kpis{ grid-template-columns:repeat(3,1fr); } }
+
+  /* cell progress (I.2) */
+  .cells{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+  @media (max-width:1100px){ .cells{ grid-template-columns:repeat(2,1fr); } }
+  .cell{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px 14px; }
+  .cell.mine{ border-color:var(--acc-line); }
+  .cell .h{ display:flex; align-items:baseline; gap:8px; }
+  .cell .h .t{ font-size:13px; font-weight:800; }
+  .cell .h .p{ margin-left:auto; font-size:13px; font-weight:900; color:#9ccbff; }
+  .cell .st{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.4px;
+    border-radius:6px; padding:3px 7px; }
+  .st.counting{ background:var(--acc-dim); border:1px solid var(--acc-line); color:#9ccbff; }
+  .st.review{ background:var(--warn-dim); border:1px solid var(--warn-line); color:#ffcf6b; }
+  .st.ready{ background:var(--ok-dim); border:1px solid var(--ok-line); color:#5ce08d; }
+  .st.sent{ background:var(--purple-dim); border:1px solid var(--purple-line); color:#c4b5fd; }
+  .prog{ height:8px; border-radius:99px; background:var(--inset); border:1px solid var(--line);
+    overflow:hidden; margin:10px 0 9px; }
+  .prog i{ display:block; height:100%; background:var(--acc); }
+  .prog i.ok{ background:var(--ok); } .prog i.warn{ background:var(--warn); }
+  .workers{ display:flex; gap:7px; flex-wrap:wrap; }
+  .wk{ display:flex; align-items:center; gap:6px; font-size:10.5px; color:var(--dim);
+    background:var(--inset); border:1px solid var(--line); border-radius:999px; padding:4px 9px; }
+  .wk b{ color:#cfe0f5; font-weight:800; }
+  .cellmeta{ font-size:10.5px; color:var(--faint); margin-top:8px; }
+  .cellmeta b{ color:var(--warn); }
+
+  /* table */
+  .tbl{ width:100%; border-collapse:collapse; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .tbl th{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--faint); text-align:left; padding:11px 12px; background:var(--inset);
+    border-bottom:1px solid var(--line); white-space:nowrap; }
+  .tbl td{ font-size:12px; padding:12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tbl tr:last-child td{ border-bottom:none; }
+  .tbl tr.resolved{ opacity:.5; }
+  .num{ text-align:right; font-variant-numeric:tabular-nums; font-weight:800; }
+  .sku{ font-weight:800; font-size:12.5px; }
+  .skusub{ font-size:10px; color:var(--faint); margin-top:3px; }
+  .var-bad{ color:#ff7b73; font-weight:900; }
+  .var-warn{ color:var(--warn); font-weight:900; }
+  .var-ok{ color:#5ce08d; font-weight:900; }
+  .thr{ font-size:9.5px; color:var(--faint); margin-top:3px; white-space:nowrap; }
+  .thr b{ color:#ff9d96; }
+
+  /* the 5 actions (F.2) */
+  .acts{ display:flex; gap:5px; flex-wrap:wrap; }
+  .abtn{ font:inherit; font-size:10.5px; font-weight:800; border-radius:8px; padding:8px 10px;
+    cursor:pointer; white-space:nowrap; min-height:36px; border:1px solid var(--line2);
+    background:var(--panel3); color:var(--dim); }
+  .abtn:active{ transform:translateY(1px); }
+  .abtn.a1{ border-color:var(--ok-line); color:#5ce08d; background:rgba(22,192,96,.10); }
+  .abtn.a2{ border-color:var(--warn-line); color:#ffcf6b; background:rgba(255,176,32,.10); }
+  .abtn.a3{ border-color:var(--bad-line); color:#ff9d96; background:rgba(255,59,48,.10); }
+  .abtn.a4{ border-color:var(--line2); color:var(--dim); background:var(--inset); }
+  .abtn.a5{ border-color:var(--purple-line); color:#c4b5fd; background:var(--purple-dim); }
+  .abtn.done{ background:var(--inset); border-color:var(--line); color:var(--faint); cursor:default; }
+  .abtn.disabled{ opacity:.35; cursor:not-allowed; }
+
+  .badge{ display:inline-block; font-size:9px; font-weight:900; text-transform:uppercase;
+    letter-spacing:.4px; border-radius:6px; padding:3px 7px; }
+  .badge.rc0{ background:var(--inset); border:1px solid var(--line); color:var(--faint); }
+  .badge.rc1{ background:var(--warn-dim); border:1px solid var(--warn-line); color:#ffcf6b; }
+  .badge.rc2{ background:var(--bad-dim); border:1px solid var(--bad-line); color:#ff9d96; }
+  .badge.rcx{ background:#3b1d1a; border:1px solid var(--bad); color:#ff7b73; }
+
+  .resolution{ font-size:10.5px; margin-top:6px; color:#5ce08d; font-weight:700; }
+  .resolution.warn{ color:#ffcf6b; } .resolution.bad{ color:#ff9d96; } .resolution.purple{ color:#c4b5fd; }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .banner{ border-radius:10px; padding:11px 14px; font-size:12px; line-height:1.6;
+    border:1px solid var(--line); background:var(--panel); margin-bottom:10px; }
+  .banner.blue{ background:rgba(59,130,246,.08); border-color:var(--acc-line); color:#bcd8ff; }
+  .banner.warn{ background:rgba(255,176,32,.08); border-color:var(--warn-line); color:#e8d4a8; }
+  .banner.bad{ background:rgba(255,59,48,.08); border-color:var(--bad-line); color:#ffb3ae; }
+  .banner b{ font-weight:800; }
+
+  .btn{ font:inherit; font-size:13px; font-weight:800; color:var(--txt); background:var(--panel3);
+    border:1px solid var(--line2); border-radius:11px; padding:13px 20px; min-height:46px; cursor:pointer; }
+  .btn.go{ background:rgba(22,192,96,.14); border-color:var(--ok-line); color:#5ce08d; }
+  .btn.primary{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .btn.ghost{ background:var(--inset); border-color:var(--line); color:var(--dim); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn:active{ transform:translateY(1px); }
+
+  /* modal */
+  .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:60;
+    display:none; align-items:center; justify-content:center; padding:20px; }
+  .scrim.on{ display:flex; }
+  .modal{ width:100%; max-width:560px; background:var(--panel); border:1px solid var(--line2);
+    border-radius:16px; padding:20px 22px; box-shadow:0 24px 70px rgba(0,0,0,.7);
+    max-height:88vh; overflow:auto; }
+  .modal h3{ font-size:16px; font-weight:900; margin:0 0 4px; }
+  .modal .msub{ font-size:11.5px; color:var(--dim); margin-bottom:14px; line-height:1.6; }
+  label.f{ display:block; font-size:9.5px; font-weight:900; text-transform:uppercase;
+    letter-spacing:.6px; color:var(--faint); margin:14px 2px 6px; }
+  select.i, textarea.i, input.i{ font:inherit; font-size:13.5px; font-weight:700; color:var(--txt);
+    background:var(--inset); border:1px solid var(--line); border-radius:10px;
+    padding:12px 12px; width:100%; min-height:46px; }
+  select.i:focus, textarea.i:focus, input.i:focus{ outline:none; border-color:var(--acc-line); }
+  .hint{ font-size:10.5px; color:var(--faint); margin-top:6px; line-height:1.55; }
+  .hint b{ color:var(--dim); }
+  .mrow{ display:flex; gap:9px; margin-top:18px; }
+  .mrow .btn{ flex:1; }
+  .reasongrp{ font-size:9.5px; font-weight:900; color:var(--faint); text-transform:uppercase;
+    letter-spacing:.4px; padding:4px 0; }
+
+  .foot{ margin:26px auto 0; font-size:11px; color:var(--faint); line-height:1.7; max-width:1380px; }
+  .foot a{ color:var(--acc-soft); }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:80;
+    background:var(--panel3); border:1px solid var(--ok-line); color:#5ce08d;
+    font-size:12.5px; font-weight:800; padding:12px 18px; border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .18s; }
+  .toast.on{ opacity:1; }
+  .two{ display:grid; grid-template-columns:1fr 340px; gap:12px; align-items:start; }
+  @media (max-width:1100px){ .two{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="pagehead">
+  <h1>Inventory Count Tool — Supervisor review</h1>
+  <p>Tier 1. Live cell progress, then every variance resolved one at a time with the
+     <b>5-action menu</b> (F.2). The supervisor <b>bundles and submits</b> — the NetSuite push belongs to the
+     manager (G.2a). <a href="index.html">← all four surfaces</a></p>
+  <div class="wipnote"><b>CONCEPT MOCKUP — 2026-07-29 (Wave 0a).</b> Shape validation ahead of the Wave 1
+     scaffold (2026-08-11). Not wired to NetSuite or any HPT service. Every SKU, quantity, name and variance
+     is a placeholder. Spec locked 2026-07-03, revised 2026-07-09.</div>
+</div>
+
+<div class="appbar">
+  <div><div class="nm">Q3 2026 Full Count · Supervisor console</div>
+    <div class="sub">Supervisor 2 · 6 work cells · started 07:00 · day 1 of 1 (A.2)</div></div>
+  <div class="spacer"></div>
+  <span class="live"><span class="dot"></span>Live · refreshed 12 s ago</span>
+  <span class="rolepill">Supervisor</span>
+</div>
+
+<!-- ══ KPI row (Std 40 §5c, adapted for a count) ══ -->
+<div class="kpis">
+  <div class="kpi good"><div class="v">73%</div><div class="k">Count complete</div><div class="d">218 of 298 SKU lines</div></div>
+  <div class="kpi"><div class="v">412</div><div class="k">Scans today</div><div class="d">across 12 workers</div></div>
+  <div class="kpi hot"><div class="v">9</div><div class="k">Open discrepancies</div><div class="d">over the F.1a threshold</div></div>
+  <div class="kpi warm"><div class="v">3</div><div class="k">Recounts in flight</div><div class="d">1 at the cap (F.5)</div></div>
+  <div class="kpi warm"><div class="v">4</div><div class="k">Unmapped barcodes</div><div class="d">waiting on you (C.3)</div></div>
+  <div class="kpi"><div class="v">2 of 6</div><div class="k">Cells ready for mgmt</div><div class="d">bundled, not pushed</div></div>
+</div>
+
+<!-- ══ per-cell progress (I.2) ══ -->
+<div class="sectlbl">Cell progress <span class="n">auto-refresh 30 s · per-worker scan counts (I.2)</span></div>
+<div class="cells">
+
+  <div class="cell mine">
+    <div class="h"><div class="t">Cell 3 — Rebar Fab</div><span class="st review">Review</span><div class="p">100%</div></div>
+    <div class="prog"><i class="ok" style="width:100%"></i></div>
+    <div class="workers">
+      <div class="wk">Operator 4 · <b>41 scans</b></div><div class="wk">Operator 7 · <b>38 scans</b></div></div>
+    <div class="cellmeta">20 lines · <b>4 discrepancies open</b> · 1 unmapped barcode</div>
+  </div>
+
+  <div class="cell">
+    <div class="h"><div class="t">Cell 1 — Strand</div><span class="st ready">Ready</span><div class="p">100%</div></div>
+    <div class="prog"><i class="ok" style="width:100%"></i></div>
+    <div class="workers"><div class="wk">Operator 1 · <b>52 scans</b></div><div class="wk">Operator 9 · <b>47 scans</b></div></div>
+    <div class="cellmeta">61 lines · 0 open · bundled for manager</div>
+  </div>
+
+  <div class="cell">
+    <div class="h"><div class="t">Cell 2 — Anchors</div><span class="st sent">With mgmt</span><div class="p">100%</div></div>
+    <div class="prog"><i class="ok" style="width:100%"></i></div>
+    <div class="workers"><div class="wk">Operator 2 · <b>44 scans</b></div><div class="wk">Operator 5 · <b>40 scans</b></div></div>
+    <div class="cellmeta">38 lines · 3 write-offs · submitted 10:58</div>
+  </div>
+
+  <div class="cell">
+    <div class="h"><div class="t">Cell 4 — Extrusion</div><span class="st counting">Counting</span><div class="p">64%</div></div>
+    <div class="prog"><i style="width:64%"></i></div>
+    <div class="workers"><div class="wk">Operator 3 · <b>29 scans</b></div><div class="wk">Operator 8 · <b>22 scans</b></div></div>
+    <div class="cellmeta">33 of 52 lines · 2 discrepancies queued</div>
+  </div>
+
+  <div class="cell">
+    <div class="h"><div class="t">Cell 5 — Yard</div><span class="st counting">Counting</span><div class="p">41%</div></div>
+    <div class="prog"><i class="warn" style="width:41%"></i></div>
+    <div class="workers"><div class="wk">Operator 6 · <b>18 scans</b></div><div class="wk">Operator 11 · <b>14 scans</b></div></div>
+    <div class="cellmeta">Slowest cell · <b>3 unmapped barcodes</b> · 2 split-location lines</div>
+  </div>
+
+  <div class="cell">
+    <div class="h"><div class="t">Cell 6 — Hardware</div><span class="st counting">Counting</span><div class="p">88%</div></div>
+    <div class="prog"><i style="width:88%"></i></div>
+    <div class="workers"><div class="wk">Operator 10 · <b>36 scans</b></div><div class="wk">Operator 12 · <b>31 scans</b></div></div>
+    <div class="cellmeta">44 of 50 lines · 0 open</div>
+  </div>
+</div>
+
+<div class="two" style="margin-top:8px;">
+<div>
+
+<!-- ══ discrepancy queue (F) ══ -->
+<div class="sectlbl">Discrepancy queue — Cell 3 <span class="n">threshold: 5% OR 10 units, whichever is smaller (F.1a)</span></div>
+
+<div class="banner blue">
+  <b>Every row below must be resolved before Cell 3 can go to the manager.</b> Workers never saw these numbers —
+  the count was blind (C.5). Your reasoning on each row is what management reviews, and what an ISO 9001 §8.5.4
+  audit reads back years later (H.3).
+</div>
+
+<table class="tbl">
+<thead><tr>
+  <th style="width:230px;">SKU</th><th class="num">Expected</th><th class="num">Counted</th>
+  <th class="num">Variance</th><th style="width:96px;">Recounts</th><th>Action (F.2)</th>
+</tr></thead>
+<tbody>
+
+<tr id="row1">
+  <td><div class="sku">RB-05-40-60-D</div><div class="skusub">#5 Rebar Gr60 40′ Dom · full bundles · Rack A2</div></td>
+  <td class="num">12,528 lb</td><td class="num">11,275 lb</td>
+  <td class="num"><span class="var-bad">−1,253 lb</span><div class="thr">−10.0% · <b>over 5%</b></div></td>
+  <td><span class="badge rc1">1 of 2</span></td>
+  <td>
+    <div class="acts" id="a1">
+      <button class="abtn a1" onclick="resolve('row1','a1','Variance accepted','')">Accept variance</button>
+      <button class="abtn a2" onclick="openRecount('row1','a1','RB-05-40-60-D',1)">Request recount</button>
+      <button class="abtn a3" onclick="openWriteoff('row1','a1','RB-05-40-60-D','−1,253 lb')">Write-off…</button>
+      <button class="abtn a4" onclick="resolve('row1','a1','Parked — investigate later','warn')">Investigate later</button>
+      <button class="abtn a5" onclick="resolve('row1','a1','Sent for management approval','purple')">Submit for mgmt approval</button>
+    </div>
+  </td>
+</tr>
+
+<tr id="row2">
+  <td><div class="sku">ST-600-270</div><div class="skusub">0.600″ 270k Strand · Rack C1/Bin 4 + Yard Row 2 (split, E.4)</div></td>
+  <td class="num">1,840 pc</td><td class="num">1,826 pc</td>
+  <td class="num"><span class="var-warn">−14 pc</span><div class="thr">−0.8% · <b>over 10 units</b></div></td>
+  <td><span class="badge rc0">0 of 2</span></td>
+  <td>
+    <div class="acts" id="a2">
+      <button class="abtn a1" onclick="resolve('row2','a2','Variance accepted','')">Accept variance</button>
+      <button class="abtn a2" onclick="openRecount('row2','a2','ST-600-270',0)">Request recount</button>
+      <button class="abtn a3" onclick="openWriteoff('row2','a2','ST-600-270','−14 pc')">Write-off…</button>
+      <button class="abtn a4" onclick="resolve('row2','a2','Parked — investigate later','warn')">Investigate later</button>
+      <button class="abtn a5" onclick="resolve('row2','a2','Sent for management approval','purple')">Submit for mgmt approval</button>
+    </div>
+    <div class="hint">Under 5% but over the 10-unit floor — the hybrid rule takes whichever is
+      <b>smaller</b>, so this one surfaces (F.1).</div>
+  </td>
+</tr>
+
+<tr id="row3">
+  <td><div class="sku">RB-05-DROPS</div><div class="skusub">#5 drops, mixed lengths · drop rack · source not tracked (D)</div></td>
+  <td class="num">402 lb</td><td class="num">183 lb</td>
+  <td class="num"><span class="var-bad">−219 lb</span><div class="thr">−54.5% · <b>over 5%</b></div></td>
+  <td><span class="badge rc2">2 of 2 — capped</span></td>
+  <td>
+    <div class="acts" id="a3">
+      <button class="abtn a1" onclick="resolve('row3','a3','Variance accepted','')">Accept variance</button>
+      <button class="abtn a2 disabled" onclick="capHit()">Request recount</button>
+      <button class="abtn a3" onclick="openWriteoff('row3','a3','RB-05-DROPS','−219 lb')">Write-off…</button>
+      <button class="abtn a4" onclick="resolve('row3','a3','Parked — investigate later','warn')">Investigate later</button>
+      <button class="abtn a5" onclick="resolve('row3','a3','Sent for management approval','purple')">Submit for mgmt approval</button>
+    </div>
+    <div class="hint" style="color:#ff9d96;"><b>Recount cap reached (F.5).</b> A third request auto-flags
+      “recount limit exceeded” and escalates to the Executive role. Cut-loss on drops is expected — code 5 fits.</div>
+  </td>
+</tr>
+
+<tr id="row4">
+  <td><div class="sku">AN-600-M</div><div class="skusub">Monostrand anchor 0.600″ · Rack B1 + Yard (split)</div></td>
+  <td class="num">3,200 pc</td><td class="num">3,451 pc</td>
+  <td class="num"><span class="var-ok">+251 pc</span><div class="thr">+7.8% · <b>over 5%</b></div></td>
+  <td><span class="badge rc0">0 of 2</span></td>
+  <td>
+    <div class="acts" id="a4">
+      <button class="abtn a1" onclick="resolve('row4','a4','Variance accepted','')">Accept variance</button>
+      <button class="abtn a2" onclick="openRecount('row4','a4','AN-600-M',0)">Request recount</button>
+      <button class="abtn a3" onclick="openWriteoff('row4','a4','AN-600-M','+251 pc')">Write-off…</button>
+      <button class="abtn a4" onclick="resolve('row4','a4','Parked — investigate later','warn')">Investigate later</button>
+      <button class="abtn a5" onclick="resolve('row4','a4','Sent for management approval','purple')">Submit for mgmt approval</button>
+    </div>
+    <div class="hint">Positive variance. Often a receipt miscount (code 4) or a dom↔intl mis-code (code 6) —
+      both are paperwork, not a real quantity change.</div>
+  </td>
+</tr>
+
+</tbody>
+</table>
+
+<!-- ══ unmapped barcodes (C.3) ══ -->
+<div class="sectlbl">Unmapped barcodes <span class="n">the vendor SKU dictionary learns as you map (D.1)</span></div>
+<table class="tbl">
+<thead><tr><th style="width:200px;">Barcode</th><th>Seen</th><th>Worker note / photo</th><th style="width:270px;">Map to NetSuite item</th></tr></thead>
+<tbody>
+<tr>
+  <td><div class="sku">7 891234 000219</div><div class="skusub">Cell 3 · 10:31 · ×1</div></td>
+  <td>1 scan</td>
+  <td>“Anchor box, blue label” · 📷 1 photo</td>
+  <td><div style="display:flex; gap:6px;">
+    <select class="i" style="min-height:38px; font-size:12px; padding:8px 10px;">
+      <option>AN-600-M — Monostrand Anchor 0.600″</option>
+      <option>AN-500-M — Monostrand Anchor 0.500″</option>
+      <option>CP-600 — Coupler 0.600″</option></select>
+    <button class="abtn a1" onclick="toast('Mapped — every future scan of this barcode resolves automatically')">Map</button></div></td>
+</tr>
+<tr>
+  <td><div class="sku">0 049875 331120</div><div class="skusub">Cell 5 · 09:12 · ×6</div></td>
+  <td>6 scans — <b style="color:var(--warn);">recurring</b></td>
+  <td>“Grease drum, 55 gal” · 📷 2 photos</td>
+  <td><div style="display:flex; gap:6px;">
+    <select class="i" style="min-height:38px; font-size:12px; padding:8px 10px;">
+      <option>GR-55-PT — PT Grease, 55 gal drum</option>
+      <option>GR-05-PT — PT Grease, 5 gal pail</option></select>
+    <button class="abtn a1" onclick="toast('Mapped — 6 pending counts resolve retroactively')">Map</button></div></td>
+</tr>
+</tbody>
+</table>
+<div class="hint" style="margin-top:8px;">Many-to-one: several vendor package SKUs can point at one NetSuite item (B.2).
+  Mapping is retroactive — the six counts already taken against this barcode resolve as soon as you map it.</div>
+
+</div>
+
+<!-- ══ right rail ══ -->
+<div>
+  <div class="sectlbl" style="margin-top:20px;">Cell 3 — submit to management</div>
+  <div class="card">
+    <div style="font-size:12.5px; font-weight:800; margin-bottom:10px;">Resolution status</div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; padding:6px 0; border-bottom:1px solid var(--line);">
+      <span style="color:var(--dim);">Lines counted</span><b>20</b></div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; padding:6px 0; border-bottom:1px solid var(--line);">
+      <span style="color:var(--dim);">Within threshold</span><b style="color:#5ce08d;">16</b></div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; padding:6px 0; border-bottom:1px solid var(--line);">
+      <span style="color:var(--dim);">Discrepancies open</span><b id="openct" style="color:#ff7b73;">4</b></div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; padding:6px 0; border-bottom:1px solid var(--line);">
+      <span style="color:var(--dim);">Resolved by you</span><b id="resct">0</b></div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; padding:6px 0;">
+      <span style="color:var(--dim);">Unmapped barcodes</span><b style="color:var(--warn);">1</b></div>
+
+    <div class="prog" style="margin:14px 0 12px;"><i id="rprog" style="width:0%"></i></div>
+
+    <button class="btn go" id="submitbtn" style="width:100%;" disabled onclick="submitCell()">
+      Submit Cell 3 for manager approval</button>
+    <div class="hint" style="margin-top:9px;">Enabled once every discrepancy carries a resolution.
+      This bundles the cell — <b>it does not touch NetSuite</b>.</div>
+  </div>
+
+  <div class="banner bad" style="margin-top:12px;">
+    <b>No push button on this screen — by design.</b> Only the manager's
+    “Approve &amp; Send to NetSuite” writes anything (G.2a, added 2026-07-09). That single explicit human
+    approval is the ISO 9001 §8.5.4 + SOX-lite moment, and it locks the count.
+  </div>
+
+  <div class="sectlbl">Escalations</div>
+  <div class="card">
+    <div style="font-size:11.5px; line-height:1.6; color:var(--dim);">
+      <b style="color:#ff9d96;">RB-05-DROPS</b> is at <b style="color:#cfe0f5;">2 of 2</b> recounts.
+      A third request auto-flags <i>recount limit exceeded</i> and routes to the <b style="color:#cfe0f5;">Executive</b>
+      role — the only thing that role does in MVP (F.5, H.2).</div>
+    <button class="btn ghost" style="width:100%; margin-top:11px;" onclick="toast('Escalation preview — executive review, recount-limit-exceeded')">
+      Preview the escalation</button>
+  </div>
+
+  <div class="sectlbl">Where this sits</div>
+  <div class="card" style="font-size:11.5px; line-height:1.75; color:var(--dim);">
+    <div>Tier 0 — Workers count <span style="color:#5ce08d;">✓ done</span></div>
+    <div><b style="color:#9ccbff;">Tier 1 — Supervisor (you)</b> — resolve + bundle</div>
+    <div>Tier 2 — Management — review reasoning, approve</div>
+    <div>Tier 3 — NetSuite — SuiteTalk REST push</div>
+    <div>Tier 4 — Audit archive — 7-year record</div>
+  </div>
+</div>
+</div>
+
+<div class="foot">
+  <b>Block coverage on this surface —</b>
+  A.2 one-day count · A.4 six cells · B.2 many-to-one vendor SKU dictionary · C.3 unmapped barcode queue ·
+  C.6 batch → review → approve · D drops vs bundles vs premade · E.4 split-location lines ·
+  F.1/F.1a hybrid 5%-or-10-unit threshold · F.2 five-action menu · F.3 recount team choice ·
+  F.4 eight reason codes + Other · F.5 recount cap 2 → executive · G.2a no push here ·
+  H.2 four roles · H.3 elevated audit fields (reasoning_text, previous_state, related_events) ·
+  I.2 live dashboard, per-cell bars, per-worker scans, 30-s refresh · J.1/J.5 report feeds.<br><br>
+  <a href="index.html">Index</a> · <a href="worker-count.html">Worker</a> · <a href="manager-approve.html">Manager</a>
+</div>
+
+</div>
+
+<!-- ══════════ WRITE-OFF MODAL (F.4 REVISED 2026-07-09) ══════════ -->
+<div class="scrim" id="wo">
+  <div class="modal">
+    <h3>Write-off with reason</h3>
+    <div class="msub">SKU <b id="woSku" style="color:#cfe0f5;">—</b> · variance <b id="woVar" style="color:#ff9d96;">—</b>.
+      Eight reason codes aligned to ISO 9001 §8.3 nonconformance categories, plus Other.
+      <b style="color:#cfe0f5;">Revised 2026-07-09</b> — supersedes the nine-code list from 07-03.</div>
+
+    <label class="f">Reason code</label>
+    <select class="i" id="woCode" onchange="woNote()">
+      <optgroup label="Internal loss">
+        <option value="1">1 · Damaged in yard — physical damage after receipt</option>
+        <option value="5">5 · Cut-loss / drop scrap — fabrication yield loss, expected %</option>
+        <option value="7">7 · Obsolete / scrapped — bar age or spec discontinuation</option>
+      </optgroup>
+      <optgroup label="Vendor-recoverable">
+        <option value="2">2 · Damaged in transit — arrived damaged from mill (vendor claim)</option>
+        <option value="3">3 · Vendor short-shipped — mill billed more than delivered</option>
+      </optgroup>
+      <optgroup label="Paperwork adjustment — no real qty change">
+        <option value="4">4 · Miscounted at receipt — receiving error, no theft or damage</option>
+        <option value="6">6 · Wrong SKU coded — dom↔intl reclass, size mislabel</option>
+      </optgroup>
+      <optgroup label="Catch-all">
+        <option value="8">8 · Other — see notes</option>
+      </optgroup>
+    </select>
+    <div class="hint">The grouping is the point: codes <b>2 and 3</b> open a vendor claim path,
+      <b>1, 5 and 7</b> are internal loss, and <b>4 and 6</b> correct paperwork without a real quantity change.
+      Feeds report J.4 (reason-code analysis, ranked by frequency and total $).</div>
+
+    <label class="f">Reasoning <span id="woReq" style="color:var(--faint);">— recommended</span></label>
+    <textarea class="i" id="woText" rows="3" placeholder="What you saw, who you asked, what you concluded."></textarea>
+    <div class="hint" id="woHint">Stored as <b>reasoning_text</b> on an elevated audit event with previous_state
+      and related_events (H.3). Management reads exactly this on the approval screen.</div>
+
+    <label class="f">Attach</label>
+    <div style="display:flex; gap:8px;">
+      <button class="abtn a4" onclick="toast('Worker photo attached to the write-off event')">📷 Worker photo (1)</button>
+      <button class="abtn a4" onclick="toast('Receiving document reference attached')">📄 Receiving doc</button>
+    </div>
+
+    <div class="mrow">
+      <button class="btn ghost" onclick="close_('wo')">Cancel</button>
+      <button class="btn go" onclick="doWriteoff()">Record write-off</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RECOUNT MODAL (F.3 REVISED 2026-07-09) ══════════ -->
+<div class="scrim" id="rc">
+  <div class="modal">
+    <h3>Request a recount</h3>
+    <div class="msub">SKU <b id="rcSku" style="color:#cfe0f5;">—</b> · this will be recount
+      <b id="rcN" style="color:#ffcf6b;">—</b>. <b style="color:#cfe0f5;">Supervisor picks per case</b>
+      — there is no global rule (F.3, confirmed 2026-07-09).</div>
+
+    <div class="banner warn" id="rcCap">Recount <b>1 of 2</b>. After the second, a third request auto-flags
+      “recount limit exceeded” and escalates to the Executive role (F.5).</div>
+
+    <label class="f">Who recounts</label>
+    <select class="i" id="rcWho" onchange="rcWhoChange()">
+      <option value="same">Same team — Operator 4 + Operator 7 recount</option>
+      <option value="reassign">Reassign to a different worker</option>
+    </select>
+    <div class="hint" id="rcWhoHint">Same team is faster and usually right when the suspicion is a missed
+      location or a transposed digit. Reassign when you suspect the counter, not the count.</div>
+
+    <div id="rcPick" style="display:none;">
+      <label class="f">Assign to</label>
+      <select class="i">
+        <option>Operator 1 — Cell 1, free at 12:30</option>
+        <option>Operator 9 — Cell 1, free now</option>
+        <option>Operator 10 — Cell 6, free at 13:00</option>
+      </select>
+      <div class="hint">Cross-cell reassignment is allowed. The original count is retained, not overwritten —
+        both sit in the audit trail with <b>related_events</b> linking them (H.3).</div>
+    </div>
+
+    <label class="f">What to look for</label>
+    <textarea class="i" rows="3" placeholder="e.g. check the drop rack Bin 1 as well — the split line may have been missed"></textarea>
+    <div class="hint">Sent to the worker's phone with the reassignment. Still blind — the recount does not
+      reveal expected (C.5).</div>
+
+    <label class="f">Scope</label>
+    <select class="i">
+      <option>This SKU only</option>
+      <option>This SKU at all locations (split count, E.4)</option>
+      <option>Whole rack — Rack A2</option>
+    </select>
+
+    <div class="mrow">
+      <button class="btn ghost" onclick="close_('rc')">Cancel</button>
+      <button class="btn primary" onclick="doRecount()">Send recount request</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var open_=0, resolved=0, total=4;
+var ctx={row:null,acts:null};
+
+function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(window._tt); window._tt=setTimeout(function(){t.classList.remove('on');},2100); }
+function close_(id){ document.getElementById(id).classList.remove('on'); }
+
+function markResolved(rowId, actsId, label, tone){
+  var acts=document.getElementById(actsId);
+  acts.innerHTML='<button class="abtn done">✓ '+label+'</button>'+
+    '<button class="abtn a4" onclick="toast(\'Resolution cleared — row reopened\')">Undo</button>';
+  var d=document.createElement('div');
+  d.className='resolution'+(tone?' '+tone:'');
+  d.textContent='Resolved '+new Date().toTimeString().slice(0,5)+' · Supervisor 2 · audit event written';
+  acts.parentNode.appendChild(d);
+  document.getElementById(rowId).classList.add('resolved');
+  resolved++;
+  document.getElementById('resct').textContent=resolved;
+  document.getElementById('openct').textContent=(total-resolved);
+  document.getElementById('rprog').style.width=Math.round(resolved/total*100)+'%';
+  if(resolved>=total){
+    document.getElementById('rprog').className='ok';
+    var b=document.getElementById('submitbtn'); b.disabled=false;
+    toast('All discrepancies resolved — Cell 3 can go to management');
+  }
+}
+function resolve(rowId, actsId, label, tone){ markResolved(rowId,actsId,label,tone); toast(label+' · recorded'); }
+
+function openWriteoff(rowId,actsId,sku,varc){
+  ctx={row:rowId,acts:actsId};
+  document.getElementById('woSku').textContent=sku;
+  document.getElementById('woVar').textContent=varc;
+  document.getElementById('wo').classList.add('on');
+  woNote();
+}
+function woNote(){
+  var v=document.getElementById('woCode').value;
+  var req=document.getElementById('woReq'), hint=document.getElementById('woHint'), ta=document.getElementById('woText');
+  if(v==='8'){ req.textContent='— MANDATORY'; req.style.color='#ff9d96';
+    ta.placeholder='Required when reason code 8 (Other) is selected.';
+    hint.innerHTML='<b style="color:#ff9d96;">Free text is mandatory for code 8.</b> The record cannot be saved without it (F.4 #8).'; }
+  else { req.textContent='— recommended'; req.style.color='#6b7280';
+    ta.placeholder='What you saw, who you asked, what you concluded.';
+    hint.innerHTML='Stored as <b>reasoning_text</b> on an elevated audit event with previous_state and related_events (H.3). Management reads exactly this on the approval screen.'; }
+}
+function doWriteoff(){
+  var sel=document.getElementById('woCode');
+  var code=sel.value, txt=document.getElementById('woText').value.trim();
+  if(code==='8' && !txt){ toast('Reason code 8 requires a note — see F.4 #8'); return; }
+  var label='Written off · code '+code;
+  close_('wo');
+  markResolved(ctx.row, ctx.acts, label, 'bad');
+  toast('Write-off recorded — code '+code+' · reasoning stored on the audit event');
+  document.getElementById('woText').value='';
+}
+
+function openRecount(rowId,actsId,sku,n){
+  ctx={row:rowId,acts:actsId};
+  document.getElementById('rcSku').textContent=sku;
+  document.getElementById('rcN').textContent=(n+1)+' of 2';
+  document.getElementById('rcCap').innerHTML= n===0
+    ? 'Recount <b>1 of 2</b>. After the second, a third request auto-flags “recount limit exceeded” and escalates to the Executive role (F.5).'
+    : '<b>This is the last recount allowed.</b> A third request auto-flags “recount limit exceeded” and escalates to the Executive role (F.5).';
+  document.getElementById('rc').classList.add('on');
+}
+function rcWhoChange(){
+  var v=document.getElementById('rcWho').value;
+  document.getElementById('rcPick').style.display = (v==='reassign'?'block':'none');
+  document.getElementById('rcWhoHint').innerHTML = v==='reassign'
+    ? 'Reassigning. The original counters are not told who is recounting — that stays between you and the audit record.'
+    : 'Same team is faster and usually right when the suspicion is a missed location or a transposed digit. Reassign when you suspect the counter, not the count.';
+}
+function doRecount(){
+  close_('rc');
+  markResolved(ctx.row, ctx.acts, 'Recount requested', 'warn');
+  toast('Recount sent to the worker’s phone · original count retained');
+}
+function capHit(){ toast('Recount cap reached (2 of 2) — a third request escalates to Executive (F.5)'); }
+
+function submitCell(){
+  document.getElementById('submitbtn').textContent='✓ Submitted — with management';
+  document.getElementById('submitbtn').disabled=true;
+  toast('Cell 3 bundled and submitted for manager approval — nothing pushed to NetSuite');
+  setTimeout(function(){ if(confirm('Open the manager approval surface?')) location.href='manager-approve.html'; },700);
+}
+document.querySelectorAll('.scrim').forEach(function(s){
+  s.addEventListener('click', function(e){ if(e.target===s) s.classList.remove('on'); });
+});
+</script>
+</body>
+</html>

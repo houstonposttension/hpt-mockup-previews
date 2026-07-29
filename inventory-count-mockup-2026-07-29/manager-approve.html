@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory Count · Manager approval + NetSuite push · MOCKUP 2026-07-29</title>
+<!-- HPT Inventory Count Tool — MANAGER surface (CONCEPT MOCKUP, 2026-07-29, Wave 0a).
+     Tier 2 of the 3-tier flow, and the ONLY place anything is written to NetSuite.
+     Spec hooks: G.2a ADDED 2026-07-09 (batch push after MANAGER final sign-off — the one trigger; locks count)
+     G.1 REVISED 2026-07-09 (SuiteTalk REST + TBA direct from the Function App, no IPaaS)
+     G.2 (Inventory Worksheet for full bundles + premade; Inventory Adjustment for drops)
+     G.5 (MVP single-warehouse location mapping) · G.6 REVISED 2026-07-09 (idempotent retry, hard block on
+     partial success, 60-s retry for 15 min, then Teams #hpt-inventory-alerts, count stays PENDING_RETRY)
+     F.4 (8 reason codes) · F.5 (recount cap + escalation) · H.3 (audit fields) · J.1/J.4/J.7 (reports).
+     All data is placeholder. Nothing is wired to NetSuite. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932; --inset:#0e1217;
+    --line:#2a3038; --line2:#39424e;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+    --ok:#16c060; --ok-dim:rgba(22,192,96,.15); --ok-line:rgba(22,192,96,.45);
+    --warn:#ffb020; --warn-dim:rgba(255,176,32,.15); --warn-line:rgba(255,176,32,.4);
+    --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15); --bad-line:rgba(255,59,48,.4);
+    --purple:#a78bfa; --purple-dim:rgba(167,139,250,.14); --purple-line:rgba(167,139,250,.4);
+    --teal:#2dd4bf; --teal-dim:rgba(45,212,191,.13); --teal-line:rgba(45,212,191,.4);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:20px 18px 90px; }
+  .wrap{ max-width:1380px; margin:0 auto; }
+
+  .pagehead h1{ font-size:19px; font-weight:800; margin:0 0 6px; }
+  .pagehead p{ font-size:12.5px; color:var(--dim); line-height:1.6; margin:0 0 8px; }
+  .pagehead b{ color:#cfe0f5; }
+  .pagehead a{ color:var(--acc-soft); }
+  .wipnote{ border-left:3px solid var(--warn); background:rgba(255,176,32,.07); padding:9px 13px;
+    margin:10px 0 18px; font-size:12px; color:#e8d4a8; line-height:1.6; border-radius:0 8px 8px 0; }
+  .wipnote b{ color:#ffd98a; }
+
+  .appbar{ display:flex; align-items:center; gap:12px; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-bottom:12px; }
+  .appbar .nm{ font-size:15px; font-weight:800; }
+  .appbar .sub{ font-size:10.5px; color:var(--dim); margin-top:2px; }
+  .rolepill{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    border-radius:6px; padding:4px 9px; background:var(--purple-dim); color:#c4b5fd;
+    border:1px solid var(--purple-line); }
+  .spacer{ flex:1; }
+  .statepill{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    border-radius:999px; padding:5px 12px; background:var(--warn-dim); border:1px solid var(--warn-line); color:#ffcf6b; }
+  .statepill.locked{ background:var(--ok-dim); border-color:var(--ok-line); color:#5ce08d; }
+
+  .sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+    color:#5a6470; margin:22px 2px 9px; display:flex; align-items:center; gap:8px; }
+  .sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; text-transform:none; letter-spacing:0; font-size:10.5px; }
+
+  .kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:9px; }
+  .kpi{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 13px; }
+  .kpi .v{ font-size:25px; font-weight:900; line-height:1; }
+  .kpi .k{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.45px;
+    color:var(--faint); margin-top:7px; line-height:1.35; }
+  .kpi .d{ font-size:10px; color:var(--dim); margin-top:5px; }
+  .kpi.hot{ border-color:var(--bad-line); } .kpi.hot .v{ color:#ff7b73; }
+  .kpi.warm{ border-color:var(--warn-line); } .kpi.warm .v{ color:var(--warn); }
+  .kpi.good .v{ color:#5ce08d; }
+  @media (max-width:1100px){ .kpis{ grid-template-columns:repeat(3,1fr); } }
+
+  .tbl{ width:100%; border-collapse:collapse; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .tbl th{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--faint); text-align:left; padding:11px 12px; background:var(--inset);
+    border-bottom:1px solid var(--line); white-space:nowrap; }
+  .tbl td{ font-size:12px; padding:12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tbl tr:last-child td{ border-bottom:none; }
+  .num{ text-align:right; font-variant-numeric:tabular-nums; font-weight:800; }
+  .sku{ font-weight:800; font-size:12.5px; }
+  .skusub{ font-size:10px; color:var(--faint); margin-top:3px; }
+  .var-bad{ color:#ff7b73; font-weight:900; } .var-ok{ color:#5ce08d; font-weight:900; }
+  .var-warn{ color:var(--warn); font-weight:900; }
+
+  .rc{ display:inline-block; font-size:9.5px; font-weight:900; border-radius:6px; padding:3px 8px;
+    white-space:nowrap; }
+  .rc.loss{ background:var(--bad-dim); border:1px solid var(--bad-line); color:#ff9d96; }
+  .rc.vendor{ background:var(--warn-dim); border:1px solid var(--warn-line); color:#ffcf6b; }
+  .rc.paper{ background:var(--acc-dim); border:1px solid var(--acc-line); color:#9ccbff; }
+  .rc.none{ background:var(--inset); border:1px solid var(--line); color:var(--faint); }
+
+  .nsrec{ display:inline-block; font-size:9.5px; font-weight:900; border-radius:6px; padding:3px 8px;
+    white-space:nowrap; }
+  .nsrec.ws{ background:var(--teal-dim); border:1px solid var(--teal-line); color:#7fe9db; }
+  .nsrec.adj{ background:var(--purple-dim); border:1px solid var(--purple-line); color:#c4b5fd; }
+
+  .why{ font-size:11px; color:var(--dim); line-height:1.6; margin-top:6px;
+    border-left:2px solid var(--line2); padding-left:9px; }
+  .why b{ color:#cfe0f5; }
+  .why .who{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.4px;
+    color:var(--faint); display:block; margin-bottom:3px; }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .banner{ border-radius:10px; padding:12px 15px; font-size:12px; line-height:1.65;
+    border:1px solid var(--line); background:var(--panel); margin-bottom:10px; }
+  .banner.blue{ background:rgba(59,130,246,.08); border-color:var(--acc-line); color:#bcd8ff; }
+  .banner.warn{ background:rgba(255,176,32,.08); border-color:var(--warn-line); color:#e8d4a8; }
+  .banner.bad{ background:rgba(255,59,48,.08); border-color:var(--bad-line); color:#ffb3ae; }
+  .banner.ok{ background:rgba(22,192,96,.08); border-color:var(--ok-line); color:#a8e8c4; }
+  .banner.purple{ background:rgba(167,139,250,.08); border-color:var(--purple-line); color:#d8ccff; }
+  .banner b{ font-weight:800; }
+
+  .btn{ font:inherit; font-size:13px; font-weight:800; color:var(--txt); background:var(--panel3);
+    border:1px solid var(--line2); border-radius:11px; padding:13px 20px; min-height:46px; cursor:pointer; }
+  .btn.ghost{ background:var(--inset); border-color:var(--line); color:var(--dim); }
+  .btn.primary{ background:var(--acc-dim); border-color:var(--acc-line); color:#9ccbff; }
+  .btn.warn{ background:rgba(255,176,32,.12); border-color:var(--warn-line); color:#ffcf6b; }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+  /* THE button (G.2a) */
+  .pushbtn{ width:100%; min-height:76px; border-radius:16px; border:2px solid var(--ok-line);
+    background:linear-gradient(180deg,rgba(22,192,96,.22),rgba(22,192,96,.07));
+    color:#a8f0c4; font:inherit; font-weight:900; font-size:17px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; }
+  .pushbtn .s{ font-size:10.5px; font-weight:800; color:#5ce08d; text-transform:uppercase; letter-spacing:.6px; }
+  .pushbtn:active{ transform:scale(.99); }
+  .pushbtn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  .kv{ display:flex; justify-content:space-between; gap:12px; font-size:11.5px; padding:7px 0;
+    border-bottom:1px solid var(--line); }
+  .kv:last-child{ border-bottom:none; }
+  .kv .k{ color:var(--dim); } .kv .v{ font-weight:800; text-align:right; }
+  .kv .v.mono{ font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:11px; color:#7fe9db; }
+
+  .two{ display:grid; grid-template-columns:1fr 380px; gap:12px; align-items:start; }
+  @media (max-width:1150px){ .two{ grid-template-columns:1fr; } }
+
+  .cellchips{ display:flex; gap:7px; flex-wrap:wrap; }
+  .cchip{ font-size:10.5px; font-weight:800; color:var(--dim); background:var(--inset);
+    border:1px solid var(--line); border-radius:999px; padding:7px 12px; }
+  .cchip.ready{ border-color:var(--ok-line); color:#5ce08d; }
+  .cchip.wait{ border-color:var(--warn-line); color:#ffcf6b; }
+  .cchip b{ color:#cfe0f5; }
+
+  .step{ display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--line); }
+  .step:last-child{ border-bottom:none; }
+  .step .n{ width:22px; height:22px; border-radius:50%; background:var(--inset); border:1px solid var(--line2);
+    display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900;
+    color:var(--faint); flex:0 0 auto; }
+  .step .t{ font-size:11.5px; line-height:1.6; color:var(--dim); }
+  .step .t b{ color:#cfe0f5; }
+  .step.ok .n{ background:var(--ok-dim); border-color:var(--ok-line); color:#5ce08d; }
+  .step.bad .n{ background:var(--bad-dim); border-color:var(--bad-line); color:#ff9d96; }
+
+  .screen{ display:none; } .screen.on{ display:block; }
+
+  .foot{ margin:26px auto 0; font-size:11px; color:var(--faint); line-height:1.7; max-width:1380px; }
+  .foot a{ color:var(--acc-soft); }
+
+  .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:60;
+    display:none; align-items:center; justify-content:center; padding:20px; }
+  .scrim.on{ display:flex; }
+  .modal{ width:100%; max-width:620px; background:var(--panel); border:1px solid var(--line2);
+    border-radius:16px; padding:22px 24px; box-shadow:0 24px 70px rgba(0,0,0,.75);
+    max-height:88vh; overflow:auto; }
+  .modal h3{ font-size:17px; font-weight:900; margin:0 0 5px; }
+  .modal .msub{ font-size:11.5px; color:var(--dim); margin-bottom:14px; line-height:1.6; }
+  .mrow{ display:flex; gap:9px; margin-top:18px; } .mrow .btn{ flex:1; }
+  input.i{ font:inherit; font-size:13.5px; font-weight:700; color:var(--txt); background:var(--inset);
+    border:1px solid var(--line); border-radius:10px; padding:12px; width:100%; min-height:46px; }
+  label.f{ display:block; font-size:9.5px; font-weight:900; text-transform:uppercase;
+    letter-spacing:.6px; color:var(--faint); margin:14px 2px 6px; }
+  .hint{ font-size:10.5px; color:var(--faint); margin-top:6px; line-height:1.55; }
+  .hint b{ color:var(--dim); }
+
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:80;
+    background:var(--panel3); border:1px solid var(--ok-line); color:#5ce08d;
+    font-size:12.5px; font-weight:800; padding:12px 18px; border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .18s; }
+  .toast.on{ opacity:1; }
+  code{ background:var(--inset); border:1px solid var(--line); border-radius:4px; padding:1px 5px;
+    font-size:11px; color:#7fe9db; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="pagehead">
+  <h1>Inventory Count Tool — Manager approval &amp; NetSuite push</h1>
+  <p>Tier 2, and the only surface that writes to NetSuite. The manager reads every supervisor's reasoning,
+     sees exactly which record type each SKU lands on, then presses
+     <b>Approve &amp; Send to NetSuite</b> once (G.2a). That click locks the count.
+     <a href="index.html">← all four surfaces</a></p>
+  <div class="wipnote"><b>CONCEPT MOCKUP — 2026-07-29 (Wave 0a).</b> Shape validation ahead of the Wave 1
+     scaffold (2026-08-11). Nothing is wired to NetSuite — the push button below simulates. Every SKU,
+     quantity, name and record ID is a placeholder. Spec locked 2026-07-03, revised 2026-07-09.</div>
+</div>
+
+<!-- ══════════════════ SCREEN 1 — BATCH REVIEW ══════════════════ -->
+<div class="screen on" id="s-review">
+
+<div class="appbar">
+  <div><div class="nm">Q3 2026 Full Count · Batch CNT-2026-Q3-001</div>
+    <div class="sub">Manager 1 · 6 cells · counted 2026-07-29 · quarterly full count (A.1)</div></div>
+  <div class="spacer"></div>
+  <span class="statepill" id="state1">Awaiting approval</span>
+  <span class="rolepill">Manager</span>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">298</div><div class="k">SKU lines counted</div><div class="d">6 cells · 12 workers</div></div>
+  <div class="kpi warm"><div class="v">31</div><div class="k">Lines with a delta</div><div class="d">10.4% of the count</div></div>
+  <div class="kpi hot"><div class="v">−$18,410</div><div class="k">Net $ variance</div><div class="d">vs. weighted average cost (J.6)</div></div>
+  <div class="kpi warm"><div class="v">14</div><div class="k">Write-offs</div><div class="d">across 6 reason codes</div></div>
+  <div class="kpi"><div class="v">7</div><div class="k">Recounts run</div><div class="d">1 hit the cap (F.5)</div></div>
+  <div class="kpi good"><div class="v">6 of 6</div><div class="k">Cells submitted</div><div class="d">all supervisors signed off</div></div>
+</div>
+
+<div class="sectlbl">Cell rollup <span class="n">every cell must be submitted before the batch can be approved</span></div>
+<div class="cellchips">
+  <div class="cchip ready">✓ Cell 1 — Strand · <b>61 lines</b> · 4 deltas · Supervisor 1</div>
+  <div class="cchip ready">✓ Cell 2 — Anchors · <b>38 lines</b> · 6 deltas · Supervisor 2</div>
+  <div class="cchip ready">✓ Cell 3 — Rebar Fab · <b>20 lines</b> · 4 deltas · Supervisor 2</div>
+  <div class="cchip ready">✓ Cell 4 — Extrusion · <b>52 lines</b> · 7 deltas · Supervisor 3</div>
+  <div class="cchip ready">✓ Cell 5 — Yard · <b>77 lines</b> · 8 deltas · Supervisor 3</div>
+  <div class="cchip ready">✓ Cell 6 — Hardware · <b>50 lines</b> · 2 deltas · Supervisor 1</div>
+</div>
+
+<div class="two" style="margin-top:8px;">
+<div>
+
+<!-- reconciled deltas -->
+<div class="sectlbl">Reconciled deltas by SKU <span class="n">supervisor reasoning shown inline · 31 lines, 6 below</span></div>
+
+<div class="banner blue">
+  <b>You are reading the reasoning, not re-counting.</b> Each row carries the supervisor's own words, the reason
+  code they chose, and the recount history. Anything you disagree with goes back as a recount — approving is
+  a one-way door (G.2a).
+</div>
+
+<table class="tbl">
+<thead><tr>
+  <th style="width:210px;">SKU</th><th class="num">Expected</th><th class="num">Counted</th><th class="num">Delta</th>
+  <th style="width:150px;">Reason code (F.4)</th><th style="width:150px;">NetSuite record (G.2)</th><th class="num">$ impact</th>
+</tr></thead>
+<tbody>
+
+<tr>
+  <td><div class="sku">RB-05-40-60-D</div><div class="skusub">#5 Gr60 40′ Dom · full bundles · Cell 3</div>
+    <div class="why"><span class="who">Supervisor 2 · 11:12 · after 1 recount</span>
+      Recount confirmed 270 pieces, not 300. Two bundles went to the Willowbrook job Friday and the pull ticket
+      never posted. <b>Not a loss — a receipt-side paperwork gap.</b> Coding 4 rather than 1 because the steel
+      is accounted for.</div></td>
+  <td class="num">12,528 lb</td><td class="num">11,275 lb</td><td class="num"><span class="var-bad">−1,253 lb</span></td>
+  <td><span class="rc paper">4 · Miscounted at receipt</span><div class="skusub">paperwork — no real qty change</div></td>
+  <td><span class="nsrec ws">Inventory Worksheet</span><div class="skusub">exclusive · replaces on-hand</div></td>
+  <td class="num"><span class="var-bad">−$1,065</span></td>
+</tr>
+
+<tr>
+  <td><div class="sku">RB-05-DROPS</div><div class="skusub">#5 drops, mixed lengths · Cell 3</div>
+    <div class="why"><span class="who">Supervisor 2 · 11:24 · recount cap reached (2 of 2)</span>
+      Two recounts, both landed near 183 lb. Drop rack was cleared to the scrap bin on 07-12 and the yield
+      write-off never went in. <b>Expected fabrication loss, not shrinkage.</b> Recount limit exceeded —
+      flagged to Executive per F.5, no third recount requested.</div></td>
+  <td class="num">402 lb</td><td class="num">183 lb</td><td class="num"><span class="var-bad">−219 lb</span></td>
+  <td><span class="rc loss">5 · Cut-loss / drop scrap</span><div class="skusub">internal loss</div></td>
+  <td><span class="nsrec adj">Inventory Adjustment</span><div class="skusub">delta · mgmt allocates dom/intl</div></td>
+  <td class="num"><span class="var-bad">−$186</span></td>
+</tr>
+
+<tr>
+  <td><div class="sku">RB-04-20-60-I</div><div class="skusub">#4 Gr60 20′ Import · full bundles · Cell 5</div>
+    <div class="why"><span class="who">Supervisor 3 · 10:41</span>
+      Mill BOL says 40 bundles, yard received 36. Photos of the load taken at receipt back it up.
+      <b>Vendor claim opened with the mill — recoverable, not our loss.</b></div></td>
+  <td class="num">16,720 lb</td><td class="num">15,048 lb</td><td class="num"><span class="var-bad">−1,672 lb</span></td>
+  <td><span class="rc vendor">3 · Vendor short-shipped</span><div class="skusub">vendor-recoverable</div></td>
+  <td><span class="nsrec ws">Inventory Worksheet</span><div class="skusub">exclusive · replaces on-hand</div></td>
+  <td class="num"><span class="var-bad">−$1,421</span></td>
+</tr>
+
+<tr>
+  <td><div class="sku">AN-600-M</div><div class="skusub">Monostrand anchor 0.600″ · Cell 2 + Cell 3 (split, E.4)</div>
+    <div class="why"><span class="who">Supervisor 2 · 11:31</span>
+      Overage is real. The Yard row wasn't in the last count's location list at all, so 251 anchors have been
+      invisible since Q2. <b>Accepting the variance — no write-off, the stock exists.</b></div></td>
+  <td class="num">3,200 pc</td><td class="num">3,451 pc</td><td class="num"><span class="var-ok">+251 pc</span></td>
+  <td><span class="rc none">— variance accepted</span><div class="skusub">no reason code needed</div></td>
+  <td><span class="nsrec ws">Inventory Worksheet</span><div class="skusub">exclusive · replaces on-hand</div></td>
+  <td class="num"><span class="var-ok">+$2,761</span></td>
+</tr>
+
+<tr>
+  <td><div class="sku">RB-06-STIR-12x18</div><div class="skusub">#3 stirrup 12×18 premade · Cell 3</div>
+    <div class="why"><span class="who">Supervisor 2 · 11:38</span>
+      Coded as domestic in NetSuite, bundle tags say import. <b>Reclass only — the bars are on the floor and the
+      quantity is right.</b> Pairs with a +318 lb line on the import SKU.</div></td>
+  <td class="num">318 lb</td><td class="num">0 lb</td><td class="num"><span class="var-bad">−318 lb</span></td>
+  <td><span class="rc paper">6 · Wrong SKU coded</span><div class="skusub">dom↔intl reclass</div></td>
+  <td><span class="nsrec ws">Inventory Worksheet</span><div class="skusub">exclusive · replaces on-hand</div></td>
+  <td class="num"><span class="var-warn">$0 net</span></td>
+</tr>
+
+<tr>
+  <td><div class="sku">ST-600-270</div><div class="skusub">0.600″ 270k strand · Cell 1 · split across 2 locations</div>
+    <div class="why"><span class="who">Supervisor 1 · 10:04</span>
+      Fourteen pieces short on 1,840. Under 5% but over the 10-unit floor, so it surfaced (F.1a).
+      Nothing found in the yard walk. <b>Small enough to accept rather than burn a recount on.</b></div></td>
+  <td class="num">1,840 pc</td><td class="num">1,826 pc</td><td class="num"><span class="var-warn">−14 pc</span></td>
+  <td><span class="rc none">— variance accepted</span><div class="skusub">no reason code needed</div></td>
+  <td><span class="nsrec ws">Inventory Worksheet</span><div class="skusub">exclusive · replaces on-hand</div></td>
+  <td class="num"><span class="var-bad">−$412</span></td>
+</tr>
+
+</tbody>
+</table>
+<div class="hint" style="margin-top:8px;">Showing 6 of 31 delta lines. The other 25 are within the F.1a
+  threshold or accepted without comment. All 298 lines are in the ISO 9001 §8.5.4 export (J.7).</div>
+
+<!-- reason code rollup -->
+<div class="sectlbl">Write-offs by reason code <span class="n">feeds report J.4 — ranked by frequency and total $</span></div>
+<table class="tbl">
+<thead><tr><th>Reason code (F.4, revised 2026-07-09)</th><th>Class</th><th class="num">Lines</th><th class="num">$ impact</th><th>Follow-up</th></tr></thead>
+<tbody>
+<tr><td><b>3 · Vendor short-shipped</b></td><td><span class="rc vendor">Vendor-recoverable</span></td><td class="num">4</td><td class="num var-bad">−$4,880</td><td style="font-size:11px;color:var(--dim);">Mill claim filed — recoverable</td></tr>
+<tr><td><b>5 · Cut-loss / drop scrap</b></td><td><span class="rc loss">Internal loss</span></td><td class="num">4</td><td class="num var-bad">−$1,204</td><td style="font-size:11px;color:var(--dim);">Expected yield loss</td></tr>
+<tr><td><b>4 · Miscounted at receipt</b></td><td><span class="rc paper">Paperwork</span></td><td class="num">3</td><td class="num var-bad">−$1,890</td><td style="font-size:11px;color:var(--dim);">Receiving process review</td></tr>
+<tr><td><b>1 · Damaged in yard</b></td><td><span class="rc loss">Internal loss</span></td><td class="num">2</td><td class="num var-bad">−$740</td><td style="font-size:11px;color:var(--dim);">Both photographed</td></tr>
+<tr><td><b>6 · Wrong SKU coded</b></td><td><span class="rc paper">Paperwork</span></td><td class="num">1</td><td class="num var-warn">$0 net</td><td style="font-size:11px;color:var(--dim);">Dom↔intl reclass, paired lines</td></tr>
+<tr><td><b>8 · Other — see notes</b></td><td><span class="rc none">Catch-all</span></td><td class="num">0</td><td class="num" style="color:var(--faint);">—</td><td style="font-size:11px;color:var(--faint);">Mandatory note if ever used</td></tr>
+</tbody>
+</table>
+<div class="hint" style="margin-top:8px;">Codes 2 (damaged in transit) and 7 (obsolete/scrapped) were not used this
+  count. The eight-code list replaced the nine-code draft on 2026-07-09 to align with ISO 9001 §8.3 nonconformance
+  categories and to separate vendor-recoverable loss from internal loss.</div>
+
+<!-- recount history + escalations -->
+<div class="sectlbl">Recount history &amp; escalations <span class="n">audit-quality metric — feeds report J.5</span></div>
+<table class="tbl">
+<thead><tr><th>SKU</th><th>Cell</th><th class="num">Recounts</th><th>Who recounted (F.3)</th><th>Outcome</th></tr></thead>
+<tbody>
+<tr><td><b>RB-05-DROPS</b></td><td>Cell 3</td><td class="num"><span class="rc loss">2 of 2 — capped</span></td>
+  <td>1st: same team · 2nd: reassigned to Operator 9</td>
+  <td style="font-size:11px;"><b style="color:#ff9d96;">Recount limit exceeded</b> — flagged to Executive (F.5).
+    Both recounts agreed; supervisor wrote it off as code 5.</td></tr>
+<tr><td><b>RB-05-40-60-D</b></td><td>Cell 3</td><td class="num"><span class="rc vendor">1 of 2</span></td>
+  <td>Same team — Operator 4 + Operator 7</td>
+  <td style="font-size:11px;">Recount confirmed the first count. Original retained, both linked via
+    <code>related_events</code>.</td></tr>
+<tr><td><b>RB-04-20-60-I</b></td><td>Cell 5</td><td class="num"><span class="rc vendor">1 of 2</span></td>
+  <td>Reassigned to Operator 1 (cross-cell)</td>
+  <td style="font-size:11px;">Confirmed 36 bundles. Triggered the mill claim.</td></tr>
+<tr><td colspan="5" style="font-size:11px; color:var(--faint);">4 further recounts across Cells 1, 4 and 6 all
+  resolved within threshold on the first pass. Recount rate 7 / 298 = <b style="color:var(--dim);">2.3%</b>.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<!-- ══ right rail: the push ══ -->
+<div>
+  <div class="sectlbl" style="margin-top:22px;">Push preview</div>
+
+  <div class="card">
+    <div style="font-size:12.5px; font-weight:800; margin-bottom:4px;">What this button will do</div>
+    <div style="font-size:11.5px; color:var(--dim); line-height:1.7; margin-bottom:12px;">
+      This will write <b style="color:#7fe9db;">27 SKU adjustments</b> to NetSuite via
+      <b style="color:#7fe9db;">Inventory Worksheet</b> (full bundles + premade shapes) and
+      <b style="color:#c4b5fd;">4 adjustments</b> via <b style="color:#c4b5fd;">Inventory Adjustment</b>
+      (drops), in one batch, under one idempotency key.</div>
+
+    <div class="kv"><div class="k">Transport</div><div class="v">SuiteTalk REST + TBA</div></div>
+    <div class="kv"><div class="k">Origin</div><div class="v">Function App — direct, no IPaaS (G.1)</div></div>
+    <div class="kv"><div class="k">Worksheet lines</div><div class="v"><span class="nsrec ws">27</span></div></div>
+    <div class="kv"><div class="k">Adjustment lines</div><div class="v"><span class="nsrec adj">4</span></div></div>
+    <div class="kv"><div class="k">NetSuite location</div><div class="v">Single warehouse (G.5, MVP)</div></div>
+    <div class="kv"><div class="k">Idempotency key</div><div class="v mono">cnt-q3-001-a41f9c</div></div>
+    <div class="kv"><div class="k">Lock on success</div><div class="v" style="color:#5ce08d;">Yes — no silent edits</div></div>
+  </div>
+
+  <div class="banner purple" style="margin-top:10px;">
+    <b>Record type is not a preference — it follows the count category (G.2).</b>
+    Full bundles and premade shapes replace on-hand, so they go on an <b>Inventory Worksheet</b> (exclusive).
+    Drops are a delta into a management-allocated dom/intl bucket, so they go on an
+    <b>Inventory Adjustment</b>. Cell/rack/bin detail stays HPT-side; NetSuite receives SKU totals against one
+    location (G.5 — flips to per-cell if James finds Location records already configured).
+  </div>
+
+  <div class="banner bad">
+    <b>If NetSuite returns partial success</b> — say 3 of 10 lines wrote — HPT <b>reverses the 3 and retries the
+    full batch</b>. Never partial. Auto-retry every 60 s for 15 minutes on network, 5xx and rate-limit failures.
+    After the 15-minute window is exhausted it escalates to Teams <b>#hpt-inventory-alerts</b>, the count stays
+    <b>PENDING_RETRY</b>, and you can retry manually or roll back. (G.6, revised 2026-07-09 — the CSV fallback
+    was deprecated because a shadow data path is worse than a loud failure.)
+  </div>
+
+  <div class="sectlbl">Approve</div>
+  <div class="card">
+    <div class="step ok"><div class="n">✓</div><div class="t"><b>All 6 cells submitted</b> by their supervisors</div></div>
+    <div class="step ok"><div class="n">✓</div><div class="t"><b>All 31 deltas resolved</b> — reason code or accepted variance on every line</div></div>
+    <div class="step ok"><div class="n">✓</div><div class="t"><b>0 unmapped barcodes</b> outstanding (C.3)</div></div>
+    <div class="step ok"><div class="n">✓</div><div class="t"><b>1 recount-cap escalation</b> reviewed and accepted (F.5)</div></div>
+    <div class="step"><div class="n">5</div><div class="t">Your approval — <b>the only NetSuite trigger in the system</b> (G.2a)</div></div>
+
+    <button class="pushbtn" id="pushbtn" style="margin-top:14px;" onclick="openConfirm()">
+      Approve &amp; Send to NetSuite
+      <span class="s">31 lines · locks the count</span>
+    </button>
+    <div class="hint" style="margin-top:9px;">Not the supervisor, not the worker, not a schedule. One explicit
+      human approval moment — the ISO 9001 §8.5.4 and SOX-lite requirement (G.2a).</div>
+
+    <button class="btn warn" style="width:100%; margin-top:9px;" onclick="toast('Recount request sent back to the supervisor — batch stays open')">
+      ↩ Send a line back for recount instead</button>
+    <div class="hint">Management can trigger another recount rather than approving (tier 2 of the 3-tier flow).</div>
+  </div>
+
+  <div class="sectlbl">Audit</div>
+  <div class="card" style="font-size:11.5px; color:var(--dim); line-height:1.7;">
+    Every event on this batch — count, edit, recount, write-off, approval, push — is append-only with
+    <b style="color:#cfe0f5;">actor_id, actor_role, timestamp_utc, sku_id, qty, location, reason_code</b> and,
+    on elevated events, <b style="color:#cfe0f5;">reasoning_text, previous_state, related_events</b>.
+    Retained <b style="color:#cfe0f5;">7 years</b> (ISO 9001 + CFR), immutable in Postgres and streamed to an
+    object-locked archive (H.3).
+    <button class="btn ghost" style="width:100%; margin-top:11px;" onclick="toast('ISO 9001 §8.5.4 traceability export — CSV / PDF (J.7)')">
+      Export audit trail (J.7)</button>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ══════════════════ SCREEN 2 — POST-PUSH CONFIRMATION ══════════════════ -->
+<div class="screen" id="s-done">
+  <div class="appbar">
+    <div><div class="nm">Q3 2026 Full Count · Batch CNT-2026-Q3-001</div>
+      <div class="sub">Pushed 2026-07-29 13:47:02 UTC by Manager 1</div></div>
+    <div class="spacer"></div>
+    <span class="statepill locked" id="state2">🔒 Locked · pushed</span>
+    <span class="rolepill">Manager</span>
+  </div>
+
+  <div class="banner ok">
+    <b>All 31 lines wrote on the first attempt.</b> No partial success, no retry window entered.
+    The count is now <b>locked</b> — no silent edits after sign-off (G.2a). A correction from here is a new
+    count batch, not an edit to this one.
+  </div>
+
+  <div class="two">
+  <div>
+    <div class="sectlbl">NetSuite records created</div>
+    <table class="tbl">
+    <thead><tr><th>Record type</th><th>NetSuite record ID</th><th class="num">Lines</th><th>Contents</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr><td><span class="nsrec ws">Inventory Worksheet</span></td>
+      <td><code>invcount_88214</code></td><td class="num">27</td>
+      <td style="font-size:11px;color:var(--dim);">Full bundles + premade shapes + all non-rebar SKUs — exclusive, replaces on-hand</td>
+      <td><b style="color:#5ce08d;">✓ Committed</b></td></tr>
+    <tr><td><span class="nsrec adj">Inventory Adjustment</span></td>
+      <td><code>invadjst_41077</code></td><td class="num">4</td>
+      <td style="font-size:11px;color:var(--dim);">Drops — delta, positive add to the management-allocated dom/intl SKU</td>
+      <td><b style="color:#5ce08d;">✓ Committed</b></td></tr>
+    </tbody></table>
+
+    <div class="sectlbl">Push trace</div>
+    <div class="card">
+      <div class="step ok"><div class="n">1</div><div class="t"><b>13:47:02</b> — manager approval recorded ·
+        <code>count_approved</code> · actor Manager 1 · previous_state <b>PENDING_APPROVAL</b></div></div>
+      <div class="step ok"><div class="n">2</div><div class="t"><b>13:47:02</b> — batch bundled, idempotency key
+        <code>cnt-q3-001-a41f9c</code> generated (one key per push attempt, G.6)</div></div>
+      <div class="step ok"><div class="n">3</div><div class="t"><b>13:47:03</b> — SuiteTalk REST · TBA ·
+        <code>POST /inventoryWorksheet</code> · 27 lines · <b>200 OK</b></div></div>
+      <div class="step ok"><div class="n">4</div><div class="t"><b>13:47:05</b> — SuiteTalk REST ·
+        <code>POST /inventoryAdjustment</code> · 4 lines · <b>200 OK</b></div></div>
+      <div class="step ok"><div class="n">5</div><div class="t"><b>13:47:05</b> — full-batch verification —
+        31 of 31 lines confirmed written. <b>No reversal needed.</b></div></div>
+      <div class="step ok"><div class="n">6</div><div class="t"><b>13:47:06</b> — count <b>LOCKED</b> ·
+        <code>push_status=SUCCESS</code> · response snapshot stored</div></div>
+      <div class="step ok"><div class="n">7</div><div class="t"><b>13:47:06</b> — audit archive stream flushed ·
+        7-year retention clock started</div></div>
+    </div>
+
+    <div class="banner warn" style="margin-top:10px;">
+      <b>What the failure path would have looked like:</b> a <code>207</code> with 3 of 31 lines written →
+      HPT reverses those 3 → retries the whole batch every 60 s → if 15 minutes pass with no clean write,
+      an Adaptive Card lands in Teams <b>#hpt-inventory-alerts</b>, this banner turns red, the state pill reads
+      <b>PENDING_RETRY</b>, and a <i>Retry</i> / <i>Roll back</i> pair appears here. Nothing half-written is
+      ever left in NetSuite (G.6).
+      <button class="btn ghost" style="margin-top:10px;" onclick="toast('Simulated — PENDING_RETRY state with Teams escalation')">Preview the failure state</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="sectlbl">Audit trail summary</div>
+    <div class="card">
+      <div class="kv"><div class="k">Batch</div><div class="v mono">CNT-2026-Q3-001</div></div>
+      <div class="kv"><div class="k">Count type</div><div class="v">Quarterly full (A.1)</div></div>
+      <div class="kv"><div class="k">Counted</div><div class="v">2026-07-29 · 1 day (A.2)</div></div>
+      <div class="kv"><div class="k">Cells / workers</div><div class="v">6 / 12 (A.3, A.4)</div></div>
+      <div class="kv"><div class="k">SKU lines</div><div class="v">298</div></div>
+      <div class="kv"><div class="k">Audit events written</div><div class="v">1,412</div></div>
+      <div class="kv"><div class="k">Elevated events</div><div class="v">52 <span style="color:var(--faint);font-weight:600;">(recount / write-off / approval)</span></div></div>
+      <div class="kv"><div class="k">Approvers in chain</div><div class="v">3 supervisors → 1 manager</div></div>
+      <div class="kv"><div class="k">Executive escalations</div><div class="v">1 (recount cap, F.5)</div></div>
+      <div class="kv"><div class="k">NetSuite record IDs</div><div class="v mono">invcount_88214 · invadjst_41077</div></div>
+      <div class="kv"><div class="k">push_status</div><div class="v" style="color:#5ce08d;">SUCCESS</div></div>
+      <div class="kv"><div class="k">Retention</div><div class="v">7 years · immutable</div></div>
+      <div class="kv"><div class="k">Count state</div><div class="v" style="color:#5ce08d;">🔒 LOCKED</div></div>
+    </div>
+
+    <div class="sectlbl">Reports now available (Block J)</div>
+    <div class="card" style="font-size:11.5px; line-height:2; color:var(--dim);">
+      <div>1 · Discrepancy report — SKU × expected × counted × variance × reason × approver</div>
+      <div>2 · Count completion status — % per cell per day</div>
+      <div>3 · Historical trending — variance rate across counts</div>
+      <div>4 · Reason code analysis — ranked by frequency + total $</div>
+      <div>5 · Recount rate by cell / worker</div>
+      <div>6 · Cost variance summary — $ vs. weighted average cost</div>
+      <div>7 · <b style="color:#cfe0f5;">ISO 9001 §8.5.4 audit export</b> — full traceability CSV / PDF</div>
+      <button class="btn primary" style="width:100%; margin-top:12px;" onclick="toast('ISO 9001 §8.5.4 export — CSV / PDF (J.7)')">
+        Export ISO 9001 §8.5.4 traceability</button>
+    </div>
+
+    <div style="margin-top:10px;">
+      <button class="btn ghost" style="width:100%;" onclick="go('s-review')">← Back to the batch review</button>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="foot">
+  <b>Block coverage on this surface —</b>
+  A.1 quarterly full · A.5 frictionless push + ISO audit trail · B.4 rebar lbs to NetSuite ·
+  D full bundles / drops / premade split · F.4 eight reason codes rolled up · F.5 recount cap escalation ·
+  G.1 SuiteTalk REST + TBA · G.2 record-type mapping per count category · G.2a the one push trigger, locks the count ·
+  G.5 single-warehouse location mapping · G.6 idempotent retry, hard block on partial success, Teams escalation,
+  PENDING_RETRY · H.2 manager + executive roles · H.3 full audit fields + netsuite_record_id + push_status +
+  push_response_snapshot · J.1–J.7 all seven reports.<br><br>
+  <a href="index.html">Index</a> · <a href="worker-count.html">Worker</a> · <a href="supervisor-review.html">Supervisor</a>
+</div>
+
+</div>
+
+<!-- ══════════ CONFIRM MODAL ══════════ -->
+<div class="scrim" id="cf">
+  <div class="modal">
+    <h3>Approve &amp; Send to NetSuite</h3>
+    <div class="msub">This is the one irreversible step in the count. Read it before you type.</div>
+
+    <div class="banner bad">
+      <b>This writes to the financial system of record and locks the count.</b>
+      After this, no one — including you — can edit batch <b>CNT-2026-Q3-001</b>. A correction becomes a new
+      count batch with its own audit chain (G.2a).
+    </div>
+
+    <div class="card" style="margin-bottom:4px;">
+      <div class="kv"><div class="k">Inventory Worksheet lines</div><div class="v"><span class="nsrec ws">27</span> — full bundles + premade + non-rebar</div></div>
+      <div class="kv"><div class="k">Inventory Adjustment lines</div><div class="v"><span class="nsrec adj">4</span> — drops</div></div>
+      <div class="kv"><div class="k">Net $ variance</div><div class="v var-bad">−$18,410</div></div>
+      <div class="kv"><div class="k">Write-offs included</div><div class="v">14 across 5 reason codes</div></div>
+      <div class="kv"><div class="k">Idempotency key</div><div class="v mono">cnt-q3-001-a41f9c</div></div>
+    </div>
+
+    <label class="f">Type <b style="color:#cfe0f5;">APPROVE</b> to confirm</label>
+    <input class="i" id="cfIn" placeholder="APPROVE" oninput="cfChk()">
+    <div class="hint">Deliberate friction. This is the SOX-lite human approval moment the whole 3-tier flow
+      exists to produce — it should not be possible to do by accident.</div>
+
+    <div class="mrow">
+      <button class="btn ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn" id="cfGo" style="background:rgba(22,192,96,.16);border-color:var(--ok-line);color:#5ce08d;"
+        disabled onclick="doPush()">Approve &amp; Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PUSHING MODAL ══════════ -->
+<div class="scrim" id="pg">
+  <div class="modal" style="max-width:460px; text-align:center;">
+    <div style="font-size:38px; margin-bottom:10px;">📤</div>
+    <h3 style="text-align:center;">Pushing to NetSuite…</h3>
+    <div class="msub" style="text-align:center;">SuiteTalk REST · TBA · idempotency key <code>cnt-q3-001-a41f9c</code></div>
+    <div id="pgSteps" style="text-align:left; font-size:11.5px; color:var(--dim); line-height:2;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function go(id){ var a=document.querySelectorAll('.screen');
+  for(var i=0;i<a.length;i++) a[i].classList.remove('on');
+  document.getElementById(id).classList.add('on'); window.scrollTo(0,0); }
+function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(window._tt); window._tt=setTimeout(function(){t.classList.remove('on');},2200); }
+
+function openConfirm(){ document.getElementById('cf').classList.add('on');
+  document.getElementById('cfIn').value=''; cfChk(); setTimeout(function(){document.getElementById('cfIn').focus();},80); }
+function closeConfirm(){ document.getElementById('cf').classList.remove('on'); }
+function cfChk(){ document.getElementById('cfGo').disabled =
+  document.getElementById('cfIn').value.trim().toUpperCase()!=='APPROVE'; }
+
+var STEPS=[
+  'Recording approval · actor Manager 1 · role Manager…',
+  'Bundling 31 reconciled SKU deltas…',
+  'POST /inventoryWorksheet — 27 lines…',
+  'POST /inventoryAdjustment — 4 lines…',
+  'Verifying full batch — no partial success allowed…',
+  'All 31 of 31 lines confirmed · locking count…'
+];
+function doPush(){
+  closeConfirm();
+  var box=document.getElementById('pgSteps'); box.innerHTML='';
+  document.getElementById('pg').classList.add('on');
+  var i=0;
+  (function next(){
+    if(i<STEPS.length){
+      var d=document.createElement('div');
+      d.innerHTML='<span style="color:#5ce08d;">✓</span> '+STEPS[i];
+      box.appendChild(d); i++; setTimeout(next,480);
+    } else {
+      setTimeout(function(){
+        document.getElementById('pg').classList.remove('on');
+        var b=document.getElementById('pushbtn');
+        b.disabled=true; b.innerHTML='🔒 Approved &amp; pushed<span class="s">count locked 13:47</span>';
+        document.getElementById('state1').textContent='🔒 Locked · pushed';
+        document.getElementById('state1').className='statepill locked';
+        go('s-done');
+        toast('Pushed — invcount_88214 + invadjst_41077 · count locked');
+      },620);
+    }
+  })();
+}
+document.querySelectorAll('.scrim').forEach(function(s){
+  s.addEventListener('click', function(e){ if(e.target===s && s.id!=='pg') s.classList.remove('on'); });
+});
+</script>
+</body>
+</html>

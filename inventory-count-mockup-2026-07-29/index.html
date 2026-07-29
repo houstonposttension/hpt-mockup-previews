@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HPT Inventory Count Tool · role mockups · 2026-07-29</title>
+<!-- HPT Inventory Count Tool — mockup index (Wave 0a, 2026-07-29).
+     Three role surfaces validating the shape of the 11-block spec (A–K) locked 2026-07-03,
+     revised 2026-07-09, ahead of the Wave 1 scaffold on 2026-08-11. -->
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932; --inset:#0e1217;
+    --line:#2a3038; --line2:#39424e;
+    --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+    --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+    --ok:#16c060; --ok-dim:rgba(22,192,96,.15); --ok-line:rgba(22,192,96,.45);
+    --warn:#ffb020; --warn-dim:rgba(255,176,32,.15); --warn-line:rgba(255,176,32,.4);
+    --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15); --bad-line:rgba(255,59,48,.4);
+    --purple:#a78bfa; --purple-dim:rgba(167,139,250,.14); --purple-line:rgba(167,139,250,.4);
+    --teal:#2dd4bf; --teal-dim:rgba(45,212,191,.13); --teal-line:rgba(45,212,191,.4);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:#14171c; color:var(--txt);
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+  body{ padding:26px 18px 80px; }
+  .wrap{ max-width:1000px; margin:0 auto; }
+
+  h1{ font-size:23px; font-weight:900; margin:0 0 8px; letter-spacing:-.3px; }
+  .lede{ font-size:13px; color:var(--dim); line-height:1.75; margin:0 0 14px; }
+  .lede b{ color:#cfe0f5; }
+  a{ color:var(--acc-soft); }
+
+  .wipnote{ border-left:3px solid var(--warn); background:rgba(255,176,32,.07); padding:11px 15px;
+    margin:0 0 18px; font-size:12px; color:#e8d4a8; line-height:1.7; border-radius:0 8px 8px 0; }
+  .wipnote b{ color:#ffd98a; }
+
+  .chips{ display:flex; gap:7px; flex-wrap:wrap; margin:14px 0 22px; }
+  .chip{ font-size:10.5px; font-weight:800; color:var(--dim); background:var(--inset);
+    border:1px solid var(--line); border-radius:999px; padding:7px 13px; }
+  .chip.ok{ border-color:var(--ok-line); color:#5ce08d; }
+  .chip.blue{ border-color:var(--acc-line); color:#9ccbff; }
+  .chip.purple{ border-color:var(--purple-line); color:#c4b5fd; }
+  .chip.warn{ border-color:var(--warn-line); color:#ffcf6b; }
+  .chip.teal{ border-color:var(--teal-line); color:#7fe9db; }
+
+  .sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.8px;
+    color:#5a6470; margin:30px 2px 11px; display:flex; align-items:center; gap:8px; }
+  .sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; text-transform:none;
+    letter-spacing:0; font-size:10.5px; }
+
+  .roles{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media (max-width:900px){ .roles{ grid-template-columns:1fr; } }
+  .role{ display:block; text-decoration:none; color:var(--txt); background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px;
+    transition:border-color .15s, background .15s; }
+  .role:hover{ background:var(--panel2); border-color:var(--acc-line); }
+  .role .ic{ font-size:30px; line-height:1; }
+  .role .tier{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    border-radius:6px; padding:3px 8px; float:right; }
+  .role.w .tier{ background:var(--acc-dim); border:1px solid var(--acc-line); color:#9ccbff; }
+  .role.s .tier{ background:var(--warn-dim); border:1px solid var(--warn-line); color:#ffcf6b; }
+  .role.m .tier{ background:var(--purple-dim); border:1px solid var(--purple-line); color:#c4b5fd; }
+  .role .nm{ font-size:16px; font-weight:900; margin:11px 0 4px; }
+  .role .dev{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--faint); margin-bottom:9px; }
+  .role .ds{ font-size:11.5px; color:var(--dim); line-height:1.65; }
+  .role .ds b{ color:#cfe0f5; }
+  .role .blocks{ font-size:10px; color:var(--faint); margin-top:11px; padding-top:10px;
+    border-top:1px solid var(--line); line-height:1.6; }
+  .role .go{ font-size:11.5px; font-weight:900; color:#9ccbff; margin-top:11px; }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .card p{ font-size:12px; color:var(--dim); line-height:1.75; margin:0 0 10px; }
+  .card p:last-child{ margin-bottom:0; }
+  .card p b{ color:#cfe0f5; }
+
+  .iso{ background:linear-gradient(180deg,rgba(45,212,191,.07),transparent);
+    border:1px solid var(--teal-line); border-radius:12px; padding:16px 18px; }
+  .iso .t{ font-size:13px; font-weight:900; color:#7fe9db; margin-bottom:8px; }
+  .iso p{ font-size:12px; color:#b8ddd7; line-height:1.75; margin:0 0 9px; }
+  .iso p:last-child{ margin-bottom:0; }
+  .iso b{ color:#d8f3ef; }
+  .iso code{ background:var(--inset); border:1px solid var(--line); border-radius:4px;
+    padding:1px 6px; font-size:11px; color:#7fe9db; }
+
+  .tbl{ width:100%; border-collapse:collapse; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .tbl th{ font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--faint); text-align:left; padding:10px 12px; background:var(--inset);
+    border-bottom:1px solid var(--line); }
+  .tbl td{ font-size:11.5px; padding:11px 12px; border-bottom:1px solid var(--line);
+    vertical-align:top; line-height:1.6; }
+  .tbl tr:last-child td{ border-bottom:none; }
+  .tbl td b{ color:#cfe0f5; }
+  .bk{ font-weight:900; font-size:12px; color:#9ccbff; white-space:nowrap; }
+  .on{ font-size:10px; font-weight:800; white-space:nowrap; }
+  .on.w{ color:#9ccbff; } .on.s{ color:#ffcf6b; } .on.m{ color:#c4b5fd; } .on.a{ color:#5ce08d; }
+
+  .links{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:900px){ .links{ grid-template-columns:1fr; } }
+  .lk{ display:block; text-decoration:none; background:var(--panel); border:1px solid var(--line);
+    border-radius:11px; padding:13px 15px; color:var(--txt); }
+  .lk:hover{ border-color:var(--acc-line); background:var(--panel2); }
+  .lk .t{ font-size:12.5px; font-weight:800; }
+  .lk .s{ font-size:10.5px; color:var(--faint); margin-top:4px; line-height:1.55;
+    word-break:break-all; }
+  .lk .s.na{ color:#ffcf6b; }
+
+  .foot{ margin-top:30px; font-size:11px; color:var(--faint); line-height:1.8; }
+  .foot a{ color:var(--acc-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>HPT Inventory Count Tool — role mockups</h1>
+<p class="lede">
+  Three role surfaces plus this index, validating the shape of the locked specification before anything is built.
+  Requirements are <b>11 blocks A–K, locked 2026-07-03</b>, with F.2a / F.3 / G.1 / G.2 / G.2a / G.6
+  <b>revised 2026-07-09</b>. This is <b>Wave 0a</b> — the last cheap place to find out a screen is wrong.
+  <b>Wave 1 scaffold lands 2026-08-11.</b>
+</p>
+
+<div class="wipnote">
+  <b>CONCEPT MOCKUPS — 2026-07-29.</b> Static HTML. Nothing is wired to NetSuite, to Postgres, or to any HPT
+  service. Every SKU, quantity, worker name, variance, dollar figure and NetSuite record ID on these pages is a
+  <b>placeholder</b> chosen to exercise a spec rule — none of it is real inventory data. Worker names are
+  anonymised (Operator 1…12). The buttons click through so the flow can be walked; they do not do anything.
+</div>
+
+<div class="chips">
+  <div class="chip ok">Std 17 — Mobile Web App UI · worker surface</div>
+  <div class="chip ok">Std 40 — Manufacturing Dashboard · supervisor + manager surfaces</div>
+  <div class="chip teal">ISO 9001 §8.5.4 — traceability</div>
+  <div class="chip blue">Spec locked 2026-07-03</div>
+  <div class="chip warn">Revised 2026-07-09</div>
+  <div class="chip purple">GA-INV-001 (draft, unfiled)</div>
+</div>
+
+<!-- ══ the three surfaces ══ -->
+<div class="sectlbl">The three role surfaces <span class="n">3-tier approval flow, plus Executive on escalation only (H.2)</span></div>
+<div class="roles">
+
+  <a class="role w" href="worker-count.html">
+    <span class="tier">Tier 0</span>
+    <div class="ic">📱</div>
+    <div class="nm">Worker — counting</div>
+    <div class="dev">Phone · mobile-first · Std 17</div>
+    <div class="ds">Phone sign-in, today's assignments, a <b>big scan button</b>, dual-UOM count entry, the
+      <b>rebar 3-category</b> form, unknown-barcode handling, and an offline sync chip. Blind throughout —
+      the worker never sees what the system expects.</div>
+    <div class="blocks">8 screens · A.3 · B.4 · B.5 · C.1–C.5 · D · E.1–E.4 · H.1 · I.1 · K.1/3/4/5/6/7/8/9</div>
+    <div class="go">Open the worker flow →</div>
+  </a>
+
+  <a class="role s" href="supervisor-review.html">
+    <span class="tier">Tier 1</span>
+    <div class="ic">🔍</div>
+    <div class="nm">Supervisor — review</div>
+    <div class="dev">Tablet / desktop · dense · Std 40</div>
+    <div class="ds">Live per-cell progress and per-worker scan counts, the discrepancy queue against the
+      <b>5% / 10-unit hybrid threshold</b>, the <b>5-action menu</b> on every variance, the
+      <b>8-code write-off modal</b>, the recount modal with same-team-or-reassign, and the recount cap.
+      Bundles the cell — <b>no NetSuite push here</b>.</div>
+    <div class="blocks">C.3 · C.6 · F.1–F.5 · G.2a (absence of) · H.2 · H.3 · I.2 · J.1/J.5</div>
+    <div class="go">Open the supervisor console →</div>
+  </a>
+
+  <a class="role m" href="manager-approve.html">
+    <span class="tier">Tier 2</span>
+    <div class="ic">✅</div>
+    <div class="nm">Manager — approve &amp; push</div>
+    <div class="dev">Desktop · decision-oriented</div>
+    <div class="ds">Batch rollup across all six cells, per-SKU deltas with each supervisor's reasoning,
+      reason-code and recount history, the record-type map, the push preview, the failure-handling preview,
+      and <b>the one button that writes to NetSuite</b> — which locks the count. Post-push confirmation with
+      record IDs and the audit summary.</div>
+    <div class="blocks">A.1 · A.5 · D · F.4 · F.5 · G.1 · G.2 · G.2a · G.5 · G.6 · H.2 · H.3 · J.1–J.7</div>
+    <div class="go">Open the manager approval →</div>
+  </a>
+</div>
+
+<!-- ══ ISO note ══ -->
+<div class="sectlbl">Why the approval chain looks like this</div>
+<div class="iso">
+  <div class="t">🔒 ISO 9001 §8.5.4 — Preservation &amp; traceability</div>
+  <p>The process this replaces produces <b>no audit trail</b>. Counts are assembled by hand and keyed into
+    NetSuite manually, so the reasoning behind every variance decision exists only in whoever produced it.
+    HPT is pursuing ISO 9001 certification, and a quarterly inventory adjustment with no traceable approval
+    chain is a §8.5.4 gap a surveillance audit finds.</p>
+  <p>Every count, edit, recount, write-off, approval and push is written as an <b>immutable append-only event</b>
+    carrying <code>event_id</code>, <code>event_type</code>, <code>actor_id</code>, <code>actor_role</code>,
+    <code>timestamp_utc</code>, <code>sku_id</code>, <code>qty</code>, <code>location</code>,
+    <code>reason_code</code> and <code>context_ref</code>. Elevated events — recount, write-off, approval —
+    add <code>reasoning_text</code>, <code>previous_state</code> and <code>related_events</code>. NetSuite
+    pushes add <code>netsuite_record_id</code>, <code>push_status</code> and
+    <code>push_response_snapshot</code>. (H.3)</p>
+  <p>Retention is <b>7 years</b> (ISO 9001 + CFR), held append-only in Postgres and streamed to an object-locked
+    archive for tamper-evident storage. The manager's single <b>Approve &amp; Send to NetSuite</b> click is the
+    explicit human approval moment the standard wants, and it <b>locks the count</b> — no silent edits after
+    sign-off (G.2a, added 2026-07-09).</p>
+</div>
+
+<!-- ══ block → screen map ══ -->
+<div class="sectlbl">Block → screen map <span class="n">where each of the 11 blocks shows up</span></div>
+<table class="tbl">
+<thead><tr><th style="width:64px;">Block</th><th style="width:150px;">Subject</th><th>Where it surfaces</th><th style="width:96px;">Screen</th></tr></thead>
+<tbody>
+<tr><td class="bk">A</td><td><b>Scope</b></td>
+  <td>Quarterly full count header on every surface; 6 cells in the supervisor rollup; 2 workers per cell on the
+    worker landing and the cell cards; the one-day window in the console subtitle; A.5's four success criteria
+    are the manager screen's whole argument.</td><td class="on a">all</td></tr>
+<tr><td class="bk">B</td><td><b>Data model &amp; NetSuite mapping</b></td>
+  <td>Dual-UOM readout ("20 pieces = 4 lbs on NetSuite") on the worker item screen; the many-to-one vendor SKU
+    dictionary in the supervisor's unmapped-barcode queue; package-only barcodes stated on the scan screen.</td>
+  <td class="on w">worker</td></tr>
+<tr><td class="bk">C</td><td><b>Workflow</b></td>
+  <td>Pre-assigned list + add-on-the-fly; scan-preferred with search and list fallbacks; unknown-barcode screen;
+    multi-UOM lines; the blind-count banner repeated on three worker screens; batch-at-cell-end submit.</td>
+  <td class="on w">worker</td></tr>
+<tr><td class="bk">D</td><td><b>Prep &amp; the rebar model</b></td>
+  <td>The rebar screen's three category tabs with <b>different fields per category</b> — the single largest form
+    divergence in the tool. Shear97 <code style="font-size:10px;">LB_PER_FT</code> cited on the conversion
+    readout. Drops carry no source field, by design.</td><td class="on w">worker</td></tr>
+<tr><td class="bk">E</td><td><b>Location model</b></td>
+  <td>Cell → Rack → Bin dropdown with sparse paths as real options; scan-if-labelled noted; split-count
+    "this item is in another location" line; per-location detail retained HPT-side.</td><td class="on w">worker</td></tr>
+<tr><td class="bk">F</td><td><b>Discrepancy reconciliation</b></td>
+  <td>The threshold shown per row (5% OR 10 units, whichever is smaller); the <b>5-action menu</b>; the
+    8-code + Other write-off modal grouped by ISO 9001 §8.3 class; the recount modal's same-team-or-reassign
+    dropdown; the 2-recount cap with the disabled third request.</td><td class="on s">supervisor</td></tr>
+<tr><td class="bk">G</td><td><b>NetSuite integration</b></td>
+  <td>Record type per SKU (Worksheet vs Adjustment) as a column, not a footnote; the push preview counting both;
+    SuiteTalk REST + TBA named; single-warehouse mapping; the G.6 failure path written out in full before you
+    press anything.</td><td class="on m">manager</td></tr>
+<tr><td class="bk">H</td><td><b>Auth &amp; audit</b></td>
+  <td>Phone → SHA256 sign-in with one-tap return; four roles as pills across the three surfaces; the audit-trail
+    summary and the field list on the post-push screen and in the ISO panel above.</td><td class="on a">all</td></tr>
+<tr><td class="bk">I</td><td><b>Offline &amp; sync</b></td>
+  <td>The sync chip in the worker app bar — tap it to go offline and watch counts queue; live per-cell bars,
+    per-worker scan counts and the 30-second refresh indicator on the supervisor console.</td>
+  <td class="on w">worker + sup</td></tr>
+<tr><td class="bk">J</td><td><b>Reporting</b></td>
+  <td>All seven listed on the post-push screen; reason-code rollup (J.4) and recount-rate table (J.5) are built
+    out as real tables; J.7's ISO export has a button on two surfaces.</td><td class="on m">manager</td></tr>
+<tr><td class="bk">K</td><td><b>Edge cases</b></td>
+  <td>Flag row on the worker item screen — damaged, consignment, customer-owned, loaner, cut-short; a
+    consignment line sits in the assignment list; missing tag → manual pick; unknown barcode has its own screen.</td>
+  <td class="on w">worker</td></tr>
+</tbody>
+</table>
+
+<!-- ══ what to look at ══ -->
+<div class="sectlbl">What's worth arguing about</div>
+<div class="card">
+  <p><b>1 · The rebar form is three different forms.</b> Full bundles, drops and premade shapes share almost no
+    fields. If a counter has to guess which tab they're on, this is where it breaks — and the tabs are the
+    thing to react to first.</p>
+  <p><b>2 · The supervisor has five buttons on every row.</b> Five is a lot of choice per discrepancy across
+    31 lines. If two of them are never used in practice, better to find that now than after Wave 4.</p>
+  <p><b>3 · The write-off codes are grouped, not just listed.</b> The dropdown groups the eight codes as
+    internal loss / vendor-recoverable / paperwork-only. That grouping is an interpretation of F.4's intent,
+    not something the spec states outright.</p>
+  <p><b>4 · The push button asks you to type APPROVE.</b> Deliberate friction on the one irreversible step.
+    It may be one step too many for a manager doing this quarterly — the alternative is a plain confirm.</p>
+  <p><b>5 · Blind count is stated three times on the worker flow.</b> Repetition is intentional — a counter who
+    forgets it's blind starts second-guessing their own eyes. It may still be one banner too many.</p>
+</div>
+
+<!-- ══ source docs ══ -->
+<div class="sectlbl">Source of truth</div>
+<div class="links">
+  <a class="lk" href="../wip-portfolio-snapshot-2026-07-28/index.html">
+    <div class="t">📊 WIP portfolio snapshot — 2026-07-28</div>
+    <div class="s">The most recent in-flight snapshot surface in this repo. <b>Note:</b> no
+      <code>snapshot.json</code> exists in <code>hpt-mockup-previews</code> — flagged for James.</div></a>
+  <a class="lk" href="../vp-dashboard-portfolio-2026-07-27/index.html">
+    <div class="t">🎨 VP dashboard portfolio — 2026-07-27</div>
+    <div class="s">Visual DNA source. Palette and typography on these four pages are lifted from it.</div></a>
+  <div class="lk">
+    <div class="t">📄 Complete spec — 11 blocks A–K</div>
+    <div class="s">C:\Dev\HPT-Memory\memories\project_inventory_count_tool_complete_spec.md — locked 2026-07-03, revised 2026-07-09</div></div>
+  <div class="lk">
+    <div class="t">📁 Wave 0 planning bundle — 2026-07-28</div>
+    <div class="s">C:\Backups\mirrors\inventory-count-planning-2026-07-28\ — PRD, tech stack, repo structure, wave plan, open questions, GA-INV-001 draft</div></div>
+</div>
+
+<div class="foot">
+  <b>Wave 0a · 2026-07-29.</b> Four static HTML files, no build step, no framework, no dependencies.
+  Palette matches <a href="../vp-dashboard-portfolio-2026-07-27/index.html">vp-dashboard-portfolio-2026-07-27</a>.
+  Wave 1 scaffold: <b>2026-08-11</b>.<br>
+  <a href="worker-count.html">Worker</a> ·
+  <a href="supervisor-review.html">Supervisor</a> ·
+  <a href="manager-approve.html">Manager</a>
+</div>
+
+</div>
+</body>
+</html>
