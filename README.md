@@ -12,6 +12,26 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ## Current mockups
 
+### Shear97 — Rebar Optimization Phase 1 (dated 2026-07-30)
+
+- [Wave 0a landing — supervisor form + run history](https://houstonposttension.github.io/hpt-mockup-previews/rebar-optimization-mockup-2026-07-30/index.html)
+- [Supervisor per-shift form (Wave 6 target)](https://houstonposttension.github.io/hpt-mockup-previews/rebar-optimization-mockup-2026-07-30/supervisor-per-shift.html)
+- [Run history + run detail (Wave 4 target, includes per-machine workload)](https://houstonposttension.github.io/hpt-mockup-previews/rebar-optimization-mockup-2026-07-30/run-history.html)
+
+Two spec-mandated browser surfaces for Shear97 Phase 1. **Supervisor per-shift form** sets
+`available_flag` (spec §2 Q1) and `helper_assigned_flag` (§4.1) per shift across the seven yard
+machines, and surfaces the §7.3 warn flags (stale drop pile, low-confidence bundle badge from
+§2 Q10, setup-count check) the supervisor must acknowledge before dispatching the plan.
+**Run history + detail** lists past optimizer runs with status / yield / setups / cost-authority
+state; the detail view carries the plan summary, the §7.5 `run_events` timeline, **per-machine
+workload in hours per shift** (feeds Phase 2 completion-date forecast — James's addition), the
+§2 Q16 override deltas against HPT Cloud routing, SC-3 archive links, and the SC-4 auditor
+reproduce command. Empty and sparse-data states rendered for both. Operator's daily invocation
+tool stays CLI + printed pull sheets per PRD §6 non-goals. Visual DNA reuses tokens verbatim from
+`vp-dashboard-portfolio-2026-07-27`. Cost figures throughout are placeholder — GA-SH97-005a is
+open and every dollar carries a NOT-FOR-QUOTING banner. Related governance row: `GA-SH97-017`
+(Phase-1 parent).
+
 ### HPT Portfolio (dated 2026-07-27)
 
 - [HPT Portfolio — portfolio overview + command surface, Cards + Timeline + Activity views (mobile)](https://houstonposttension.github.io/hpt-mockup-previews/vp-dashboard-portfolio-2026-07-27/index.html)
