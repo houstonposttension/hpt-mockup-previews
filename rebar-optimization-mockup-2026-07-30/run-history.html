@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shear97 -- Run History &amp; Detail (Wave 4 mockup)</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+  --line:#2a3038; --line2:#39424e;
+  --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+  --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+  --ok:#16c060; --ok-dim:rgba(22,192,96,.15);
+  --warn:#ffb020; --warn-dim:rgba(255,176,32,.15);
+  --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15);
+}
+*{box-sizing:border-box}
+html,body{background:#14171c;color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;margin:0;font-variant-numeric:tabular-nums}
+body{padding:20px 24px 60px;max-width:1440px;margin:0 auto}
+a{color:#9ccbff;text-decoration:none}
+a:hover{text-decoration:underline}
+.crumb{font-size:11px;color:var(--faint);margin-bottom:8px}
+.crumb a{color:var(--dim)}
+h1{font-size:20px;font-weight:800;margin:0 0 4px}
+.sub{color:var(--dim);font-size:12.5px;margin-bottom:16px}
+.eyebrow{font-size:9.5px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:12px}
+.card.hi{border-left:4px solid var(--acc)}
+.card.warn{border-left:4px solid var(--warn)}
+.card.bad{border-left:4px solid var(--bad)}
+.card.ok{border-left:4px solid var(--ok)}
+.card h2{margin:0 0 4px;font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+
+.state{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;border-radius:5px;padding:3px 7px}
+.state.ok{background:var(--ok-dim);border:1px solid rgba(22,192,96,.4);color:#5ce08d}
+.state.warn{background:var(--warn-dim);border:1px solid rgba(255,176,32,.4);color:#ffcf6b}
+.state.bad{background:var(--bad-dim);border:1px solid rgba(255,59,48,.4);color:#ff7b73}
+.state.acc{background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff}
+.state.dim{background:#242b34;border:1px solid var(--line);color:var(--dim)}
+
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.chip{background:#0e1217;border:1px solid var(--line);border-radius:18px;padding:6px 11px;font-size:10.5px;font-weight:800;color:var(--dim);cursor:pointer;user-select:none}
+.chip.on{background:var(--acc-dim);border-color:var(--acc-line);color:#9ccbff}
+.searchbox{flex:1;min-width:220px;background:#0e1217;border:1px solid var(--line);border-radius:9px;padding:7px 12px;color:var(--txt);font-size:12px;font-family:inherit}
+.searchbox::placeholder{color:var(--faint)}
+
+table.runs{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:12px}
+table.runs thead th{text-align:left;color:var(--faint);font-size:8.5px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;padding:0 10px 6px;border-bottom:1px solid var(--line)}
+table.runs thead th.c{text-align:center}
+table.runs thead th.r{text-align:right}
+table.runs tbody tr{background:#0e1217;cursor:pointer}
+table.runs tbody tr:hover{background:#151b23}
+table.runs tbody tr.on{background:#1a2333;box-shadow:inset 3px 0 0 var(--acc)}
+table.runs tbody td{padding:10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+table.runs tbody td:first-child{border-left:1px solid var(--line);border-top-left-radius:8px;border-bottom-left-radius:8px}
+table.runs tbody td:last-child{border-right:1px solid var(--line);border-top-right-radius:8px;border-bottom-right-radius:8px}
+table.runs tbody td.c{text-align:center}
+table.runs tbody td.r{text-align:right;font-variant-numeric:tabular-nums}
+.runid{font-family:"SF Mono",Consolas,monospace;font-size:11px;color:var(--faint)}
+.release{font-weight:800;color:var(--txt)}
+.job{font-size:10.5px;color:var(--faint)}
+.yield-good{color:#5ce08d;font-weight:800}
+.yield-mid{color:#ffcf6b;font-weight:800}
+.yield-low{color:#ff7b73;font-weight:800}
+
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr)}}
+.kpi{background:#0e1217;border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+.kpi .k{font-size:8.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
+.kpi .v{font-size:19px;font-weight:900;color:var(--txt);margin-top:2px;letter-spacing:-.5px}
+.kpi .m{font-size:10px;color:var(--dim);margin-top:2px}
+
+.psum{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11.5px}
+.psum .row{display:flex;justify-content:space-between;padding:5px 8px;background:#0e1217;border:1px solid var(--line);border-radius:6px}
+.psum .row b{color:#cfe0f5;font-weight:800}
+
+.wtable{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px}
+.wtable th{text-align:right;font-size:8.5px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:var(--faint);padding:6px 8px;border-bottom:1px solid var(--line)}
+.wtable th:first-child{text-align:left}
+.wtable td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.wtable td:first-child{text-align:left;color:var(--txt);font-weight:700}
+.wtable td.tot{color:#cfe0f5;font-weight:800;background:#0e1217}
+.bar{display:inline-block;height:5px;background:var(--acc);border-radius:3px;vertical-align:middle;margin-right:4px}
+
+.tl{position:relative;padding-left:20px;font-size:11.5px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tli{position:relative;margin-bottom:9px;padding-left:6px}
+.tli::before{content:"";position:absolute;left:-19px;top:5px;width:9px;height:9px;background:var(--acc);border:2px solid #0e1217;border-radius:50%}
+.tli.ok::before{background:var(--ok)}
+.tli.warn::before{background:var(--warn)}
+.tli.bad::before{background:var(--bad)}
+.tli .ts{font-family:"SF Mono",Consolas,monospace;font-size:10px;color:var(--faint)}
+.tli .msg{color:var(--txt);font-weight:600;line-height:1.4}
+.tli .meta{color:var(--dim);font-size:10.5px;margin-top:2px}
+
+.otable{width:100%;border-collapse:collapse;font-size:11px}
+.otable th{text-align:left;font-size:8.5px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;color:var(--faint);padding:6px 8px;border-bottom:1px solid var(--line)}
+.otable td{padding:6px 8px;border-bottom:1px solid var(--line)}
+.otable td.tag{font-weight:800;color:var(--txt);font-family:"SF Mono",Consolas,monospace;font-size:11px}
+.arrow{color:var(--warn);margin:0 4px}
+
+.arclink{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#0e1217;border:1px solid var(--line);border-radius:8px;margin-bottom:5px;font-size:11.5px}
+.arclink .l{color:var(--txt);font-weight:700}
+.arclink .m{color:var(--faint);font-size:10px}
+.arclink .b{background:var(--panel3);border:1px solid var(--line2);color:#9ccbff;font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px;text-decoration:none}
+
+.cbanner{background:var(--warn-dim);border:1px solid rgba(255,176,32,.4);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:11.5px;color:#e8d4a8;line-height:1.5}
+.cbanner b{color:#ffcf6b;font-weight:800;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;font-size:10.5px}
+
+.empty{text-align:center;padding:26px 10px;color:var(--faint);font-size:11.5px;background:#0e1217;border:1px dashed var(--line);border-radius:9px;margin-top:8px}
+.tabbar{display:flex;gap:0;background:#0e1217;border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:12px;width:fit-content}
+.tabbar button{background:transparent;border:0;color:var(--dim);font-size:11px;font-weight:800;padding:7px 14px;border-radius:8px;cursor:pointer}
+.tabbar button.on{background:var(--acc-dim);color:#9ccbff}
+
+.mockmark{position:fixed;top:6px;right:8px;background:var(--bad-dim);border:1px solid rgba(255,59,48,.4);color:#ff7b73;font-size:9px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;border-radius:4px;padding:3px 6px;z-index:100}
+</style>
+</head>
+<body>
+
+<div class="mockmark">Mockup &middot; not wired</div>
+
+<div class="crumb"><a href="index.html">&larr; Wave 0a mockups</a> &middot; Run history &amp; detail &middot; Wave 4 target</div>
+<h1>Run history &mdash; Shear97</h1>
+<div class="sub">Every optimizer run persisted to <code style="background:#0e1217;padding:1px 5px;border-radius:4px;color:#9ccbff;font-size:11.5px">runs</code> (Wave 3) is listed here. Click a row for detail. Supports PRD SC-3 (any past run reconstructable) and SC-4 (ISO&nbsp;9001 auditor traceability).</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="k">Runs today</div><div class="v">14</div><div class="m">3 shifts &middot; 4 releases</div></div>
+  <div class="kpi"><div class="k">Runs this week</div><div class="v">78</div><div class="m">+6 vs last week</div></div>
+  <div class="kpi"><div class="k">Avg yield (7d)</div><div class="v" style="color:#5ce08d">83.2%</div><div class="m">target 80%</div></div>
+  <div class="kpi"><div class="k">Avg setups (7d)</div><div class="v">6.1</div><div class="m">target 5, floor 10</div></div>
+  <div class="kpi"><div class="k">Infeasible (7d)</div><div class="v" style="color:#ffcf6b">3</div><div class="m">1 delivery, 2 heat</div></div>
+  <div class="kpi"><div class="k">Cost authority</div><div class="v" style="color:#ff7b73">FALSE</div><div class="m">GA-SH97-005a open</div></div>
+</div>
+
+<div class="card">
+  <div class="filterbar">
+    <input class="searchbox" placeholder="Search release / run id / release ID / tag ...">
+    <span class="chip on">All</span><span class="chip">Clean</span><span class="chip">Gap-flagged</span><span class="chip">Stale drop</span><span class="chip">Infeasible</span><span class="chip">Overrides</span><span class="chip">Last 24h</span><span class="chip">Last 7d</span>
+  </div>
+
+  <table class="runs">
+    <thead><tr><th style="width:15%">When (CT)</th><th style="width:14%">Release</th><th style="width:18%">Run id</th><th style="width:9%" class="c">Status</th><th style="width:7%" class="r">Yield</th><th style="width:6%" class="c">Setups</th><th style="width:8%" class="r">New stock</th><th style="width:8%" class="c">Cost</th><th style="width:15%">Operator &middot; overrides</th></tr></thead>
+    <tbody>
+      <tr class="on"><td>Wed 06:30 <span style="color:var(--faint);font-size:10.5px">(now)</span></td><td><div class="release">FT073026-042</div><div class="job">Job 42816302 &middot; CSI</div></td><td><span class="runid">r_20260805T063014Z_a1b2c3</span></td><td class="c"><span class="state ok">clean</span></td><td class="r"><span class="yield-good">80.6%</span></td><td class="c">6</td><td class="r">954 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>jbrady &middot; <span style="color:var(--faint)">none</span></td></tr>
+      <tr><td>Wed 05:12</td><td><div class="release">FT073126-018</div><div class="job">Job 42815891 &middot; Turner</div></td><td><span class="runid">r_20260805T051205Z_c2d4e7</span></td><td class="c"><span class="state warn">2 warn</span></td><td class="r"><span class="yield-mid">76.4%</span></td><td class="c">8</td><td class="r">1,382 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>knguyen &middot; <span style="color:var(--warn)">1 route</span></td></tr>
+      <tr><td>Wed 04:58</td><td><div class="release">FT073126-018</div><div class="job">Job 42815891 &middot; Turner</div></td><td><span class="runid">r_20260805T045801Z_9f8a2b</span></td><td class="c"><span class="state bad">infeasible</span></td><td class="r"><span style="color:var(--faint)">&mdash;</span></td><td class="c"><span style="color:var(--faint)">&mdash;</span></td><td class="r"><span style="color:var(--faint)">&mdash;</span></td><td class="c"><span class="state dim">n/a</span></td><td>knguyen &middot; <span style="color:var(--bad)">heat purity</span></td></tr>
+      <tr><td>Tue 22:15</td><td><div class="release">FT073026-041</div><div class="job">Job 42816302 &middot; CSI</div></td><td><span class="runid">r_20260804T221543Z_e6f1c9</span></td><td class="c"><span class="state warn">stale drop</span></td><td class="r"><span class="yield-good">88.4%</span></td><td class="c">4</td><td class="r">721 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>knguyen &middot; <span style="color:var(--faint)">none</span></td></tr>
+      <tr><td>Tue 18:04</td><td><div class="release">FT073026-040</div><div class="job">Job 42816044 &middot; Kiewit</div></td><td><span class="runid">r_20260804T180402Z_d3a5b1</span></td><td class="c"><span class="state ok">clean</span></td><td class="r"><span class="yield-good">91.2%</span></td><td class="c">5</td><td class="r">2,014 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>jbrady &middot; <span style="color:var(--faint)">none</span></td></tr>
+      <tr><td>Tue 14:20</td><td><div class="release">FT073026-040</div><div class="job">Job 42816044 &middot; Kiewit</div></td><td><span class="runid">r_20260804T142011Z_7e2f8d</span></td><td class="c"><span class="state warn">1 warn</span></td><td class="r"><span class="yield-mid">78.1%</span></td><td class="c">7</td><td class="r">1,876 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>cmartinez &middot; <span style="color:var(--faint)">none</span></td></tr>
+      <tr><td>Tue 06:45</td><td><div class="release">FT072926-037</div><div class="job">Job 42815712 &middot; Balfour</div></td><td><span class="runid">r_20260804T064512Z_b4c8e2</span></td><td class="c"><span class="state ok">clean</span></td><td class="r"><span class="yield-good">85.7%</span></td><td class="c">5</td><td class="r">1,204 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>cmartinez &middot; <span style="color:var(--acc)">2 route</span></td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px;font-size:11px;color:var(--faint);text-align:right">Showing 7 of 78 runs (last 7 days) &middot; <a href="#" style="font-weight:800">load more</a></div>
+</div>
+
+<h1 style="margin-top:24px">Run detail &mdash; <span class="runid" style="font-size:16px;color:#cfe0f5">r_20260805T063014Z_a1b2c3</span> <span class="state ok" style="margin-left:6px;vertical-align:middle">clean</span></h1>
+<div class="sub">Release <b style="color:#cfe0f5">FT073026-042</b> &middot; Wed 2026-08-05 06:30:14 UTC by jbrady &middot; shear_optimizer 0.3.2 (git 4f9a1e2) &middot; DRY-RUN &middot; solve 847 ms.</div>
+
+<div class="cbanner"><b>Cost figures on this page are placeholder &mdash; not for quoting</b>configs/costs.yaml v2026-06-04 &middot; authoritative: FALSE &middot; source: interim rule &middot; gated on GA-SH97-005a</div>
+
+<div class="tabbar"><button class="on">Plan summary</button><button>Fabricator sequence</button><button>Verification</button><button>Raw JSON</button><button>Rendered pull sheet (PDF)</button></div>
+
+<div class="grid">
+
+  <div>
+
+    <div class="card hi">
+      <div class="eyebrow" style="color:var(--acc-soft)">Plan summary</div>
+      <h2>Material &amp; sequence</h2>
+      <div class="psum" style="margin-top:8px">
+        <div class="row"><span>Tags parsed</span><b>7 (all kept)</b></div>
+        <div class="row"><span>Total pieces</span><b>47</b></div>
+        <div class="row"><span>Total weight</span><b>1,057 lbs</b></div>
+        <div class="row"><span>New stock bars</span><b>8</b></div>
+        <div class="row"><span>Drop-pile bars</span><b>3</b></div>
+        <div class="row"><span>Yield (total)</span><b class="yield-good">80.6%</b></div>
+        <div class="row"><span>Drop kept</span><b>169 lbs (17.8%)</b></div>
+        <div class="row"><span>Scrap</span><b>0 lbs (0.00%)</b></div>
+        <div class="row"><span>Setups</span><b>6</b></div>
+        <div class="row"><span>Pulls</span><b>9</b></div>
+        <div class="row"><span>New stock cost</span><b style="color:#ffcf6b">$374.17 *</b></div>
+        <div class="row"><span>Drop retrieval</span><b style="color:#ffcf6b">$6.00 *</b></div>
+      </div>
+      <div style="font-size:10.5px;color:var(--faint);margin-top:6px">* Placeholder $ &mdash; see cost banner above.</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow" style="color:var(--acc-soft)">James&#39;s addition &middot; feeds Phase 2 completion-date forecast</div>
+      <h2>Per-machine workload <span style="color:var(--faint);font-weight:600;font-size:11px">hrs loaded per shift</span></h2>
+
+      <table class="wtable">
+        <thead><tr><th>Machine</th><th>Shift 1 (06:00)</th><th>Shift 2 (14:00)</th><th>Shift 3 (22:00)</th><th>Total</th><th style="width:80px">Util</th></tr></thead>
+        <tbody>
+          <tr><td>H4002 Shear line</td><td>2.3</td><td>0.0</td><td>0.0</td><td class="tot">2.3</td><td><span class="bar" style="width:23%"></span> 29%</td></tr>
+          <tr><td>KRB Double bender</td><td>0.0</td><td>0.0</td><td>0.0</td><td class="tot">0.0</td><td><span style="color:var(--faint)">&mdash;</span></td></tr>
+          <tr><td>Prima P16</td><td>1.1</td><td>0.0</td><td>0.0</td><td class="tot">1.1</td><td><span class="bar" style="width:14%"></span> 14%</td></tr>
+          <tr><td>22N bender</td><td>0.4</td><td>0.0</td><td>0.0</td><td class="tot">0.4</td><td><span class="bar" style="width:5%"></span> 5%</td></tr>
+          <tr><td>CRS MOD 35 <span class="state bad" style="margin-left:4px">DOWN</span></td><td colspan="4" style="text-align:center;color:var(--faint)">unavailable this shift (MaintainX #4218)</td><td>&mdash;</td></tr>
+          <tr><td>Coil straightener</td><td>0.0</td><td>0.0</td><td>0.0</td><td class="tot">0.0</td><td><span style="color:var(--faint)">&mdash;</span></td></tr>
+          <tr><td>Radius bender</td><td>0.0</td><td>0.0</td><td>0.0</td><td class="tot">0.0</td><td><span style="color:var(--faint)">&mdash;</span></td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--faint);margin-top:8px;line-height:1.5">Hours from CP-SAT solver output (Wave 4 &middot; §7.1 obj 3 minimizes setups per machine). Feeds Phase 2 forecast: "if we accept this new order today, delivery date is <em>X</em>." Rate tables per HPT Cloud §10 (Q-SH97-2 pending).</div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Spec &sect;2 Q16 &middot; deltas vs HPT Cloud AssignedMachine</div>
+      <h2>Routing overrides &amp; deviations</h2>
+      <table class="otable">
+        <thead><tr><th>Tag</th><th>Size / cut</th><th>HPT Cloud said</th><th>Solver picked</th><th>Reason / flag</th></tr></thead>
+        <tbody>
+          <tr><td class="tag">T007</td><td>#8 @ 25'-0" (STR)</td><td>SHEAR</td><td><span class="arrow">&rarr;</span> SHEAR</td><td><span style="color:var(--faint)">matched</span></td></tr>
+          <tr><td class="tag">T004</td><td>#4 @ 4'-8" (T-bend)</td><td>PRIMA</td><td><span class="arrow">&rarr;</span> PRIMA</td><td><span style="color:var(--faint)">matched</span></td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--faint);margin-top:8px;line-height:1.5">No <code style="background:#0e1217;padding:1px 4px;border-radius:3px;color:#ffcf6b;font-size:11px">override_flag=true</code> rows this run. When solver disagrees with HPT Cloud, delta shows here and on the tag itself. Foreman hard-pin overrides show separately.</div>
+    </div>
+
+  </div>
+
+  <div>
+
+    <div class="card">
+      <div class="eyebrow">Spec &sect;7.5 &middot; ISO 9001 run_events</div>
+      <h2>Timeline</h2>
+      <div class="tl" style="margin-top:8px">
+        <div class="tli ok"><div class="ts">06:30:14.847 UTC</div><div class="msg">Run complete &middot; exit 0</div><div class="meta">verification OK &middot; #6 22/22 &middot; #8 9/9</div></div>
+        <div class="tli"><div class="ts">06:30:14.782</div><div class="msg">Fabricator schedule generated</div><div class="meta">9 pulls &middot; 6 setups &middot; 31 pieces cut</div></div>
+        <div class="tli"><div class="ts">06:30:14.611</div><div class="msg">Material summary computed</div><div class="meta">8 new stock bars &middot; 3 drop-pile bars &middot; 80.6% yield</div></div>
+        <div class="tli"><div class="ts">06:30:14.501</div><div class="msg">Optimize completed &middot; 2 sizes</div><div class="meta">#6: 5 patterns &middot; #8: 4 patterns &middot; greedy path</div></div>
+        <div class="tli"><div class="ts">06:30:14.187</div><div class="msg">Tags routed to 4 machines</div><div class="meta">SHEAR: 4 tags &middot; PULL_STOCK: 1 &middot; PRIMA: 1 &middot; 22N: 1</div></div>
+        <div class="tli ok"><div class="ts">06:30:14.098</div><div class="msg">drop_inventory.csv loaded &middot; fresh (1 day)</div><div class="meta">3 bars &middot; 58 lbs &middot; is_stale=false</div></div>
+        <div class="tli ok"><div class="ts">06:30:14.021</div><div class="msg">Load-list parsed &middot; 47 rows kept, 0 skipped</div><div class="meta">FT073026-042.TXT &middot; sha256 8b7d4f...c19a &middot; cp1252</div></div>
+        <div class="tli"><div class="ts">06:30:14.000</div><div class="msg">Run started</div><div class="meta">host shop-workstation-3 &middot; user jbrady &middot; DRY-RUN mode</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">SC-3 archive &middot; DO Spaces</div>
+      <h2>Reconstructable artifacts</h2>
+      <div class="arclink"><div><div class="l">FT073026-042.TXT</div><div class="m">input load list &middot; 1,432 bytes &middot; sha256 8b7d4f...c19a</div></div><a class="b" href="#">download</a></div>
+      <div class="arclink"><div><div class="l">drop_inventory.csv snapshot</div><div class="m">consumed drop-pile state at run time &middot; 3 bars</div></div><a class="b" href="#">download</a></div>
+      <div class="arclink"><div><div class="l">configs/costs.yaml v2026-06-04</div><div class="m">cost constants used &middot; authoritative: FALSE</div></div><a class="b" href="#">download</a></div>
+      <div class="arclink"><div><div class="l">run-summary.json</div><div class="m">machine-readable per run-summary-schema.json</div></div><a class="b" href="#">download</a></div>
+      <div class="arclink"><div><div class="l">report.txt (stdout)</div><div class="m">rendered human report as printed to floor</div></div><a class="b" href="#">download</a></div>
+      <div class="arclink"><div><div class="l">pull-sheet.pdf</div><div class="m">what the crew actually held &middot; 3 pages</div></div><a class="b" href="#">download</a></div>
+      <div style="font-size:10.5px;color:var(--faint);margin-top:8px">Retention: <b style="color:var(--dim)">7 yr</b> (ISO 9001 §7.5) &middot; bucket <code style="background:#0e1217;padding:1px 4px;border-radius:3px;color:#9ccbff;font-size:11px">hpt-archive/shear97/2026/08/</code></div>
+    </div>
+
+    <div class="card ok">
+      <div class="eyebrow" style="color:#5ce08d">SC-4 &middot; auditor mode</div>
+      <h2>Reproduce this run</h2>
+      <div style="font-size:11.5px;color:var(--dim);line-height:1.55;margin-top:6px">
+        <code style="background:#0e1217;padding:6px 8px;border-radius:5px;color:#5ce08d;font-size:11px;display:block">shear_optimizer replay --run r_20260805T063014Z_a1b2c3</code>
+        <div style="margin-top:8px">Re-runs against the archived input + drop snapshot + cost config using version <b style="color:var(--txt)">0.3.2</b> (git 4f9a1e2). Output byte-identical to this run.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<h1 style="margin-top:32px;font-size:16px;color:var(--dim)">Empty-data state &middot; day one</h1>
+<div class="card">
+  <div class="empty">
+    <div style="font-size:40px;line-height:1;color:var(--faint);margin-bottom:8px">&#8709;</div>
+    <div style="font-size:14px;color:var(--dim);font-weight:800;margin-bottom:4px">No runs yet</div>
+    <div style="font-size:11.5px;color:var(--faint);max-width:420px;margin:0 auto 12px">The first shear_optimizer run against a real load list will show up here. Runs are captured automatically once the tool is invoked with a Wave-1 build.</div>
+    <a href="#" style="background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff;padding:7px 12px;border-radius:8px;font-weight:800;font-size:11.5px;display:inline-block">Read the setup guide &rarr;</a>
+  </div>
+</div>
+
+<h1 style="margin-top:24px;font-size:16px;color:var(--dim)">Sparse-data state &middot; first week (3 runs)</h1>
+<div class="card">
+  <table class="runs">
+    <thead><tr><th>When (CT)</th><th>Release</th><th>Run id</th><th class="c">Status</th><th class="r">Yield</th><th class="c">Setups</th><th class="r">New stock</th><th class="c">Cost</th><th>Operator</th></tr></thead>
+    <tbody>
+      <tr><td>Mon 07:12</td><td><div class="release">FT080526-001</div><div class="job">Job 42817001</div></td><td><span class="runid">r_20260810T071204Z_a1b2c3</span></td><td class="c"><span class="state ok">clean</span></td><td class="r"><span class="yield-good">82.0%</span></td><td class="c">4</td><td class="r">612 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>jbrady</td></tr>
+      <tr><td>Fri 15:40</td><td><div class="release">FT080126-003</div><div class="job">Job 42816844</div></td><td><span class="runid">r_20260807T154012Z_e2f5c1</span></td><td class="c"><span class="state warn">1 warn</span></td><td class="r"><span class="yield-mid">74.3%</span></td><td class="c">5</td><td class="r">988 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>cmartinez</td></tr>
+      <tr><td>Wed 09:22</td><td><div class="release">FT073126-018</div><div class="job">Job 42815891</div></td><td><span class="runid">r_20260805T092208Z_9d3f7a</span></td><td class="c"><span class="state ok">clean</span></td><td class="r"><span class="yield-good">88.1%</span></td><td class="c">3</td><td class="r">1,204 lbs</td><td class="c"><span class="state warn">plchldr</span></td><td>jbrady</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px;font-size:11px;color:var(--faint);text-align:center">Trend KPIs above hidden until 7 runs accumulate &middot; a 3-run average would mislead.</div>
+</div>
+
+</body>
+</html>
