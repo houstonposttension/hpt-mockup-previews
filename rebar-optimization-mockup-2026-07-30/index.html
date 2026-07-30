@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shear97 (Rebar Optimization) -- Wave 0a mockups</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+  --line:#2a3038; --line2:#39424e;
+  --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+  --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+  --ok:#16c060; --ok-dim:rgba(22,192,96,.15);
+  --warn:#ffb020; --warn-dim:rgba(255,176,32,.15);
+  --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15);
+}
+*{box-sizing:border-box}
+html,body{background:#14171c;color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;margin:0}
+body{padding:32px 24px 60px;max-width:1080px;margin:0 auto}
+h1{font-size:22px;font-weight:800;margin:0 0 4px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:24px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:13px;padding:18px 20px;margin-bottom:14px}
+.card h2{margin:0 0 6px;font-size:16px;font-weight:800}
+.card p{margin:0 0 10px;font-size:13px;color:var(--dim);line-height:1.55}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tag{background:#0e1217;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--dim)}
+.tag.acc{background:var(--acc-dim);border-color:var(--acc-line);color:#9ccbff}
+a.launch{display:inline-block;background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff;padding:8px 14px;border-radius:9px;font-weight:800;font-size:12.5px;text-decoration:none;margin-top:8px}
+a.launch:hover{background:rgba(59,130,246,.28)}
+.meta{margin-top:24px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:11px;font-size:12px;color:var(--dim);line-height:1.6}
+.meta code{background:#0e1217;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:#9ccbff;font-size:11.5px}
+.eyebrow{font-size:9.5px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div class="eyebrow">Wave 0a &middot; shape validation &middot; 2026-07-30</div>
+<h1>Shear97 (Rebar Optimization) &mdash; Wave 0a browser mockups</h1>
+<div class="sub">
+  Two spec-mandated browser surfaces for Phase&nbsp;1. Operator-facing tool stays CLI + printed pull sheets
+  (PRD &sect;6 non-goals). Cost figures are placeholder until GA-SH97-005a resolves.
+</div>
+
+<div class="card">
+  <div class="eyebrow" style="color:var(--acc-soft);margin-bottom:6px">Mockup 1 &middot; Wave 6 target</div>
+  <h2>Supervisor per-shift form</h2>
+  <p>
+    The 06:00 walk-around surface. Sets per-machine <code>available_flag</code> (spec &sect;2 Q1) and
+    <code>helper_assigned_flag</code> (&sect;4.1) for the current shift across the seven yard machines.
+    Also raises the &sect;7.3 warn-flag treatments (yield-floor breach, low-confidence bundle badge from
+    &sect;2 Q10, stale drop pile) the supervisor must acknowledge before dispatching the plan.
+  </p>
+  <div class="tags">
+    <span class="tag acc">Std 40 dense-info</span>
+    <span class="tag">desktop-first</span>
+    <span class="tag">supervisor role</span>
+    <span class="tag">spec &sect;2 Q1 / &sect;4.1 / &sect;7.3 / &sect;7.5</span>
+  </div>
+  <a class="launch" href="supervisor-per-shift.html">Open supervisor form &rarr;</a>
+</div>
+
+<div class="card">
+  <div class="eyebrow" style="color:var(--acc-soft);margin-bottom:6px">Mockup 2 &middot; Wave 4 target</div>
+  <h2>Run history + run detail</h2>
+  <p>
+    List of past optimizer runs with status, yield, setups, cost-authority state. Detail view surfaces
+    the plan summary, the <code>run_events</code> timeline, <b>per-machine workload (hrs per shift)</b>
+    from the CP-SAT solver output, the &sect;2 Q16 override_flag deltas against HPT Cloud routing, and
+    archive links to the input TXT / drop snapshot / rendered plan. Supports PRD SC-3 (reproducible
+    runs) and SC-4 (ISO&nbsp;9001 auditor traceability). Includes empty and sparse-data renderings.
+  </p>
+  <div class="tags">
+    <span class="tag acc">Std 40 dense-info</span>
+    <span class="tag">desktop-first</span>
+    <span class="tag">PM + auditor + VP role</span>
+    <span class="tag">PRD SC-3 / SC-4</span>
+    <span class="tag">per-machine workload (James&#39;s add)</span>
+  </div>
+  <a class="launch" href="run-history.html">Open run history &rarr;</a>
+</div>
+
+<div class="meta">
+  <b style="color:var(--txt)">What this mockup is not.</b><br>
+  &bull; Not the operator&#39;s daily invocation surface &mdash; that stays CLI + printed pull sheets forever (PRD &sect;6 non-goal).<br>
+  &bull; Not a cost-review dashboard &mdash; cost figures are placeholder; a review surface over numbers marked NOT FOR QUOTING inverts the priority (Q-SH97-15).<br>
+  &bull; Not a live yield/quality alert view &mdash; Wave 6 routes those to Teams; a page you have to remember to check is not an alert.<br>
+  &bull; Not wired to any live system &mdash; every number here is fabricated for shape validation.<br>
+  <br>
+  <b style="color:var(--txt)">Visual DNA.</b> Reuses tokens verbatim from <code>vp-dashboard-portfolio-2026-07-27</code>
+  (same <code>--panel</code>, <code>--acc</code>, status colors, chip / state-pill / risk-dot patterns). Desktop-first at
+  1280&ndash;1440px, degrades to single column below 900px. All CSS inline, no external stylesheets, no browser storage.
+  <br><br>
+  <b style="color:var(--txt)">Source</b> lives under <code>C:\Dev\Shear97\docs\mockups\</code> alongside the Day 1 stdout /
+  JSON sketches. Related governance row: <code>GA-SH97-017</code> (Phase-1 parent). Feedback in this chat.
+</div>
+
+</body>
+</html>
