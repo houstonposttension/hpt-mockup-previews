@@ -62,11 +62,19 @@ For phone lookups specifically, wire this so `lookup_by_phone(phone)` walks:
 3. ADP roster `phone` last-10 tail match
 4. None
 
+Note: order (2) before (3) inverts today's implicit priority - `WorkerPhones.phone` (the worker-confirmed bound value) becomes authoritative over ADP's cell for identity resolution. That is deliberate and matches James's ownership model, but it IS a behavior change worth calling out to reviewers.
+
 The reconciliation rule already in `adp_roster.phone_for_key` (override -> ADP with auto-clear on ADP catch-up, `adp_roster.py:142-178`) is the reference behavior; Wave-1 lifts it into a shared primitive.
 
-### 3.2 `bind_phone` non-clobber rule (strict)
+### 3.2 `bind_phone` non-clobber rule (revised)
 
-Change: **never overwrite a stored non-empty `position_id` with an empty string**, regardless of caller's worker_id. Remove the worker_id-equality condition currently at `tagstore.py:2778-2781`. If the caller has an empty pid and the stored row has one, keep the stored one and audit-log. Do not fail closed - the current abort at `:2809` is retained only for storage errors.
+**Keep** the existing worker_id-equality guard at `tagstore.py:2778-2781` - it is load-bearing for `scripts/reconcile_workers_apply.py`, which deliberately rebinds a phone to a new worker on shop-line / recycled-number cases and requires the stored `position_id` to clear when the incoming worker_id differs.
+
+The Wave-1 fix instead moves earlier in the call chain: make `register_v2` **always resolve a good `position_id`** via the new `resolve_worker_field` / `lookup_by_phone` primitive before calling `bind_phone`. When the primitive returns a valid pid, `bind_phone` writes it directly. When the primitive returns nothing, the existing GA-WIP-181/182 guards preserve any stored value on that phone's own row.
+
+Additional refinement: add an audit-log row when the equality guard fires (a re-registration with a differing worker_id clears a stored pid). Today that path is silent; Wave-1 adds a `RegistrationAudit` entry so future occurrences are traceable.
+
+Cross-worker adoption without a second factor (GA-WIP-195) remains an accepted residual - not closed by Wave-1. See Risk #2.
 
 ### 3.3 Auth surface posture (unchanged in Wave-1)
 
@@ -84,7 +92,7 @@ Change: **never overwrite a stored non-empty `position_id` with an empty string*
 | Change | Files | Est. LoC |
 |---|---|---|
 | `resolve_worker_field` primitive + `lookup_by_phone_v2` wrapper | `tagstore.py`, `adp_roster.py` | ~30 |
-| `bind_phone` strict non-clobber | `tagstore.py:2726-2812` | ~10 |
+| `bind_phone` audit-row on equality-guard clear (keep guard) | `tagstore.py:2726-2812` | ~8 |
 | Wire `register_phone_lookup` and `register_v2` to new primitive | `function_app.py:1911, 1954` | ~10 |
 | Unit tests (Jr. Tapia shape, re-register shape, cross-worker shape) | `tests/test_bind_phone_matrix.py`, `tests/test_phone_first_registration.py` | ~60 |
 | GA row filed + reviewer subagent pass | `GOVERNANCE_ACTIONS.md` | 1 row |
@@ -150,7 +158,7 @@ Rationale:
 
 1. Wave-1 branch cuts from current `master` head.
 2. Wave-1 merges to `master` first (this task, after James approval).
-3. hpt-auth extraction sub-agent rebases its shell PR onto post-Wave-1 `master` before writing any code.
+3. When the hpt-auth shell repo is created (currently pending), its first commit cuts from post-Wave-1 `master`. No rebase is required because no hpt-auth code exists yet.
 4. hpt-auth v0.1.0 initial extraction includes the Wave-1 fixes as part of the baseline copy.
 
 ---
@@ -160,7 +168,7 @@ Rationale:
 Next-free WIP-Processor IDs at 2026-07-30: highest APPROVED on master is **GA-WIP-262**; hpt-auth sub-agent holds **GA-WIP-266**. Wave-1 claims **GA-WIP-267**.
 
 ```
-| GA-WIP-267 | 2026-07-30 | 62,16,18 | **Two ADP / HPT-Cloud reconciliation pilot-blocker bugs surface every time a V2 phone-first registration lands with a blank ADP phone (Jr. Tapia case, 2026-07-27).** Bug 1: `lookup_by_phone` (`adp_roster.py:181-195`) reads ADP only, ignoring `WorkerPhones.phone_override` and `WorkerPhones.phone`, so any worker whose ADP row lacks a phone falls to an orphan branch that mints a phone-derived `worker_id` disconnected from the ADP `position_id` all prior scans are keyed to. Bug 2: `bind_phone` (`tagstore.py:2726-2812`) preserves `position_id` only under conditional guards (own-row + worker_id equality, GA-WIP-182); cross-worker re-registration paths still write `position_id=""` and destroy the ADP join. Both violate James's data ownership model (override -> ADP -> default with reconciliation) locked 2026-07-27. | Land three coordinated changes on `master` before hpt-auth extraction cuts over: (a) add `resolve_worker_field(field, position_id)` primitive to `tagstore.py` that walks override -> ADP -> default; (b) refactor `lookup_by_phone` to walk WorkerPhones.phone_override -> WorkerPhones.phone -> ADP.phone last-10 tail matches; (c) strengthen `bind_phone` to NEVER blank a stored non-empty `position_id`, unconditionally (remove worker_id equality condition). Wire `register_phone_lookup` and `register_v2` to the new primitive. Add three test shapes: Jr. Tapia (ADP row exists, ADP phone blank), re-register-same-phone, and cross-worker re-register. Add James's phone hash to `PHONE_FIRST_PILOT_PHONES` for the worker-OTP-scan validation test. Rollback: revert PR + un-set James's phone hash; no data migration needed. | P1 | PROPOSED | **Tags:** app:WIP section:Auth feature:v2-registration-reconciliation version:v1 stage:requirements type:bug plain_summary: What: When a worker's ADP record has no phone number, the phone-first sign-up creates a duplicate identity instead of matching the worker; a follow-up sign-up on the same phone can also wipe out the worker's identity link. * Why it matters: The pilot worker's scans get attributed to the wrong identity and their supervisor-set shift, role, and history disappear from view. * If not fixed: Every new pilot worker whose ADP phone is blank arrives as a fresh unknown, and any re-registration risks corrupting the record we already have. * Recommended: Add one shared "look up the field" helper that respects override-then-ADP order, and make the sign-up step never blank out a stored ADP link. /plain_summary Sequenced BEFORE hpt-auth extraction (GA-WIP-266) so the fixes are part of the extraction baseline and the byte-identical bar is preserved. Reviewer subagent pass required per WIP CLAUDE.md before Status=DONE. | James Brady | 2026-08-13 |
+| GA-WIP-267 | 2026-07-30 | 62,16,18 | **Two ADP / HPT-Cloud reconciliation pilot-blocker bugs surface every time a V2 phone-first registration lands with a blank ADP phone (Jr. Tapia case, 2026-07-27).** Bug 1: `lookup_by_phone` (`adp_roster.py:181-195`) reads ADP only, ignoring `WorkerPhones.phone_override` and `WorkerPhones.phone`, so any worker whose ADP row lacks a phone falls to an orphan branch that mints a phone-derived `worker_id` disconnected from the ADP `position_id` all prior scans are keyed to. Bug 2: `bind_phone` (`tagstore.py:2726-2812`) preserves `position_id` only under conditional guards (own-row + worker_id equality, GA-WIP-182); cross-worker re-registration paths still write `position_id=""` and destroy the ADP join. Both violate James's data ownership model (override -> ADP -> default with reconciliation) locked 2026-07-27. | Land three coordinated changes on `master` before hpt-auth extraction cuts over: (a) add `resolve_worker_field(field, position_id)` primitive to `tagstore.py` that walks override -> ADP -> default; (b) refactor `lookup_by_phone` to walk WorkerPhones.phone_override -> WorkerPhones.phone -> ADP.phone last-10 tail matches; (c) wire `register_phone_lookup` and `register_v2` to the new primitive so `bind_phone` always receives a resolved `position_id` instead of empty; keep the existing worker_id-equality guard at `tagstore.py:2778-2781` intact (required by `scripts/reconcile_workers_apply.py` for recycled-number cases) and add a `RegistrationAudit` row when that guard clears a stored pid so future cross-worker rebinds are traceable. Add three test shapes: Jr. Tapia (ADP row exists, ADP phone blank), re-register-same-phone, and cross-worker re-register. Add James's phone hash to `PHONE_FIRST_PILOT_PHONES` for the worker-OTP-scan validation test. Rollback: revert PR + un-set James's phone hash; no data migration needed. | P1 | PROPOSED | **Tags:** app:WIP section:Auth feature:v2-registration-reconciliation version:v1 stage:requirements type:bug plain_summary: What: When a worker's ADP record has no phone number, the phone-first sign-up creates a duplicate identity instead of matching the worker; a follow-up sign-up on the same phone can also wipe out the worker's identity link. * Why it matters: The pilot worker's scans get attributed to the wrong identity and their supervisor-set shift, role, and history disappear from view. * If not fixed: Every new pilot worker whose ADP phone is blank arrives as a fresh unknown, and any re-registration risks corrupting the record we already have. * Recommended: Add one shared "look up the field" helper that respects override-then-ADP order, and make the sign-up step never blank out a stored ADP link. /plain_summary Sequenced BEFORE hpt-auth extraction (GA-WIP-266) so the fixes are part of the extraction baseline and the byte-identical bar is preserved. Reviewer subagent pass required per WIP CLAUDE.md before Status=DONE. | James Brady | 2026-08-13 |
 ```
 
 Note: the plain_summary delimiter above is shown as `*` to comply with the ASCII-only rule for this scope doc. When filed to `GOVERNANCE_ACTIONS.md`, substitute the Std-68 canonical middle-dot delimiter.
@@ -174,7 +182,7 @@ Note: the plain_summary delimiter above is shown as `*` to comply with the ASCII
 | Day 1 (Wed 2026-07-30) | 0.5 | James reads scope, approves or corrects |
 | Day 1 | 1.5 | File GA-WIP-267 as PROPOSED -> APPROVED per chat approval rule |
 | Day 2 (Thu 2026-07-31) | 2 | Implement `resolve_worker_field` + `lookup_by_phone` refactor |
-| Day 2 | 1 | Implement `bind_phone` strict non-clobber |
+| Day 2 | 1 | Add `bind_phone` audit-row when equality-guard clears a stored pid |
 | Day 2 | 2 | Write 3 test shapes; run local pytest |
 | Day 3 (Fri 2026-08-01) | 1 | Wire callers, run full test suite |
 | Day 3 | 1 | Reviewer subagent pass (non-negotiable per WIP CLAUDE.md) |
@@ -184,7 +192,7 @@ Note: the plain_summary delimiter above is shown as `*` to comply with the ASCII
 | Day 4 (Sat 2026-08-02) | 0.5 | James runs worker-OTP-scan test on his phone against 3 HPT Cloud tags |
 | Day 4 | 0.5 | Verify audit rows + no orphans; close GA-WIP-267 as DONE |
 
-**Total build effort: ~10 hours across 4 elapsed days.**
+**Total build effort: ~11.5 hours across 4 elapsed days.**
 
 ---
 
@@ -193,7 +201,7 @@ Note: the plain_summary delimiter above is shown as `*` to comply with the ASCII
 | Change | Rollback |
 |---|---|
 | `resolve_worker_field` primitive + `lookup_by_phone` refactor | Revert PR. Old primitive is pure and stateless; no data migration. |
-| `bind_phone` strict non-clobber | Revert PR. Existing conditional guards (GA-WIP-181/182) remain in tree. |
+| `bind_phone` audit-row addition | Revert PR. Existing conditional guards (GA-WIP-181/182) remain in tree; only the new audit log is removed. |
 | James's phone in `PHONE_FIRST_PILOT_PHONES` | Remove hash from env var; no code change needed. |
 | Worker-OTP-scan test data (RegistrationAudit + Events rows) | Leave in place; small volume, aids debugging. |
 
