@@ -12,9 +12,9 @@
 |---|---|
 | Wave-1 branch | `wave1-adp-reconciliation-267` (cut from master `ad969382831f9f4495f269cf389e4e181922100e` — short `ad96938`) |
 | Base your rebase against | `ad96938` (same master SHA your `feat/hpt-auth-extraction` was cut from) |
-| Draft PR against `master` | **[link TBD — inserted once opened; check the wip-processor Pull Requests tab if this line is still a placeholder when you read it]** |
+| Draft PR against `master` | **https://github.com/houstonposttension/wip-processor/pull/187** — DRAFT status, do NOT merge. Wave-1 CI status is visible on the PR checks pane; secret-scan is temporarily red due to `.wave1-restore/` recovery-chunk history noise (see PR body "Known CI-status caveats"). |
 | CI on feature branch | deploy.yml triggered — `deploy` job auto-skips on non-master (`if: github.ref == 'refs/heads/master'`), test/lint/secret-scan jobs run |
-| Reviewer subagent pass | required per WIP CLAUDE.md before Status=DONE (in progress on the WIP session) |
+| Reviewer subagent pass | complete — one MAJOR (dead code in register_v2 else branch), one MINOR (silent fallthrough in resolve_worker_field), and one MAJOR-deferred-to-Wave-2 (scope §3.1 aspirational broader-caller consolidation). Details on the PR. |
 | Merge timing | **NOT tonight. Not tomorrow. Expected post-Saturday 2026-08-02 A/B validation.** James merges only after the worker-OTP-scan test on the pilot worker's phone AND the second device (shop-side supervisor) both come back green per scope §5.2. |
 | Post-merge master SHA | **`<TBD-after-James-merges>`** — hpt-auth extraction cuts from this SHA. Fill in after James merges. |
 
@@ -22,7 +22,7 @@
 
 - `adp_roster.lookup_by_phone` refactored to walk WorkerPhones override → WorkerPhones phone → ADP phone (was ADP-only, minting orphan worker_ids).
 - `tagstore.bind_phone` strict non-clobber: never overwrites a stored non-empty `position_id` with an empty string on cross-worker re-registration. Preserves the same-worker equality guard (load-bearing for `scripts/reconcile_workers_apply.py`) and writes a `RegistrationAudit` row (`action=bind_phone_non_clobber`, `result=preserved_cross_worker`) on cross-worker preserve.
-- New `tagstore.resolve_worker_field(field, position_id, roster=None)` primitive (override → ADP → default). Single point of enforcement for James's data ownership model locked 2026-07-27.
+- New `tagstore.resolve_worker_field(field, position_id, roster=None)` primitive (override → ADP → default). Single point of enforcement for James's data ownership model locked 2026-07-27. Currently used by the `phone` field only; other fields fall through to ADP with a `log.debug` breadcrumb reminding Wave-2 callers to wire additional override columns.
 - `register_phone_lookup` and `register_v2` rewired to use the refactored primitive path.
 
 ## Sequencing rationale (scope §6)
@@ -56,6 +56,7 @@ If the Saturday 2026-08-02 A/B validation FAILS (any of scope §5.3), James reve
 
 ## Cross-references
 
+- **Wave-1 DRAFT PR:** https://github.com/houstonposttension/wip-processor/pull/187
 - Scope: https://raw.githubusercontent.com/houstonposttension/hpt-mockup-previews/main/adp-reconciliation-wave1-scope-2026-07-30/scope.md
 - Test plan (Sat 2026-08-02): `adp-wave1-test-plan-2026-08-02/test-plan.md` in this repo
 - Related memories: `[[project_adp_hpt_cloud_data_ownership_2026_07_27]]`, `[[project_hpt_phones_not_kiosks]]`, `[[universal-auth manifest]]` (ADR-003)
