@@ -33,6 +33,7 @@ h1{font-size:20px;font-weight:800;margin:0 0 4px}
 .card.hi{border-left:4px solid var(--acc)}
 .card.warn{border-left:4px solid var(--warn)}
 .card.bad{border-left:4px solid var(--bad)}
+.card.ok{border-left:4px solid var(--ok)}
 .card h2{margin:0 0 4px;font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:6px}
 .card .cardsub{color:var(--dim);font-size:11.5px;margin-bottom:10px;line-height:1.5}
 .eyebrow{font-size:9.5px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
@@ -226,6 +227,29 @@ input:disabled + .slider{opacity:.35;cursor:not-allowed}
   <button class="btn ghost">Discard</button>
   <button class="btn">Save draft</button>
   <button class="btn primary" disabled>Dispatch shift &rarr;</button>
+</div>
+
+<h1 style="margin-top:40px;font-size:16px;color:var(--dim)">Empty state &middot; first shift of the day, no warn flags, no overrides</h1>
+<div class="strip">
+  <div class="stat"><div class="k">Machines up</div><div class="v">7 / 7</div><div class="m">all ready</div></div>
+  <div class="stat acc"><div class="k">Helpers assigned</div><div class="v">2 / 5</div><div class="m">shear + double bender</div></div>
+  <div class="stat"><div class="k">Warn flags</div><div class="v" style="color:#5ce08d">0</div><div class="m">clean</div></div>
+  <div class="stat"><div class="k">Load estimate</div><div class="v">3.8 hr</div><div class="m">of 8 hr shift, 47% util</div></div>
+</div>
+<div class="card ok">
+  <div class="eyebrow" style="color:#5ce08d">Nothing to acknowledge &middot; dispatch is enabled</div>
+  <h2>All checks pass <span class="pill ok">ready</span></h2>
+  <div class="cardsub" style="margin-bottom:0">All 7 machines up. Drop pile fresh (updated today). No low-confidence bundles. Bundle-count confirmation pending (0/8 confirmed). <b style="color:#5ce08d">Dispatch shift</b> activates once the crew has walked the floor and confirmed the 8 bundles this plan pulls from. This is the state most 06:00 walk-arounds should land in.</div>
+</div>
+
+<h1 style="margin-top:24px;font-size:16px;color:var(--dim)">Sparse state &middot; end-of-day shift 3, nothing left to run</h1>
+<div class="card">
+  <div class="empty" style="padding:40px 20px">
+    <div style="font-size:36px;color:var(--faint);margin-bottom:8px">&#9202;</div>
+    <div style="font-size:14px;color:var(--dim);font-weight:800;margin-bottom:4px">No release scheduled for Shift 3 (22:00)</div>
+    <div style="font-size:11.5px;color:var(--faint);max-width:440px;margin:0 auto 12px">Today&#39;s two releases finished by 16:40. Machines idle for shift 3. Supervisor still confirms machine availability so the drop-pile freshness stamp and audit trail run, but no dispatch action is required until tomorrow&#39;s 06:00.</div>
+    <a href="#" style="background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff;padding:7px 12px;border-radius:8px;font-weight:800;font-size:11.5px;display:inline-block">Set availability only &rarr;</a>
+  </div>
 </div>
 
 </body>
