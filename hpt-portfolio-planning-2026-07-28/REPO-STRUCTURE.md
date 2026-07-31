@@ -137,7 +137,7 @@ C:\Dev\HPT-Portfolio\
 | `CONTEXT.md` | DO app ID, GitHub App ID and installation ID, encrypted env-var names, Entra tenant + object IDs, Postgres schema name, environment specifics. Reference material, not narrative. |
 | `GOVERNANCE_ACTIONS.md` | Ledger table with the standard columns: ID, Date, Std, Finding, Proposed action, Pri, Status, Resolution, Owner, Due-by. Seeded with GA-PORT-001 (or GA-WIP-263 if James keeps the WIP-series ID — see `GA-WIP-263-DRAFT.md`). |
 | `DEPLOY.md` | DO provisioning runbook, the manual `Run workflow` deploy path, `doctl apps update` command reference, post-deploy verification, rollback. |
-| `MODULES.md` | Std 19 declarations. Before writing any auth, HTTP, GitHub-client, retry, or Postgres-connection code, check `Standards and Guidelines/library/MODULES.md` for an existing implementation. |
+| `MODULES.md` | Std 19 declarations. Before writing any auth, HTTP, GitHub-client, retry, alerting, or Postgres-connection code, check `Standards and Guidelines/library/MODULES.md` for an existing implementation. |
 | `governed_config.json` | Std 68 §2. At minimum: `.do/app.yaml`, `alembic/env.py`, `pyproject.toml`. Enforced by the standards check. |
 | `README.md` | Public-facing overview, architecture diagram (FastAPI on DO App Platform + Postgres), local setup via docker-compose. |
 
