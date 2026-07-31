@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rebar Optimization Phase 2 - System of four (2026-07-30)</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+  --line:#2a3038; --line2:#39424e;
+  --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+  --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+  --ok:#16c060; --ok-dim:rgba(22,192,96,.15);
+  --warn:#ffb020; --warn-dim:rgba(255,176,32,.15);
+  --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15);
+  --hpt:#7d5cff; --hpt-dim:rgba(125,92,255,.18); --hpt-line:rgba(125,92,255,.45);
+  --s97:#22b8a8; --s97-dim:rgba(34,184,168,.15); --s97-line:rgba(34,184,168,.42);
+}
+*{box-sizing:border-box}
+html,body{background:#14171c;color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;margin:0}
+body{padding:32px 24px 60px;max-width:1080px;margin:0 auto}
+h1{font-size:22px;font-weight:800;margin:0 0 4px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:20px;line-height:1.55}
+h2{font-size:14px;font-weight:800;margin:24px 0 8px;color:var(--dim);letter-spacing:.3px;text-transform:uppercase}
+.eyebrow{font-size:9.5px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+
+.pbanner{background:var(--warn-dim);border:1px solid rgba(255,176,32,.4);border-radius:9px;padding:11px 14px;margin-bottom:18px;font-size:12px;color:#e8d4a8;line-height:1.55}
+.pbanner b{color:#ffcf6b;font-weight:900;letter-spacing:.4px;text-transform:uppercase;font-size:10.5px;display:block;margin-bottom:4px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:13px;padding:16px 18px;margin-bottom:12px}
+.card.sketch{border-left-color:var(--warn)}
+.card h3{margin:0 0 4px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card p{margin:0 0 10px;font-size:12.5px;color:var(--dim);line-height:1.55}
+.wpill{display:inline-block;background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;border-radius:5px;padding:3px 6px}
+.wpill.sketch{background:var(--warn-dim);border-color:rgba(255,176,32,.4);color:#ffcf6b}
+.role{display:inline-block;background:#0e1217;border:1px solid var(--line);color:var(--dim);font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border-radius:5px;padding:3px 6px;margin-left:4px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;margin-bottom:8px}
+.tag{background:#0e1217;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--dim)}
+.tag.hpt{background:var(--hpt-dim);border-color:var(--hpt-line);color:#b39bff}
+.tag.s97{background:var(--s97-dim);border-color:var(--s97-line);color:#5fd8ca}
+.tag.acc{background:var(--acc-dim);border-color:var(--acc-line);color:#9ccbff}
+a.launch{display:inline-block;background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff;padding:8px 14px;border-radius:9px;font-weight:800;font-size:12.5px;text-decoration:none;margin-top:6px;margin-right:6px}
+a.launch:hover{background:rgba(59,130,246,.28)}
+a.launch.sketch{background:var(--warn-dim);border-color:rgba(255,176,32,.4);color:#ffcf6b}
+a.launch.sketch:hover{background:rgba(255,176,32,.28)}
+
+.meta{margin-top:24px;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:11px;font-size:12px;color:var(--dim);line-height:1.65}
+.meta code{background:#0e1217;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:#9ccbff;font-size:11.5px}
+.meta b{color:var(--txt)}
+
+.decisions{background:#0e1217;border:1px solid var(--line);border-radius:11px;padding:14px 16px;margin-top:20px;font-size:12px;color:var(--dim);line-height:1.55}
+.decisions h3{margin:0 0 8px;font-size:12px;color:var(--txt);font-weight:800;letter-spacing:.3px;text-transform:uppercase}
+.decisions ol{margin:0;padding-left:20px}
+.decisions ol li{margin-bottom:6px}
+.decisions ol li b{color:var(--txt)}
+
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;font-size:11px;color:var(--faint)}
+.legend .sw{display:inline-flex;align-items:center;gap:5px;background:#0e1217;border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.legend .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="eyebrow">Phase 2 Wave 1 | system-of-four mockup | 2026-07-30</div>
+<h1>Rebar Optimization Phase 2 - system of four</h1>
+<div class="sub">
+  Four surfaces that surround Shear97 Phase 1's core optimizer. Wave 1 (Manager order selection) is high fidelity;
+  W2, W3, W4 are sketch fidelity so the shared shell, tokens, chip / state-pill / risk-dot patterns get locked in
+  one push instead of drifting across four one-off screens.
+</div>
+
+<div class="pbanner"><b>Forecasted dates are placeholders</b>Every date labeled "Forecast complete" on the Order selection screen is a placeholder awaiting the Phase 1 workload feed. Dashed underlines carry a tooltip. Real values arrive when Phase 1 ships per-machine workload per shift and W4 assigns operators.</div>
+
+<h2>Surfaces</h2>
+
+<div class="card">
+  <div class="eyebrow" style="color:var(--acc-soft)">Wave 1 | high fidelity | Manager role</div>
+  <h3><span class="wpill">W1</span>Order selection <span class="role">Manager</span></h3>
+  <p>
+    Pre-plan queue. Pulls orders from HPT Cloud and Shear97, side-by-side with <b>SOURCE: HPT</b> / <b>SOURCE: S97</b>
+    badges. Common fields (order id, due date, weight, forecast complete) surface identically. Source-specific fields
+    collapse under expand-on-click. Batch multi-select is the only submit action - sticky footer shows "Send N orders
+    to optimizer". Three states rendered: main / sparse (8 orders), stress (54 orders, dense table auto-engages above 30),
+    empty (day one or after a batch submit).
+  </p>
+  <div class="tags">
+    <span class="tag hpt">Source HPT</span>
+    <span class="tag s97">Source S97</span>
+    <span class="tag acc">Batch multi-select</span>
+    <span class="tag">Std 40 dense-info</span>
+    <span class="tag">desktop-first</span>
+    <span class="tag">3 states rendered</span>
+  </div>
+  <a class="launch" href="order-selection.html">Open W1 order selection -&gt;</a>
+</div>
+
+<div class="card sketch">
+  <div class="eyebrow" style="color:#ffcf6b">Wave 2 | sketch fidelity | Manager role</div>
+  <h3><span class="wpill sketch">W2</span>Pre-plan review <span class="role">Manager</span></h3>
+  <p>
+    Manager reviews the optimizer's output before it goes to the floor. Approve, tweak, or send back to W1.
+    Warn-flag acknowledgment gate (spec §7.3), manual override slot, cost placeholder banner (GA-SH97-005a).
+    Sketch validates the shared shell across the Manager's two Phase 2 surfaces.
+  </p>
+  <div class="tags"><span class="tag">shell target</span><span class="tag">tokens shared with W1</span><span class="tag">warn-flag pattern from Wave 0a</span></div>
+  <a class="launch sketch" href="w2-pre-plan-review.html">Open W2 pre-plan review -&gt;</a>
+</div>
+
+<div class="card sketch">
+  <div class="eyebrow" style="color:#ffcf6b">Wave 3 | sketch fidelity | Loader role (mobile-first)</div>
+  <h3><span class="wpill sketch">W3</span>Drop-bin retrieval <span class="role">Loader</span></h3>
+  <p>
+    Scanner-in-hand surface for the loader pulling drops the approved plan calls for. Discrepancies auto-trigger a
+    recount via the Inventory Count Tool workflow. Mobile-first per Std 17 - desktop preview shown for shape only.
+  </p>
+  <div class="tags"><span class="tag">mobile-first Std 17</span><span class="tag">scanner + manual entry</span><span class="tag">ISO 9001 §7.5 audit</span></div>
+  <a class="launch sketch" href="w3-drop-bin-retrieval.html">Open W3 drop-bin retrieval -&gt;</a>
+</div>
+
+<div class="card sketch">
+  <div class="eyebrow" style="color:#ffcf6b">Wave 4 | sketch fidelity | Supervisor role</div>
+  <h3><span class="wpill sketch">W4</span>Loader / cutter split <span class="role">Supervisor</span></h3>
+  <p>
+    Supervisor assigns loader + cutter + optional helper per dispatched plan per shift. Skills matrix filters the
+    pickers (Phase 1 placeholder: everyone can run everything). Assignment rules (safety, competence, availability)
+    render as constraint tiles.
+  </p>
+  <div class="tags"><span class="tag">skills matrix (Phase 1 stub)</span><span class="tag">shift-scoped</span><span class="tag">feeds W2 workload</span></div>
+  <a class="launch sketch" href="w4-loader-cutter-split.html">Open W4 loader / cutter split -&gt;</a>
+</div>
+
+<div class="legend">
+  <span class="sw"><span class="dot" style="background:var(--hpt)"></span>HPT Cloud order source</span>
+  <span class="sw"><span class="dot" style="background:var(--s97)"></span>Shear97 order source</span>
+  <span class="sw"><span class="dot" style="background:var(--acc)"></span>Selected / active state</span>
+  <span class="sw"><span class="dot" style="background:var(--ok)"></span>OK / ready</span>
+  <span class="sw"><span class="dot" style="background:var(--warn)"></span>Warn / placeholder date</span>
+  <span class="sw"><span class="dot" style="background:var(--bad)"></span>Bad / past-due / infeasible</span>
+</div>
+
+<div class="decisions">
+  <h3>Locked decisions carried into this mockup</h3>
+  <ol>
+    <li><b>Scope shape:</b> System of four - shared shell + one high-fi + three sketch targets. Locks visual DNA in one push, avoids shape-drift across four one-off screens.</li>
+    <li><b>Order data model:</b> Native display of both sources with <code>SOURCE: HPT</code> / <code>SOURCE: S97</code> badges. Common fields identical. Source-specific fields collapsed. Display convention only - <b>not a data contract</b>.</li>
+    <li><b>Forecasted dates:</b> Labeled placeholder - dashed underline + tooltip on every date, plus this page's banner. Real values wait on Phase 1 workload feed.</li>
+    <li><b>Multi-select:</b> Batch-only. Checkboxes + sticky footer. No per-card individual send button.</li>
+  </ol>
+</div>
+
+<div class="meta">
+  <b>What this mockup is not.</b><br>
+  * Not the operator's daily invocation surface - Shear97 tool stays CLI + printed pull sheets per Phase 1 PRD §6.<br>
+  * Not a data contract - the dual-source card layout is a display convention. Phase 2 W1 build decides the actual API shape.<br>
+  * Not driven by real data - every order id, weight, forecast date, and customer name is fabricated for shape validation.<br>
+  * Not wired - no browser storage, no fetch, all inline CSS, native form controls only.<br>
+  <br>
+  <b>Visual DNA.</b> Reuses tokens verbatim from <code>vp-dashboard-portfolio-2026-07-27</code> and <code>rebar-optimization-mockup-2026-07-30</code>
+  (same <code>--panel</code>, <code>--acc</code>, status colors, chip / state-pill / risk-dot patterns). Two new source tokens
+  <code>--hpt</code> (violet) and <code>--s97</code> (teal) added for the SOURCE badges - orthogonal to the status palette so they don't clash.
+  <br><br>
+  <b>Source</b> lives under <code>rebar-p2-order-selection-mockup-2026-07-30/</code>. Related governance parent (once ratified):
+  <code>GA-SH97-018</code> (Phase 2 parent). Feedback in this chat.
+</div>
+
+</body>
+</html>
