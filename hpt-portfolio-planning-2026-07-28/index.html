@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HPT Portfolio -- planning bundle (2026-07-28)</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --accent: #6b21a8;
+    --border: #e5e5e5;
+    --card: #fafafa;
+    --status-fg: #92400e;
+    --status-bg: #fef3c7;
+    --status-border: #d97706;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    color: var(--fg);
+    background: var(--bg);
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    max-width: 780px;
+  }
+  h1 {
+    font-size: 24px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 20px;
+  }
+  .status {
+    background: var(--status-bg);
+    color: var(--status-fg);
+    border-left: 4px solid var(--status-border);
+    padding: 12px 14px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 15px;
+    margin: 16px 0 24px;
+  }
+  h2 {
+    font-size: 17px;
+    margin: 28px 0 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  ul.files {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul.files li {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  ul.files a.title {
+    display: block;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  ul.files a.title:hover { text-decoration: underline; }
+  ul.files .desc {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .related {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .related a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 15px;
+  }
+  .related a:hover { text-decoration: underline; }
+  .related .desc {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  code {
+    background: #f0f0f0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.92em;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  footer {
+    margin-top: 32px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+</style>
+</head>
+<body>
+<h1>HPT Portfolio -- planning bundle</h1>
+<p class="subtitle">Wave 0 planning artifacts &middot; dated 2026-07-28</p>
+
+<div class="status">Concept locked 2026-07-27. Build not yet started.</div>
+
+<h2>Files</h2>
+<ul class="files">
+  <li>
+    <a class="title" href="PRD.md">PRD.md</a>
+    <div class="desc">Product Requirements Document -- problem, goal, users, six success criteria, the portfolio card model, single-approval semantics, atmosphere section, add-work paths, non-goals, and designed-for failure modes.</div>
+  </li>
+  <li>
+    <a class="title" href="TECH-STACK-RECOMMENDATION.md">TECH-STACK-RECOMMENDATION.md</a>
+    <div class="desc">Locked stack: Python 3.11 + FastAPI + HTMX/Alpine on DigitalOcean App Platform from day one, DO Managed Postgres with an append-only audit table, in-app Entra SSO via MSAL, and a GitHub App bot for approvals. Rationale for why HPT Portfolio is the DO pathfinder for the WIP Processor migration.</div>
+  </li>
+  <li>
+    <a class="title" href="REPO-STRUCTURE.md">REPO-STRUCTURE.md</a>
+    <div class="desc">Proposed <code>houstonposttension/hpt-portfolio</code> layout -- folder tree, standard file set, conventions inherited from WIP Processor, and the DO-specific conventions this project establishes for the estate.</div>
+  </li>
+  <li>
+    <a class="title" href="WAVE-PLAN.md">WAVE-PLAN.md</a>
+    <div class="desc">Six build waves after Wave 0. Wave 1 (read-only cards on DO) targets 2026-08-05; Wave 2 (approval fan-out) targets 2026-08-12 -- the value milestone; feature-complete by 2026-09-02; Wave 6 tail by 2026-09-10 (absorbs Labor Day).</div>
+  </li>
+  <li>
+    <a class="title" href="OPEN-QUESTIONS.md">OPEN-QUESTIONS.md</a>
+    <div class="desc">Decisions still needed before Wave 1 kickoff -- repo name (Q1), DO app spec shape (Q-DO-1), secrets choice (Q-DO-3), Postgres pooling (Q-DO-4), auth library (Q-DO-5). Q5 blocks Wave 2. Q2 / Q3 / Q-DO-2 / Q-DO-6 already decided and kept for record.</div>
+  </li>
+  <li>
+    <a class="title" href="GA-WIP-263-DRAFT.md">GA-WIP-263-DRAFT.md</a>
+    <div class="desc">Draft governance row filing HPT Portfolio as an APPROVED project. Includes an ID / ledger caveat -- likely should be <code>GA-PORT-001</code> in a new project ledger rather than <code>GA-WIP-263</code> in the WIP Processor ledger.</div>
+  </li>
+</ul>
+
+<h2>Visual reference</h2>
+<div class="related">
+  <a href="../vp-dashboard-portfolio-2026-07-27/index.html">HPT Portfolio mockup (vp-dashboard-portfolio-2026-07-27) &rarr;</a>
+  <div class="desc">The validated concept mockup this planning bundle turns into a build plan. Mobile-first single-page surface with Cards, Timeline, and Activity views.</div>
+</div>
+
+<footer>Wave 0 output &middot; Concept-to-plan translation only. No repo, no infrastructure, no code yet.</footer>
+</body>
+</html>

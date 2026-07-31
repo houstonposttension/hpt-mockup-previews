@@ -81,3 +81,19 @@ One role-scoped mobile UI for supervisors (plant-wide, cross-shift) and leads (s
 - [Variant B -- Split panel matrix (tablet-first)](https://houstonposttension.github.io/hpt-mockup-previews/loader-category-status-2026-07-21/variant-b-split-panel.html)
 
 Design note + spec live in the private repo at `docs/spec/loader-category-status-design-2026-07-21.md`.
+
+## Planning bundles
+
+Wave 0 planning artifacts — problem statement, tech stack, repo structure, wave plan, open questions, and a draft governance row — for work approved but not yet built.
+
+### HPT Portfolio -- planning bundle (Wave 0, dated 2026-07-28)
+
+- [Landing -- concept-locked notice, six files with one-line summaries, mockup reference](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/index.html)
+- [PRD -- problem, goal, users, six success criteria, portfolio card model, single-approval semantics, atmosphere section, non-goals, failure modes](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/PRD.md)
+- [Tech stack recommendation -- Python 3.11 + FastAPI + HTMX/Alpine on DO App Platform, DO Managed Postgres, in-app Entra SSO via MSAL, GitHub App bot](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/TECH-STACK-RECOMMENDATION.md)
+- [Repo structure -- proposed layout for houstonposttension/hpt-portfolio, DO-specific conventions established](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/REPO-STRUCTURE.md)
+- [Wave plan -- six build waves after Wave 0, Wave 1 target 2026-08-05, Wave 2 (value milestone) 2026-08-12, feature-complete 2026-09-02](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/WAVE-PLAN.md)
+- [Open questions -- Q1/Q-DO-1/Q-DO-3/Q-DO-4/Q-DO-5 block Wave 1; Q5 blocks Wave 2](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/OPEN-QUESTIONS.md)
+- [GA-WIP-263 draft -- governance row filing HPT Portfolio APPROVED; ID/ledger caveat inside](https://houstonposttension.github.io/hpt-mockup-previews/hpt-portfolio-planning-2026-07-28/GA-WIP-263-DRAFT.md)
+
+Wave 0 concept-to-plan translation for the HPT Portfolio product — a mobile single-page surface that answers *what is in flight everywhere* and replaces per-PR approval theater with a single feature-level approval that fans out to every downstream PR. **Concept locked 2026-07-27. Build not yet started.** The validated concept mockup is `vp-dashboard-portfolio-2026-07-27` above; this bundle is the plan that turns it into code. Hosting decision reversed Azure → DO App Platform on 2026-07-28, positioning HPT Portfolio as the DO pathfinder for the WIP Processor migration in Sprint 4-6. Wave 1 target 2026-08-05, Wave 2 (approval fan-out — the value milestone that kills approval theater per PRD SC-1) target 2026-08-12, feature-complete against the locked concept by 2026-09-02, tail (notifications, activity feed, related docs) by 2026-09-10. GA row drafted as GA-WIP-263 but likely files as GA-PORT-001 pending project-code allocation.
