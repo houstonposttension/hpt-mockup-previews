@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rebar P2 W2 - Pre-plan review (sketch)</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+  --line:#2a3038; --line2:#39424e;
+  --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280;
+  --acc:#3b82f6; --acc-soft:#7da2c9; --acc-dim:rgba(59,130,246,.16); --acc-line:rgba(59,130,246,.4);
+  --ok:#16c060; --ok-dim:rgba(22,192,96,.15);
+  --warn:#ffb020; --warn-dim:rgba(255,176,32,.15);
+  --bad:#ff3b30; --bad-dim:rgba(255,59,48,.15);
+  --hpt:#7d5cff; --hpt-dim:rgba(125,92,255,.18); --hpt-line:rgba(125,92,255,.45);
+  --s97:#22b8a8; --s97-dim:rgba(34,184,168,.15); --s97-line:rgba(34,184,168,.42);
+}
+*{box-sizing:border-box}
+html,body{background:#14171c;color:var(--txt);font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;margin:0;font-variant-numeric:tabular-nums}
+.wrap{padding:16px 24px 60px;max-width:1440px;margin:0 auto}
+a{color:#9ccbff;text-decoration:none}
+a:hover{text-decoration:underline}
+
+.shellnav{background:#0e1217;border-bottom:1px solid var(--line);padding:10px 24px;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:60}
+.shellnav .brand{font-size:12px;font-weight:900;letter-spacing:.5px;color:var(--acc-soft);text-transform:uppercase}
+.shellnav .brand .sys{color:var(--faint);font-weight:800;margin-right:6px}
+.shellnav .tabs{display:flex;gap:2px;margin-left:8px;flex-wrap:wrap}
+.shellnav .tab{font-size:11px;font-weight:800;color:var(--dim);padding:6px 12px;border-radius:8px;text-transform:uppercase;letter-spacing:.4px}
+.shellnav .tab .w{font-size:8.5px;color:var(--faint);margin-right:6px;letter-spacing:.6px}
+.shellnav .tab.on{background:var(--acc-dim);color:#9ccbff;border:1px solid var(--acc-line)}
+.shellnav .tab.sketch .w{color:#ffcf6b}
+.shellnav .who{margin-left:auto;font-size:11px;color:var(--faint)}
+.shellnav .who b{color:var(--dim)}
+
+.sketchbanner{background:var(--warn-dim);border:1px solid rgba(255,176,32,.4);border-radius:9px;padding:9px 12px;margin-bottom:12px;font-size:11.5px;color:#e8d4a8;line-height:1.5}
+.sketchbanner b{color:#ffcf6b;font-weight:900;letter-spacing:.4px;text-transform:uppercase;font-size:10.5px;margin-right:6px}
+
+.crumb{font-size:11px;color:var(--faint);margin-bottom:8px}
+h1{font-size:20px;font-weight:800;margin:0 0 4px}
+.sub{color:var(--dim);font-size:12.5px;margin-bottom:14px}
+.eyebrow{font-size:9.5px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:12px}
+.card.hi{border-left:4px solid var(--acc)}
+.card.warn{border-left:4px solid var(--warn)}
+.card.ok{border-left:4px solid var(--ok)}
+.card h2{margin:0 0 4px;font-size:14.5px;font-weight:800}
+.card .cs{color:var(--dim);font-size:11.5px;margin-bottom:8px;line-height:1.5}
+
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+
+.state{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;border-radius:5px;padding:3px 7px;white-space:nowrap}
+.state.ok{background:var(--ok-dim);border:1px solid rgba(22,192,96,.4);color:#5ce08d}
+.state.warn{background:var(--warn-dim);border:1px solid rgba(255,176,32,.4);color:#ffcf6b}
+.state.bad{background:var(--bad-dim);border:1px solid rgba(255,59,48,.4);color:#ff7b73}
+.state.acc{background:var(--acc-dim);border:1px solid var(--acc-line);color:#9ccbff}
+.state.dim{background:#242b34;border:1px solid var(--line);color:var(--dim)}
+
+.sketchbox{background:#0e1217;border:1px dashed var(--line2);border-radius:9px;padding:14px 16px;color:var(--faint);font-size:11.5px;line-height:1.55;margin-bottom:8px}
+.sketchbox b{color:var(--dim)}
+
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#0e1217;border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+.kpi .k{font-size:8.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:var(--faint)}
+.kpi .v{font-size:19px;font-weight:900;color:var(--txt);margin-top:2px;letter-spacing:-.5px}
+.kpi .m{font-size:10px;color:var(--dim);margin-top:2px}
+
+.plan{background:#0e1217;border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px;display:grid;grid-template-columns:24px 1fr 100px 100px;gap:10px;align-items:center;font-size:12px}
+.plan .badge{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;background:var(--acc-dim);color:#9ccbff;font-weight:900;font-size:11px;border-radius:5px;border:1px solid var(--acc-line)}
+.plan .tag{font-family:"SF Mono",Consolas,monospace;font-size:11px;color:#cfe0f5}
+.plan .val{color:var(--dim);font-size:11px;text-align:right}
+.plan .val b{color:var(--txt);font-weight:800}
+
+.footbar{position:fixed;left:0;right:0;bottom:0;background:#0e1217;border-top:1px solid var(--line2);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:70}
+.footbar .meta{font-size:11.5px;color:var(--dim)}
+.btn{background:var(--panel3);border:1px solid var(--line2);color:var(--txt);font-size:12px;font-weight:800;padding:9px 16px;border-radius:9px;cursor:pointer}
+.btn.primary{background:var(--acc-dim);border-color:var(--acc-line);color:#9ccbff;padding:10px 22px;font-size:12.5px}
+.btn.ghost{background:transparent;color:var(--dim)}
+.btn.danger{background:var(--bad-dim);border-color:rgba(255,59,48,.4);color:#ff7b73}
+
+.mockmark{position:fixed;top:6px;right:8px;background:var(--bad-dim);border:1px solid rgba(255,59,48,.4);color:#ff7b73;font-size:9px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;border-radius:4px;padding:3px 6px;z-index:100}
+</style>
+</head>
+<body>
+
+<div class="mockmark">Mockup | not wired</div>
+
+<div class="shellnav">
+  <div class="brand"><span class="sys">Rebar Optimization Phase 2</span> System of four</div>
+  <div class="tabs">
+    <a class="tab" href="order-selection.html"><span class="w">W1</span>Order selection</a>
+    <div class="tab on"><span class="w">W2</span>Pre-plan review</div>
+    <a class="tab sketch" href="w3-drop-bin-retrieval.html"><span class="w">W3</span>Drop-bin retrieval</a>
+    <a class="tab sketch" href="w4-loader-cutter-split.html"><span class="w">W4</span>Loader / cutter split</a>
+  </div>
+  <div class="who">Signed in as <b>jbrady</b> (Manager) | plant Houston 1</div>
+</div>
+
+<div class="wrap">
+
+<div class="crumb"><a href="index.html">&lt;- Phase 2 mockup landing</a> | Pre-plan review (W2) | sketch fidelity target</div>
+<h1>Pre-plan review - Manager <span style="font-size:11px;font-weight:700;color:var(--faint);letter-spacing:.5px;text-transform:uppercase;margin-left:8px">Review optimizer output before it hits the floor</span></h1>
+<div class="sub">
+  The optimizer has run against the batch submitted from W1. This surface is the last stop before the plan prints to
+  the shop. Approve, tweak, or send back.
+</div>
+
+<div class="sketchbanner"><b>Sketch fidelity</b>W2 shape only. Detailed component work happens in P2-W2 (est 6-8 days). This screen exists here to lock the shared shell / tokens / patterns against W1.</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="k">Orders in plan</div><div class="v">3</div><div class="m">from W1 batch</div></div>
+  <div class="kpi"><div class="k">Pieces</div><div class="v">184</div><div class="m">across sizes #4, #5, #8</div></div>
+  <div class="kpi"><div class="k">Yield</div><div class="v" style="color:#5ce08d">82.4%</div><div class="m">target 80%</div></div>
+  <div class="kpi"><div class="k">Setups</div><div class="v">7</div><div class="m">target 5, floor 10</div></div>
+  <div class="kpi"><div class="k">Warn flags</div><div class="v" style="color:#ffcf6b">2</div><div class="m">must ack before send</div></div>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="card hi">
+      <div class="eyebrow">Section 1 | plan summary</div>
+      <h2>Optimizer output <span class="state ok" style="margin-left:6px">clean</span></h2>
+      <div class="cs">CP-SAT solver returned in 923 ms. Below is the machine-level plan. Expand any row for the tag-level cut list.</div>
+      <div class="sketchbox">
+        Machine-level plan table sketches here.<br>
+        Rows: <b>H4002 Shear</b> (4.1 hr), <b>Prima P16</b> (1.8 hr), <b>KRB Double</b> (0.6 hr), <b>22N bender</b> (0.4 hr).<br>
+        Expand-row reveals the source cut list from W1's HPT / S97 batch, with SOURCE badges preserved so managers see which order each cut came from.
+      </div>
+    </div>
+
+    <div class="card warn">
+      <div class="eyebrow" style="color:#ffcf6b">Section 2 | spec §7.3 | acknowledge before send</div>
+      <h2>Plan warnings <span class="state warn" style="margin-left:6px">2 open</span></h2>
+      <div class="sketchbox">
+        Warn-flag list (same visual pattern as the Wave 0a Supervisor Per-Shift screen).<br>
+        <br>
+        1. <b>Drop-pile inventory 41 days stale</b> - Physical count recommended. Ack button.<br>
+        2. <b>Bundle B-2026-0714-A confidence 0.62</b> - Below §2 Q10 threshold. Ack button.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Section 3 | overrides</div>
+      <h2>Manual overrides</h2>
+      <div class="sketchbox">
+        Hard-pin any tag to a specific machine. Solver respects the pin and flags if suboptimal. Empty state by default.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="eyebrow">Sidebar | batch context (from W1)</div>
+      <h2>Source orders</h2>
+      <div style="font-size:11.5px;color:var(--dim);line-height:1.7;margin-top:6px">
+        <div style="padding:6px 0;border-bottom:1px solid var(--line)">FT080326-004 <span style="background:var(--hpt-dim);border:1px solid var(--hpt-line);color:#b39bff;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px">HPT</span> | CSI Pier 3 tie beam</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--line)">FT080426-011 <span style="background:var(--s97-dim);border:1px solid var(--s97-line);color:#5fd8ca;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px">S97</span> | Turner Deck 4 stirrups</div>
+        <div style="padding:6px 0">FT080326-007 <span style="background:var(--hpt-dim);border:1px solid var(--hpt-line);color:#b39bff;font-size:8.5px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px">HPT</span> | Kiewit Ramp B footings</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Per-machine workload</div>
+      <h2>Hours this shift</h2>
+      <div class="sketchbox">
+        Same table pattern as Wave 0a run-detail per-machine workload. Feeds the placeholder forecast dates on W1.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Cost banner</div>
+      <h2>NOT FOR QUOTING</h2>
+      <div class="sketchbox" style="border-color:rgba(255,176,32,.4)">
+        Placeholder cost figures pending GA-SH97-005a. Same treatment as Wave 0a run-detail.
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footbar">
+  <div class="meta">3 orders | 10,516 lbs | 2 warns to acknowledge before send</div>
+  <button class="btn ghost">Send back to W1</button>
+  <button class="btn">Re-run with tweaks</button>
+  <button class="btn primary">Approve and dispatch to floor -&gt;</button>
+</div>
+
+</body>
+</html>
