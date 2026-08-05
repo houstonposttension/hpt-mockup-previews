@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — Inventory (cross-role) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>4 / 9 &middot; Inventory (cross-role, always visible)</h1>
+  <p>Rebar worker taps the always-visible <b>Inventory</b> pill. Content = their assigned count sheet.
+    The banner shows the <b>"Acting as"</b> chain to preview the audit-trail language:
+    every count logs under the source role but tagged with the acting role.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Landing (worker)</a>
+    <a href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a href="function-swap.html">3. Function swap</a>
+    <a class="on" href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a href="authority-swap.html">6. Authority swap</a>
+    <a href="locked-single-role.html">7. Locked single-role</a>
+    <a href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/inventory</span></div>
+
+  <div class="appbar">
+    <div class="fnpick" data-fnpick>
+      <span>Inventory</span><span class="caret">&#9662;</span>
+    </div>
+    <div class="fnmenu hidden" data-fnmenu>
+      <div class="sect">My functions</div>
+      <a class="fnrow" href="index.html"><span class="glyph">R</span>Rebar Fabricator</a>
+      <a class="fnrow" href="landing-supervisor.html"><span class="glyph">L</span>Loader</a>
+      <a class="fnrow" href="index.html"><span class="glyph">Y</span>Yard</a>
+      <div class="divider"></div>
+      <div class="sect">Cross-role</div>
+      <a class="fnrow cross on" href="inventory-cross-role.html"><span class="glyph">I</span>Inventory<span class="badge">3</span></a>
+      <a class="fnrow cross" href="maintenance-cross-role.html"><span class="glyph">M</span>Maintenance<span class="badge">2</span></a>
+    </div>
+    <div class="role-banner">
+      <div class="lbl">Signed in</div>
+      <div class="id">(<span class="fn">Rebar Fabricator</span>, <span class="auth">Worker</span>)</div>
+      <div class="actas">&rarr; Acting as (Inventory, Worker)</div>
+    </div>
+  </div>
+
+  <div class="crossrail">
+    <a class="crosspill on" href="inventory-cross-role.html">
+      <span class="glyph">INV</span>Inventory<span class="cnt">3</span>
+    </a>
+    <a class="crosspill" href="maintenance-cross-role.html">
+      <span class="glyph">MX</span>Maintenance<span class="cnt">2</span>
+    </a>
+  </div>
+
+  <div class="sectlbl">My count assignments <span class="n">3 open</span></div>
+
+  <div class="card">
+    <div class="kick">Sheet INV-08-04-A &middot; due 3:00 PM</div>
+    <h2>Rebar bundle rack &mdash; Bay 2</h2>
+    <div class="body">
+      Count on-hand bundles by size &middot; last count <b>2 days ago</b>.
+    </div>
+    <div class="stat"><span class="k">#4 bar (12&#39;)</span><span class="v">&mdash;</span></div>
+    <div class="stat"><span class="k">#5 bar (20&#39;)</span><span class="v">&mdash;</span></div>
+    <div class="stat"><span class="k">#6 bar (20&#39;)</span><span class="v">&mdash;</span></div>
+    <div class="stat"><span class="k">#8 bar (20&#39;)</span><span class="v">&mdash;</span></div>
+    <div style="margin-top:10px;">
+      <a class="btn prim blk" href="#" onclick="return false;">Open sheet &rarr;</a>
+    </div>
+  </div>
+
+  <div class="wrow warn">
+    <div>
+      <div class="nm">Sheet INV-08-04-B</div>
+      <div class="sub">Strand lot cage &middot; due 5:00 PM</div>
+    </div>
+    <div class="val">0/8</div>
+  </div>
+  <div class="wrow">
+    <div>
+      <div class="nm">Sheet INV-08-04-C</div>
+      <div class="sub">Consumables shelf &middot; due tomorrow</div>
+    </div>
+    <div class="val">0/14</div>
+  </div>
+
+  <div class="sectlbl">Audit trail preview</div>
+  <div class="card" style="border-color:var(--acc-line); background:var(--acc-dim)">
+    <div class="body" style="color:var(--acc); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;">
+      actor=W-0421<br>
+      home_function=Rebar_Fabricator<br>
+      acting_function=Inventory<br>
+      authority=Worker<br>
+      event=count_submitted<br>
+      sheet=INV-08-04-A
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <a class="btn ghost blk" href="index.html">&larr; Back to Rebar</a>
+  </div>
+
+</div></div></div>
+
+<div class="footnav">
+  Prev: <a href="function-swap.html">Function swap</a> &middot;
+  Next: <a href="maintenance-cross-role.html">Maintenance (cross-role)</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>

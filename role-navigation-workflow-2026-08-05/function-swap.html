@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — function swap (Rebar → Loader) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  /* mid-swap state — dropdown open with "swapping" hint, URL bar transitioning */
+  .urlbar .path.old{ color:var(--faint); text-decoration:line-through; }
+  .urlbar .arrow{ color:var(--acc); font-weight:900; margin:0 2px; }
+  .swapmask{ position:absolute; inset:0; background:rgba(11,13,16,.35);
+    backdrop-filter: blur(2px); z-index:20; pointer-events:none; }
+  .swapmsg{ position:absolute; top:56%; left:50%; transform:translate(-50%,-50%);
+    background:var(--acc-dim); border:1px solid var(--acc-line); color:var(--acc);
+    padding:9px 14px; border-radius:20px; font-size:12px; font-weight:800; z-index:30;
+    box-shadow:0 6px 24px rgba(0,0,0,.6); }
+  .fnpick.pulse{ box-shadow:0 0 0 3px var(--acc-dim); }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>3 / 9 &middot; Function swap in-flight (Rebar &rarr; Loader)</h1>
+  <p>Frame captures the <b>moment of swap</b>: dropdown open with Loader highlighted, URL bar shows the
+    transition <code>/rebar</code> &rarr; <code>/load</code>, content is fading to the Loader home.
+    <b>No re-auth</b> &mdash; same session, same identity, banner already reflects the target role.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Landing (worker)</a>
+    <a href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a class="on" href="function-swap.html">3. Function swap</a>
+    <a href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a href="authority-swap.html">6. Authority swap</a>
+    <a href="locked-single-role.html">7. Locked single-role</a>
+    <a href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone" style="position:relative;"><div class="scr">
+
+  <div class="urlbar">
+    <span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path old">/rebar</span>
+    <span class="arrow">&rarr;</span><span class="path">/load</span>
+  </div>
+
+  <div class="appbar">
+    <div class="fnpick open pulse" data-fnpick>
+      <span>Loader</span><span class="caret">&#9662;</span>
+    </div>
+    <div class="fnmenu" data-fnmenu>
+      <div class="sect">My functions</div>
+      <a class="fnrow" href="index.html"><span class="glyph">R</span>Rebar Fabricator</a>
+      <a class="fnrow on slidein" href="landing-supervisor.html"><span class="glyph">L</span>Loader</a>
+      <a class="fnrow" href="index.html"><span class="glyph">Y</span>Yard</a>
+      <div class="divider"></div>
+      <div class="sect">Cross-role</div>
+      <a class="fnrow cross" href="inventory-cross-role.html"><span class="glyph">I</span>Inventory<span class="badge">3</span></a>
+      <a class="fnrow cross" href="maintenance-cross-role.html"><span class="glyph">M</span>Maintenance<span class="badge">2</span></a>
+    </div>
+    <div class="role-banner">
+      <div class="lbl">Signed in</div>
+      <div class="id">(<span class="fn">Loader</span>, <span class="auth">Worker</span>)</div>
+    </div>
+  </div>
+
+  <div class="crossrail">
+    <a class="crosspill" href="inventory-cross-role.html">
+      <span class="glyph">INV</span>Inventory<span class="cnt">3</span>
+    </a>
+    <a class="crosspill" href="maintenance-cross-role.html">
+      <span class="glyph">MX</span>Maintenance<span class="cnt">2</span>
+    </a>
+  </div>
+
+  <!-- content fades out, Loader home fades in -->
+  <div class="fade-out">
+    <div class="sectlbl">My loads &mdash; today <span class="n">3 assigned</span></div>
+    <div class="card slidein">
+      <div class="kick">Truck 07 &middot; X8 &middot; Aldine Westfield</div>
+      <h2>15 of 22 &middot; loading</h2>
+      <div class="body">
+        <b>7 tags pending</b>: 4 rebar, 3 tendon.<br>
+        Last tag <b>2 min ago</b>.
+      </div>
+      <div class="pills">
+        <span class="pill warn">Pending backfill</span>
+        <span class="pill">Bay 3</span>
+      </div>
+    </div>
+    <div class="wrow ok">
+      <div>
+        <div class="nm">Truck 04 &middot; Y2 &middot; Katy Plant</div>
+        <div class="sub">22 of 22 &middot; ready</div>
+      </div>
+      <div class="val">100%</div>
+    </div>
+  </div>
+
+  <div class="swapmask"></div>
+  <div class="swapmsg">Swapping to Loader &hellip;</div>
+
+</div></div></div>
+
+<div class="footnav">
+  Prev: <a href="index.html">Landing (worker)</a> &middot;
+  Next: <a href="inventory-cross-role.html">Inventory (cross-role)</a>
+</div>
+
+<script>
+  // auto-dismiss swap overlay for a live click-through feel
+  setTimeout(function(){
+    var m1 = document.querySelector('.swapmask');
+    var m2 = document.querySelector('.swapmsg');
+    var f  = document.querySelector('.fade-out');
+    if (m1) m1.style.transition='opacity .4s';
+    if (m2) m2.style.transition='opacity .4s';
+    if (m1) m1.style.opacity=0;
+    if (m2) m2.style.opacity=0;
+    if (f)  f.classList.remove('fade-out');
+    setTimeout(function(){ if(m1) m1.remove(); if(m2) m2.remove(); }, 500);
+  }, 1400);
+</script>
+<script src="_shared.js"></script>
+</body>
+</html>

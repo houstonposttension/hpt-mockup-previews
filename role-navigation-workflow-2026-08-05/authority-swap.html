@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — authority swap (Supervise: ON) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>6 / 9 &middot; Authority swap &mdash; Supervise: ON</h1>
+  <p>Loading Supervisor toggled <b>Supervise: ON</b>. Content flips from "your count assignments"
+    to "your team's status": roster, active loads, discrepancy queue. Same session, same identity,
+    audit trail now logs authority = <b>Supervisor</b> instead of Worker.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Landing (worker)</a>
+    <a href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a href="function-swap.html">3. Function swap</a>
+    <a href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a class="on" href="authority-swap.html">6. Authority swap</a>
+    <a href="locked-single-role.html">7. Locked single-role</a>
+    <a href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/load/supervise</span></div>
+
+  <div class="appbar">
+    <div class="fnpick" data-fnpick>
+      <span>Loader</span><span class="caret">&#9662;</span>
+    </div>
+    <div class="fnmenu hidden" data-fnmenu>
+      <div class="sect">My functions</div>
+      <a class="fnrow" href="index.html"><span class="glyph">R</span>Rebar Fabricator</a>
+      <a class="fnrow on" href="landing-supervisor.html"><span class="glyph">L</span>Loader</a>
+      <a class="fnrow" href="index.html"><span class="glyph">Y</span>Yard</a>
+      <div class="divider"></div>
+      <div class="sect">Cross-role</div>
+      <a class="fnrow cross" href="inventory-cross-role.html"><span class="glyph">I</span>Inventory<span class="badge">3</span></a>
+      <a class="fnrow cross" href="maintenance-cross-role.html"><span class="glyph">M</span>Maintenance<span class="badge">2</span></a>
+    </div>
+    <div class="role-banner">
+      <div class="lbl">Signed in</div>
+      <div class="id">(<span class="fn">Loader</span>, <span class="auth">Supervisor</span>)</div>
+    </div>
+  </div>
+
+  <div class="suptoggle" style="border-color:var(--acc-line); background:var(--acc-dim);">
+    <span class="k" style="color:var(--acc)">Supervise</span>
+    <b style="color:var(--acc)">Team view</b>
+    <span class="sw on" data-sup data-href="landing-supervisor.html">
+      <span class="opt off-lbl">OFF</span>
+      <span class="opt on-lbl">ON</span>
+    </span>
+  </div>
+
+  <div class="crossrail">
+    <a class="crosspill" href="inventory-cross-role.html">
+      <span class="glyph">INV</span>Inventory<span class="cnt">3</span>
+    </a>
+    <a class="crosspill" href="maintenance-cross-role.html">
+      <span class="glyph">MX</span>Maintenance<span class="cnt">2</span>
+    </a>
+  </div>
+
+  <div class="sectlbl">Team roster &mdash; on shift <span class="n">4 of 5</span></div>
+  <div class="wrow ok">
+    <div>
+      <div class="nm">W-0203 &middot; T. Alvarez</div>
+      <div class="sub">Truck 04 &middot; 22 of 22 &middot; ready</div>
+    </div>
+    <div class="val">100%</div>
+  </div>
+  <div class="wrow warn">
+    <div>
+      <div class="nm">W-0421 &middot; you</div>
+      <div class="sub">Truck 07 &middot; 15 of 22 &middot; pending backfill</div>
+    </div>
+    <div class="val">68%</div>
+  </div>
+  <div class="wrow">
+    <div>
+      <div class="nm">W-0378 &middot; R. Nguyen</div>
+      <div class="sub">Truck 11 &middot; not started</div>
+    </div>
+    <div class="val">&mdash;</div>
+  </div>
+  <div class="wrow bad">
+    <div>
+      <div class="nm">W-0505 &middot; J. Ortiz</div>
+      <div class="sub">Off shift &middot; no cover assigned</div>
+    </div>
+    <div class="val">&mdash;</div>
+  </div>
+
+  <div class="sectlbl">Active loads &mdash; today</div>
+  <div class="kpigrid">
+    <div class="kpi ok"><div class="n">1</div><div class="l">ready</div></div>
+    <div class="kpi warn"><div class="n">1</div><div class="l">loading</div></div>
+    <div class="kpi"><div class="n">1</div><div class="l">not started</div></div>
+  </div>
+
+  <div class="sectlbl">Discrepancy queue <span class="n">2 open</span></div>
+  <div class="wrow bad">
+    <div>
+      <div class="nm">Truck 07 &middot; strand lot short 3 tags</div>
+      <div class="sub">Opened 12 min ago &middot; needs backfill sign-off</div>
+    </div>
+    <div class="val">HIGH</div>
+  </div>
+  <div class="wrow warn">
+    <div>
+      <div class="nm">Truck 11 &middot; hardware mismatch</div>
+      <div class="sub">Opened 40 min ago &middot; awaiting purchasing</div>
+    </div>
+    <div class="val">MED</div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <a class="btn ghost blk" href="landing-supervisor.html">&larr; Back to worker view</a>
+  </div>
+
+</div></div></div>
+
+<div class="footnav">
+  Prev: <a href="maintenance-cross-role.html">Maintenance</a> &middot;
+  Next: <a href="locked-single-role.html">Locked single-role</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>

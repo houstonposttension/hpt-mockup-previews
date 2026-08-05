@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — landing (Rebar Fabricator, Worker) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>1 / 9 &middot; Landing &mdash; multi-function worker (primary = Rebar Fabricator)</h1>
+  <p>Worker <b>W-0421</b> is assigned three functions: <b>Rebar</b>, <b>Loader</b>, <b>Yard</b>.
+    Landing = the primary function's home. Top-nav dropdown surfaces all assigned functions plus the
+    two always-visible cross-role widgets (<b>Inventory</b>, <b>Maintenance</b>). Authority = Worker,
+    so no Supervise toggle is shown.</p>
+  <p>Banner convention: <code>(Function, Authority)</code> visible top-right on every page.</p>
+  <div class="crumbs">
+    <a class="on" href="index.html">1. Landing (worker)</a>
+    <a href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a href="function-swap.html">3. Function swap</a>
+    <a href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a href="authority-swap.html">6. Authority swap</a>
+    <a href="locked-single-role.html">7. Locked single-role</a>
+    <a href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/rebar</span></div>
+
+  <div class="appbar">
+    <div class="fnpick open" data-fnpick>
+      <span>Rebar</span><span class="caret">&#9662;</span>
+    </div>
+    <div class="fnmenu" data-fnmenu>
+      <div class="sect">My functions</div>
+      <a class="fnrow on" href="index.html"><span class="glyph">R</span>Rebar Fabricator</a>
+      <a class="fnrow" href="function-swap.html"><span class="glyph">L</span>Loader</a>
+      <a class="fnrow" href="function-swap.html"><span class="glyph">Y</span>Yard</a>
+      <div class="divider"></div>
+      <div class="sect">Cross-role</div>
+      <a class="fnrow cross" href="inventory-cross-role.html"><span class="glyph">I</span>Inventory<span class="badge">3</span></a>
+      <a class="fnrow cross" href="maintenance-cross-role.html"><span class="glyph">M</span>Maintenance<span class="badge">2</span></a>
+    </div>
+    <div class="role-banner">
+      <div class="lbl">Signed in</div>
+      <div class="id">(<span class="fn">Rebar Fabricator</span>, <span class="auth">Worker</span>)</div>
+    </div>
+  </div>
+
+  <div class="crossrail">
+    <a class="crosspill" href="inventory-cross-role.html">
+      <span class="glyph">INV</span>Inventory<span class="cnt">3</span>
+    </a>
+    <a class="crosspill" href="maintenance-cross-role.html">
+      <span class="glyph">MX</span>Maintenance<span class="cnt">2</span>
+    </a>
+  </div>
+
+  <div class="sectlbl">My shift &mdash; today <span class="n">Aug 4</span></div>
+  <div class="kpigrid">
+    <div class="kpi ok"><div class="n">1,842</div><div class="l">ft strand</div></div>
+    <div class="kpi"><div class="n">7</div><div class="l">bins closed</div></div>
+    <div class="kpi warn"><div class="n">2</div><div class="l">rework</div></div>
+  </div>
+
+  <div class="sectlbl">My next tag</div>
+  <div class="card">
+    <div class="kick">Bin X8 &middot; Aldine Westfield Ph2</div>
+    <h2>Tag 015 &middot; 0.6" 270ksi</h2>
+    <div class="body">
+      <b>22 ft</b> &middot; grip pattern L-R &middot; strand lot <b>SL-0803-A2</b><br>
+      Next station: <b>Cut &amp; Bundle 03</b>.
+    </div>
+    <div class="pills">
+      <span class="pill ok">Fab-ready</span>
+      <span class="pill">Sub-order 10827</span>
+    </div>
+    <div style="margin-top:10px; display:flex; gap:6px;">
+      <a class="btn prim blk" href="#" onclick="return false;">Start tag &rarr;</a>
+    </div>
+  </div>
+
+  <div class="sectlbl">Assigned bins <span class="n">4 open</span></div>
+  <div class="wrow ok">
+    <div>
+      <div class="nm">X8 &middot; Aldine Westfield Ph2</div>
+      <div class="sub">15 of 22 &middot; last tag 2 min ago</div>
+    </div>
+    <div class="val">68%</div>
+  </div>
+  <div class="wrow warn">
+    <div>
+      <div class="nm">X9 &middot; Beltway Substation</div>
+      <div class="sub">Pending backfill &middot; SL lot short</div>
+    </div>
+    <div class="val">40%</div>
+  </div>
+  <div class="wrow">
+    <div>
+      <div class="nm">Y2 &middot; Katy Plant Expansion</div>
+      <div class="sub">Not started</div>
+    </div>
+    <div class="val">&mdash;</div>
+  </div>
+  <div class="wrow">
+    <div>
+      <div class="nm">Y7 &middot; Memorial Hospital</div>
+      <div class="sub">Not started</div>
+    </div>
+    <div class="val">&mdash;</div>
+  </div>
+
+</div></div></div>
+
+<div class="footnav">
+  Next: <a href="landing-supervisor.html">Landing (supervisor)</a> &middot;
+  <a href="function-swap.html">Function swap</a> &middot;
+  <a href="role-model-README.md">README</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>

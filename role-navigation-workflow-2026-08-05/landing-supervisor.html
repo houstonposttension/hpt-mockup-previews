@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — landing (Loading Supervisor) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>2 / 9 &middot; Landing &mdash; Loading Supervisor (Supervise: OFF)</h1>
+  <p>Same worker <b>W-0421</b>, now with the <b>Supervisor</b> authority level on the Loader function.
+    The <b>Supervise</b> toggle appears (only for Supervisor+). Default lands with Supervise OFF, so
+    the view is still the worker's own load queue. Flipping ON reveals worker roster, active loads,
+    and the discrepancy queue.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Landing (worker)</a>
+    <a class="on" href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a href="function-swap.html">3. Function swap</a>
+    <a href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a href="authority-swap.html">6. Authority swap</a>
+    <a href="locked-single-role.html">7. Locked single-role</a>
+    <a href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/load</span></div>
+
+  <div class="appbar">
+    <div class="fnpick" data-fnpick>
+      <span>Loader</span><span class="caret">&#9662;</span>
+    </div>
+    <div class="fnmenu hidden" data-fnmenu>
+      <div class="sect">My functions</div>
+      <a class="fnrow" href="index.html"><span class="glyph">R</span>Rebar Fabricator</a>
+      <a class="fnrow on" href="landing-supervisor.html"><span class="glyph">L</span>Loader</a>
+      <a class="fnrow" href="function-swap.html"><span class="glyph">Y</span>Yard</a>
+      <div class="divider"></div>
+      <div class="sect">Cross-role</div>
+      <a class="fnrow cross" href="inventory-cross-role.html"><span class="glyph">I</span>Inventory<span class="badge">3</span></a>
+      <a class="fnrow cross" href="maintenance-cross-role.html"><span class="glyph">M</span>Maintenance<span class="badge">2</span></a>
+    </div>
+    <div class="role-banner">
+      <div class="lbl">Signed in</div>
+      <div class="id">(<span class="fn">Loader</span>, <span class="auth">Supervisor</span>)</div>
+    </div>
+  </div>
+
+  <div class="suptoggle">
+    <span class="k">Supervise</span>
+    <b>Worker view</b>
+    <span class="sw off" data-sup data-href="authority-swap.html">
+      <span class="opt off-lbl">OFF</span>
+      <span class="opt on-lbl">ON</span>
+    </span>
+  </div>
+
+  <div class="crossrail">
+    <a class="crosspill" href="inventory-cross-role.html">
+      <span class="glyph">INV</span>Inventory<span class="cnt">3</span>
+    </a>
+    <a class="crosspill" href="maintenance-cross-role.html">
+      <span class="glyph">MX</span>Maintenance<span class="cnt">2</span>
+    </a>
+  </div>
+
+  <div class="sectlbl">My loads &mdash; today <span class="n">3 assigned</span></div>
+
+  <div class="card">
+    <div class="kick">Truck 07 &middot; X8 &middot; Aldine Westfield</div>
+    <h2>15 of 22 &middot; loading</h2>
+    <div class="body">
+      <b>7 tags pending</b>: 4 rebar, 3 tendon.<br>
+      Last tag <b>2 min ago</b> &middot; sub-orders 10827 &middot; 10755.
+    </div>
+    <div class="pills">
+      <span class="pill warn">Pending backfill</span>
+      <span class="pill">Bay 3</span>
+    </div>
+  </div>
+
+  <div class="wrow ok">
+    <div>
+      <div class="nm">Truck 04 &middot; Y2 &middot; Katy Plant</div>
+      <div class="sub">22 of 22 &middot; ready to depart</div>
+    </div>
+    <div class="val">100%</div>
+  </div>
+  <div class="wrow">
+    <div>
+      <div class="nm">Truck 11 &middot; W3 &middot; Memorial Hosp.</div>
+      <div class="sub">Not started &middot; waiting on fab</div>
+    </div>
+    <div class="val">&mdash;</div>
+  </div>
+
+  <div class="sectlbl">Tip</div>
+  <div class="card" style="border-color:var(--acc-line); background:var(--acc-dim)">
+    <div class="body" style="color:var(--acc)">
+      Flip <b>Supervise</b> ON to see your team's status, active loads, and the discrepancy queue.
+      Identity stays the same &mdash; every action logs as <b>(Loader, Supervisor)</b> in the audit trail.
+    </div>
+  </div>
+
+</div></div></div>
+
+<div class="footnav">
+  Next: <a href="function-swap.html">Function swap</a> &middot;
+  Try the toggle: <a href="authority-swap.html">Authority swap &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>

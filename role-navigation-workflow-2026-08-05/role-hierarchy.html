@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — role hierarchy (executive view) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  /* Desktop-oriented view for the model overview */
+  .desk{ max-width:1080px; margin:0 auto; }
+  .matrix{ display:grid;
+    grid-template-columns: 200px repeat(5, 1fr);
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    overflow:hidden; margin:14px 0 24px; }
+  .matrix .cell{ padding:14px 12px; border-top:1px solid var(--line); border-left:1px solid var(--line);
+    font-size:12px; color:var(--dim); }
+  .matrix .cell.head{ background:#0e1217; font-weight:900; text-transform:uppercase;
+    letter-spacing:.6px; font-size:10.5px; color:var(--acc); border-top:none; }
+  .matrix .cell.rowlbl{ background:#0e1217; font-weight:800; color:var(--bright);
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px; border-left:none;
+    display:flex; align-items:center; gap:8px; }
+  .matrix .cell.rowlbl .glyph{ display:inline-block; width:22px; height:22px; border-radius:6px;
+    background:var(--acc-dim); border:1px solid var(--acc-line); color:var(--acc); font-weight:900;
+    font-size:11px; text-align:center; line-height:20px; flex:0 0 22px; }
+  .matrix .cell.corner{ background:#0e1217; border-left:none; border-top:none; }
+  .matrix .cell.cross{ background:rgba(125,162,201,.06); }
+  .matrix .cell.cross .glyph{ background:rgba(125,162,201,.12); color:var(--blue-soft);
+    border-color:rgba(125,162,201,.4); }
+  .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+  .dot.on{ background:var(--acc); }
+  .dot.aud{ background:var(--blue-soft); }
+  .dot.no{ background:#33383f; }
+  .lg{ display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--dim); margin:0 4px 8px; }
+  .lg span{ display:inline-flex; align-items:center; gap:6px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0 24px; }
+  @media (max-width: 780px){
+    .matrix{ grid-template-columns: 130px repeat(5, 1fr); font-size:10.5px; }
+    .matrix .cell{ padding:10px 8px; }
+    .grid2{ grid-template-columns: 1fr; }
+  }
+  .info{ background:var(--panel2); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; font-size:13px; color:var(--dim); line-height:1.6; }
+  .info b{ color:var(--bright); }
+  .info h3{ font-size:12px; margin:0 0 8px; text-transform:uppercase; letter-spacing:.7px; color:var(--acc); }
+  .info code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; color:var(--acc-soft);
+    background:#0e1217; border:1px solid var(--line); border-radius:5px; padding:1px 6px; }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>8 / 9 &middot; Role model at a glance &mdash; executive / manager view</h1>
+  <p>The two-axis model: <b>Job function</b> (rows) &times; <b>Authority level</b> (columns).
+    Cross-role functions (Inventory + Maintenance) are always in nav for everyone &mdash; shown at the
+    bottom of the matrix. Auditor is orthogonal to Worker/Supervisor/Manager: read-only visibility
+    across all functions.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Landing (worker)</a>
+    <a href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a href="function-swap.html">3. Function swap</a>
+    <a href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a href="authority-swap.html">6. Authority swap</a>
+    <a href="locked-single-role.html">7. Locked single-role</a>
+    <a class="on" href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="desk">
+
+  <div class="lg">
+    <span><i class="dot on"></i>Common assignment</span>
+    <span><i class="dot aud"></i>Auditor (read-only)</span>
+    <span><i class="dot no"></i>Rare / by exception</span>
+  </div>
+
+  <div class="matrix">
+    <div class="cell corner"></div>
+    <div class="cell head">Worker</div>
+    <div class="cell head">Supervisor</div>
+    <div class="cell head">Manager</div>
+    <div class="cell head">Executive</div>
+    <div class="cell head">Auditor</div>
+
+    <div class="cell rowlbl"><span class="glyph">R</span>Rebar Fabricator</div>
+    <div class="cell"><i class="dot on"></i>fab bay</div>
+    <div class="cell"><i class="dot on"></i>bay lead</div>
+    <div class="cell"><i class="dot on"></i>shop mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">L</span>Loader</div>
+    <div class="cell"><i class="dot on"></i>truck</div>
+    <div class="cell"><i class="dot on"></i>shift lead</div>
+    <div class="cell"><i class="dot on"></i>yard mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">D</span>Driver</div>
+    <div class="cell"><i class="dot on"></i>route</div>
+    <div class="cell"><i class="dot on"></i>lead</div>
+    <div class="cell"><i class="dot on"></i>fleet mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">P</span>PT</div>
+    <div class="cell"><i class="dot on"></i>tension</div>
+    <div class="cell"><i class="dot on"></i>crew lead</div>
+    <div class="cell"><i class="dot on"></i>PT mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">H</span>Hardware</div>
+    <div class="cell"><i class="dot on"></i>staging</div>
+    <div class="cell"><i class="dot on"></i>lead</div>
+    <div class="cell"><i class="dot on"></i>ops mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">E</span>Extruder</div>
+    <div class="cell"><i class="dot on"></i>machine</div>
+    <div class="cell"><i class="dot on"></i>shift lead</div>
+    <div class="cell"><i class="dot on"></i>plant mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">V</span>Receiver</div>
+    <div class="cell"><i class="dot on"></i>dock</div>
+    <div class="cell"><i class="dot on"></i>lead</div>
+    <div class="cell"><i class="dot on"></i>ops mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl"><span class="glyph">Y</span>Yard</div>
+    <div class="cell"><i class="dot on"></i>picker</div>
+    <div class="cell"><i class="dot on"></i>lead</div>
+    <div class="cell"><i class="dot on"></i>yard mgr</div>
+    <div class="cell"><i class="dot no"></i></div>
+    <div class="cell"><i class="dot aud"></i>view</div>
+
+    <!-- cross-role -->
+    <div class="cell rowlbl cross"><span class="glyph">I</span>Inventory <span style="color:var(--faint); font-weight:400; margin-left:auto; font-size:9.5px;">cross</span></div>
+    <div class="cell cross"><i class="dot on"></i>everyone</div>
+    <div class="cell cross"><i class="dot on"></i>cycle-count</div>
+    <div class="cell cross"><i class="dot on"></i>inv mgr</div>
+    <div class="cell cross"><i class="dot no"></i></div>
+    <div class="cell cross"><i class="dot aud"></i>view</div>
+
+    <div class="cell rowlbl cross"><span class="glyph">M</span>Maintenance <span style="color:var(--faint); font-weight:400; margin-left:auto; font-size:9.5px;">cross</span></div>
+    <div class="cell cross"><i class="dot on"></i>submit tix</div>
+    <div class="cell cross"><i class="dot on"></i>MX shift lead</div>
+    <div class="cell cross"><i class="dot on"></i>MX mgr</div>
+    <div class="cell cross"><i class="dot no"></i></div>
+    <div class="cell cross"><i class="dot aud"></i>view</div>
+
+    <!-- Executive spans all functions read/act via portfolio -->
+    <div class="cell rowlbl" style="background:var(--acc-dim); color:var(--acc); border-color:var(--acc-line);"><span class="glyph" style="background:var(--acc); color:var(--ok-ink); border-color:var(--acc);">X</span>Executive</div>
+    <div class="cell" colspan="0" style="grid-column: span 5; background:var(--acc-dim); color:var(--acc); font-weight:800;">
+      Portfolio view across all functions &middot; sees discrepancies, KPIs, and safety incidents in one surface
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="info">
+      <h3>Assignment rules</h3>
+      A user record carries an <code>assigned_functions[]</code> array and an <code>authority</code>
+      level. If <code>len(assigned_functions) == 1</code> and <code>locked_to_primary = true</code>,
+      the top-nav function dropdown is hidden. Cross-role widgets (Inventory + Maintenance) are always
+      in nav, for every authority level.
+    </div>
+    <div class="info">
+      <h3>Landing rule</h3>
+      Landing route = <b>primary function's home</b>. Function swaps and authority swaps <b>never
+      re-auth</b> and preserve session. Every write logs
+      <code>(home_function, acting_function, authority)</code>.
+    </div>
+  </div>
+
+  <div class="info" style="margin-bottom:16px;">
+    <h3>What's not in the matrix</h3>
+    <b>Executive</b> is a portfolio surface, not a function. <b>Auditor</b> is read-only across every
+    function; that's the third column intent. Any operator can be promoted temporarily to Supervisor
+    for a shift via the same <b>Supervise: ON</b> toggle &mdash; the change is per-session, not stored on
+    the user record.
+  </div>
+
+</div>
+
+<div class="footnav">
+  Prev: <a href="locked-single-role.html">Locked single-role</a> &middot;
+  <a href="role-model-README.md">README</a> &middot;
+  <a href="index.html">Back to start</a>
+</div>
+
+</body>
+</html>

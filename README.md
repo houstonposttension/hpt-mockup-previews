@@ -12,6 +12,31 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ## Current mockups
 
+### WIP Role & Navigation Workflow (dated 2026-08-05)
+
+- [Click-through landing -- Worker with 3 assigned functions, function dropdown drawn open](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/index.html)
+- [Landing (supervisor) -- same worker as Loading Supervisor, Supervise OFF/ON toggle appears](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/landing-supervisor.html)
+- [Function swap in-flight -- Rebar to Loader, `/rebar` to `/load`](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/function-swap.html)
+- [Inventory (cross-role) -- assigned count sheet, "Acting as" banner](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/inventory-cross-role.html)
+- [Maintenance (cross-role) -- open MaintainX work orders + station-tagged ticket submit](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/maintenance-cross-role.html)
+- [Authority swap -- Supervise ON, team roster + active loads + discrepancy queue at `/load/supervise`](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/authority-swap.html)
+- [Locked single-role -- Driver with `locked_to_primary`, no function dropdown](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/locked-single-role.html)
+- [Role hierarchy -- full Function x Authority matrix for exec/manager viewers](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/role-hierarchy.html)
+- [Set README -- model summary, click-through order, design conventions, open items](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/role-model-README.md)
+
+Click-through demonstrating the WIP application's two-axis role model -- **job function x
+authority level** -- and how a signed-in user moves between roles without re-auth. 10 job
+functions (Rebar Fabricator, Loader, Driver, PT, Hardware, Extruder, Receiver, Yard, Inventory,
+Maintenance) x 5 authority levels (Worker, Supervisor, Manager, Executive, Auditor). Inventory +
+Maintenance are pinned in nav for everyone as cross-role pills; landing is the primary function's
+home. **Function swap** is a top-nav dropdown of `assigned_functions[]` (hidden when only one is
+assigned); **authority swap** is a separate Supervise OFF/ON toggle visible only to Supervisor+.
+Both keep the same session -- no re-auth -- and every write logs
+`(home_function, acting_function, authority)`. Mobile-first (390px phone frame), HPT dark theme,
+CTA-green accent. No live data and no API calls: submit-style buttons are deliberately inert.
+Design is locked; these are for walkthrough confirmation, not final visual design. Companion spec
+lives in the private repo at `docs/spec/role-model-and-navigation-2026-08-05.md`.
+
 ### Rebar Optimization Phase 2 -- System of four (dated 2026-07-30)
 
 - [Landing -- system-of-four overview + placeholder-dates banner](https://houstonposttension.github.io/hpt-mockup-previews/rebar-p2-order-selection-mockup-2026-07-30/index.html)

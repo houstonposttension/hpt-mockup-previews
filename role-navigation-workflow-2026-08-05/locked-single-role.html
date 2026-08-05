@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WIP role & nav — locked single-role (Driver) · 2026-08-05</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>7 / 9 &middot; Locked single-role &mdash; Driver (locked_to_primary = true)</h1>
+  <p>Driver <b>D-0109</b> has one assigned function and <code>locked_to_primary = true</code>.
+    Nav is <b>clean and minimal</b>: no function dropdown (only one function), no chevron. Inventory +
+    Maintenance stay visible (they always are). Banner still shows <code>(Function, Authority)</code>.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Landing (worker)</a>
+    <a href="landing-supervisor.html">2. Landing (supervisor)</a>
+    <a href="function-swap.html">3. Function swap</a>
+    <a href="inventory-cross-role.html">4. Inventory</a>
+    <a href="maintenance-cross-role.html">5. Maintenance</a>
+    <a href="authority-swap.html">6. Authority swap</a>
+    <a class="on" href="locked-single-role.html">7. Locked single-role</a>
+    <a href="role-hierarchy.html">8. Role tree</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/drive</span></div>
+
+  <div class="appbar">
+    <!-- no fnpick chevron: locked to single primary -->
+    <div class="brand">Driver<span class="dot">&middot;</span></div>
+    <div class="role-banner">
+      <div class="lbl">Signed in</div>
+      <div class="id">(<span class="fn">Driver</span>, <span class="auth">Worker</span>)</div>
+    </div>
+  </div>
+
+  <div class="crossrail">
+    <a class="crosspill" href="inventory-cross-role.html">
+      <span class="glyph">INV</span>Inventory<span class="cnt">0</span>
+    </a>
+    <a class="crosspill" href="maintenance-cross-role.html">
+      <span class="glyph">MX</span>Maintenance<span class="cnt">1</span>
+    </a>
+  </div>
+
+  <div class="sectlbl">Today's trip <span class="n">3 bins</span></div>
+
+  <div class="card">
+    <div class="kick">Truck 04 &middot; leaves 10:20 AM</div>
+    <h2>3 bins &middot; 2 sites</h2>
+    <div class="body">
+      <b>X8</b> Aldine Westfield Ph2 &middot; <b>Y2</b> Katy Plant Exp. &middot; <b>Y7</b> Memorial Hosp.
+    </div>
+    <div class="pills">
+      <span class="pill ok">All ready</span>
+      <span class="pill">Hand-off to OptimoRoute at gate</span>
+    </div>
+  </div>
+
+  <div class="wrow ok">
+    <div>
+      <div class="nm">X8 &middot; Aldine Westfield</div>
+      <div class="sub">22 of 22 &middot; ready</div>
+    </div>
+    <div class="val">100%</div>
+  </div>
+  <div class="wrow ok">
+    <div>
+      <div class="nm">Y2 &middot; Katy Plant</div>
+      <div class="sub">14 of 14 &middot; ready</div>
+    </div>
+    <div class="val">100%</div>
+  </div>
+  <div class="wrow ok">
+    <div>
+      <div class="nm">Y7 &middot; Memorial Hosp.</div>
+      <div class="sub">8 of 8 &middot; ready</div>
+    </div>
+    <div class="val">100%</div>
+  </div>
+
+  <div style="margin-top:14px;">
+    <a class="btn prim blk" href="#" onclick="return false;">Depart &mdash; hand off to OptimoRoute &rarr;</a>
+  </div>
+
+  <div class="sectlbl">Note</div>
+  <div class="card" style="border-color:var(--acc-line); background:var(--acc-dim)">
+    <div class="body" style="color:var(--acc)">
+      Nav has no function dropdown because <b>locked_to_primary = true</b> and only one function is
+      assigned. Cross-role widgets (Inventory + Maintenance) still appear &mdash; they're always visible
+      for everyone, per the locked design.
+    </div>
+  </div>
+
+</div></div></div>
+
+<div class="footnav">
+  Prev: <a href="authority-swap.html">Authority swap</a> &middot;
+  Next: <a href="role-hierarchy.html">Role tree</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
