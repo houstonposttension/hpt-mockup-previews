@@ -12,6 +12,36 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ## Current mockups
 
+### WIP Role & Navigation -- rev 2, "scan-first, one bar" (dated 2026-08-06)
+
+- [1. Rebar Fabricator -- quiet state (both cross-role badges 0, pills collapsed to zero width)](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/index.html)
+- [2. Rebar Fabricator -- busy state (Inventory 3 + a red Maintenance 1 that blocks your station; live collapse toggle)](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/rebar-busy.html)
+- [3. Loader -- same bar, same strip, different verb](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/loader.html)
+- [4. Loader -- bottom drawer pulled up (punch list + close-out gate)](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/loader-drawer.html)
+- [5. Wrong-bin alarm -- full-screen blocking interrupt, then the Switch / Stay / Stop decision](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/loader-alarm.html)
+- [6. Supervisor -- authority swap folded into the identity chip, person-axis team view](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/supervisor.html)
+- [7. Bar anatomy -- quiet / busy / crowded, space budget, reused vs new, open decisions](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/bar-anatomy.html)
+- [Set README -- the three decisions, the shared kit, positions taken, what is still unbacked](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/README.md)
+
+Ideation successor to the 2026-08-05 role/nav set, driven by one constraint: **screen real estate**.
+The earlier set spent three stacked rows of chrome -- app bar, cross-role rail, Supervise toggle --
+roughly **97 px for a worker and 149 px for a supervisor** before any content. Rev 2 consolidates all
+three into **one 38 px bar**: role tabs left, cross-role pills and the identity chip right. Cross-role
+items are icon + badge count only, and at a badge of **0 the pill collapses to zero width and
+disappears** rather than greying out (pages 1 vs 2 are the contrast). Authority swap folds into the
+identity chip, so the Supervise row is deleted. **Scan owns the screen** -- every role scans, so the bar
+sits as a thin strip *on top of* the live scanner rather than being replaced by a dashboard, and the
+camera viewport is drawn for the first time. **Task metadata rides with scan context**: a thin
+where / for whom / by when strip bound to whatever is in the viewport, plus a **bottom pull-up drawer,
+collapsed by default**, for roles with a genuinely browsable list. Uses the same four shared primitives
+the requirements audit found already serving every role (`.wrow`, `.sectlbl`, `.crosspill`, `.card`) --
+no new content primitive -- with the **6-stage lifecycle** as the single status vocabulary across every
+screen. The nine genuinely role-specific elements stay outside the shared kit; the loader's wrong-bin
+alarm is rendered as its own full-screen interrupt to make that explicit. Mobile-first 390 px frame,
+HPT dark theme. No live data, no API calls. Names are placeholders; numbers are illustrative, and each
+page marks inline what is real in production today versus what has no data source yet. Companion audit
+in the private repo: `docs/spec/role-information-requirements-2026-08-06.md`.
+
 ### WIP Role & Navigation Workflow (dated 2026-08-05)
 
 - [Click-through landing -- Worker with 3 assigned functions, function dropdown drawn open](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-workflow-2026-08-05/index.html)
