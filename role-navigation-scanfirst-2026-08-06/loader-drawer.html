@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — Loader, bottom drawer pulled up · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .scrim{ position:absolute; inset:0; background:rgba(8,10,13,.55); z-index:20; }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>4 / 7 &middot; Loader &mdash; <b>bottom drawer pulled up</b></h1>
+  <p>The drawer is the answer to "what if a role needs a real, browsable task list?" It is
+    <b>collapsed by default</b> (a 46&nbsp;px handle), it opens on a pull or a tap, and critically it
+    <b>never covers the bar</b> &mdash; the role tabs, cross-role pills and identity chip stay reachable
+    at the top the whole time, and the scan surface is dimmed rather than replaced. Dismiss it and you
+    are back scanning; you never navigated anywhere.</p>
+  <p>This is the loader's punch list &mdash; bin &rarr; category &rarr; missing tags, with a walk-to hint
+    per category &mdash; and it ends in the <b>close-out gate</b>: a short truck cannot depart without a
+    note and a photo.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a href="loader.html">3. Loader &middot; scan</a>
+    <a class="on" href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a href="supervisor.html">6. Supervisor swap</a>
+    <a href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
+
+  <div class="topbar" style="position:relative; z-index:30; background:var(--bg);">
+    <div class="tabs">
+      <a class="roletab" href="index.html">Rebar</a>
+      <a class="roletab on" href="loader-drawer.html">Loader</a>
+      <a class="roletab" href="#" onclick="return false;">Yard</a>
+    </div>
+    <div class="xrail">
+      <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+      <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+      <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+    </div>
+  </div>
+
+  <div class="camwrap short">
+    <div class="syncchip"><span class="dot"></span>Synced</div>
+    <div class="retic" style="width:230px;height:100px;"><span class="c2"></span><span class="c3"></span></div>
+    <div class="camhint">Scan paused &mdash; punch list open</div>
+  </div>
+
+  <div class="ctxstrip">
+    <div class="cx"><span class="ck">Where</span>
+      <span class="cv">Truck 07 <span class="mut">&middot; bin X8 &middot; bay 3</span></span></div>
+    <div class="cx"><span class="ck">For</span>
+      <span class="cv">Aldine Westfield Ph2 <span class="mut">&middot; sub-orders 10827 &middot; 10755</span></span></div>
+    <div class="cx"><span class="ck">By</span>
+      <span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct warn">68%</span></span></span></div>
+    <div class="pbar"><i class="warn" style="width:68%"></i></div>
+  </div>
+
+  <div class="scrim"></div>
+
+  <div class="drawer open" data-drawer>
+    <div class="dhandle" data-dhandle>
+      <span class="grip"></span>
+      <div>
+        <div class="dt">Punch list &mdash; what's left</div>
+        <div class="ds">7 tags &middot; 3 categories &middot; Truck 07</div>
+      </div>
+      <span class="dn">7</span>
+      <span class="car">&#9652;</span>
+    </div>
+    <div class="dbody">
+
+      <div class="sectlbl" style="margin-top:2px;">Rebar <span class="n">4 left &middot; walk to bay 2</span></div>
+      <div class="wrow warn">
+        <div><div class="nm">FT052926-002#1</div>
+          <div class="sub">At machine &middot; BENDER &middot; #5 T2 &middot; 14&#8242;-6&#8243;</div></div>
+        <div class="val warn">&mdash;</div>
+      </div>
+      <div class="wrow warn">
+        <div><div class="nm">FT052926-002#2</div>
+          <div class="sub">At machine &middot; BENDER &middot; #5 T2 &middot; 14&#8242;-6&#8243;</div></div>
+        <div class="val warn">&mdash;</div>
+      </div>
+      <div class="wrow warn">
+        <div><div class="nm">FT052926-007#4</div>
+          <div class="sub">In staging &middot; ready &middot; #4 straight &middot; 12&#8242;-0&#8243;</div></div>
+        <div class="val warn">&mdash;</div>
+      </div>
+      <div class="wrow warn">
+        <div><div class="nm">FT052926-007#5</div>
+          <div class="sub">In staging &middot; ready &middot; #4 straight &middot; 12&#8242;-0&#8243;</div></div>
+        <div class="val warn">&mdash;</div>
+      </div>
+
+      <div class="sectlbl">Tendon <span class="n">3 left &middot; not printed</span></div>
+      <div class="wrow bad">
+        <div><div class="nm">FT052931-001#1 &hellip; #3</div>
+          <div class="sub">Tag in office &middot; blocks close-out</div></div>
+        <div class="val bad">3</div>
+      </div>
+
+      <div class="sectlbl">Hardware <span class="n">complete</span></div>
+      <div class="wrow ok">
+        <div><div class="nm">2 tags</div>
+          <div class="sub">On truck &middot; 11 min ago</div></div>
+        <div class="val ok">100%</div>
+      </div>
+
+      <div class="card" style="border-color:rgba(255,176,32,.4); background:rgba(255,176,32,.07);">
+        <div class="kick" style="color:var(--warn);">Close-out gate</div>
+        <div class="body">
+          Truck 07 is <b>7 tags short</b>. Departing short needs a written reason and a photo, and
+          raises a supervisor sign-off.
+        </div>
+        <div class="ctarow" style="margin-top:9px;">
+          <a class="btn blk" href="#" onclick="return false;" style="border-color:var(--warn); color:var(--warn);">
+            Depart short &mdash; needs sign-off</a>
+        </div>
+      </div>
+
+      <div class="ctarow" style="margin-bottom:4px;">
+        <a class="btn ghost blk" href="loader.html">&#9662;&nbsp; Close list, back to scanning</a>
+      </div>
+    </div>
+  </div>
+
+</div></div></div>
+
+<div class="note">
+  <span class="h">Rules the drawer is carrying</span>
+  <b>1.</b> Collapsed is the default state for every role &mdash; the handle costs 46&nbsp;px and states
+  its own count, so nothing is hidden.<br>
+  <b>2.</b> The drawer never overlaps the bar, and it dims rather than unmounts the scan surface, so
+  "open the list" is not a navigation.<br>
+  <b>3.</b> Rows in it are the same <code>.wrow</code> as every other role's list, with the
+  <code>.val</code> rule applied: <b>percent, or an em-dash when there is no progress</b> &mdash; never
+  a severity. Severity moved out to a <code>.pill</code>/left border. That is a proposed answer to the
+  audit's open question &sect;9.3.<br>
+  <span class="flag">Not backed:</span> the punch list needs the <code>category</code> field (L12) and
+  physical locations for the walk-to hints (G10/L9); the close-out gate and its sign-off need the
+  unbuilt <code>hpt-approvals</code> primitive (L10/L11).
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader.html">3. Loader &middot; scan</a> &middot;
+  Next: <a href="loader-alarm.html">5. Wrong-bin alarm &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
