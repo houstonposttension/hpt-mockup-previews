@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — Loader, same chrome different verb · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>3 / 7 &middot; Loader &mdash; same bar, same strip, <b>different verb</b></h1>
+  <p>A worker who swaps Rebar &rarr; Loader should recognise every row, chip and colour and only have to
+    learn what the big green button now does. That is the audit's &sect;9.6 target &mdash;
+    <b>same chrome and same grammar, different verbs</b> &mdash; and it is what this page tests.
+    Compare against page 1 side by side: the bar, the viewport, the 3-line strip, the stage row and the
+    drawer are byte-identical in structure. Only <b>Record scan</b> &rarr; <b>Scan onto truck</b>, and
+    the strip's <code>where</code> resolves to a truck instead of a machine.</p>
+  <p>Inventory is at 0 so its pill is gone; Maintenance carries 2. One bar, still 38&nbsp;px.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a class="on" href="loader.html">3. Loader &middot; scan</a>
+    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a href="supervisor.html">6. Supervisor swap</a>
+    <a href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
+
+  <div class="topbar">
+    <div class="tabs">
+      <a class="roletab" href="index.html">Rebar</a>
+      <a class="roletab on" href="loader.html">Loader</a>
+      <a class="roletab" href="#" onclick="return false;">Yard</a>
+    </div>
+    <div class="xrail">
+      <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+      <a class="crosspill" href="#" onclick="return false;" title="Maintenance — 2 open WOs">
+        <span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+      <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+    </div>
+  </div>
+
+  <div class="camwrap short">
+    <div class="syncchip"><span class="dot"></span>Synced</div>
+    <div class="camtools">
+      <span class="camtool" title="Torch">&#9788;</span>
+      <span class="camtool" title="Language EN/ES">ES</span>
+    </div>
+    <div class="retic" style="width:230px;height:100px;"><span class="c2"></span><span class="c3"></span></div>
+    <div class="scanline"></div>
+    <div class="camhint"><span class="live">&#9679;</span> Scanning onto <b>Truck 07</b></div>
+  </div>
+
+  <!-- identical strip, different resolution of where/for/by -->
+  <div class="ctxstrip">
+    <div class="cx"><span class="ck">Where</span>
+      <span class="cv">Truck 07 <span class="mut">&middot; bin X8 &middot; bay 3</span></span></div>
+    <div class="cx"><span class="ck">For</span>
+      <span class="cv">Aldine Westfield Ph2 <span class="mut">&middot; sub-orders 10827 &middot; 10755</span></span></div>
+    <div class="cx"><span class="ck">By</span>
+      <span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct warn">68%</span></span></span></div>
+    <div class="pbar"><i class="warn" style="width:68%"></i></div>
+    <div class="stages">
+      <div class="stg done">Not<br>printed</div>
+      <div class="stg done">Tag in<br>office</div>
+      <div class="stg done">At<br>machine</div>
+      <div class="stg done">In<br>staging</div>
+      <div class="stg now warn">On<br>truck</div>
+      <div class="stg">Deliv&#8203;ered</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0;">
+    <div class="kick">Loaded &middot; 12 sec ago</div>
+    <h2>FT052926-004#1</h2>
+    <div class="body">
+      <b>#6</b> &middot; straight &middot; 20&#8242;&#8209;0&#8243; &middot; qty <b>24</b> &middot; 961 lb<br>
+      7 tags still off the truck.
+    </div>
+    <div class="pills">
+      <span class="pill warn">Pending backfill</span>
+      <span class="pill ok">Bin X8 matches</span>
+    </div>
+  </div>
+
+  <div class="ctarow">
+    <a class="btn prim blk big" href="loader-alarm.html">Scan onto truck &rarr;</a>
+    <a class="btn hold" href="#" onclick="return false;" title="Load photos — driver / passenger / rear">&#128247;</a>
+  </div>
+  <div class="ctarow">
+    <a class="btn ghost blk" href="loader-drawer.html">Close out load &mdash; 7 short &#9652;</a>
+  </div>
+
+  <div class="drawer" data-drawer>
+    <div class="dhandle" data-dhandle>
+      <span class="grip"></span>
+      <div>
+        <div class="dt">Punch list &mdash; what's left</div>
+        <div class="ds">7 tags &middot; 3 categories</div>
+      </div>
+      <span class="dn">7</span>
+      <span class="car">&#9652;</span>
+    </div>
+    <div class="dbody">
+      <div class="sectlbl" style="margin-top:2px;">Still to load <span class="n">7 of 22</span></div>
+      <div class="wrow warn">
+        <div><div class="nm">Rebar &middot; 4 tags</div>
+          <div class="sub">At machine &middot; BENDER &middot; walk to bay 2</div></div>
+        <div class="val warn">4</div>
+      </div>
+      <div class="wrow bad">
+        <div><div class="nm">Tendon &middot; 3 tags</div>
+          <div class="sub">Tag in office &middot; not printed yet</div></div>
+        <div class="val bad">3</div>
+      </div>
+      <div class="wrow ok">
+        <div><div class="nm">Hardware &middot; 0 tags</div>
+          <div class="sub">On truck &middot; complete</div></div>
+        <div class="val ok">100%</div>
+      </div>
+    </div>
+  </div>
+
+</div></div></div>
+
+<div class="note">
+  <span class="h">Why the punch list is a drawer and not a section</span>
+  James's three sections (roles / scan / task metadata) resolved to <b>two</b>: the strip carries the
+  <i>current</i> task context and is always visible because it is tied to what is in the viewport;
+  anything <i>browsable</i> &mdash; a list you read rather than glance at &mdash; goes in the bottom
+  pull-up, collapsed. The loader is the role that most needs a browsable list (the punch list), so it
+  is the clearest test of the pattern. Page 4 shows it open.<br>
+  <b>Real today:</b> the loader app is fully live (<code>/api/load</code>, <code>load_app.html</code>),
+  including progress counts, the 4-part load identity, load photos and the 6-stage lifecycle view
+  (built, flag <code>WIP_LOADER_LIFECYCLE_V2</code> off).<br>
+  <span class="flag">Not backed:</span> <b>Truck 07</b> &mdash; there is no truck/vehicle entity anywhere
+  in the model (G4) &middot; the <b>punch list</b> and its walk-to hints are designed, unbuilt, and blocked
+  on the <code>category</code> field, which does not exist on the tag (L9/L12) &middot; the
+  <b>close-out gate</b> is the loader spec's ROI item and is also unbuilt &mdash; today a partially
+  loaded truck gets no gate at all (L10).
+</div>
+
+<div class="footnav">
+  Prev: <a href="rebar-busy.html">2. Rebar &middot; busy</a> &middot;
+  Next: <a href="loader-drawer.html">4. Drawer open &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
