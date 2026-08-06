@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — Rebar Fabricator, quiet state · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>1 / 7 &middot; Rebar Fabricator &mdash; <b>quiet state</b> (all cross-role badges 0)</h1>
+  <p><b>Scan owns the screen.</b> Nobody navigates to scan &mdash; it is where every role already is
+    (production: <code>/api/scan</code>). The role bar is a <b>38&nbsp;px strip on top of scan</b>, not a
+    dashboard in front of it. With Inventory and Maintenance both at zero the two cross-role pills
+    <b>collapse to zero width and disappear</b> &mdash; they do not grey out, they stop costing pixels.
+    Compare page 2, where the same bar carries two live badges.</p>
+  <p>Task metadata rides <b>with</b> the scan context as a thin strip under the viewport &mdash; the
+    <code>where / for whom / by when</code> 3-line pattern from the requirements audit &sect;9.2 (C3),
+    standardised across every role. A fuller browsable list lives in the
+    <b>bottom pull-up drawer</b>, collapsed by default.</p>
+  <div class="crumbs">
+    <a class="on" href="index.html">1. Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a href="loader.html">3. Loader &middot; scan</a>
+    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a href="supervisor.html">6. Supervisor swap</a>
+    <a href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/scan</span></div>
+
+  <!-- ONE BAR: role tabs + cross-role pills + identity/authority chip. 38px. -->
+  <div class="topbar">
+    <div class="tabs">
+      <a class="roletab on" href="index.html">Rebar</a>
+      <a class="roletab" href="loader.html">Loader</a>
+      <a class="roletab" href="#" onclick="return false;">Yard</a>
+    </div>
+    <div class="xrail">
+      <!-- both at 0 -> collapsed to zero width -->
+      <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+      <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">0</span></a>
+      <span class="whochip" title="Tap = authority swap. Worker has no supervisor level, so this is display-only.">
+        0421&nbsp;<span class="auth">W</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- camera viewport — R3, present for the 6 scan-driven roles -->
+  <div class="camwrap">
+    <div class="syncchip"><span class="dot"></span>Synced</div>
+    <div class="camtools">
+      <span class="camtool" title="Torch">&#9788;</span>
+      <span class="camtool" title="Language EN/ES">ES</span>
+    </div>
+    <div class="retic"><span class="c2"></span><span class="c3"></span></div>
+    <div class="scanline"></div>
+    <div class="camhint"><span class="live">&#9679;</span> Scanning &mdash; hold the tag steady</div>
+  </div>
+
+  <!-- context strip: bound to what the scanner just read. Not a section. -->
+  <div class="ctxstrip">
+    <div class="cx"><span class="ck">Where</span>
+      <span class="cv">Shear 03 <span class="mut">&middot; bin X8 &middot; bay 2</span></span></div>
+    <div class="cx"><span class="ck">For</span>
+      <span class="cv">Aldine Westfield Ph2 <span class="mut">&middot; sub-order 10827</span></span></div>
+    <div class="cx"><span class="ck">By</span>
+      <span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct">68%</span></span></span></div>
+    <div class="pbar"><i style="width:68%"></i></div>
+    <div class="stages">
+      <div class="stg done">Not<br>printed</div>
+      <div class="stg done">Tag in<br>office</div>
+      <div class="stg now">At<br>machine</div>
+      <div class="stg">In<br>staging</div>
+      <div class="stg">On<br>truck</div>
+      <div class="stg">Deliv&#8203;ered</div>
+    </div>
+  </div>
+
+  <!-- last read -->
+  <div class="card" style="margin-top:0;">
+    <div class="kick">Last read &middot; 8 sec ago</div>
+    <h2>FT052926-001#3</h2>
+    <div class="body">
+      <b>#5</b> &middot; bend <b>T2</b> &middot; 14&#8242;&#8209;6&#8243; &middot; qty <b>18</b> &middot; 412 lb<br>
+      Next work centre: <b>BENDER</b>.
+    </div>
+    <div class="pills">
+      <span class="pill acc">At machine</span>
+      <span class="pill">This shift: 34</span>
+    </div>
+  </div>
+
+  <div class="ctarow">
+    <a class="btn prim blk big" href="#" onclick="return false;">Record scan &rarr;</a>
+    <a class="btn hold" href="#" onclick="return false;" title="Can't scan — photo fallback">&#128247;</a>
+  </div>
+
+  <!-- bottom drawer: collapsed by default -->
+  <div class="drawer" data-drawer>
+    <div class="dhandle" data-dhandle>
+      <span class="grip"></span>
+      <div>
+        <div class="dt">Bins I touched today</div>
+        <div class="ds">4 bins &middot; 1 pending backfill</div>
+      </div>
+      <span class="dn">4</span>
+      <span class="car">&#9652;</span>
+    </div>
+    <div class="dbody">
+      <div class="sectlbl" style="margin-top:2px;">Today <span class="n">by last scan</span></div>
+      <div class="wrow ok">
+        <div><div class="nm">X8 &middot; Aldine Westfield Ph2</div>
+          <div class="sub">At machine &middot; 15 of 22 &middot; 2 min ago</div></div>
+        <div class="val ok">68%</div>
+      </div>
+      <div class="wrow warn">
+        <div><div class="nm">X9 &middot; Beltway Substation</div>
+          <div class="sub">At machine &middot; 8 of 20 &middot; 41 min ago</div></div>
+        <div class="val warn">40%</div>
+      </div>
+      <div class="wrow ok">
+        <div><div class="nm">W4 &middot; Katy Plant Expansion</div>
+          <div class="sub">In staging &middot; 14 of 14 &middot; 1 h 10 m ago</div></div>
+        <div class="val ok">100%</div>
+      </div>
+      <div class="wrow">
+        <div><div class="nm">Y7 &middot; Memorial Hospital</div>
+          <div class="sub">Tag in office &middot; 0 of 9 &middot; 3 h ago</div></div>
+        <div class="val">&mdash;</div>
+      </div>
+    </div>
+  </div>
+
+</div></div></div>
+
+<div class="note">
+  <span class="h">Grounding &amp; open flags on this screen</span>
+  <b>Real today:</b> the camera and decode paths (<code>scan_engine.js</code>), the shift count
+  (<i>"This shift: N"</i>), the offline/sync chip, the bin roll-up under the scanner
+  (<code>/api/load-status</code>), tag fields (<code>bar_size</code>, <code>bend_code</code>,
+  <code>qty</code>, <code>weight_lbs</code>, <code>ship_date</code>, <code>order_num</code>) and the
+  <code>tag_id = ticket#line</code> identity.<br>
+  <b>Deliberate change from the 2026-08-05 set:</b> the drawer says <i>"Bins I touched today"</i>, not
+  <i>"Assigned bins"</i> &mdash; there is <span class="flag">no worker&harr;work assignment model</span>
+  anywhere in production (audit &sect;0, gap G3), but <i>bins this actor has scanned</i> is derivable
+  from <code>events.actor</code> today.<br>
+  <b>Still unbacked:</b> <span class="flag">bay 2</span> (no location field, G10) &middot;
+  <span class="flag">0421</span> badge format (G14) &middot; cross-role badge counts depend on the
+  Inventory and Maintenance builds (G9).
+</div>
+
+<div class="footnav">
+  Next: <a href="rebar-busy.html">2. Same screen, busy state &rarr;</a> &middot;
+  <a href="bar-anatomy.html">Bar anatomy</a> &middot;
+  <a href="README.md">README</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
