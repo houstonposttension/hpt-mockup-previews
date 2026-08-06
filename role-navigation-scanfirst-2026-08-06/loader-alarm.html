@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — wrong-bin alarm, full-screen interrupt · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>5 / 7 &middot; Loader &mdash; <b>wrong-bin alarm</b>, deliberately outside the shared chrome</h1>
+  <p>Everything else in this set is an argument for consolidation. This is the counter-example. The
+    wrong-bin alarm is the loader's <b>primary error-prevention control</b> and it is
+    <b>role-specific by design</b> &mdash; the audit lists it as R2, one of nine things that must
+    <b>not</b> be flattened into the shared kit. So it does not render as a toast, a strip, a pill, or a
+    row inside the bar. It <b>takes the whole screen, including the bar</b>, pulses, sounds a tone,
+    vibrates, and blocks every other control until the loader makes a three-way decision.</p>
+  <p>Frame A is the interrupt. Frame B is the decision that follows it &mdash; <b>Switch / Stay / Stop</b>
+    &mdash; which is where the bar comes back. Tap either frame to dismiss and see the loader screen
+    underneath.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a href="loader.html">3. Loader &middot; scan</a>
+    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a class="on" href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a href="supervisor.html">6. Supervisor swap</a>
+    <a href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== FRAME A — the interrupt ===== -->
+  <div>
+  <div class="phone"><div class="scr">
+
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab on" href="loader.html">Loader</a>
+        <a class="roletab" href="#" onclick="return false;">Yard</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+    <div class="camwrap short">
+      <div class="retic" style="width:230px;height:100px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="camhint">Scanning onto <b>Truck 07</b></div>
+    </div>
+    <div class="ctxstrip">
+      <div class="cx"><span class="ck">Where</span><span class="cv">Truck 07 <span class="mut">&middot; bin X8 &middot; bay 3</span></span></div>
+      <div class="cx"><span class="ck">For</span><span class="cv">Aldine Westfield Ph2</span></div>
+      <div class="cx"><span class="ck">By</span><span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct warn">68%</span></span></span></div>
+    </div>
+
+    <!-- covers everything, bar included -->
+    <div class="alarm">
+      <div class="icon">&#9888;</div>
+      <div class="hdr">WRONG BIN</div>
+      <div class="sub">This tag does not belong on Truck&nbsp;07.</div>
+      <div class="cmp">
+        <div>
+          <div class="k">Truck is locked to</div>
+          <div class="v">X8</div>
+          <div class="s">Aldine Westfield Ph2</div>
+        </div>
+        <div>
+          <div class="k">You just scanned</div>
+          <div class="v">X9</div>
+          <div class="s">Beltway Substation</div>
+        </div>
+      </div>
+      <div class="acts">
+        <button class="abtn sw" data-alarm-dismiss>Switch this truck to X9</button>
+        <button class="abtn stay" data-alarm-dismiss>Stay on X8 &mdash; set this tag aside</button>
+        <button class="abtn stop" data-alarm-dismiss>Stop &mdash; get a supervisor</button>
+      </div>
+      <div class="foot">TAG NOT RECORDED &middot; TONE + VIBRATE &middot; NO OTHER CONTROL IS LIVE</div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; the interrupt &mdash; covers the bar</div>
+  </div>
+
+  <!-- ===== FRAME B — the decision aftermath ===== -->
+  <div>
+  <div class="phone"><div class="scr">
+
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab on" href="loader.html">Loader</a>
+        <a class="roletab" href="#" onclick="return false;">Yard</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0; border-color:rgba(255,59,48,.45); background:rgba(255,59,48,.07);">
+      <div class="kick" style="color:var(--bad);">Bin conflict &middot; decide before scanning resumes</div>
+      <h2>X8 locked &middot; X9 scanned</h2>
+      <div class="body">
+        Truck 07 already has <b>15 tags from X8</b> on it. Switching the truck to <b>X9</b> moves this
+        load's identity and re-counts progress against X9's 14 tags.
+      </div>
+      <div class="pills">
+        <span class="pill bad">Tag not recorded</span>
+        <span class="pill">Logged to audit trail</span>
+      </div>
+    </div>
+
+    <div class="sectlbl">Your three options</div>
+    <div class="wrow">
+      <div><div class="nm">Switch truck to X9</div>
+        <div class="sub">Re-keys the load &middot; 15 X8 tags flagged for review</div></div>
+      <div class="val">&mdash;</div>
+    </div>
+    <div class="wrow ok">
+      <div><div class="nm">Stay on X8</div>
+        <div class="sub">Set this tag aside &middot; keep loading &middot; 15 of 22</div></div>
+      <div class="val ok">68%</div>
+    </div>
+    <div class="wrow bad">
+      <div><div class="nm">Stop &mdash; get a supervisor</div>
+        <div class="sub">Raises a sign-off &middot; truck cannot depart</div></div>
+      <div class="val">&mdash;</div>
+    </div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn prim blk" href="loader.html">Stay on X8 &mdash; resume scanning &rarr;</a>
+    </div>
+
+    <div class="ctxstrip empty" style="margin-top:10px;">
+      <div class="cx"><span class="ck">Where</span><span class="cv"><span class="none">paused &mdash; awaiting decision</span></span></div>
+      <div class="cx"><span class="ck">For</span><span class="cv"><span class="none">&mdash;</span></span></div>
+      <div class="cx"><span class="ck">By</span><span class="cv"><span class="none">&mdash;</span></span></div>
+    </div>
+
+  </div></div>
+  <div class="phcap">B &middot; the decision &mdash; bar is back</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">What this page is arguing</span>
+  Consolidating chrome is not the same as flattening behaviour. The audit named nine role-specific
+  elements (&sect;9.5) that lose capability if normalised &mdash; the wrong-bin alarm (R2), the
+  bend-shape thumbnail (R1), the camera viewport's presence or absence (R3), the driver's binary
+  go/no-go (R4), the inventory numeric entry grid (R5), maintenance's external-staleness state (R6), the
+  supervisor's person-axis pivot (R7), the offline queue (R8), and the station picker (R9). This set
+  keeps all nine outside the shared kit. <b>The bar is the thing that unifies; the work is not.</b><br>
+  <b>Real today:</b> the alarm, the tone, the vibrate and the three-way Switch / Stay / Stop decision
+  are live in <code>load_app.html</code>. Rev 2 changes none of that behaviour &mdash; it only shows what
+  happens to the new bar when the alarm fires (it is covered) and what it looks like when the decision
+  screen takes over (it returns).<br>
+  Note the third frame element: the context strip renders its <b>empty state</b> while the load is
+  paused, rather than disappearing. The strip's height is reserved so the screen does not jump.
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader-drawer.html">4. Loader &middot; drawer</a> &middot;
+  Next: <a href="supervisor.html">6. Supervisor swap &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
