@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — Rebar Fabricator, busy state · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .demobar{ max-width:860px; margin:0 auto 12px; display:flex; align-items:center; gap:10px;
+    background:#0e1217; border:1px solid var(--acc-line); border-radius:12px; padding:9px 13px; }
+  .demobar .lbl{ font-size:11.5px; color:var(--dim); }
+  .demobar .lbl b{ color:var(--bright); }
+  .demobar button{ margin-left:auto; font-family:inherit; font-size:12px; font-weight:800;
+    background:var(--acc); color:var(--ok-ink); border:none; border-radius:10px;
+    padding:8px 13px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>2 / 7 &middot; Rebar Fabricator &mdash; <b>busy state</b> (cross-role badges live)</h1>
+  <p>Identical screen to page 1. The only difference is that Inventory now has <b>3</b> waiting counts and
+    Maintenance has <b>1</b> work order that <b>blocks this worker's station</b> &mdash; so the two
+    <code>.crosspill</code>s expand inline, on the same row as the role tabs. <b>Still one bar, still
+    38&nbsp;px.</b> Cross-role never becomes a second row.</p>
+  <p>The Maintenance count renders <b>red rather than amber</b> when the WO blocks the station you are
+    scanning at &mdash; that is the one cross-role signal a fabricator has to see before walking to a
+    machine (audit &sect;6, M3). Everything else about the screen is unchanged: scan still owns it.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Rebar &middot; quiet</a>
+    <a class="on" href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a href="loader.html">3. Loader &middot; scan</a>
+    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a href="supervisor.html">6. Supervisor swap</a>
+    <a href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<div class="demobar">
+  <div class="lbl">Tap to watch the rule fire &mdash; <b>zero badge = zero width</b>, not greyed out.</div>
+  <button data-collapse-demo>Badges clear to 0 &rarr; pills collapse</button>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/scan</span></div>
+
+  <div class="topbar">
+    <div class="tabs">
+      <a class="roletab on" href="rebar-busy.html">Rebar</a>
+      <a class="roletab" href="loader.html">Loader</a>
+      <a class="roletab" href="#" onclick="return false;">Yard</a>
+    </div>
+    <div class="xrail">
+      <a class="crosspill" data-xpill="3" href="#" onclick="return false;" title="Inventory — 3 counts assigned">
+        <span class="glyph">&#9638;</span><span class="cnt">3</span></a>
+      <a class="crosspill" data-xpill="1" href="#" onclick="return false;" title="Maintenance — 1 WO blocking your station">
+        <span class="glyph">&#9881;</span><span class="cnt bad">1</span></a>
+      <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+    </div>
+  </div>
+
+  <div class="camwrap">
+    <div class="syncchip warn"><span class="dot"></span>2 queued</div>
+    <div class="camtools">
+      <span class="camtool on" title="Torch">&#9788;</span>
+      <span class="camtool" title="Language EN/ES">ES</span>
+    </div>
+    <div class="retic"><span class="c2"></span><span class="c3"></span></div>
+    <div class="scanline"></div>
+    <div class="camhint"><span class="live">&#9679;</span> Scanning &mdash; hold the tag steady</div>
+  </div>
+
+  <div class="ctxstrip">
+    <div class="cx"><span class="ck">Where</span>
+      <span class="cv">Shear 03 <span class="mut">&middot; bin X8 &middot; bay 2</span></span></div>
+    <div class="cx"><span class="ck">For</span>
+      <span class="cv">Aldine Westfield Ph2 <span class="mut">&middot; sub-order 10827</span></span></div>
+    <div class="cx"><span class="ck">By</span>
+      <span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct">68%</span></span></span></div>
+    <div class="pbar"><i style="width:68%"></i></div>
+    <div class="stages">
+      <div class="stg done">Not<br>printed</div>
+      <div class="stg done">Tag in<br>office</div>
+      <div class="stg now">At<br>machine</div>
+      <div class="stg">In<br>staging</div>
+      <div class="stg">On<br>truck</div>
+      <div class="stg">Deliv&#8203;ered</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0;">
+    <div class="kick">Last read &middot; 8 sec ago</div>
+    <h2>FT052926-001#3</h2>
+    <div class="body">
+      <b>#5</b> &middot; bend <b>T2</b> &middot; 14&#8242;&#8209;6&#8243; &middot; qty <b>18</b> &middot; 412 lb<br>
+      Next work centre: <b>BENDER</b> &mdash; <span style="color:var(--bad);font-weight:800;">down, WO-11842</span>.
+    </div>
+    <div class="pills">
+      <span class="pill acc">At machine</span>
+      <span class="pill bad">Bender blocked</span>
+      <span class="pill">This shift: 34</span>
+    </div>
+  </div>
+
+  <div class="ctarow">
+    <a class="btn prim blk big" href="#" onclick="return false;">Record scan &rarr;</a>
+    <a class="btn hold" href="#" onclick="return false;" title="Can't scan — photo fallback">&#128247;</a>
+  </div>
+
+  <div class="drawer" data-drawer>
+    <div class="dhandle" data-dhandle>
+      <span class="grip"></span>
+      <div>
+        <div class="dt">Bins I touched today</div>
+        <div class="ds">4 bins &middot; 1 pending backfill</div>
+      </div>
+      <span class="dn">4</span>
+      <span class="car">&#9652;</span>
+    </div>
+    <div class="dbody">
+      <div class="sectlbl" style="margin-top:2px;">Today <span class="n">by last scan</span></div>
+      <div class="wrow ok">
+        <div><div class="nm">X8 &middot; Aldine Westfield Ph2</div>
+          <div class="sub">At machine &middot; 15 of 22 &middot; 2 min ago</div></div>
+        <div class="val ok">68%</div>
+      </div>
+      <div class="wrow warn">
+        <div><div class="nm">X9 &middot; Beltway Substation</div>
+          <div class="sub">At machine &middot; 8 of 20 &middot; 41 min ago</div></div>
+        <div class="val warn">40%</div>
+      </div>
+      <div class="wrow ok">
+        <div><div class="nm">W4 &middot; Katy Plant Expansion</div>
+          <div class="sub">In staging &middot; 14 of 14 &middot; 1 h 10 m ago</div></div>
+        <div class="val ok">100%</div>
+      </div>
+      <div class="wrow">
+        <div><div class="nm">Y7 &middot; Memorial Hospital</div>
+          <div class="sub">Tag in office &middot; 0 of 9 &middot; 3 h ago</div></div>
+        <div class="val">&mdash;</div>
+      </div>
+    </div>
+  </div>
+
+</div></div></div>
+
+<div class="note">
+  <span class="h">The collapse rule, stated</span>
+  A cross-role pill is rendered <b>only while its badge count is &gt; 0</b>. At zero it animates to
+  <code>max-width:0; padding:0; opacity:0; border-width:0</code> &mdash; it reclaims the pixels rather
+  than sitting there grey. The entry stays reachable (long-press the role tabs opens the full function
+  list), so nothing becomes undiscoverable.<br>
+  This <b>supersedes</b> the 2026-08-05 set, where <code>locked-single-role.html</code> rendered an
+  Inventory pill with a literal badge of <code>0</code> &mdash; the audit flagged that as a mockup/spec
+  conflict (&sect;12.1) and the locked spec &sect;9.1 already said "hide at zero". Rev 2 hides it, and
+  reclaims the space.<br>
+  <span class="flag">Still unbacked:</span> the badge counts themselves need the Inventory and
+  Maintenance builds (G9), and the red "blocks this station" variant needs the WO&harr;station map (M3).
+</div>
+
+<div class="footnav">
+  Prev: <a href="index.html">1. Rebar &middot; quiet</a> &middot;
+  Next: <a href="loader.html">3. Loader &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
