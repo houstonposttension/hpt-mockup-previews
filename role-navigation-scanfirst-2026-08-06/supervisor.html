@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — supervisor authority swap · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .stage{ align-items:flex-start; }
+  /* authority sheet — hangs off the identity chip, replaces the whole .suptoggle row */
+  .authpop{ position:absolute; top:78px; right:10px; z-index:40; width:206px;
+    background:var(--panel); border:1px solid var(--line2); border-radius:12px;
+    box-shadow:0 16px 40px rgba(0,0,0,.7); overflow:hidden; }
+  .authpop .ah{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+    color:var(--faint); padding:9px 12px 5px; }
+  .authpop .arow{ display:flex; align-items:center; gap:8px; padding:9px 12px; font-size:12.5px;
+    color:var(--txt); border-top:1px solid #1e2429; cursor:pointer; text-decoration:none; }
+  .authpop .arow.on{ background:rgba(125,162,201,.14); color:var(--bright); font-weight:800; }
+  .authpop .arow .g{ width:20px; height:20px; border-radius:6px; background:#0e1217;
+    border:1px solid var(--line); color:var(--dim); font-size:10px; font-weight:900;
+    text-align:center; line-height:18px; flex:0 0 20px; }
+  .authpop .arow.on .g{ background:var(--blue-soft); color:#0b0d10; border-color:var(--blue-soft); }
+  .authpop .foot{ font-size:9.5px; color:var(--faint); padding:7px 12px 9px; line-height:1.5;
+    border-top:1px dashed var(--line); }
+  .authpop::before{ content:""; position:absolute; top:-6px; right:22px; width:10px; height:10px;
+    background:var(--panel); border-left:1px solid var(--line2); border-top:1px solid var(--line2);
+    transform:rotate(45deg); }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>6 / 7 &middot; Supervisor &mdash; <b>authority swap folded into the identity chip</b></h1>
+  <p>The 2026-08-05 set spent a <b>third stacked row</b> on the Supervise OFF/ON toggle &mdash; app bar,
+    then cross-role rail, then the toggle, roughly 150&nbsp;px of chrome before any content. Rev 2 folds
+    it into the identity chip that was already in the bar: <code>0421&nbsp;W</code> &rarr; tap &rarr;
+    <code>0421&nbsp;SUP</code>. Still one bar. Still 38&nbsp;px.</p>
+  <p>The swap stays <b>explicit and audited</b> &mdash; it opens a small sheet rather than toggling on a
+    single tap, because every write after it logs a different authority. Frame A is that sheet; frame B is
+    the supervisor view it produces.</p>
+  <p>Supervisor is the one role in this set that is <b>not</b> scan-first. Its pivot flips from a work
+    unit to a person (audit R7), so there is no camera viewport and no context strip &mdash; the roster
+    <i>is</i> the content. The bar is identical anyway, which is the point.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a href="loader.html">3. Loader &middot; scan</a>
+    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a class="on" href="supervisor.html">6. Supervisor swap</a>
+    <a href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== FRAME A — the chip tapped ===== -->
+  <div>
+  <div class="phone"><div class="scr">
+
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab on" href="loader.html">Loader</a>
+        <a class="roletab" href="#" onclick="return false;">Yard</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip sup">0421&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="authpop">
+      <div class="ah">Acting authority</div>
+      <a class="arow on" href="#" onclick="return false;"><span class="g">W</span>Worker</a>
+      <a class="arow" href="supervisor.html"><span class="g">S</span>Supervisor</a>
+      <div class="foot">Every write from here logs<br>(Loader, <b>Supervisor</b>) until you swap back.</div>
+    </div>
+
+    <div class="camwrap short" style="opacity:.35;">
+      <div class="retic" style="width:230px;height:100px;"><span class="c2"></span><span class="c3"></span></div>
+    </div>
+    <div class="ctxstrip" style="opacity:.35;">
+      <div class="cx"><span class="ck">Where</span><span class="cv">Truck 07 <span class="mut">&middot; bin X8</span></span></div>
+      <div class="cx"><span class="ck">For</span><span class="cv">Aldine Westfield Ph2</span></div>
+      <div class="cx"><span class="ck">By</span><span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct warn">68%</span></span></span></div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; chip tapped &mdash; no second row</div>
+  </div>
+
+  <!-- ===== FRAME B — supervisor view ===== -->
+  <div>
+  <div class="phone"><div class="scr">
+
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load?view=supervise</span></div>
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab on" href="supervisor.html">Loader</a>
+        <a class="roletab" href="#" onclick="return false;">Yard</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting" title="Acting as Supervisor — every write is logged with this authority">
+          0421&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <div class="sectlbl" style="margin-top:2px;">Loads today <span class="n">Aug 6</span></div>
+    <div class="kpigrid">
+      <div class="kpi ok"><div class="n">1</div><div class="l">on truck</div></div>
+      <div class="kpi warn"><div class="n">2</div><div class="l">in staging</div></div>
+      <div class="kpi"><div class="n">1</div><div class="l">at machine</div></div>
+    </div>
+
+    <div class="sectlbl">Team <span class="n">5 on the loader</span></div>
+    <div class="wrow warn">
+      <div><div class="nm">0421 &middot; you</div>
+        <div class="sub">Truck 07 &middot; on truck &middot; 15 of 22 &middot; 2 min ago</div>
+        <div class="pills"><span class="pill warn">Pending backfill</span></div></div>
+      <div class="val warn">68%<span class="u">loaded</span></div>
+    </div>
+    <div class="wrow ok">
+      <div><div class="nm">0203 &middot; Operator 2</div>
+        <div class="sub">Truck 04 &middot; on truck &middot; 22 of 22 &middot; 14 min ago</div></div>
+      <div class="val ok">100%<span class="u">loaded</span></div>
+    </div>
+    <div class="wrow">
+      <div><div class="nm">0378 &middot; Operator 3</div>
+        <div class="sub">Truck 11 &middot; in staging &middot; 0 of 18 &middot; no scans yet</div></div>
+      <div class="val">&mdash;<span class="u">loaded</span></div>
+    </div>
+    <div class="wrow bad">
+      <div><div class="nm">0505 &middot; Operator 4</div>
+        <div class="sub">Truck 09 &middot; at machine &middot; 3 of 26 &middot; 51 min ago</div>
+        <div class="pills"><span class="pill bad">Stalled</span></div></div>
+      <div class="val bad">12%<span class="u">loaded</span></div>
+    </div>
+    <div class="wrow">
+      <div><div class="nm">0611 &middot; Operator 5</div>
+        <div class="sub">Hardware &middot; tag in office &middot; 0 of 4</div></div>
+      <div class="val">&mdash;<span class="u">loaded</span></div>
+    </div>
+
+    <div class="drawer" data-drawer>
+      <div class="dhandle" data-dhandle>
+        <span class="grip"></span>
+        <div>
+          <div class="dt">Needs your sign-off</div>
+          <div class="ds">2 open &middot; oldest 40 min</div>
+        </div>
+        <span class="dn">2</span>
+        <span class="car">&#9652;</span>
+      </div>
+      <div class="dbody">
+        <div class="sectlbl" style="margin-top:2px;">Sign-off queue <span class="n">2 open</span></div>
+        <div class="wrow bad">
+          <div><div class="nm">Truck 07 &middot; depart short</div>
+            <div class="sub">0421 &middot; 7 tags &middot; opened 12 min ago</div>
+            <div class="pills"><span class="pill bad">High</span><span class="pill">Blocks departure</span></div></div>
+          <div class="val bad">68%</div>
+        </div>
+        <div class="wrow warn">
+          <div><div class="nm">Truck 11 &middot; hardware mismatch</div>
+            <div class="sub">0378 &middot; opened 40 min ago</div>
+            <div class="pills"><span class="pill warn">Medium</span><span class="pill">Awaiting purchasing</span></div></div>
+          <div class="val">&mdash;</div>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+  <div class="phcap">B &middot; supervisor &mdash; person-axis, no camera</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">What changed from the 2026-08-05 authority-swap page</span>
+  <b>1. The Supervise row is gone.</b> Authority lives in the identity chip that was already in the bar.
+  Chrome for a supervisor drops from three rows to one.<br>
+  <b>2. Severity left the <code>.val</code> slot.</b> The old roster put <code>HIGH</code> / <code>MED</code>
+  in the same right-hand slot that holds <code>68%</code> and <code>100%</code> elsewhere &mdash; three
+  data types in one place, the audit's open question &sect;9.3. Here <code>.val</code> is
+  <b>always the progress percent</b> (with a unit caption under it), and severity is a
+  <code>.pill</code> plus the row's left border. Every list in this set follows that rule.<br>
+  <b>3. One status vocabulary.</b> Roster subs read <i>at machine / in staging / on truck / tag in
+  office</i> &mdash; the 6-stage lifecycle, everywhere, per the audit's &sect;9.4 recommendation. The
+  older <i>ready / loading / not started</i> wording is dropped.<br>
+  <b>4. Presence is dropped.</b> The old page showed <i>"4 of 5 on shift"</i> and <i>"Off shift &middot;
+  no cover assigned"</i>. There is <span class="flag">no clock-in signal</span> in the system, and the
+  locked spec &sect;12.5 records the decision that there is no software OOO handling. The header now reads
+  <i>"5 on the loader"</i> &mdash; an assignment count, which is what <code>primary_shift</code> actually
+  is.<br>
+  <span class="flag">Still unbacked:</span> trucks (G4) &middot; the worker&harr;load link that puts a
+  person on a truck (G3) &middot; the sign-off queue, which needs the unbuilt <code>hpt-approvals</code>
+  primitive (S13) &middot; the <code>0421</code> badge format (G14). Also note that "Supervisor" is not
+  enforced in production today &mdash; <code>PORTAL_ENFORCE_SUPERVISOR_ROLE</code> is unset, so any
+  authenticated principal passes, and <code>authority_level</code> does not exist in the data model yet.
+  Names shown are placeholders, not roster data.
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader-alarm.html">5. Wrong-bin alarm</a> &middot;
+  Next: <a href="bar-anatomy.html">7. Bar anatomy &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
