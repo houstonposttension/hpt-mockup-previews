@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scan-first rev 2 — the one bar, dissected · 2026-08-06</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .barbox{ width:390px; margin:0 auto; background:var(--bg); border:2px solid var(--line);
+    border-radius:14px; padding:8px 8px 2px; }
+  .barbox .topbar{ margin-bottom:6px; }
+  .barcap{ width:390px; margin:6px auto 20px; text-align:center; font-size:10.5px; font-weight:800;
+    letter-spacing:.4px; color:var(--faint); text-transform:uppercase; }
+  .callouts{ max-width:860px; margin:6px auto 0; display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:8px; }
+  .co{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+  .co .t{ font-size:11px; font-weight:900; color:var(--acc); text-transform:uppercase;
+    letter-spacing:.6px; margin-bottom:4px; }
+  .co .d{ font-size:11.5px; color:var(--dim); line-height:1.55; }
+  .co .d b{ color:var(--bright); }
+  h2.sec{ max-width:860px; margin:30px auto 8px; font-size:14px; font-weight:900; color:var(--txt);
+    border-bottom:1px solid var(--line); padding-bottom:7px; }
+  .prims{ max-width:860px; margin:0 auto; font-size:12px; }
+  .prims table{ width:100%; border-collapse:collapse; }
+  .prims th{ font-size:9.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--faint);
+    text-align:left; font-weight:900; padding:7px 8px; border-bottom:1px solid var(--line); }
+  .prims td{ padding:7px 8px; border-bottom:1px solid #1c2128; color:var(--dim); vertical-align:top; }
+  .prims td code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11px; color:var(--acc-soft); }
+  .prims td b{ color:var(--bright); }
+  .tag{ display:inline-block; font-size:9px; font-weight:900; letter-spacing:.4px; text-transform:uppercase;
+    border-radius:5px; padding:2px 6px; }
+  .tag.keep{ background:var(--ok-dim); color:var(--ok); border:1px solid rgba(22,192,96,.4); }
+  .tag.new{ background:rgba(125,162,201,.14); color:var(--blue-soft); border:1px solid rgba(125,162,201,.4); }
+  .tag.gone{ background:var(--bad-dim); color:var(--bad); border:1px solid rgba(255,59,48,.4); }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>7 / 7 &middot; The one bar, dissected</h1>
+  <p>Screen real estate was the driving constraint of the 2026-08-06 discussion. This page states the
+    budget, the collapse rule, and exactly which pieces are reused versus new.</p>
+  <div class="crumbs">
+    <a href="index.html">1. Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
+    <a href="loader.html">3. Loader &middot; scan</a>
+    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
+    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
+    <a href="supervisor.html">6. Supervisor swap</a>
+    <a class="on" href="bar-anatomy.html">7. Bar anatomy</a>
+  </div>
+</div>
+
+<h2 class="sec">Quiet &rarr; busy &rarr; crowded &mdash; the same 38&nbsp;px</h2>
+
+<div class="barbox">
+  <div class="topbar" style="border-bottom:none;">
+    <div class="tabs">
+      <span class="roletab on">Rebar</span>
+      <span class="roletab">Loader</span>
+      <span class="roletab">Yard</span>
+    </div>
+    <div class="xrail">
+      <span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
+      <span class="crosspill zero"><span class="glyph">&#9881;</span><span class="cnt">0</span></span>
+      <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+    </div>
+  </div>
+</div>
+<div class="barcap">Quiet &mdash; both cross-role counts at 0, both pills gone</div>
+
+<div class="barbox">
+  <div class="topbar" style="border-bottom:none;">
+    <div class="tabs">
+      <span class="roletab on">Rebar</span>
+      <span class="roletab">Loader</span>
+      <span class="roletab">Yard</span>
+    </div>
+    <div class="xrail">
+      <span class="crosspill"><span class="glyph">&#9638;</span><span class="cnt">3</span></span>
+      <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt bad">1</span></span>
+      <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+    </div>
+  </div>
+</div>
+<div class="barcap">Busy &mdash; both pills expand inline, red = blocks your station</div>
+
+<div class="barbox">
+  <div class="topbar" style="border-bottom:none;">
+    <div class="tabs">
+      <span class="roletab on">Loader</span>
+      <span class="roletab">Rebar</span>
+      <span class="roletab more">+3&nbsp;&#9662;</span>
+    </div>
+    <div class="xrail">
+      <span class="crosspill"><span class="glyph">&#9638;</span><span class="cnt">3</span></span>
+      <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt bad">1</span></span>
+      <span class="whochip acting">0421&nbsp;<span class="auth">SUP</span></span>
+    </div>
+  </div>
+</div>
+<div class="barcap">Crowded &mdash; 5 functions + supervisor: tabs overflow to <b>+3</b>, nothing wraps</div>
+
+<div class="callouts">
+  <div class="co"><div class="t">Role tabs</div><div class="d">
+    Up to <b>3 tabs inline</b>, the rest behind <code>+N</code>. The 2026-08-05 dropdown is retained
+    only as that overflow. A single-function worker gets <b>no tabs at all</b> &mdash; the strip is
+    then just the identity chip.</div></div>
+  <div class="co"><div class="t">Cross-role pills</div><div class="d">
+    Icon + count only, no label. <b>Zero count = zero width</b>: <code>max-width</code>,
+    <code>padding</code>, <code>margin</code>, <code>opacity</code> and <code>border-width</code> all
+    animate to 0 over 220&nbsp;ms. Not greyed &mdash; gone.</div></div>
+  <div class="co"><div class="t">Identity chip</div><div class="d">
+    <code>(Function, Authority)</code> compressed to badge + authority letter. The function half is
+    already shown by the active tab, so only the authority is spelled out. <b>Tapping it is the
+    authority swap</b> &mdash; the old Supervise OFF/ON row is deleted.</div></div>
+  <div class="co"><div class="t">What is NOT in the bar</div><div class="d">
+    No page title, no logo, no hamburger, no back arrow, no breadcrumb, no notification bell. Scan is
+    the root; there is nothing to go back to.</div></div>
+</div>
+
+<h2 class="sec">Space budget &mdash; against the 2026-08-05 baseline</h2>
+
+<div class="measure">
+  <div>Chrome above the first pixel of content</div><div>Baseline</div><div>Rev 2</div>
+
+  <div>App bar (brand + function dropdown + role banner)</div>
+  <div class="num bad">~50 px</div><div class="num">&mdash;</div>
+
+  <div>Cross-role rail (2 full-width labelled pills, own row)</div>
+  <div class="num bad">~47 px</div><div class="num">&mdash;</div>
+
+  <div>Supervise OFF/ON row (supervisor only)</div>
+  <div class="num bad">~52 px</div><div class="num">&mdash;</div>
+
+  <div>Consolidated bar (tabs + pills + identity)</div>
+  <div class="num">&mdash;</div><div class="num good">~47 px</div>
+
+  <div><b>Total &mdash; worker</b></div>
+  <div class="num bad">~97 px</div><div class="num good">~47 px</div>
+
+  <div><b>Total &mdash; supervisor</b></div>
+  <div class="num bad">~149 px</div><div class="num good">~47 px</div>
+
+  <div><b>Reclaimed for scan</b></div>
+  <div class="num">&mdash;</div><div class="num good">50&ndash;102 px</div>
+</div>
+
+<div class="note" style="border-left-color:var(--acc);">
+  <span class="h" style="color:var(--acc);">How these were measured</span>
+  Box-model arithmetic on each set's <code>_shared.css</code> &mdash; padding + line-box + borders +
+  bottom margin per row &mdash; not a rendered screenshot, so treat them as <b>±3&nbsp;px design
+  targets</b>, not measurements off a device. The URL bar is a mockup device hint and is excluded from
+  both columns. On a 390&times;780 phone frame, 102&nbsp;px is roughly <b>13% of the viewport</b>, or
+  about 40% of the camera viewport's height.
+</div>
+
+<h2 class="sec">What is reused and what is new</h2>
+
+<div class="prims">
+<table>
+  <tr><th>Piece</th><th>Status</th><th>Where it came from</th></tr>
+
+  <tr><td><code>.wrow</code> &mdash; list row</td><td><span class="tag keep">reused</span></td>
+    <td>The audit counted it on <b>all 7</b> baseline screens. Unchanged, except that <code>.val</code>
+      now carries <b>percent only</b> &mdash; a proposed answer to open question &sect;9.3.</td></tr>
+
+  <tr><td><code>.sectlbl</code> &mdash; section label + count</td><td><span class="tag keep">reused</span></td>
+    <td>All 7 baseline screens. Unchanged.</td></tr>
+
+  <tr><td><code>.crosspill</code> &mdash; cross-role pill</td><td><span class="tag keep">reused</span></td>
+    <td>All 7 baseline screens. Same class, same badge, <b>re-laid-out</b> from a full-width row item to
+      an inline icon+count with a zero-width collapse state.</td></tr>
+
+  <tr><td><code>.card</code> &mdash; detail card</td><td><span class="tag keep">reused</span></td>
+    <td>6 of 7 baseline screens. Unchanged.</td></tr>
+
+  <tr><td><code>.pill</code>, <code>.kpi</code>, <code>.btn</code></td><td><span class="tag keep">reused</span></td>
+    <td>Unchanged. <code>.pill</code> now also carries severity, which moved out of <code>.val</code>.</td></tr>
+
+  <tr><td><code>.topbar</code> / <code>.roletab</code> / <code>.whochip</code></td><td><span class="tag new">new chrome</span></td>
+    <td>Replaces <code>.appbar</code> + <code>.fnmenu</code> + <code>.crossrail</code> +
+      <code>.suptoggle</code>. Chrome only &mdash; no content moved into it.</td></tr>
+
+  <tr><td><code>.camwrap</code> &mdash; camera viewport</td><td><span class="tag new">new chrome</span></td>
+    <td>The audit's <b>R3</b>: present for the 6 scan-driven roles, <b>absent</b> for Driver and
+      Maintenance. No baseline mockup showed the camera at all, which is why every baseline screen
+      looked like a dashboard.</td></tr>
+
+  <tr><td><code>.ctxstrip</code> &mdash; task metadata</td><td><span class="tag new">new chrome</span></td>
+    <td>The <b>where / for whom / by when</b> 3-line pattern (audit C3), bound to what is in the
+      viewport. Carries the standard progress fraction (C4) and the 6-stage row.</td></tr>
+
+  <tr><td><code>.drawer</code> &mdash; bottom pull-up</td><td><span class="tag new">new chrome</span></td>
+    <td>Collapsed by default. Only for roles with a genuinely browsable list.</td></tr>
+
+  <tr><td><code>.alarm</code> &mdash; wrong-bin interrupt</td><td><span class="tag new">new chrome</span></td>
+    <td>The audit's <b>R2</b>. Deliberately full-screen and outside the shared kit. Mirrors what
+      <code>load_app.html</code> already does in production.</td></tr>
+
+  <tr><td><code>.appbar</code>, <code>.fnmenu</code>, <code>.crossrail</code>, <code>.suptoggle</code></td>
+    <td><span class="tag gone">deleted</span></td>
+    <td>Four rows of chrome collapsed into one. The dropdown survives only as the <code>+N</code> tab
+      overflow.</td></tr>
+</table>
+</div>
+
+<h2 class="sec">One status vocabulary &mdash; the 6-stage lifecycle</h2>
+
+<div style="max-width:390px;margin:0 auto;">
+  <div class="ctxstrip">
+    <div class="stages">
+      <div class="stg done">Not<br>printed</div>
+      <div class="stg done">Tag in<br>office</div>
+      <div class="stg now">At<br>machine</div>
+      <div class="stg">In<br>staging</div>
+      <div class="stg">On<br>truck</div>
+      <div class="stg">Deliv&#8203;ered</div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <span class="h">Why this one</span>
+  The audit found <b>five overlapping status vocabularies</b> live in production
+  (<code>fab_status</code>; the loader category set; the 6-stage lifecycle; the ClickUp WIP phase pill;
+  and the derived tag status). Nothing can "feel the same" across roles until one wins. The 6-stage
+  lifecycle is already the locked cross-surface answer for Bins, the loader's
+  <code>WIP_LOADER_LIFECYCLE_V2</code> view, and the supervisor+lead mockup, so every screen in this set
+  uses it and nothing else &mdash; in the strip, in the roster subs, in the punch list, in the pills.<br>
+  <span class="flag">Precondition:</span> the phase&rarr;stage map is currently <b>mirrored in three
+  files that must stay byte-identical</b>. Standardising on it without collapsing that duplication first
+  multiplies the risk.
+</div>
+
+<h2 class="sec">Open decisions this set takes a position on</h2>
+
+<div class="prims">
+<table>
+  <tr><th>Audit question</th><th>Position taken here</th></tr>
+  <tr><td><b>&sect;9.3</b> &mdash; the <code>.val</code> slot carries percent, fraction <i>and</i> severity</td>
+    <td><b>Percent only</b>, with a small unit caption. Severity moves to a <code>.pill</code> and the
+      row's left border. Counts render as plain integers in a fraction context, never in
+      <code>.val</code>.</td></tr>
+  <tr><td><b>&sect;9.4</b> &mdash; five status vocabularies</td>
+    <td><b>6-stage lifecycle everywhere.</b> No screen in this set uses the other four.</td></tr>
+  <tr><td><b>Q2</b> &mdash; is a worker&harr;work assignment model in scope?</td>
+    <td><b>Sidestepped, not assumed.</b> Every "my assigned X" is re-worded to something derivable today
+      &mdash; "bins I touched today" (from <code>events.actor</code>) rather than "assigned bins".</td></tr>
+  <tr><td><b>Q4</b> &mdash; presence on the supervisor roster</td>
+    <td><b>Dropped.</b> No clock-in signal exists and the locked spec records "no software OOO
+      handling". The header counts assignment, not attendance.</td></tr>
+  <tr><td><b>Spec &sect;9.1</b> vs <code>locked-single-role.html</code> &mdash; badge at zero</td>
+    <td><b>Spec wins, harder.</b> Zero hides the pill <i>and</i> reclaims its width; the entry stays
+      reachable behind the tab overflow.</td></tr>
+  <tr><td><b>U1 / P1</b> &mdash; function vs station</td>
+    <td><b>Independent axes.</b> Station is not in the bar; it renders as the <code>where</code> line of
+      the context strip, because that is what it is. Still needs James's ruling.</td></tr>
+</table>
+</div>
+
+<div class="footnav">
+  Prev: <a href="supervisor.html">6. Supervisor swap</a> &middot;
+  <a href="index.html">Back to 1. Rebar &middot; quiet</a> &middot;
+  <a href="README.md">README</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
