@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Supervisor — act as operator + shift-scoped reposition · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<link rel="stylesheet" href="_supervisor_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>11 / 12 &middot; Supervisor &mdash; <b>act as operator</b> + <b>reposition</b></h1>
+  <p>These are pillars 2 and 3 of the locked design, and the first one <b>directly overlaps the
+    authority chip I put in the bar last night</b> &mdash; so it needs settling rather than layering.</p>
+  <p><b>Act as operator does not mean acting on someone&#39;s behalf.</b> The locked answer is that a
+    supervisor who steps in and scans is credited to <b>their own identity</b>. There is no
+    &quot;on behalf of&quot; prompt and no <code>on_behalf_of</code> field &mdash; the audit trail names
+    the real person who did the work, and the hourly grid grows a supervisor row. That is simpler
+    <i>and</i> more honest, and it needs no data-model change: the existing <code>actor</code> carries it.</p>
+  <p><b>Reposition is shift-scoped and cannot be made permanent.</b> Every move writes a shift override
+    with a 7-day TTL and shows an &quot;expires end of shift&quot; hint, so a careless move can&#39;t
+    quietly become a reassignment.</p>
+  <div class="crumbs">
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a class="on" href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — ACT AS OPERATOR ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/scan</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab" href="supervisor-station.html">Stations</a>
+        <a class="roletab on" href="supervisor-actas.html">Scan</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting" title="Still Operator 1's own identity — no impersonation">
+          0119&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <div class="actas">
+      <div class="ah">Scanning as Operator 1 &middot; Radius Bender</div>
+      <div class="ab">You&#39;re covering <b>Radius Bender</b> &mdash; Operator 8 is off this shift.
+        Scans you make here are recorded as <b>you</b>, not Operator 8.</div>
+      <div class="scopes">
+        <span class="scope">void_scan</span>
+        <span class="scope">out_of_seq_op</span>
+        <span class="scope">reprint_tag</span>
+        <span class="scope">manual_capture_approve</span>
+      </div>
+    </div>
+
+    <div class="camwrap short">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:220px;height:96px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Scanning &mdash; Radius Bender</div>
+    </div>
+
+    <div class="card" style="margin-top:0;">
+      <div class="kick">Tag scanned &middot; just now</div>
+      <h2>FT0430#77</h2>
+      <div class="body">#6 &middot; radius &middot; Union Crossing</div>
+    </div>
+
+    <div class="recorded">
+      <div class="ini">O1</div>
+      <div><div class="rt">Recorded as Operator 1 (supervisor)</div>
+        <div class="rs">No &quot;on behalf of&quot; prompt &mdash; the audit names who did the work.</div></div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big" href="#" onclick="return false;">&#10003; Record OP_FINISHED as Operator 1</a>
+    </div>
+
+    <div class="emits">writes actor = Operator 1&#39;s pseudonym &middot; same Event shape as any operator scan<br>
+      no on_behalf_of field &middot; the hourly grid shows a supervisor row</div>
+
+  </div></div>
+  <div class="phcap">A &middot; act as operator &mdash; own identity, always</div>
+  </div>
+
+  <!-- ===== B — REPOSITION ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/reposition</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab on" href="supervisor-actas.html">Stations</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting">0119&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <a class="backlink" href="supervisor.html">&larr; Reposition</a>
+    <div class="sdhdr"><span class="sname">Reposition</span><span class="scell">1st shift &middot; Rebar Cutting</span></div>
+
+    <div class="whybar"><b>Why:</b> Shear &#9660;38% of target this hour.</div>
+
+    <div class="sectlbl">Move worker</div>
+    <div class="wkrow">
+      <div class="ini">O2</div>
+      <div><div class="wn">Operator 2</div><div class="ws">now on Big Single Bender &middot; 93% of target</div></div>
+      <div class="wv">2.1k<span class="u">lb/h</span></div>
+    </div>
+
+    <div class="movepair">
+      <div class="mb"><div class="ml">From</div><div class="mv">Big Bender</div></div>
+      <span class="arrow">&rarr;</span>
+      <div class="mb to"><div class="ml">To</div><div class="mv">Shear</div></div>
+    </div>
+
+    <div class="sectlbl">Move to</div>
+    <div class="targets">
+      <div class="tgt on">Shear <span class="why">behind &#9660;38%</span></div>
+      <div class="tgt">Double Bender</div>
+      <div class="tgt">22N</div>
+      <div class="tgt">Radius Bender <span class="none">no operator</span></div>
+      <div class="tgt">Loading</div>
+    </div>
+
+    <div class="expiry">
+      <span>&#8987;</span>
+      <span>This move <b>expires at end of shift</b> (1st, today). It writes a shift override, not a
+        permanent reassignment &mdash; re-apply next shift if you still need it.</span>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big" href="#" onclick="return false;">Move Operator 2 &rarr; Shear (this shift)</a>
+    </div>
+
+    <div class="emits">writes ShiftOverrides(worker, plant_date, shift=1, station=Shear)<br>
+      7-day TTL &middot; auto-expires &middot; no durable role change</div>
+
+  </div></div>
+  <div class="phcap">B &middot; reposition &mdash; shift-scoped, no durable option</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">The collision this settles &mdash; needs your call</span>
+  Last night I folded the <b>authority swap</b> into the identity chip: tap <code>0421 W</code> to become
+  <code>0421 SUP</code>. The locked design already has a related-but-different flow, <b>Act as
+  operator</b>, and the two are not the same thing:<br>
+  &bull; <b>Authority swap</b> changes <i>what you can see and approve</i> (worker view &harr; team view).<br>
+  &bull; <b>Act as operator</b> changes <i>what you are doing</i> (a supervisor covering a station and
+  scanning), and explicitly does <b>not</b> change identity &mdash; the scan is credited to the
+  supervisor.<br>
+  Rendered here as two distinct things, with the chip carrying authority and <i>Cover this station</i>
+  on the station detail entering act-as. <b>If you want them merged into one control, say so</b> &mdash;
+  but merging risks implying impersonation, which the locked answer to Q6 deliberately rejected.<br>
+  <span class="flag">Known trap on reposition:</span> every <code>primary_shift</code> write stamps a
+  7-day TTL that re-arms. That is the mechanism this feature depends on, and it is also the thing that
+  silently clears worker shifts &mdash; worth confirming the shift-override path is the one that expires
+  cleanly before this is built.
+</div>
+
+<div class="footnav">
+  Prev: <a href="supervisor-approvals.html">Approvals</a> &middot;
+  Next: <a href="bar-anatomy.html">Bar anatomy &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
