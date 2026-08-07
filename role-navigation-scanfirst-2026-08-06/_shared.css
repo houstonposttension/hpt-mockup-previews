@@ -165,6 +165,30 @@ a:hover{ color:var(--acc); }
 .syncchip .dot{ width:7px; height:7px; border-radius:50%; background:var(--ok); }
 .syncchip.warn .dot{ background:var(--warn); } .syncchip.bad .dot{ background:var(--bad); }
 
+/* ---------- scan-side controls, under the viewport (2026-08-07) ----------
+   Production order in scan_poc.html is: video -> savebar -> start/stop ->
+   capbtn / cantscan / nativeCamBtn. Everything belonging to the ACT of
+   scanning sits directly under the viewport, and the fallbacks are hidden
+   until the camera is running. The save bar is position:sticky so the result
+   follows the worker down the page.
+   There is deliberately NO "record" button: the decode records itself
+   (handleDecode -> onScan -> POST /api/scan_event). A confirm press would be
+   a step production does not have. */
+.savestrip{ position:sticky; top:0; z-index:35; display:flex; align-items:center; gap:9px;
+  border-radius:12px; padding:10px 12px; margin:0 0 7px; font-size:13px; font-weight:800;
+  line-height:1.25; }
+.savestrip.ok{ background:var(--ok); color:var(--ok-ink); }
+.savestrip.queued{ background:#0e7a3c; color:#eafff1; }
+.savestrip.bad{ background:var(--bad); color:#fff; }
+.savestrip .tg{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; }
+.savestrip .n{ margin-left:auto; font-size:11px; font-weight:800; opacity:.82; white-space:nowrap; }
+.camrow{ display:flex; gap:6px; margin:0 0 9px; }
+.camrow .cbtn{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:10px 12px; border-radius:12px; font-size:12.5px; font-weight:800;
+  border:1px solid var(--line2); background:#0e1217; color:var(--bright); cursor:pointer;
+  white-space:nowrap; }
+.camrow .cbtn.sec{ flex:0 0 auto; color:var(--dim); }
+
 /* ---------- context strip — task metadata bound to the scanner ----------
    The C3 "where / for whom / by when" 3-line pattern, standardised.
    Not a section, not a drawer: it belongs to what is in the viewport. */
