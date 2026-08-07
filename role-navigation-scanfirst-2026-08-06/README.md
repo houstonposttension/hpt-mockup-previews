@@ -102,6 +102,24 @@ thing that changed about those screens.
 
 **Everywhere:** the **6-stage lifecycle** is the only status vocabulary.
 
+### Scan controls sit under the viewport (2026-08-07)
+
+Production's order in `scan_poc.html` is **video → savebar → start/stop → capture-frame /
+can't-scan / native-camera**. Everything belonging to the act of scanning is directly beneath the
+viewport, and the fallbacks are hidden until the camera is running; the save bar is
+`position:sticky` so the result follows the worker down the page.
+
+The mockups now match. The photo fallback moved from **274 px below the camera to 51 px**.
+
+**The "Record scan" button was removed, not relocated.** Production has no such control — a decode
+calls `handleDecode → onScan → POST /api/scan_event` on its own, and confirmation is the save bar
+plus the full-screen flash. A confirm press would have added a step the real flow does not have, and
+would have cost a hand for a worker already holding a bundle. What sits under the viewport is the
+**result state** (Saved / Queued / Rejected), not a button.
+
+The one screen that keeps an explicit record button is **Act as operator** — that button is in the
+locked persona mockup (frame 15), so it stays.
+
 ---
 
 ## Deliberately out of scope
