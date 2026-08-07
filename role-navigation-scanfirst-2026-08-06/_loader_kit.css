@@ -1,0 +1,300 @@
+/* HPT role/nav mockups — REV 2 "scan-first, one bar" — 2026-08-06
+   Successor to role-navigation-workflow-2026-08-05/_shared.css.
+
+   What carries over verbatim: the colour tokens, and the four shared content
+   primitives the requirements audit found already serving every role —
+   .wrow (list row), .sectlbl (section label + count), .crosspill (cross-role
+   pill), .card (detail card). Plus .pill, .kpi, .btn.
+
+   What is NEW here is CHROME ONLY — .topbar (one consolidated bar replacing
+   .appbar + .crossrail + .suptoggle), .camwrap (the camera viewport, R3),
+   .ctxstrip (task metadata tied to the scanner), .drawer (bottom pull-up),
+   .alarm (the loader's full-screen wrong-bin interrupt, R2).
+   No new *content* primitive was invented. */
+
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+  --line:#2a3038; --line2:#39424e;
+  --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280; --bright:#cfe0f5;
+  --acc:#16c060; --acc-soft:#5ce090; --acc-dim:rgba(22,192,96,.15); --acc-line:rgba(22,192,96,.42);
+  --ok:#16c060; --ok-dim:rgba(22,192,96,.14); --ok-ink:#04150a;
+  --warn:#ffb020; --warn-dim:rgba(255,176,32,.14);
+  --bad:#ff3b30; --bad-dim:rgba(255,59,48,.14);
+  --blue-soft:#7da2c9;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ margin:0; background:#14171c; color:var(--txt);
+  font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; }
+body{ padding:18px 14px 60px; }
+a{ color:var(--acc-soft); text-decoration:none; }
+a:hover{ color:var(--acc); }
+
+/* ---------- design-note header (outside the phone) ---------- */
+.pgnote{ max-width:860px; margin:0 auto 14px; font-size:12px; color:var(--dim); line-height:1.6; }
+.pgnote h1{ font-size:16px; font-weight:800; color:var(--txt); margin:0 0 4px; }
+.pgnote b{ color:var(--bright); }
+.pgnote code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; color:var(--acc-soft);
+  background:#0e1217; border:1px solid var(--line); border-radius:5px; padding:1px 6px; }
+.pgnote .flag{ color:var(--warn); font-weight:700; }
+.crumbs{ display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 12px; font-size:11px; }
+.crumbs a{ background:#0e1217; border:1px solid var(--line); border-radius:16px;
+  padding:4px 10px; color:var(--dim); font-weight:700; }
+.crumbs a.on{ background:var(--acc-dim); border-color:var(--acc-line); color:var(--acc); }
+.crumbs a:hover{ border-color:var(--acc-line); color:var(--acc); }
+
+/* callout used to mark gaps / decisions on a page */
+.note{ max-width:860px; margin:14px auto 0; font-size:11.5px; line-height:1.65; color:var(--dim);
+  background:#0e1217; border:1px solid var(--line); border-left:3px solid var(--warn);
+  border-radius:10px; padding:10px 13px; }
+.note b{ color:var(--bright); }
+.note .h{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+  color:var(--warn); display:block; margin-bottom:4px; }
+
+/* ---------- phone frame ---------- */
+.stage{ display:flex; justify-content:center; gap:18px; flex-wrap:wrap; }
+.phone{ width:390px; border-radius:28px; overflow:hidden; border:2px solid var(--line);
+  background:var(--bg); box-shadow:0 16px 50px rgba(0,0,0,.55); position:relative; }
+.scr{ padding:8px 8px 0; min-height:780px; position:relative; overflow:hidden; }
+.phcap{ text-align:center; font-size:10.5px; font-weight:800; letter-spacing:.4px;
+  color:var(--faint); text-transform:uppercase; margin:8px 0 0; }
+@media (max-width:480px){
+  body{ padding:8px 0 40px; }
+  .pgnote,.note{ padding-left:12px; padding-right:12px; }
+  .phone{ width:100%; border:none; border-radius:0; box-shadow:none; }
+}
+
+/* ---------- URL bar (browser chrome hint) ---------- */
+.urlbar{ display:flex; align-items:center; gap:6px; font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:10.5px; color:var(--dim); background:#0e1217; border:1px solid var(--line);
+  border-radius:10px; padding:5px 9px; margin:0 0 7px; }
+.urlbar .lock{ color:var(--ok); font-weight:800; }
+.urlbar .path{ color:var(--acc); font-weight:700; }
+
+/* ================================================================
+   THE ONE BAR  (replaces .appbar + .crossrail + .suptoggle)
+   Height budget: 38px + 8px margin. The 2026-08-05 baseline spent
+   ~105px (appbar 53 + crossrail 52) for a worker and ~150px for a
+   supervisor. This is the whole point of rev 2.
+   ================================================================ */
+.topbar{ display:flex; align-items:center; gap:5px; height:38px; padding:0 3px;
+  margin:0 0 8px; border-bottom:1px solid var(--line); }
+
+/* role tabs — the function swap, now inline instead of a dropdown */
+.tabs{ display:flex; align-items:center; gap:4px; min-width:0; }
+.roletab{ display:inline-flex; align-items:center; height:26px; padding:0 10px;
+  border-radius:8px; font-size:12px; font-weight:800; color:var(--dim);
+  background:transparent; border:1px solid transparent; white-space:nowrap; cursor:pointer; }
+.roletab:hover{ color:var(--txt); background:#0e1217; }
+.roletab.on{ background:var(--acc-dim); border-color:var(--acc-line); color:var(--acc); }
+.roletab.more{ padding:0 7px; color:var(--faint); font-weight:900; }
+
+/* cross-role rail — .crosspill, collapsed to icon + count.
+   .zero collapses to ZERO WIDTH, it does not grey out. */
+.xrail{ display:flex; align-items:center; gap:4px; margin-left:auto; }
+.crosspill{ display:inline-flex; align-items:center; gap:4px; height:26px; padding:0 8px;
+  background:var(--panel); border:1px solid var(--line); border-radius:8px;
+  font-size:11px; font-weight:800; color:var(--bright); text-decoration:none;
+  overflow:hidden; white-space:nowrap; cursor:pointer;
+  transition:max-width .22s ease, padding .22s ease, opacity .18s ease, margin .22s ease,
+             border-color .18s ease; max-width:120px; opacity:1; }
+.crosspill:hover{ border-color:var(--acc-line); }
+.crosspill .glyph{ font-size:12px; color:var(--blue-soft); font-weight:900; line-height:1; }
+.crosspill .cnt{ font-size:10px; font-weight:900; color:var(--warn); background:var(--warn-dim);
+  border:1px solid rgba(255,176,32,.4); border-radius:20px; padding:0 5px; line-height:15px; }
+.crosspill .cnt.bad{ color:var(--bad); background:var(--bad-dim); border-color:rgba(255,59,48,.45); }
+/* THE COLLAPSE — badge count 0 means the pill stops taking space entirely */
+.crosspill.zero{ max-width:0; padding:0; margin:0; opacity:0; border-width:0; pointer-events:none; }
+
+/* identity chip — (Function, Authority) compressed. Tapping it is the
+   AUTHORITY swap; the .suptoggle row is gone. */
+.whochip{ display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 8px;
+  border-radius:8px; background:#0e1217; border:1px solid var(--line);
+  font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10.5px; font-weight:800;
+  color:var(--dim); cursor:pointer; white-space:nowrap; }
+.whochip .auth{ color:var(--blue-soft); font-weight:900; }
+.whochip.sup{ border-color:rgba(125,162,201,.55); background:rgba(125,162,201,.12); color:var(--bright); }
+.whochip.acting{ border-color:rgba(255,176,32,.5); background:var(--warn-dim); color:var(--warn); }
+.whochip.acting .auth{ color:var(--warn); }
+
+/* ---------- camera viewport (R3 — scan-driven roles ONLY) ---------- */
+.camwrap{ position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--line2);
+  background:
+    radial-gradient(120% 90% at 50% 35%, #263041 0%, #151a22 55%, #0d1116 100%);
+  height:250px; margin:0 0 8px; }
+.camwrap.short{ height:196px; }
+.retic{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:240px; height:118px; border-radius:10px; box-shadow:0 0 0 2000px rgba(6,9,12,.42); }
+.retic::before,.retic::after{ content:""; position:absolute; width:34px; height:34px;
+  border:3px solid var(--acc); }
+.retic::before{ left:-1px; top:-1px; border-right:none; border-bottom:none; border-radius:8px 0 0 0; }
+.retic::after{ right:-1px; bottom:-1px; border-left:none; border-top:none; border-radius:0 0 8px 0; }
+.retic .c2,.retic .c3{ position:absolute; width:34px; height:34px; border:3px solid var(--acc); }
+.retic .c2{ right:-1px; top:-1px; border-left:none; border-bottom:none; border-radius:0 8px 0 0; }
+.retic .c3{ left:-1px; bottom:-1px; border-right:none; border-top:none; border-radius:0 0 0 8px; }
+.scanline{ position:absolute; left:0; right:0; height:2px; background:var(--acc);
+  box-shadow:0 0 12px var(--acc); opacity:.85; animation:sweep 2.4s ease-in-out infinite; }
+@keyframes sweep{ 0%,100%{ top:34%; } 50%{ top:64%; } }
+.camhint{ position:absolute; left:0; right:0; bottom:9px; text-align:center;
+  font-size:11px; font-weight:800; color:var(--bright); text-shadow:0 1px 6px #000; }
+.camhint .live{ color:var(--acc); }
+.camtools{ position:absolute; top:8px; right:8px; display:flex; gap:5px; }
+.camtool{ width:30px; height:30px; border-radius:9px; background:rgba(10,13,17,.72);
+  border:1px solid var(--line2); color:var(--bright); font-size:13px; font-weight:800;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.camtool.on{ background:var(--acc-dim); border-color:var(--acc-line); color:var(--acc); }
+/* offline / sync state (U3) rides the top-left of the viewport */
+.syncchip{ position:absolute; top:8px; left:8px; display:inline-flex; align-items:center; gap:5px;
+  height:30px; padding:0 9px; border-radius:9px; background:rgba(10,13,17,.72);
+  border:1px solid var(--line2); font-size:10.5px; font-weight:800; color:var(--dim); }
+.syncchip.warn{ color:var(--warn); border-color:rgba(255,176,32,.5); background:rgba(52,38,10,.8); }
+.syncchip.bad{ color:var(--bad); border-color:rgba(255,59,48,.5); background:rgba(52,14,12,.85); }
+.syncchip .dot{ width:7px; height:7px; border-radius:50%; background:var(--ok); }
+.syncchip.warn .dot{ background:var(--warn); } .syncchip.bad .dot{ background:var(--bad); }
+
+/* ---------- context strip — task metadata bound to the scanner ----------
+   The C3 "where / for whom / by when" 3-line pattern, standardised.
+   Not a section, not a drawer: it belongs to what is in the viewport. */
+.ctxstrip{ background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  padding:7px 10px; margin:0 0 8px; }
+.ctxstrip.empty{ border-style:dashed; }
+.cx{ display:flex; align-items:baseline; gap:8px; padding:2px 0; }
+.cx .ck{ flex:0 0 40px; font-size:8.5px; font-weight:900; letter-spacing:.7px;
+  text-transform:uppercase; color:#5a6470; }
+.cx .cv{ font-size:12px; font-weight:700; color:var(--bright); line-height:1.35; }
+.cx .cv .mut{ color:var(--dim); font-weight:600; }
+.cx .cv .none{ color:var(--faint); font-weight:600; font-style:italic; }
+/* the standard progress fraction — C4, one formatter for every role */
+.frac{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; color:var(--txt); }
+.frac .pct{ color:var(--acc); }
+.frac .pct.warn{ color:var(--warn); } .frac .pct.bad{ color:var(--bad); }
+.pbar{ height:4px; border-radius:3px; background:#0e1217; border:1px solid var(--line);
+  margin:6px 0 1px; overflow:hidden; }
+.pbar > i{ display:block; height:100%; background:var(--acc); }
+.pbar > i.warn{ background:var(--warn); } .pbar > i.bad{ background:var(--bad); }
+
+/* ---------- 6-stage lifecycle (V3) — the single status vocabulary ---------- */
+.stages{ display:flex; gap:3px; margin:7px 0 0; }
+.stg{ flex:1; text-align:center; font-size:7.5px; font-weight:900; letter-spacing:.2px;
+  text-transform:uppercase; color:#4d5763; padding:3px 1px 4px; border-radius:5px;
+  background:#0e1217; border:1px solid #1d232b; line-height:1.15; }
+.stg.done{ color:var(--acc); border-color:var(--acc-line); background:var(--acc-dim); }
+.stg.now{ color:var(--ok-ink); background:var(--acc); border-color:var(--acc); }
+.stg.now.warn{ background:var(--warn); border-color:var(--warn); color:#241701; }
+
+/* ---------- content primitives — carried over unchanged ---------- */
+.card{ background:var(--panel); border:1px solid var(--line); border-radius:14px;
+  padding:12px 13px; margin:8px 0; }
+.card h2{ font-size:14px; font-weight:800; margin:0 0 5px; color:var(--txt); }
+.card .kick{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+  color:var(--acc); margin:0 0 3px; }
+.card .body{ font-size:12.5px; color:var(--dim); line-height:1.55; }
+.card .body b{ color:var(--bright); }
+
+.wrow{ display:flex; align-items:center; gap:9px; padding:8px 11px; margin:5px 0;
+  background:#111722; border:1px solid #1c2530; border-left:4px solid var(--line);
+  border-radius:10px; }
+.wrow.ok{ border-left-color:var(--ok); }
+.wrow.warn{ border-left-color:var(--warn); }
+.wrow.bad{ border-left-color:var(--bad); }
+.wrow .nm{ font-size:12.5px; font-weight:800; color:var(--bright); }
+.wrow .sub{ font-size:10.5px; color:var(--faint); margin-top:1px; }
+.wrow .val{ margin-left:auto; font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px; font-weight:800; color:var(--txt); text-align:right; }
+/* §9.3 rule proposed here: .val is ALWAYS the progress percent (or an em-dash
+   when there is no progress). Severity moved out to a .pill in .sub. */
+.wrow .val.ok{ color:var(--ok); } .wrow .val.warn{ color:var(--warn); } .wrow .val.bad{ color:var(--bad); }
+.wrow .val .u{ display:block; font-size:8.5px; font-weight:800; letter-spacing:.4px;
+  color:var(--faint); text-transform:uppercase; font-family:inherit; }
+
+.sectlbl{ font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
+  color:#5a6470; margin:12px 4px 5px; display:flex; align-items:center; gap:7px; }
+.sectlbl .n{ margin-left:auto; color:var(--faint); font-weight:700; }
+
+.pills{ display:flex; flex-wrap:wrap; gap:5px; margin:5px 0 0; }
+.pill{ font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px;
+  border:1px solid var(--line); color:var(--dim); background:#0e1217; }
+.pill.ok{ color:var(--ok); border-color:rgba(22,192,96,.4); background:var(--ok-dim); }
+.pill.warn{ color:var(--warn); border-color:rgba(255,176,32,.4); background:var(--warn-dim); }
+.pill.bad{ color:var(--bad); border-color:rgba(255,59,48,.45); background:var(--bad-dim); }
+.pill.acc{ color:var(--acc); border-color:var(--acc-line); background:var(--acc-dim); }
+
+.kpigrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:5px 0 8px; }
+.kpi{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:7px; text-align:center; }
+.kpi .n{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:17px; font-weight:900; color:var(--bright); }
+.kpi .l{ font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin-top:2px; }
+.kpi.ok .n{ color:var(--ok); } .kpi.warn .n{ color:var(--warn); } .kpi.bad .n{ color:var(--bad); }
+
+/* ---------- buttons / primary CTA ---------- */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px 14px; border-radius:12px; font-size:13px; font-weight:800;
+  border:1px solid var(--line); background:#0e1217; color:var(--txt);
+  text-decoration:none; cursor:pointer; }
+.btn.prim{ background:var(--acc); color:var(--ok-ink); border-color:var(--acc); }
+.btn.prim:hover{ background:var(--acc-soft); }
+.btn.blk{ display:flex; width:100%; }
+.btn.ghost{ background:transparent; }
+.btn.big{ padding:14px; font-size:15px; }
+.btn.danger{ background:var(--bad); border-color:var(--bad); color:#fff; }
+.btn.hold{ background:#0e1217; border-color:var(--line2); color:var(--bright); }
+/* the one thing that changes per role: the CTA verb */
+.ctarow{ display:flex; gap:6px; margin:2px 0 8px; }
+
+/* ---------- bottom pull-up drawer (collapsed by default) ---------- */
+.drawer{ position:absolute; left:0; right:0; bottom:0; z-index:25;
+  background:var(--panel2); border-top:1px solid var(--line2);
+  border-radius:16px 16px 0 0; box-shadow:0 -10px 30px rgba(0,0,0,.55);
+  transform:translateY(calc(100% - 46px)); transition:transform .28s cubic-bezier(.3,.8,.4,1);
+  max-height:76%; display:flex; flex-direction:column; }
+.drawer.open{ transform:translateY(0); }
+.dhandle{ display:flex; align-items:center; gap:8px; padding:9px 13px 8px; cursor:pointer;
+  flex:0 0 auto; }
+.dhandle .grip{ position:absolute; left:50%; top:5px; transform:translateX(-50%);
+  width:34px; height:3px; border-radius:3px; background:var(--line2); }
+.dhandle .dt{ font-size:11.5px; font-weight:800; color:var(--bright); }
+.dhandle .ds{ font-size:10.5px; color:var(--faint); }
+.dhandle .dn{ margin-left:auto; font-size:10px; font-weight:900; color:var(--warn);
+  background:var(--warn-dim); border:1px solid rgba(255,176,32,.4); border-radius:20px; padding:1px 7px; }
+.dhandle .car{ font-size:10px; color:var(--dim); transition:transform .28s; }
+.drawer.open .dhandle .car{ transform:rotate(180deg); }
+.dbody{ padding:0 10px 14px; overflow-y:auto; flex:1 1 auto; }
+
+/* ---------- full-screen wrong-bin alarm (R2 — loader only) ---------- */
+.alarm{ position:absolute; inset:0; z-index:60; background:#2a0705;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:22px 18px; text-align:center; animation:alarmpulse 1.05s ease-in-out infinite; }
+@keyframes alarmpulse{ 0%,100%{ background:#2a0705; } 50%{ background:#4a0b07; } }
+.alarm .icon{ font-size:52px; line-height:1; margin-bottom:4px; }
+.alarm .hdr{ font-size:27px; font-weight:900; letter-spacing:-.4px; color:#fff; margin:6px 0 2px; }
+.alarm .sub{ font-size:13.5px; font-weight:700; color:#ffd9d6; line-height:1.5; margin-bottom:14px; }
+.alarm .cmp{ display:flex; gap:8px; width:100%; margin-bottom:16px; }
+.alarm .cmp > div{ flex:1; background:rgba(0,0,0,.34); border:1px solid rgba(255,255,255,.16);
+  border-radius:12px; padding:9px 8px; }
+.alarm .cmp .k{ font-size:8.5px; font-weight:900; letter-spacing:.7px; text-transform:uppercase;
+  color:#ffb2ac; }
+.alarm .cmp .v{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:19px; font-weight:900;
+  color:#fff; margin-top:2px; }
+.alarm .cmp .s{ font-size:10px; color:#ffd9d6; margin-top:2px; }
+.alarm .acts{ display:flex; flex-direction:column; gap:7px; width:100%; }
+.alarm .abtn{ display:block; width:100%; padding:13px; border-radius:12px; font-size:14.5px;
+  font-weight:900; border:1px solid transparent; cursor:pointer; }
+.alarm .abtn.sw{ background:#fff; color:#2a0705; }
+.alarm .abtn.stay{ background:transparent; color:#fff; border-color:rgba(255,255,255,.5); }
+.alarm .abtn.stop{ background:rgba(0,0,0,.4); color:#ffb2ac; border-color:rgba(255,178,172,.45); }
+.alarm .foot{ font-size:10px; color:#ff9a92; margin-top:13px; font-weight:700; letter-spacing:.3px; }
+
+/* ---------- footer nav ---------- */
+.footnav{ margin:22px auto 0; max-width:860px; font-size:11.5px; color:var(--dim);
+  border-top:1px solid var(--line); padding-top:14px; text-align:center; }
+.footnav a{ color:var(--acc-soft); margin:0 6px; }
+
+/* ---------- anatomy page helpers ---------- */
+.anat{ max-width:860px; margin:0 auto; }
+.measure{ display:grid; grid-template-columns:1fr auto auto; gap:0 12px; font-size:12px;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin:10px 0; }
+.measure > div{ padding:6px 0; border-top:1px solid var(--line); }
+.measure > div:nth-child(-n+3){ border-top:none; font-size:9.5px; font-weight:900;
+  text-transform:uppercase; letter-spacing:.6px; color:var(--faint); }
+.measure .num{ font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800; text-align:right; color:var(--bright); }
+.measure .num.good{ color:var(--acc); }
+.measure .num.bad{ color:var(--warn); }
+.swatchrow{ display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 4px; }
