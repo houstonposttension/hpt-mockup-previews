@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Supervisor — the Approvals pillar (authoritative inbox) · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<link rel="stylesheet" href="_supervisor_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>10 / 12 &middot; Supervisor &mdash; the <b>Approvals</b> pillar</h1>
+  <p>This is the <b>authoritative</b> version of the inbox. The loader design note is explicit:
+    <i>&quot;Where the two disagree on the inbox, the persona mockup wins; where they disagree on the
+    request payload, the loader note is the shared source.&quot;</i> So the layout here follows the
+    persona mockup and the record shape follows the loader note.</p>
+  <p><b>It is not a loader feature.</b> <code>hpt-approvals</code> is a reusable queue with a typed
+    <code>request_kind</code> &mdash; the list below deliberately mixes <b>split-load, VOID, scrap and
+    price override</b> to show that. Split-load is instance #1, not the whole thing.</p>
+  <p><b>Plant-wide, no cell scope, self-approval allowed.</b> Any lead or supervisor can take any
+    request. Most urgent first; age escalates <b>gold &rarr; red</b>; a truck-waiting request pulses
+    amber and jumps the queue.</p>
+  <div class="crumbs">
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a class="on" href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — INBOX ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/approvals</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab" href="supervisor-station.html">Stations</a>
+        <a class="roletab on" href="supervisor-approvals.html">Approvals</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting">0119&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <div class="inboxhdr"><h2>Approvals</h2><span class="qbadge">5</span>
+      <span style="margin-left:auto; font-size:10.5px; color:var(--faint);">most urgent first</span></div>
+    <div class="mexist" style="margin:0 0 10px; text-align:left; font-style:normal;">
+      <b style="color:var(--bright)">Plant-wide</b> &mdash; leads and supervisors see the same list. Any
+      approver can take any request (no cell scope, self-approval allowed).
+      Notify: nav badge + PWA push.</div>
+
+    <div class="apcard urgent">
+      <div class="apc1"><span class="abin">X18</span><span class="arsn">Split-load</span><span class="apage gold">22m</span></div>
+      <div class="apc2"><b>Operator 2</b> &middot; <span class="ship">ship 15</span> &middot;
+        <span class="carry2">carry 2</span> &middot; Kennedy V &middot; Loading<br>
+        Note: &quot;Trailer full &mdash; carry these 2 to the next run, rest is loaded.&quot;</div>
+      <div class="apwait"><span class="d"></span>Truck 22N waiting</div>
+      <div class="apacts"><button class="apok">&#10003; Approve</button><button class="apno">Reject</button></div>
+    </div>
+
+    <div class="apcard">
+      <div class="apc1"><span class="abin">FT0428#31</span><span class="arsn">VOID</span><span class="apage gold">9m</span></div>
+      <div class="apc2"><b>Operator 4</b> &middot; void mis-scan at Shear &middot; scanned twice &middot; Rebar Cutting</div>
+      <div class="apacts"><button class="apok">&#10003; Approve</button><button class="apno">Reject</button></div>
+    </div>
+
+    <div class="apcard">
+      <div class="apc1"><span class="abin">X23</span><span class="arsn">Scrap</span><span class="apage gold">3m</span></div>
+      <div class="apc2"><b>Operator 5</b> &middot; scrap short cut &mdash; #8, 3 bars &middot;
+        <span style="font-family:ui-monospace,Menlo,Consolas,monospace">FT0430#04</span> &middot; Rebar Cutting</div>
+      <div class="apacts"><button class="apok">&#10003; Approve</button><button class="apno">Reject</button></div>
+    </div>
+
+    <div class="apcard">
+      <div class="apc1"><span class="abin">HP-55990</span><span class="arsn">Price override</span><span class="apage gold">2m</span></div>
+      <div class="apc2"><b>Operator 6</b> &middot; manual price &mdash; walk-in order &middot; Hardware</div>
+      <div class="apacts"><button class="apok">&#10003; Approve</button><button class="apno">Reject</button></div>
+    </div>
+
+    <div class="apcard">
+      <div class="apc1"><span class="abin">R4</span><span class="arsn">QC hold</span><span class="apage red">21m</span></div>
+      <div class="apc2"><b>Operator 3</b> &middot; <span class="ship">ship 9</span> &middot;
+        <span class="carry2">carry 3</span> &middot; Kingwood Med<br>
+        Note: &quot;3 bars flagged at QC &mdash; holding for re-check.&quot;</div>
+      <div class="apacts"><button class="apok">&#10003; Approve</button><button class="apno">Reject</button></div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; one queue, four request kinds</div>
+  </div>
+
+  <!-- ===== B — APPROVE ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/approvals/8814</span></div>
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab" href="supervisor-station.html">Stations</a>
+        <a class="roletab on" href="supervisor-approvals.html">Approvals</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting">0119&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <a class="backlink" href="supervisor-approvals.html">&larr; Approvals</a>
+    <div class="sdhdr"><span class="sname">Split-load request</span></div>
+
+    <div class="apcard urgent" style="margin-top:2px;">
+      <div class="apc1"><span class="abin">X18</span><span class="arsn">Split-load</span></div>
+      <div class="apc2">Carry 2 tags to next run<br>
+        Submitted by <b>Operator 2</b> (Loading) &middot; <b>08:20</b> &middot; 22m ago</div>
+      <div class="apwait"><span class="d"></span>Truck 22N waiting &mdash; flagged urgent by submitter</div>
+    </div>
+
+    <div class="sectlbl">Context</div>
+    <div class="card">
+      <div class="kick">Bin X18 &middot; Kennedy V &middot; ship today</div>
+      <div class="body">Carrying forward:</div>
+      <div class="lrow cat-rebar" style="cursor:default;"><span class="lnum">#12</span><span class="lspec">FT0431#12 &middot; #5 &middot; 23-06</span>
+        <span class="shape" data-asa="STR" data-dims='{}' data-st="notscan"></span></div>
+      <div class="lrow cat-rebar" style="cursor:default;"><span class="lnum">#15</span><span class="lspec">FT0431#15 &middot; #5 &middot; 23-06</span>
+        <span class="shape" data-asa="STR" data-dims='{}' data-st="notscan"></span></div>
+    </div>
+
+    <div class="sectlbl">Reason given</div>
+    <div class="card"><div class="body">&quot;Trailer full &mdash; 7 go on tomorrow&#39;s run, same bin.
+      Rest is loaded and strapped.&quot;</div></div>
+
+    <div class="apacts" style="margin-top:14px;">
+      <button class="apok" style="font-size:15px; padding:14px;">&#10003; Approve</button>
+      <button class="apno" style="font-size:15px; padding:14px;">Reject</button>
+    </div>
+    <div class="emits">approve &rarr; status:&quot;approved&quot; &middot; approver_id + decided_at stamped<br>
+      submitter notified &middot; truck released &middot; CLOSEOUT_OVERRIDDEN fires</div>
+  </div></div>
+  <div class="phcap">B &middot; enough context to decide without a call</div>
+  </div>
+
+  <!-- ===== C — REJECT ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/approvals/8814/reject</span></div>
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab" href="supervisor-station.html">Stations</a>
+        <a class="roletab on" href="supervisor-approvals.html">Approvals</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting">0119&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <a class="backlink" href="supervisor-approvals.html">&larr; Reject request</a>
+    <div class="sdhdr"><span class="sname">Split-load &middot; X18</span></div>
+
+    <div class="apcard" style="margin-top:2px;">
+      <div class="apc2">Carry 2 tags to next run &mdash; by <b>Operator 2</b> &middot; Bin <b>X18</b>
+        &middot; FT0431#12, #15</div>
+      <div class="rejbox">
+        <label>&#9679; Reason for rejection &mdash; required</label>
+        <select class="rejsel">
+          <option>Choose a reason&hellip;</option>
+          <option selected>Load it all &mdash; trailer has room</option>
+          <option>Wrong bin / customer</option>
+          <option>Not authorized to split</option>
+          <option>Tags not ready</option>
+          <option>Other</option>
+        </select>
+        <label style="margin-top:11px;">Optional note to submitter</label>
+        <textarea class="rejta" rows="3">Re-check — trailer 4 has 2 more slots, load all of X18.</textarea>
+        <div class="apacts">
+          <button class="apok" style="background:var(--bad); color:#fff;">Reject &amp; send reason</button>
+          <button class="apno">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="emits">reject &rarr; status:&quot;rejected&quot; &middot; decision_note = reason + note<br>
+      no close-out event fires &middot; submitter sees the reason on their device</div>
+
+    <div class="note" style="margin:14px 0 0; max-width:none; font-size:11px;">
+      <span class="h">Why reject is heavier than approve</span>
+      Approve is one tap and the note is optional. Reject requires a reason from a fixed list, because
+      the submitter has to know what to fix &mdash; same audit discipline as supervisor corrections
+      elsewhere. The reason is stored on the shared record&#39;s <code>decision_note</code>.
+    </div>
+  </div></div>
+  <div class="phcap">C &middot; reject &mdash; reason required, note optional</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Contract this surface builds to</span>
+  The queue record is the shared source between the loader side and this one:
+  <code>request_kind</code> &middot; bin/run &middot; <code>shipped[]</code> / <code>carry[]</code>
+  &middot; <code>reason</code> &middot; <code>actor</code> (pseudonymised) &middot; <code>urgent</code>
+  &middot; <code>submitted_at</code> &middot; state &middot; <code>approver_id</code> /
+  <code>decided_at</code>.<br>
+  <b>Age thresholds</b> are a build-time tuning knob; the mockup shows 2&ndash;9&nbsp;min gold and
+  21&nbsp;min red. <b>Urgency</b> comes from the submitter&#39;s <code>urgent</code> flag, which pins the
+  request to the top and pulses on both the card and, at build, the nav badge.<br>
+  <span class="flag">Still unbuilt:</span> there is no approvals store, no endpoints, and no
+  <code>CORRECT</code>/<code>VOID</code>/<code>SCRAP</code> writer in production &mdash; those event
+  types are read but never written. This whole pillar is designed, not built.
+</div>
+
+<div class="footnav">
+  Prev: <a href="supervisor-station.html">Station detail</a> &middot;
+  Next: <a href="supervisor-actas.html">Act-as / Reposition &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
