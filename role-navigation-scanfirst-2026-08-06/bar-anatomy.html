@@ -67,7 +67,7 @@
     </div>
     <div class="xrail">
       <span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
-      <span class="crosspill zero"><span class="glyph">&#9881;</span><span class="cnt">0</span></span>
+      <span class="crosspill zero"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">0</span></span>
       <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
     </div>
   </div>
@@ -83,7 +83,7 @@
     </div>
     <div class="xrail">
       <span class="crosspill"><span class="glyph">&#9638;</span><span class="cnt">3</span></span>
-      <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt bad">1</span></span>
+      <span class="crosspill"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt bad">1</span></span>
       <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
     </div>
   </div>
@@ -99,7 +99,7 @@
     </div>
     <div class="xrail">
       <span class="crosspill"><span class="glyph">&#9638;</span><span class="cnt">3</span></span>
-      <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt bad">1</span></span>
+      <span class="crosspill"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt bad">1</span></span>
       <span class="whochip acting">0421&nbsp;<span class="auth">SUP</span></span>
     </div>
   </div>
@@ -114,7 +114,10 @@
   <div class="co"><div class="t">Cross-role pills</div><div class="d">
     Icon + count only, no label. <b>Zero count = zero width</b>: <code>max-width</code>,
     <code>padding</code>, <code>margin</code>, <code>opacity</code> and <code>border-width</code> all
-    animate to 0 over 220&nbsp;ms. Not greyed &mdash; gone.</div></div>
+    animate to 0 over 220&nbsp;ms. Not greyed &mdash; gone.<br>
+    Marks: <b>&#9638; Inventory</b>, <b>wrench = Maintenance</b> (Maintenance&#39;s request,
+    2026-08-07). Both are drawn monochrome in the same blue so the two read as one family; the wrench
+    is an inline SVG tinted with <code>currentColor</code>, not a colour emoji.</div></div>
   <div class="co"><div class="t">Identity chip</div><div class="d">
     <code>(Function, Authority)</code> compressed to badge + authority letter. The function half is
     already shown by the active tab, so only the authority is spelled out. <b>Tapping it is the
