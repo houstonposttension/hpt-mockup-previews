@@ -19,6 +19,11 @@
     <code>where / for whom / by when</code> 3-line pattern from the requirements audit &sect;9.2 (C3),
     standardised across every role. A fuller browsable list lives in the
     <b>bottom pull-up drawer</b>, collapsed by default.</p>
+  <p><b>Scan controls moved up (2026-08-07).</b> The save result and the two fallbacks now sit
+    <b>directly under the viewport</b>, matching production&#39;s order. The photo fallback went from
+    <b>274&nbsp;px below the camera to 51&nbsp;px</b>. The invented <i>"Record scan"</i> button is gone:
+    in production a decode <b>records itself</b>, so the thing that belongs under the viewport is the
+    result, not a confirm press.</p>
   <div class="crumbs">
     <a class="on" href="index.html">Rebar &middot; quiet</a>
     <a href="rebar-busy.html">Rebar &middot; busy</a>
@@ -68,6 +73,14 @@
     <div class="camhint"><span class="live">&#9679;</span> Scanning &mdash; hold the tag steady</div>
   </div>
 
+  <!-- production order: the scan records itself, so what sits under the viewport
+       is the RESULT and the two fallbacks — not a confirm button -->
+  <div class="savestrip ok">&#10003; Saved <span class="tg">FT052926-001#3</span><span class="n">This shift: 34</span></div>
+  <div class="camrow">
+    <button class="cbtn">&#128247; Can&#39;t scan? Photo &rarr;</button>
+    <button class="cbtn sec">Capture frame</button>
+  </div>
+
   <!-- context strip: bound to what the scanner just read. Not a section. -->
   <div class="ctxstrip">
     <div class="cx"><span class="ck">Where</span>
@@ -101,12 +114,7 @@
     </div>
   </div>
 
-  <div class="ctarow">
-    <a class="btn prim blk big" href="#" onclick="return false;">Record scan &rarr;</a>
-    <a class="btn hold" href="#" onclick="return false;" title="Can't scan — photo fallback">&#128247;</a>
-  </div>
-
-  <!-- bottom drawer: collapsed by default -->
+    <!-- bottom drawer: collapsed by default -->
   <div class="drawer" data-drawer>
     <div class="dhandle" data-dhandle>
       <span class="grip"></span>
