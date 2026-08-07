@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reconciled Loader — close-out gate + truck documentation · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>6 / 12 &middot; Loader &mdash; <b>close-out gate</b> + the 3-photo truck panel</h1>
+  <p>This is the ROI item the whole loader feature exists for: <b>stop the second delivery run.</b>
+    Today a partially loaded truck gets <b>no gate at all</b> &mdash; <code>renderDocPanel()</code> only
+    renders when every tag is loaded, so a short truck simply leaves. Frames A and B are the gate.</p>
+  <p>Frame C is the <b>3-photo load documentation panel</b>, which was missing from last night&#39;s
+    draft entirely. It is live in production and it is the evidence chain for shipping disputes:
+    a <b>rig-type toggle</b> that swaps a truck diagram, <b>camera positions with sight-lines</b> so the
+    loader knows where to stand, and three buttons that turn green as each shot lands.</p>
+  <div class="crumbs">
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a class="on" href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — GREEN: all loaded ===== -->
+  <div>
+  <div class="phone"><div class="gate">
+    <div class="gbig">&#10003;</div>
+    <div class="gmain">READY TO DEPART</div>
+    <div class="gsub">All 22 tags loaded<br>across X8.1 &middot; X8.2 &middot; X8.3</div>
+    <div class="gmeta">Run X8 &middot; Aldine Westfield Ph2<br>
+      Rebar 8 &middot; Tendon 5 &middot; Hardware 4 &middot; Lumber 2 &middot; Cloud 3<br>
+      Loaded by you, Operator 2, Operator 3</div>
+    <button class="gbtn">Clear driver to depart</button>
+  </div></div>
+  <div class="phcap">A &middot; the happy path &mdash; no queue, loader closes out</div>
+  </div>
+
+  <!-- ===== B — BLOCKED + override ===== -->
+  <div>
+  <div class="phone"><div class="scr blockscr flow">
+    <div class="topbar">
+      <div class="tabs"><span class="roletab">Rebar</span><span class="roletab on">Loader</span><span class="roletab">Yard</span></div>
+      <div class="xrail"><span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
+        <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt">2</span></span>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span></div>
+    </div>
+
+    <div class="blockhdr">
+      <div class="bi">&#128721;</div>
+      <h2>LOADING NOT COMPLETE</h2>
+      <div class="bs"><b>2 tags are not on the truck.</b><br>Sending the driver now means a second run.</div>
+    </div>
+
+    <div class="plhdr" style="color:var(--bad)">Missing<span class="tot">2 tags &middot; 2 areas</span></div>
+    <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 &middot; 48&quot;</span><span class="lbin">X8.2</span><span class="ldot st-notprinted"></span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span></div>
+
+    <div class="acts">
+      <a class="b act-find" href="loader-punchlist.html">&larr; Go find them</a>
+      <button class="act-over">Override &mdash; finish loading short</button>
+    </div>
+
+    <div class="modal">
+      <h3>&#9888; Override &mdash; finish loading short</h3>
+      <div class="msub">Recorded against run <b>X8</b> and your name. Both fields required.</div>
+      <div class="req"><span class="dot"></span>1 &middot; Why are you finishing without them?</div>
+      <textarea class="ta">Customer approved short ship — L-02 and C-90 will follow up Friday. Confirmed w/ Operator 2.</textarea>
+      <div class="charc">92 / 300</div>
+      <div class="req"><span class="dot"></span>2 &middot; Photo of the loaded truck</div>
+      <button class="photobtn">&#10003; Photo captured &mdash; tap to retake</button>
+      <button class="confirm">Confirm override &amp; finish loading</button>
+    </div>
+  </div></div>
+  <div class="phcap">B &middot; blocked &mdash; note + photo, both required</div>
+  </div>
+
+  <!-- ===== C — 3-photo documentation panel ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="topbar">
+      <div class="tabs"><span class="roletab">Rebar</span><span class="roletab on">Loader</span><span class="roletab">Yard</span></div>
+      <div class="xrail"><span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
+        <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt">2</span></span>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span></div>
+    </div>
+
+    <div class="loadbar">
+      <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span><span class="runtag">22 of 22</span></div>
+      <div class="cust">Aldine Westfield Ph2</div>
+      <div class="sub">ships 06/12/26 &middot; all loaded</div>
+    </div>
+
+    <div class="docpanel">
+      <div class="dochdr">&#10003; Load complete &mdash; take 3 photos</div>
+      <div class="vehtoggle">
+        <button class="vbtn on" data-veh="18w">18-Wheeler</button>
+        <button class="vbtn" data-veh="noncdl">Non-CDL</button>
+      </div>
+      <div data-truck="18w"></div>
+      <div class="docbtns">
+        <button class="docbtn ok">&#10003; Driver side</button>
+        <button class="docbtn ok">&#10003; Passenger side</button>
+        <button class="docbtn">&#128247; Rear</button>
+      </div>
+    </div>
+    <div class="mexist">Tap the rig toggle &mdash; the diagram and the camera sight-lines change with it.</div>
+  </div></div>
+  <div class="phcap">C &middot; evidence chain &mdash; live in production today</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">What this restores, and the terminology fix</span>
+  <b>The green state existed only in the locked design.</b> Last night I drew the short path and no
+  success path at all. Frame A is the locked gate: the category breakdown, who loaded it, and
+  <b>"Clear driver to depart"</b> &mdash; which is correct wording, because here the loader really is
+  handing off <i>to</i> the driver.<br>
+  <b>The override is a form, not a sentence.</b> Two numbered required fields, a 300-character counter,
+  and a captured-photo state. Neither field is optional. The photo path reuses the existing unscannable-
+  tag flow, so it introduces no new camera code, and <code>/api/photo-upload</code> is already
+  fail-closed &mdash; if the linking <code>PHOTO</code> event can&#39;t be written the blob is rolled
+  back and the upload fails. For an override that is exactly right: <b>no evidence, no override.</b><br>
+  <b>Copy corrected throughout:</b> <i>Complete loading</i> (not "Complete delivery run"),
+  <i>LOADING NOT COMPLETE</i> (not "can&#39;t close out" &mdash; it states the fact rather than
+  refusing), <i>Override &mdash; finish loading short</i> (not "ship short"), <i>Why are you finishing
+  without them?</i><br>
+  <span class="flag">Backend deltas still open:</span> <code>/api/photo-upload</code> has no free-text
+  field today, so the justification needs either a new <code>note</code> on the <code>PHOTO</code> event
+  or &mdash; recommended &mdash; a distinct <code>CLOSEOUT_OVERRIDDEN</code> event carrying note + photo
+  path, which keeps the upload contract unchanged and makes overrides queryable on their own. The
+  run-level sign-off should be <code>LOADING_COMPLETED</code>; it must not reuse <code>LOADED</code>,
+  which is per-tag.
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader-alarm.html">Interrupts</a> &middot;
+  Next: <a href="loader-split.html">Split &amp; carry &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
