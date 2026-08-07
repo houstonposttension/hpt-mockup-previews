@@ -3,35 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Scan-first rev 2 — Loader, same chrome different verb · 2026-08-06</title>
+<title>Reconciled Loader — in-progress view · 2026-08-07</title>
 <link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_loader_kit.css">
 </head>
 <body>
 
 <div class="pgnote">
-  <h1>3 / 7 &middot; Loader &mdash; same bar, same strip, <b>different verb</b></h1>
-  <p>A worker who swaps Rebar &rarr; Loader should recognise every row, chip and colour and only have to
-    learn what the big green button now does. That is the audit's &sect;9.6 target &mdash;
-    <b>same chrome and same grammar, different verbs</b> &mdash; and it is what this page tests.
-    Compare against page 1 side by side: the bar, the viewport, the 3-line strip, the stage row and the
-    drawer are byte-identical in structure. Only <b>Record scan</b> &rarr; <b>Scan onto truck</b>, and
-    the strip's <code>where</code> resolves to a truck instead of a machine.</p>
-  <p>Inventory is at 0 so its pill is gone; Maintenance carries 2. One bar, still 38&nbsp;px.</p>
+  <h1>3 / 12 &middot; Loader &mdash; in-progress view <b>(reconciled)</b></h1>
+  <p>This is the <b>LEAN canonical loader</b> (design note rev 13, &sect;20 &mdash; <i>"what actually
+    ships"</i>), brought forward whole, with the new <b>38&nbsp;px consolidated bar</b> sitting on top of
+    it. Nothing from the locked design was simplified to make room: the bar replaced the old app-bar +
+    cross-role rail, and that is the entire delta.</p>
+  <p><b>The row contract is locked and unchanged.</b> Left edge = <b>category</b> (never severity).
+    Corner dot = <b>upstream lifecycle state</b>. Load status lives on the <b>section header</b>, never
+    repeated per row. A row is tag&nbsp;# + short spec + the <b>bend-shape thumbnail</b> &mdash; rendered
+    by the same <code>shapeSVG()</code> the production loader uses. Everything else is one tap away in
+    the row drawer. <b>Tap row #42 or #39</b> to see it.</p>
   <div class="crumbs">
-    <a href="index.html">1. Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
-    <a class="on" href="loader.html">3. Loader &middot; scan</a>
-    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
-    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
-    <a href="supervisor.html">6. Supervisor swap</a>
-    <a href="bar-anatomy.html">7. Bar anatomy</a>
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a class="on" href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
   </div>
 </div>
 
-<div class="stage"><div class="phone"><div class="scr">
+<div class="stage"><div class="phone"><div class="scr flow">
 
   <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
 
+  <!-- the one consolidated bar — the only thing rev 2 changes about this screen -->
   <div class="topbar">
     <div class="tabs">
       <a class="roletab" href="index.html">Rebar</a>
@@ -40,115 +49,171 @@
     </div>
     <div class="xrail">
       <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
-      <a class="crosspill" href="#" onclick="return false;" title="Maintenance — 2 open WOs">
+      <a class="crosspill" href="#" onclick="return false;" title="Maintenance — owned by the HPT-MaintainX project">
         <span class="glyph">&#9881;</span><span class="cnt">2</span></a>
       <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
     </div>
   </div>
 
-  <div class="camwrap short">
-    <div class="syncchip"><span class="dot"></span>Synced</div>
-    <div class="camtools">
-      <span class="camtool" title="Torch">&#9788;</span>
-      <span class="camtool" title="Language EN/ES">ES</span>
-    </div>
-    <div class="retic" style="width:230px;height:100px;"><span class="c2"></span><span class="c3"></span></div>
+  <!-- scan stays present, compressed: the loader is scanning onto a truck -->
+  <div class="camwrap" style="height:132px;">
+    <div class="syncchip"><span class="dot"></span>Synced &middot; 3s</div>
+    <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+    <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
     <div class="scanline"></div>
-    <div class="camhint"><span class="live">&#9679;</span> Scanning onto <b>Truck 07</b></div>
+    <div class="camhint"><span class="live">&#9679;</span> Scanning onto <b>X8</b></div>
   </div>
 
-  <!-- identical strip, different resolution of where/for/by -->
-  <div class="ctxstrip">
-    <div class="cx"><span class="ck">Where</span>
-      <span class="cv">Truck 07 <span class="mut">&middot; bin X8 &middot; bay 3</span></span></div>
-    <div class="cx"><span class="ck">For</span>
-      <span class="cv">Aldine Westfield Ph2 <span class="mut">&middot; sub-orders 10827 &middot; 10755</span></span></div>
-    <div class="cx"><span class="ck">By</span>
-      <span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct warn">68%</span></span></span></div>
-    <div class="pbar"><i class="warn" style="width:68%"></i></div>
-    <div class="stages">
-      <div class="stg done">Not<br>printed</div>
-      <div class="stg done">Tag in<br>office</div>
-      <div class="stg done">At<br>machine</div>
-      <div class="stg done">In<br>staging</div>
-      <div class="stg now warn">On<br>truck</div>
-      <div class="stg">Deliv&#8203;ered</div>
+  <!-- load header: 4-part identity + orders + presence/freshness -->
+  <div class="loadbar">
+    <div class="binrow">
+      <span class="binlbl">Run</span><span class="binval">X8</span>
+      <a class="swbtn" href="loader-split.html" title="Switch run">&#8646; <span class="k">3 loads</span></a>
+      <span class="runtag">3 orders</span>
+    </div>
+    <div class="cust">Aldine Westfield Ph2</div>
+    <div class="sub">ships 06/12/26 &middot; 22 tags</div>
+    <div class="orders">X8.1 &middot; X8.2 &middot; X8.3</div>
+    <div class="syncline">&#128100; <b>Operator 2 &middot; Operator 3</b> also loading &middot; updated 3s ago</div>
+  </div>
+
+  <!-- locked toggle. Badge escalates grey -> amber at 80% -> red on short close-out -->
+  <div class="viewtog">
+    <span class="vt on">In progress</span>
+    <a class="vt" href="loader-punchlist.html">Punch list <span class="cnt">14</span></a>
+  </div>
+
+  <div class="prog">
+    <div class="row"><span class="big">8 <span class="small">of 22 loaded</span></span>
+      <span class="small">6,240 lb left</span></div>
+    <div class="bar"><i style="width:36%"></i></div>
+  </div>
+
+  <!-- the six-cell counts bar; Conflicts only renders when > 0 -->
+  <div class="counts">
+    <div class="cnt6"><div class="cv">22</div><div class="cl">Total</div></div>
+    <div class="cnt6 c-fab"><div class="cv">9</div><div class="cl">In fab</div></div>
+    <div class="cnt6 c-ready"><div class="cv">5</div><div class="cl">Ready</div></div>
+    <div class="cnt6 c-loaded"><div class="cv">8</div><div class="cl">Loaded</div></div>
+    <div class="cnt6 c-rem"><div class="cv">14</div><div class="cl">Left</div></div>
+    <div class="cnt6 c-conflict"><div class="cv">1</div><div class="cl">Conflicts</div></div>
+  </div>
+
+  <div class="rowlbl">Filter by category</div>
+  <div class="catbar">
+    <div class="ctab active"><span class="nm">All</span><span class="n">22</span></div>
+    <div class="ctab"><span class="nm">Rebar</span><span class="n">8</span></div>
+    <div class="ctab"><span class="nm">Tendon</span><span class="n">5</span></div>
+    <div class="ctab"><span class="nm">Hardware</span><span class="n">4</span></div>
+    <div class="ctab"><span class="nm">Lumber</span><span class="n">2</span></div>
+    <div class="ctab"><span class="nm">Pending</span><span class="n">3</span></div>
+  </div>
+
+  <!-- ── X8.1 ── -->
+  <div class="ordh"><span class="oid">X8.1</span><span class="odesc">Wall panel</span><span class="oct">3 of 6 loaded</span></div>
+  <div class="secthdr notscan">&#9675; Not scanned<span class="n">2</span></div>
+  <div class="lrow cat-hardware"><span class="lnum">H-02</span><span class="lspec">pocket formers</span><span class="ldot st-staged"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lrow cat-lumber"><span class="lnum">L-01</span><span class="lspec">2x4 forming</span><span class="ldot st-staged"></span><span class="caret">tap &#8964;</span></div>
+  <div class="secthdr scan">&#9686; Scanned<span class="n">1</span></div>
+  <div class="lrow cat-rebar"><span class="lnum">#1</span><span class="lspec">STR &middot; 11-08</span><span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lcollapse"><div class="lloaded">&#10003; 3 loaded<span class="arrow">&#8597;</span></div>
+    <div class="lloaded-body">
+      <div class="lrow cat-rebar doneRow"><span class="lnum">#4</span><span class="lspec">4N01 &middot; qty 8</span></div>
+      <div class="lrow cat-rebar doneRow"><span class="lnum">#5</span><span class="lspec">4N02 &middot; qty 16</span></div>
+      <div class="lrow cat-tendon doneRow"><span class="lnum">T-01</span><span class="lspec">0.6&quot; &middot; 42&#8242;</span></div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:0;">
-    <div class="kick">Loaded &middot; 12 sec ago</div>
-    <h2>FT052926-004#1</h2>
-    <div class="body">
-      <b>#6</b> &middot; straight &middot; 20&#8242;&#8209;0&#8243; &middot; qty <b>24</b> &middot; 961 lb<br>
-      7 tags still off the truck.
-    </div>
-    <div class="pills">
-      <span class="pill warn">Pending backfill</span>
-      <span class="pill ok">Bin X8 matches</span>
+  <!-- ── X8.2 — carries the drawer + conflict demos ── -->
+  <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">2 of 8 loaded</span></div>
+  <div class="secthdr notscan">&#9675; Not scanned<span class="n">3</span></div>
+  <div class="lrow cat-hardware"><span class="lnum">H-03</span><span class="lspec">wedges &middot; box</span><span class="ldot st-staged"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6&quot; &middot; 44&#8242;</span><span class="ldot st-machine"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 &middot; 48&quot;</span><span class="ldot st-notprinted"></span><span class="caret">tap &#8964;</span></div>
+
+  <div class="secthdr short">&#9888; Short<span class="n">1</span></div>
+  <div class="lrow cat-rebar open"><span class="lnum">#42</span><span class="lspec">8B03 &middot; 30-04</span>
+    <span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span>
+    <div class="ldrawer">
+      <div class="drow"><span class="dk">Category</span><span class="dv"><span class="catpill">Rebar</span></span></div>
+      <div class="drow"><span class="dk">Where</span><span class="dv">At Shear &middot; <b style="color:var(--bad)">2 of 12 missing</b></span></div>
+      <div class="drow"><span class="dk">Full spec</span><span class="dv">8B03 &middot; #8 &middot; 30-04 &middot; qty 12</span></div>
+      <div class="drow"><span class="dk">Shape</span><span class="dv"><span class="dbig shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span></span></div>
+      <button class="dcam">&#128247; Can&#39;t scan? Photo + hand-load</button>
     </div>
   </div>
 
-  <div class="ctarow">
-    <a class="btn prim blk big" href="loader-alarm.html">Scan onto truck &rarr;</a>
-    <a class="btn hold" href="#" onclick="return false;" title="Load photos — driver / passenger / rear">&#128247;</a>
-  </div>
-  <div class="ctarow">
-    <a class="btn ghost blk" href="loader-drawer.html">Close out load &mdash; 7 short &#9652;</a>
+  <div class="secthdr scan">&#9686; Scanned<span class="n">1</span></div>
+  <div class="lrow cat-tendon"><span class="lnum">T-03</span><span class="lspec">0.5&quot; &middot; 51&#8242;</span><span class="caret">tap &#8964;</span></div>
+
+  <div class="secthdr pendh">&#9729; Pending &mdash; backfill<span class="n">1</span></div>
+  <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="ldot st-unknown"></span><span class="caret">tap &#8964;</span></div>
+
+  <!-- server 409: the optimistic mark was rolled back -->
+  <div class="conflict">&#9888; Already loaded by <b>Operator 2</b> at 09:14 &mdash; your mark was undone and the list re-fetched.</div>
+
+  <div class="lcollapse open"><div class="lloaded">&#10003; 2 loaded<span class="arrow">&#8597;</span></div>
+    <div class="lloaded-body">
+      <div class="lrow cat-rebar doneRow open"><span class="lnum">#39</span><span class="lspec">8B01 &middot; qty 12</span>
+        <span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="load"></span>
+        <div class="ldrawer">
+          <div class="drow"><span class="dk">Category</span><span class="dv"><span class="catpill">Rebar</span></span></div>
+          <div class="drow"><span class="dk">Loaded by</span><span class="dv"><b>Operator 2</b> &middot; 4s ago
+            <span class="dattrib">(you scanned a moment later &mdash; server kept theirs)</span></span></div>
+          <div class="drow"><span class="dk">Full spec</span><span class="dv">8B01 &middot; #8 &middot; 30-04 &middot; qty 12</span></div>
+        </div>
+      </div>
+      <div class="lrow cat-rebar doneRow"><span class="lnum">#40</span><span class="lspec">8B02 &middot; qty 6 &middot; &#128247;</span></div>
+    </div>
   </div>
 
-  <div class="drawer" data-drawer>
-    <div class="dhandle" data-dhandle>
-      <span class="grip"></span>
-      <div>
-        <div class="dt">Punch list &mdash; what's left</div>
-        <div class="ds">7 tags &middot; 3 categories</div>
-      </div>
-      <span class="dn">7</span>
-      <span class="car">&#9652;</span>
-    </div>
-    <div class="dbody">
-      <div class="sectlbl" style="margin-top:2px;">Still to load <span class="n">7 of 22</span></div>
-      <div class="wrow warn">
-        <div><div class="nm">Rebar &middot; 4 tags</div>
-          <div class="sub">At machine &middot; BENDER &middot; walk to bay 2</div></div>
-        <div class="val warn">4</div>
-      </div>
-      <div class="wrow bad">
-        <div><div class="nm">Tendon &middot; 3 tags</div>
-          <div class="sub">Tag in office &middot; not printed yet</div></div>
-        <div class="val bad">3</div>
-      </div>
-      <div class="wrow ok">
-        <div><div class="nm">Hardware &middot; 0 tags</div>
-          <div class="sub">On truck &middot; complete</div></div>
-        <div class="val ok">100%</div>
-      </div>
+  <!-- ── X8.3 ── -->
+  <div class="ordh"><span class="oid">X8.3</span><span class="odesc">Podium deck</span><span class="oct">3 of 8 loaded</span></div>
+  <div class="secthdr notscan">&#9675; Not scanned<span class="n">2</span></div>
+  <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="ldot st-machine"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs &middot; bundle</span><span class="ldot st-office"></span><span class="caret">tap &#8964;</span></div>
+  <div class="secthdr scan">&#9686; Scanned<span class="n">1</span></div>
+  <div class="lrow cat-rebar"><span class="lnum">#41</span><span class="lspec">3C15 &middot; 6-06</span><span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span><span class="caret">tap &#8964;</span></div>
+  <div class="secthdr pendh">&#9729; Pending &mdash; backfill<span class="n">2</span></div>
+  <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="ldot st-unknown"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="ldot st-unknown"></span><span class="caret">tap &#8964;</span></div>
+  <div class="lcollapse"><div class="lloaded">&#10003; 3 loaded<span class="arrow">&#8597;</span></div>
+    <div class="lloaded-body">
+      <div class="lrow cat-rebar doneRow"><span class="lnum">#9</span><span class="lspec">4N09 &middot; qty 4</span></div>
+      <div class="lrow cat-hardware doneRow"><span class="lnum">H-01</span><span class="lspec">bearing plates</span></div>
+      <div class="lrow cat-tendon doneRow"><span class="lnum">T-02</span><span class="lspec">0.6&quot; &middot; 38&#8242;</span></div>
     </div>
   </div>
+
+  <button class="startover">&#8635; Start over</button>
 
 </div></div></div>
 
-<div class="note">
-  <span class="h">Why the punch list is a drawer and not a section</span>
-  James's three sections (roles / scan / task metadata) resolved to <b>two</b>: the strip carries the
-  <i>current</i> task context and is always visible because it is tied to what is in the viewport;
-  anything <i>browsable</i> &mdash; a list you read rather than glance at &mdash; goes in the bottom
-  pull-up, collapsed. The loader is the role that most needs a browsable list (the punch list), so it
-  is the clearest test of the pattern. Page 4 shows it open.<br>
-  <b>Real today:</b> the loader app is fully live (<code>/api/load</code>, <code>load_app.html</code>),
-  including progress counts, the 4-part load identity, load photos and the 6-stage lifecycle view
-  (built, flag <code>WIP_LOADER_LIFECYCLE_V2</code> off).<br>
-  <span class="flag">Not backed:</span> <b>Truck 07</b> &mdash; there is no truck/vehicle entity anywhere
-  in the model (G4) &middot; the <b>punch list</b> and its walk-to hints are designed, unbuilt, and blocked
-  on the <code>category</code> field, which does not exist on the tag (L9/L12) &middot; the
-  <b>close-out gate</b> is the loader spec's ROI item and is also unbuilt &mdash; today a partially
-  loaded truck gets no gate at all (L10).
+<div class="note" style="border-left-color:var(--acc);">
+  <span class="h" style="color:var(--acc);">What the reconciliation changed &mdash; and what it did not</span>
+  <b>Changed (1 thing):</b> the old app-bar + cross-role rail became the single 38&nbsp;px bar. That is
+  the whole of rev 2 on this screen.<br>
+  <b>Restored from the canonical design, absent from last night&#39;s draft:</b> the six-cell counts bar
+  &middot; the 4-part load header with its orders line &middot; multi-loader presence + freshness
+  (<i>"Operator 2 &middot; Operator 3 also loading &middot; updated 3s ago"</i>, the 4-second poll)
+  &middot; the 409 conflict banner with attribution and the rolled-back optimistic mark &middot; the
+  three sub-orders as their own sections &middot; the category filter (wrapped, never scrolled) &middot;
+  the bend-shape thumbnails &middot; the row drawer with per-tag photo + hand-load &middot; the
+  <i>"&#10003; N loaded"</i> collapse &middot; <code>Start over</code>.<br>
+  <b>One reconciliation call for your sign-off.</b> Last night I proposed a bottom pull-up drawer for the
+  punch list. The locked design already solves that with the <b>In progress | Punch list</b> toggle,
+  which carries the outstanding count <i>and</i> the urgency-scaling rule (grey &rarr; amber at 80%
+  &rarr; red on a short close-out). <b>The toggle wins here</b> &mdash; the punch list is a full second
+  view of 14 rows across 5 categories, not a peek. The pull-up drawer stays on the rebar screen, where
+  it is a peek.<br>
+  <span class="flag">Unbacked, carried over unchanged:</span> the <code>category</code> field does not
+  exist on the tag (L12) &middot; per-row attribution needs <code>loaded_by</code>/<code>loaded_at</code>
+  added to <code>/api/load-status</code>, and names are tenant-only PII &middot; presence does not exist.
 </div>
 
 <div class="footnav">
-  Prev: <a href="rebar-busy.html">2. Rebar &middot; busy</a> &middot;
-  Next: <a href="loader-drawer.html">4. Drawer open &rarr;</a>
+  Prev: <a href="rebar-busy.html">Rebar &middot; busy</a> &middot;
+  Next: <a href="loader-punchlist.html">Punch list &rarr;</a>
 </div>
 
 <script src="_shared.js"></script>
