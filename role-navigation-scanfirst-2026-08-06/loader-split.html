@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reconciled Loader — split, approval, carry-over, run switch · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>7 / 12 &middot; Loader &mdash; <b>split, approval, carry-over</b> + run switch</h1>
+  <p>The largest thing missing from last night&#39;s draft. When a truck ships short, the loader taps
+    <b>Confirm</b> and is done &mdash; no code, no waiting at the truck. The request drops into a
+    <b>plant-wide approvals queue</b> and the truck can stay parked or start reloading. On approval the
+    loader gets a banner and <code>CLOSEOUT_OVERRIDDEN</code> fires with the approver stamped.</p>
+  <p><b>The scan is the assignment.</b> Whatever is loaded ships; whatever isn&#39;t stays in the bin for
+    the next truck. The next truck simply reopens the run at <b>15 of 22</b> with the 7 remaining marked
+    <b>&#8617; carry</b>. No new operation, nothing for the loader to learn.</p>
+  <div class="crumbs">
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a class="on" href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — REQUEST SUBMITTED ===== -->
+  <div>
+  <div class="phone"><div class="scr blockscr flow">
+    <div class="topbar">
+      <div class="tabs"><span class="roletab">Rebar</span><span class="roletab on">Loader</span><span class="roletab">Yard</span></div>
+      <div class="xrail"><span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
+        <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt">2</span></span>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span></div>
+    </div>
+
+    <div class="blockhdr" style="background:#12202f; border-color:#2f4a63;">
+      <div class="bi">&#128233;</div>
+      <h2 style="color:#9ccbff;">REQUEST SUBMITTED</h2>
+      <div class="bs" style="color:#bcd6ef;"><b>15 of 22 loaded.</b><br>Awaiting supervisor/lead approval to close out short.</div>
+    </div>
+
+    <div class="reqsub">
+      <h3>&#8987; Awaiting approval</h3>
+      <div class="rs2">Run <b>X8</b> &middot; <b>15 tags</b> shipping &middot; <b>7 carry</b> to the next
+        run &middot; reason <b>Split &mdash; carry forward</b>. A supervisor or lead confirms from the
+        portal &mdash; you don&#39;t have to wait here.</div>
+      <div class="tl">
+        <div class="tlrow done"><b>Submitted</b> by you <span class="t">&middot; 09:23</span></div>
+        <div class="tlrow now"><b>Awaiting approval</b> &mdash; in the supervisor/lead queue<br>
+          <span class="urg"><span class="d"></span>Truck 22N waiting</span></div>
+        <div class="tlrow"><b>Close-out fires</b> on approval <span class="t">&middot; not yet</span></div>
+      </div>
+      <div class="reqfoot">Truck can stay parked, or start reloading the next run &mdash; the close-out
+        records the moment a lead approves.</div>
+    </div>
+  </div></div>
+  <div class="phcap">A &middot; loader is done &mdash; no code, no waiting</div>
+  </div>
+
+  <!-- ===== B — APPROVED ===== -->
+  <div>
+  <div class="phone"><div class="scr blockscr flow">
+    <div class="topbar">
+      <div class="tabs"><span class="roletab">Rebar</span><span class="roletab on">Loader</span><span class="roletab">Yard</span></div>
+      <div class="xrail"><span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
+        <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt">2</span></span>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span></div>
+    </div>
+
+    <div class="apprvd">
+      <h3>&#10003; Approved</h3>
+      <div class="ap2"><b>Approved by Operator 7 (lead)</b> at 09:26 &mdash; 3 min after you asked.
+        Run <b>X8</b> closed out: <b>15 shipped</b>, <b>7 carry</b> to the next truck.</div>
+      <div class="notif">&#128276; <span>In-app banner, plus a phone push if the PWA is installed. The
+        in-app state is the source of truth &mdash; the push just reaches you when your phone&#39;s in
+        your pocket.</span></div>
+    </div>
+
+    <div class="tl" style="margin-top:14px;">
+      <div class="tlrow done"><b>Submitted</b> <span class="t">&middot; 09:23</span></div>
+      <div class="tlrow done"><b>Approved by Operator 7 (lead)</b> <span class="t">&middot; 09:26</span></div>
+      <div class="tlrow done"><b>Close-out recorded</b> &mdash; 15 shipped &middot; 7 carry <span class="t">&middot; 09:26</span></div>
+    </div>
+
+    <div class="secthdr" style="margin-top:14px;">&#10003; Shipped on truck 22N<span class="n">15</span></div>
+    <div class="lcollapse"><div class="lloaded">&#10003; 15 shipped &mdash; closed out &amp; gone<span class="arrow">&#8597;</span></div>
+      <div class="lloaded-body">
+        <div class="lrow cat-rebar doneRow"><span class="lnum">#39</span><span class="lspec">8B01 &middot; qty 12</span></div>
+        <div class="lrow cat-rebar doneRow"><span class="lnum">#40</span><span class="lspec">8B02 &middot; qty 6 &middot; &#128247;</span></div>
+        <div class="lrow doneRow" style="border-left-color:var(--line);"><span class="lspec" style="color:var(--faint)">&hellip;13 more</span></div>
+      </div>
+    </div>
+    <div class="emits" style="font-family:ui-monospace,Menlo,Consolas,monospace; font-size:9.5px; color:#5f6a76; text-align:center; margin-top:12px; line-height:1.6;">
+      CLOSEOUT_OVERRIDDEN &middot; approver_id + decided_at stamped from the queue record
+    </div>
+  </div></div>
+  <div class="phcap">B &middot; approved &mdash; approver stamped on the event</div>
+  </div>
+
+  <!-- ===== C — CARRY-OVER, NEXT TRUCK ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="topbar">
+      <div class="tabs"><span class="roletab">Rebar</span><span class="roletab on">Loader</span><span class="roletab">Yard</span></div>
+      <div class="xrail"><span class="crosspill zero"><span class="glyph">&#9638;</span><span class="cnt">0</span></span>
+        <span class="crosspill"><span class="glyph">&#9881;</span><span class="cnt">2</span></span>
+        <span class="whochip">0421&nbsp;<span class="auth">W</span></span></div>
+    </div>
+
+    <div class="loadbar">
+      <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span><span class="runtag">reopened</span></div>
+      <div class="cust">Aldine Westfield Ph2</div>
+      <div class="sub">ships 06/12/26 &middot; 22 tags</div>
+      <div class="orders">X8.1 &middot; X8.2 &middot; X8.3</div>
+    </div>
+
+    <div class="carrybar">&#8617; <b>Carried over from truck 1</b> &middot; closed out 2:14 PM &middot;
+      loaded by you, <b>approved by Operator 7 (lead)</b><br>
+      <span class="stale">&#9888; Ship date 06/12/26 is from the original run &mdash; confirm before this
+      truck departs.</span></div>
+
+    <div class="viewtog">
+      <span class="vt on">In progress</span>
+      <a class="vt" href="loader-punchlist.html">Punch list <span class="cnt amber">7</span></a>
+    </div>
+    <div class="prog"><div class="row"><span class="big">15 <span class="small">of 22 loaded</span></span>
+      <span class="small">7 carry-over</span></div><div class="bar"><i style="width:68%"></i></div></div>
+
+    <div class="ordh"><span class="oid">X8.2</span><span class="odesc">Foundation</span><span class="oct">carry-over</span></div>
+    <div class="secthdr notscan">&#9675; Not scanned<span class="n">2</span></div>
+    <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6&quot; &middot; 44&#8242;</span><span class="carry">&#8617; carry</span><span class="ldot st-machine"></span></div>
+    <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 &middot; 48&quot;</span><span class="carry">&#8617; carry</span><span class="ldot st-notprinted"></span></div>
+    <div class="secthdr pendh">&#9729; Pending &mdash; backfill<span class="n">1</span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="carry">&#8617; carry</span><span class="ldot st-unknown"></span></div>
+
+    <div class="ordh"><span class="oid">X8.3</span><span class="odesc">Podium deck</span><span class="oct">carry-over</span></div>
+    <div class="secthdr notscan">&#9675; Not scanned<span class="n">2</span></div>
+    <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="carry">&#8617; carry</span><span class="ldot st-machine"></span></div>
+    <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs &middot; bundle</span><span class="carry">&#8617; carry</span><span class="ldot st-office"></span></div>
+    <div class="secthdr pendh">&#9729; Pending &mdash; backfill<span class="n">2</span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="carry">&#8617; carry</span><span class="ldot st-unknown"></span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="carry">&#8617; carry</span><span class="ldot st-unknown"></span></div>
+
+    <div class="lcollapse"><div class="lloaded">&#10003; 15 shipped on truck 1<span class="arrow">&#8597;</span></div>
+      <div class="lloaded-body">
+        <div class="lrow cat-rebar doneRow"><span class="lnum">#39</span><span class="lspec">8B01 &middot; qty 12</span></div>
+        <div class="lrow cat-hardware doneRow"><span class="lnum">H-03</span><span class="lspec">wedges &middot; box</span></div>
+        <div class="lrow doneRow" style="border-left-color:var(--line);"><span class="lspec" style="color:var(--faint)">&hellip;13 more &mdash; closed out &amp; gone</span></div>
+      </div>
+    </div>
+  </div></div>
+  <div class="phcap">C &middot; next truck &mdash; run reopens at 15 of 22</div>
+  </div>
+
+  <!-- ===== D — SWITCH RUN ===== -->
+  <div>
+  <div class="phone"><div class="picker">
+    <h2>Switch run</h2>
+    <div class="psub">Runs you&#39;ve worked on this device. Tap one to switch &mdash; your current run is saved.</div>
+    <div class="bpcard cur">
+      <div class="bprow"><span class="bpbin">X8</span><span class="curtag">On this now</span></div>
+      <div class="bpcust">Aldine Westfield Ph2</div>
+      <div class="bpmeta"><span>8/22</span><span class="bpbar"><i style="width:36%"></i></span><span>now</span></div>
+    </div>
+    <div class="bpcard">
+      <div class="bprow"><span class="bpbin">X4</span></div>
+      <div class="bpcust">Systel Addition</div>
+      <div class="bpmeta"><span>3/9</span><span class="bpbar"><i style="width:33%"></i></span><span>18 min ago</span></div>
+    </div>
+    <div class="bpcard">
+      <div class="bprow"><span class="bpbin">16</span></div>
+      <div class="bpcust">PC Panel P26&ndash;P38</div>
+      <div class="bpmeta"><span>0/12</span><span class="bpbar"><i style="width:0%"></i></span><span>2 hr ago</span></div>
+      <div class="bpwarn">&#9888; No tag remembered &mdash; you&#39;ll need to scan the first tag of this run.</div>
+    </div>
+    <div class="plimit">This list holds the last <b>3</b> runs and is stored on this phone only &mdash;
+      it&#39;s &quot;runs I touched here&quot;, not &quot;runs assigned to me&quot;. A fresh phone starts empty.</div>
+  </div></div>
+  <div class="phcap">D &middot; multi-run switcher &mdash; live today</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">The approval queue is a reusable primitive, not a loader feature</span>
+  Build it once as <code>hpt-approvals</code> with a typed <code>request_kind</code>
+  (<code>closeout_override</code> first; <code>scrap</code>, <code>void</code>,
+  <code>price_override</code> later) and every later approval flow is a <b>new kind, not a new
+  mechanism</b>. The approver side lives on the supervisor persona surface &mdash; see
+  <a href="supervisor-approvals.html">Approvals</a>.<br>
+  <b>Locked eligibility rules</b> (2026-07-24), which my draft&#39;s two-row "needs your sign-off" list
+  didn&#39;t carry: <b>any lead or supervisor can approve any load</b> &mdash; the queue is <i>not</i>
+  cell-scoped &mdash; and <b>self-approval is allowed</b>: do not build a "cannot approve your own"
+  guard. The audit still records both <code>actor</code> and <code>approver_id</code>; they may be the
+  same id, and that is acceptable.<br>
+  <b>Only a short ship enters the queue.</b> A full 22/22 load is the happy path and the loader closes
+  out themselves &mdash; the carry count decides <i>whether</i> a request is created, the reason enum
+  only classifies <i>why</i>.<br>
+  <b>Notification surfaces:</b> portal nav badge (copying the shipped Orphans "13" badge pattern) and
+  PWA push are both primary. A Teams channel was explicitly <b>deferred</b> &mdash; do not wire it in
+  this pass.<br>
+  <span class="flag">Open for build:</span> where the queue record lives (a lightweight
+  <code>approvals</code> table vs riding the events log), and whether reject-then-resubmit threads to
+  the same request id or opens a new one. Frame C&#39;s two copy calls (the "15 of 22" framing and the
+  annotated stale ship date) are still awaiting your answer from the original review.
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader-closeout.html">Close-out</a> &middot;
+  Next: <a href="supervisor.html">Supervisor &middot; workcells &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
