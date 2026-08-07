@@ -77,6 +77,14 @@
     <div class="camhint"><span class="live">&#9679;</span> Scanning &mdash; hold the tag steady</div>
   </div>
 
+  <!-- production order: the scan records itself, so what sits under the viewport
+       is the RESULT and the two fallbacks — not a confirm button -->
+  <div class="savestrip queued">&#8987; Queued <span class="tg">FT052926-001#3</span><span class="n">2 waiting &middot; sends on wifi</span></div>
+  <div class="camrow">
+    <button class="cbtn">&#128247; Can&#39;t scan? Photo &rarr;</button>
+    <button class="cbtn sec">Capture frame</button>
+  </div>
+
   <div class="ctxstrip">
     <div class="cx"><span class="ck">Where</span>
       <span class="cv">Shear 03 <span class="mut">&middot; bin X8 &middot; bay 2</span></span></div>
@@ -109,12 +117,7 @@
     </div>
   </div>
 
-  <div class="ctarow">
-    <a class="btn prim blk big" href="#" onclick="return false;">Record scan &rarr;</a>
-    <a class="btn hold" href="#" onclick="return false;" title="Can't scan — photo fallback">&#128247;</a>
-  </div>
-
-  <div class="drawer" data-drawer>
+    <div class="drawer" data-drawer>
     <div class="dhandle" data-dhandle>
       <span class="grip"></span>
       <div>
