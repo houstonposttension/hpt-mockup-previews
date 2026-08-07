@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reconciled Loader — punch list · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_loader_kit.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>4 / 12 &middot; Loader &mdash; punch list <b>(a walking route, not a report)</b></h1>
+  <p>The same tags pivoted <b>Bin &rarr; Category &rarr; missing</b>. Its whole purpose is to answer
+    <i>"what&#39;s left and where do I walk?"</i> in one screen, so every category header carries a
+    <b>walk-to hint</b> &mdash; and where the location genuinely isn&#39;t known, it renders
+    <b>TBD</b> rather than inventing one.</p>
+  <p><b>"Missing" is every tag not yet Loaded</b> &mdash; which includes <i>Scanned</i> (in hand, not on
+    the truck yet), <i>Not scanned</i>, <i>Short</i>, and <i>Pending&nbsp;&mdash;&nbsp;backfill</i>.
+    Cloud tags get their own bucket because their category, and therefore their walk-to, is unknown.
+    Every row carries its <b>sub-order chip</b> so you know which part of the bin to walk to.</p>
+  <div class="crumbs">
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a class="on" href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage"><div class="phone"><div class="scr flow">
+
+  <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load?view=punch</span></div>
+
+  <div class="topbar">
+    <div class="tabs">
+      <a class="roletab" href="index.html">Rebar</a>
+      <a class="roletab on" href="loader-punchlist.html">Loader</a>
+      <a class="roletab" href="#" onclick="return false;">Yard</a>
+    </div>
+    <div class="xrail">
+      <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+      <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+      <span class="whochip">0421&nbsp;<span class="auth">W</span></span>
+    </div>
+  </div>
+
+  <div class="loadbar">
+    <div class="binrow"><span class="binlbl">Run</span><span class="binval">X8</span>
+      <a class="swbtn" href="loader-split.html">&#8646; <span class="k">3 loads</span></a>
+      <span class="runtag">3 orders</span></div>
+    <div class="cust">Aldine Westfield Ph2</div>
+    <div class="sub">ships 06/12/26 &middot; 22 tags</div>
+    <div class="syncline">&#128100; <b>Operator 2 &middot; Operator 3</b> also loading &middot; updated 1s ago</div>
+  </div>
+
+  <div class="viewtog">
+    <a class="vt" href="loader.html">In progress</a>
+    <span class="vt on">Punch list <span class="cnt">14</span></span>
+  </div>
+
+  <div class="prog">
+    <div class="row"><span class="big">8 <span class="small">of 22 loaded</span></span><span class="small">36%</span></div>
+    <div class="bar"><i style="width:36%"></i></div>
+  </div>
+
+  <div class="plhdr">Still to load<span class="tot">14 tags &middot; 5 areas</span></div>
+
+  <div class="pcat">
+    <div class="pchead"><span class="nm" style="color:var(--rebar)">Rebar</span>
+      <span class="walk">&rarr; cutting area / 20 Station</span><span class="badge">3</span></div>
+    <div class="lrow cat-rebar"><span class="lnum">#1</span><span class="lspec">STR &middot; 11-08</span>
+      <span class="shape" data-asa="STR" data-dims='{}' data-st="scan"></span>
+      <span class="lbin">X8.1</span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-rebar"><span class="lnum">#41</span><span class="lspec">3C15 &middot; 6-06</span>
+      <span class="shape" data-asa="T1" data-dims='{"A":"0-04","B":"2-04","C":"0-06","D":"2-04","E":"0-06","G":"0-04"}' data-st="scan"></span>
+      <span class="lbin">X8.3</span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-rebar"><span class="lnum">#42</span><span class="lspec">8B03 &middot; short</span>
+      <span class="shape" data-asa="2" data-dims='{"A":"1-04","B":"27-08","G":"1-04"}' data-st="short"></span>
+      <span class="lbin">X8.2</span><span class="ldot st-machine"></span><span class="caret">tap &#8964;</span></div>
+  </div>
+
+  <div class="pcat">
+    <div class="pchead"><span class="nm" style="color:var(--tendon)">Tendon</span>
+      <span class="walk">&rarr; PT Atlas / Hayes</span><span class="badge">3</span></div>
+    <div class="lrow cat-tendon"><span class="lnum">T-03</span><span class="lspec">0.5&quot; &middot; 51&#8242;</span><span class="lbin">X8.2</span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-tendon"><span class="lnum">T-04</span><span class="lspec">0.6&quot; &middot; 44&#8242;</span><span class="lbin">X8.2</span><span class="ldot st-machine"></span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-tendon"><span class="lnum">T-05</span><span class="lspec">anchor set</span><span class="lbin">X8.3</span><span class="ldot st-machine"></span><span class="caret">tap &#8964;</span></div>
+  </div>
+
+  <div class="pcat">
+    <div class="pchead"><span class="nm" style="color:var(--hardware)">Hardware</span>
+      <span class="walk">&rarr; location <span class="tbd">TBD</span></span><span class="badge">3</span></div>
+    <div class="lrow cat-hardware"><span class="lnum">H-02</span><span class="lspec">pocket formers</span><span class="lbin">X8.1</span><span class="ldot st-staged"></span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-hardware"><span class="lnum">H-03</span><span class="lspec">wedges &middot; box</span><span class="lbin">X8.2</span><span class="ldot st-staged"></span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-hardware"><span class="lnum">H-04</span><span class="lspec">chairs &middot; bundle</span><span class="lbin">X8.3</span><span class="ldot st-office"></span><span class="caret">tap &#8964;</span></div>
+  </div>
+
+  <div class="pcat">
+    <div class="pchead"><span class="nm" style="color:var(--lumber)">Lumber</span>
+      <span class="walk">&rarr; location <span class="tbd">TBD</span></span><span class="badge">2</span></div>
+    <div class="lrow cat-lumber"><span class="lnum">L-01</span><span class="lspec">2x4 forming</span><span class="lbin">X8.1</span><span class="ldot st-staged"></span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-lumber"><span class="lnum">L-02</span><span class="lspec">4x4 &middot; 48&quot;</span><span class="lbin">X8.2</span><span class="ldot st-notprinted"></span><span class="caret">tap &#8964;</span></div>
+  </div>
+
+  <div class="pcat">
+    <div class="pchead"><span class="nm" style="color:var(--warn)">Pending &mdash; backfill</span>
+      <span class="walk" style="color:#b9903f">&rarr; area unknown</span><span class="badge amber">3</span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-88</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="lbin">X8.2</span><span class="ldot st-unknown"></span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-89</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap &#8964;</span></div>
+    <div class="lrow cat-cloud"><span class="lnum">C-90</span><span class="lspec">HPT Cloud tag &mdash; details pending</span><span class="lbin">X8.3</span><span class="ldot st-unknown"></span><span class="caret">tap &#8964;</span></div>
+  </div>
+
+  <a class="closebtn" href="loader-closeout.html">Complete loading</a>
+  <div class="mexist">The loader completes the <b>loading</b>, not the delivery. <code>ON_TRUCK</code> is
+    the loader&#39;s terminal state; <code>DELIVERED</code> is the driver&#39;s.</div>
+
+</div></div></div>
+
+<div class="note">
+  <span class="h">Locked decisions visible on this screen</span>
+  <b>Walk-to hints, with honest TBDs.</b> Rebar and Tendon have real destinations; Hardware and Lumber
+  locations are genuinely unknown, so they render <code>TBD</code> instead of a plausible-looking
+  invention. Pending&nbsp;&mdash;&nbsp;backfill reads <i>"area unknown."</i><br>
+  <b>Terminology (&sect;15.2).</b> The button is <b>"Complete loading"</b>, not "Complete delivery run"
+  and not "Depart." The event registry separates <code>LOADED</code> (per tag) from a proposed
+  <code>LOADING_COMPLETED</code> (per run), and <code>DELIVERED</code> stays the driver&#39;s.
+  My draft last night said <i>"Depart short"</i> &mdash; that was office/driver language the locked spec
+  had already rejected, and it is corrected here.<br>
+  <b>Per-row status is kept here</b> and removed on the in-progress view. The rule (&sect;15.1) is that
+  the label is dropped only where rows are <i>grouped by status</i>; this view groups by category, with
+  statuses deliberately mixed inside each group, so the corner dot is the only thing distinguishing
+  Staged from At-machine from Not-printed.<br>
+  <span class="flag">Unbacked:</span> the whole punch list needs the <code>category</code> field on the
+  tag (L12), which is also GA-WIP-192&#39;s prerequisite &mdash; one fix serves both. Walk-to locations
+  need a physical-location field (G10).<br>
+  <span class="flag">Open conflict between two prior artifacts, not introduced here:</span> LEAN renders
+  cloud tags as <code>HPT Cloud &middot; f3a1&hellip;</code>, but the GA-WIP-179 spec says label them
+  <b>"HPT Cloud tag &mdash; details pending"</b> and explicitly <i>not</i> a truncated GUID. I have used
+  the GA-WIP-179 wording here. Flagging it so you can settle which one wins.
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader.html">Loader &middot; in progress</a> &middot;
+  Next: <a href="loader-alarm.html">Interrupts &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
