@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Supervisor — station detail + the honest dark cell · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_supervisor_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>9 / 12 &middot; Supervisor &mdash; station detail + the <b>honest dark cell</b></h1>
+  <p>Frame A is the tile drill-down. It repeats the tile&#39;s <b>current-hour</b> metric, then adds
+    what the tile deliberately withholds: <b>shift-so-far</b> (&quot;how well I did my job&quot;), an
+    <b>8-hour sparkline</b>, who is on the station, tags in progress with a <b>stall flag at 4&nbsp;h</b>,
+    and what is queued next.</p>
+  <p>Frame B is the one the locked mockup calls <b>the cheapest real improvement in the whole set</b>.
+    Three cells emit zero events. Rather than showing a fabricated number or an empty chart, the pane
+    states <b>exactly why it is empty and what the single fix is</b> &mdash; the stations exist in the
+    v8 registry but were never added to the live scanner picker, so no worker can select them.</p>
+  <div class="crumbs">
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a href="supervisor.html">Sup &middot; workcells</a>
+    <a class="on" href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — STATION DETAIL ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/cells/shear</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab on" href="supervisor-station.html">Stations</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip sup">0203&nbsp;<span class="auth">LEAD</span></span>
+      </div>
+    </div>
+
+    <a class="backlink" href="supervisor.html">&larr; Shear</a>
+    <div class="sdhdr">
+      <span class="sname">Shear</span>
+      <span class="scell">Rebar Cutting &middot; 1st shift</span>
+      <span class="snow" style="color:var(--ok);">&#128994; on pace</span>
+    </div>
+
+    <div class="statpair">
+      <div class="statbox ok">
+        <div class="sl">This hour</div>
+        <div class="sv">3.9k</div><span class="su">lb/h</span>
+        <div class="sn">&#8593; vs 3.6k last hr &middot; 98% of 4k</div>
+      </div>
+      <div class="statbox">
+        <div class="sl">Shift so far</div>
+        <div class="sv">3.7k</div><span class="su">lb/h avg</span>
+        <div class="sn">vs 4k target</div>
+      </div>
+    </div>
+
+    <div class="spark">
+      <div class="sh">Last 8 hours <span class="u">lb/h</span></div>
+      <div data-spark="3.1,3.4,3.2,3.8,3.5,3.6,3.6,3.9" data-target="4"></div>
+      <div class="ax"><span>07:00</span><span class="r">now &middot; 3.9k</span></div>
+    </div>
+
+    <div class="sectlbl">On station <span class="n">1 worker</span></div>
+    <div class="wkrow">
+      <div class="ini">O4</div>
+      <div><div class="wn">Operator 4</div><div class="ws">since 06:02 &middot; last scan 2m ago</div></div>
+      <div class="wv">3.9k<span class="u">lb/h</span></div>
+    </div>
+
+    <div class="sectlbl">Tags in progress <span class="n">2 &middot; now 10:28</span></div>
+    <div class="tagrow">
+      <span class="ic">&#9881;</span>
+      <div><div class="tid">FT0430#19</div><div class="tsp">#6 &middot; started 09:41</div></div>
+      <div class="tage">47m</div>
+    </div>
+    <div class="tagrow stall">
+      <span class="ic">&#9881;</span>
+      <div><div class="tid">FT0429#22</div><div class="tsp">#8 &middot; started 06:10</div></div>
+      <div class="tage">4h 18m<span class="st">stalled</span></div>
+    </div>
+
+    <div class="sectlbl">Queued next <span class="n">from schedule</span></div>
+    <div class="tagrow queued">
+      <span class="ic">&#8987;</span>
+      <div><div class="tid">FT0431#08</div><div class="tsp">#5 &middot; 23-06 &middot; Kennedy V</div></div>
+      <div class="tage" style="font-size:10px;">next</div>
+    </div>
+    <div class="tagrow queued">
+      <span class="ic">&#8987;</span>
+      <div><div class="tid">FT0431#09</div><div class="tsp">#5 &middot; 23-06 &middot; Kennedy V</div></div>
+      <div class="tage" style="font-size:10px;">+1</div>
+    </div>
+
+    <div class="ctarow" style="margin-top:12px;">
+      <a class="btn ghost blk" href="supervisor-actas.html">Cover this station &rarr;</a>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; drill-down adds shift-so-far + 8 h trend</div>
+  </div>
+
+  <!-- ===== B — DARK CELL ===== -->
+  <div id="dark">
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/cells/tendon</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab" href="supervisor.html">Cells</a>
+        <a class="roletab on" href="supervisor-station.html">Stations</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
+        <span class="whochip acting">0119&nbsp;<span class="auth">SUP</span></span>
+      </div>
+    </div>
+
+    <a class="backlink" href="supervisor.html">&larr; Tendon</a>
+    <div class="sdhdr">
+      <span class="sname">Tendon</span>
+      <span class="scell">Remote &middot; PT Atlas &middot; Hayes</span>
+      <span class="snow" style="color:var(--faint);">&#9898; not scanning</span>
+    </div>
+
+    <div class="dark">
+      <div class="dh">&#9888; This cell isn&#39;t scanning yet</div>
+      <div class="dbody">
+        Both Tendon stations &mdash; <b>PT Atlas</b> and <b>Hayes</b> &mdash; are defined in the v8
+        station registry (<code>scan_stations:</code>, tagged <code>tag_type: strand</code>) but neither
+        appears in the live scanner picker (<code>config.SCAN_STATIONS</code>). No worker can select
+        them, so they emit <b>zero events</b> and this pane has nothing to show.
+      </div>
+      <div class="fix">
+        <b>What &quot;wire the station&quot; means</b>
+        <ol>
+          <li>Add <code>&quot;PT Atlas&quot;</code> and <code>&quot;Hayes&quot;</code> to <code>SCAN_STATIONS</code>.</li>
+          <li>Deploy &mdash; the picker reads the list at page-serve, no HTML change.</li>
+          <li>Scans start flowing; <code>work_center_for()</code> already resolves any station to a
+            work-centre, so analytics don&#39;t break.</li>
+        </ol>
+        <div class="est">&rarr; Est. one config line per station + a deploy. No new endpoints.</div>
+      </div>
+    </div>
+
+    <div class="sectlbl">Until then</div>
+    <div class="card">
+      <div class="body">The supervisor manages Tendon <b>by phone</b> (off-floor). This pane lights up the
+        moment the stations are in the picker &mdash; <b>no other work is needed on the read side</b>.</div>
+      <div class="pills"><span class="pill warn">Same empty state applies to 20 Station (Bundling) and Lumber</span></div>
+    </div>
+
+    <div class="sectlbl">What is <i>not</i> shown here <span class="n">deliberately</span></div>
+    <div class="card">
+      <div class="body">No rate. No trend arrow. No zeroed bar chart. No &quot;0 lb/h&quot; tile that
+        reads like a performance problem. <b>A cell that emits nothing shows nothing</b>, and says why.</div>
+    </div>
+
+  </div></div>
+  <div class="phcap">B &middot; dark cell &mdash; no fabricated numbers</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Locked answers this page carries</span>
+  <b>Tile vs drill-down split.</b> The tile shows last-hour rate only; shift-so-far appears here and
+  nowhere else. That division is deliberate &mdash; the tile answers <i>"is it running right now"</i>,
+  the drill-down answers <i>"how did we do"</i>.<br>
+  <b>Stall threshold is 4 hours</b> on in-progress tags, and the stalled row is styled distinctly rather
+  than just sorted to the top.<br>
+  <b>The dark cell is the pattern to copy.</b> Three cells in the plant are dark for the same reason,
+  and the diagnosis is specific enough to act on without a meeting. This is also the one place the
+  supervisor surface names a concrete config fix.<br>
+  <span class="flag">Unbacked here:</span> <i>Queued next</i> needs a persisted machine assignment &mdash;
+  there is no queue-position model today, which is the same gap that limits the self-service ETA
+  surface. The 8-hour sparkline is derivable from the hourly matrix that already exists.
+</div>
+
+<div class="footnav">
+  Prev: <a href="supervisor.html">Sup &middot; workcells</a> &middot;
+  Next: <a href="supervisor-approvals.html">Approvals &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+</body>
+</html>
