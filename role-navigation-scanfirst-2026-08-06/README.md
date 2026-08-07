@@ -121,6 +121,11 @@ projects that already hold locked specs:
 
 In this set they appear only as **cross-role pills** — links out, with no interior.
 
+**Icons (2026-08-07):** Maintenance is marked with a **wrench**, at Maintenance's request. This is a
+visual marker only — the interior stays out of scope. Inventory keeps `▦`. Both render monochrome in
+the same blue so the pair reads as one family: the wrench is an inline SVG masked and tinted with
+`currentColor` rather than a colour emoji, with an emoji fallback for anything that can't mask.
+
 ---
 
 ## Still unbacked by production data
