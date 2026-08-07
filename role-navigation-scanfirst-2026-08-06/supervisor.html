@@ -3,212 +3,294 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Scan-first rev 2 — supervisor authority swap · 2026-08-06</title>
+<title>Supervisor + Lead — workcell tiles (rebuilt against the locked design) · 2026-08-07</title>
 <link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_supervisor_kit.css">
 <style>
   .stage{ align-items:flex-start; }
-  /* authority sheet — hangs off the identity chip, replaces the whole .suptoggle row */
-  .authpop{ position:absolute; top:78px; right:10px; z-index:40; width:206px;
-    background:var(--panel); border:1px solid var(--line2); border-radius:12px;
-    box-shadow:0 16px 40px rgba(0,0,0,.7); overflow:hidden; }
-  .authpop .ah{ font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.7px;
-    color:var(--faint); padding:9px 12px 5px; }
-  .authpop .arow{ display:flex; align-items:center; gap:8px; padding:9px 12px; font-size:12.5px;
-    color:var(--txt); border-top:1px solid #1e2429; cursor:pointer; text-decoration:none; }
-  .authpop .arow.on{ background:rgba(125,162,201,.14); color:var(--bright); font-weight:800; }
-  .authpop .arow .g{ width:20px; height:20px; border-radius:6px; background:#0e1217;
-    border:1px solid var(--line); color:var(--dim); font-size:10px; font-weight:900;
-    text-align:center; line-height:18px; flex:0 0 20px; }
-  .authpop .arow.on .g{ background:var(--blue-soft); color:#0b0d10; border-color:var(--blue-soft); }
-  .authpop .foot{ font-size:9.5px; color:var(--faint); padding:7px 12px 9px; line-height:1.5;
-    border-top:1px dashed var(--line); }
-  .authpop::before{ content:""; position:absolute; top:-6px; right:22px; width:10px; height:10px;
-    background:var(--panel); border-left:1px solid var(--line2); border-top:1px solid var(--line2);
-    transform:rotate(45deg); }
   @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
 </style>
 </head>
 <body>
 
 <div class="pgnote">
-  <h1>6 / 7 &middot; Supervisor &mdash; <b>authority swap folded into the identity chip</b></h1>
-  <p>The 2026-08-05 set spent a <b>third stacked row</b> on the Supervise OFF/ON toggle &mdash; app bar,
-    then cross-role rail, then the toggle, roughly 150&nbsp;px of chrome before any content. Rev 2 folds
-    it into the identity chip that was already in the bar: <code>0421&nbsp;W</code> &rarr; tap &rarr;
-    <code>0421&nbsp;SUP</code>. Still one bar. Still 38&nbsp;px.</p>
-  <p>The swap stays <b>explicit and audited</b> &mdash; it opens a small sheet rather than toggling on a
-    single tap, because every write after it logs a different authority. Frame A is that sheet; frame B is
-    the supervisor view it produces.</p>
-  <p>Supervisor is the one role in this set that is <b>not</b> scan-first. Its pivot flips from a work
-    unit to a person (audit R7), so there is no camera viewport and no context strip &mdash; the roster
-    <i>is</i> the content. The bar is identical anyway, which is the point.</p>
+  <h1>8 / 12 &middot; Supervisor + Lead &mdash; workcell tiles <b>(rebuilt)</b></h1>
+  <p><b>My earlier supervisor page has been replaced, not patched.</b> It pivoted on a flat roster of
+    people with load percentages. The locked 18-frame persona mockup pivots on
+    <b>workcells &rarr; stations</b>, and it treats <b>Lead and Supervisor as two different roles with
+    two different homes</b>. House precedent applies &mdash; the persona mockup wins.</p>
+  <p><b>The tile metric is locked:</b> <b>last-hour lbs/hr</b>, a trend arrow versus the <i>prior hour</i>,
+    and a status colour against target &mdash; or against a 7-day average where no target exists, which
+    is labelled as such. <b>Shift-so-far is deliberately not on the tile</b>; it lives in the drill-down.
+    Stations with no target show <b>&quot;&mdash; no target&quot;</b> and no bar, never an invented one.</p>
+  <p>Frame A is the <b>Lead</b> home &mdash; scoped to their own cells and shift, groups expanded by
+    default. Frame B is the <b>Supervisor</b> home &mdash; plant-wide and cross-shift, hotspot first,
+    groups collapsed by default because there is more to scroll.</p>
   <div class="crumbs">
-    <a href="index.html">1. Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">2. Rebar &middot; busy</a>
-    <a href="loader.html">3. Loader &middot; scan</a>
-    <a href="loader-drawer.html">4. Loader &middot; drawer</a>
-    <a href="loader-alarm.html">5. Wrong-bin alarm</a>
-    <a class="on" href="supervisor.html">6. Supervisor swap</a>
-    <a href="bar-anatomy.html">7. Bar anatomy</a>
+    <a href="index.html">Rebar &middot; quiet</a>
+    <a href="rebar-busy.html">Rebar &middot; busy</a>
+    <a href="loader.html">Loader &middot; in progress</a>
+    <a href="loader-punchlist.html">Punch list</a>
+    <a href="loader-alarm.html">Interrupts</a>
+    <a href="loader-closeout.html">Close-out</a>
+    <a href="loader-split.html">Split &amp; carry</a>
+    <a class="on" href="supervisor.html">Sup &middot; workcells</a>
+    <a href="supervisor-station.html">Station detail</a>
+    <a href="supervisor-approvals.html">Approvals</a>
+    <a href="supervisor-actas.html">Act-as / Reposition</a>
+    <a href="bar-anatomy.html">Bar anatomy</a>
   </div>
 </div>
 
 <div class="stage">
 
-  <!-- ===== FRAME A — the chip tapped ===== -->
+  <!-- ===== A — LEAD HOME ===== -->
   <div>
-  <div class="phone"><div class="scr">
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/cells</span></div>
 
-    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load</span></div>
     <div class="topbar">
       <div class="tabs">
-        <a class="roletab" href="index.html">Rebar</a>
-        <a class="roletab on" href="loader.html">Loader</a>
-        <a class="roletab" href="#" onclick="return false;">Yard</a>
+        <a class="roletab on" href="supervisor.html">Cells</a>
+        <a class="roletab" href="supervisor-station.html">Stations</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
       </div>
       <div class="xrail">
         <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
         <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
-        <span class="whochip sup">0421&nbsp;<span class="auth">W</span></span>
+        <span class="whochip sup">0203&nbsp;<span class="auth">LEAD</span></span>
       </div>
     </div>
 
-    <div class="authpop">
-      <div class="ah">Acting authority</div>
-      <a class="arow on" href="#" onclick="return false;"><span class="g">W</span>Worker</a>
-      <a class="arow" href="supervisor.html"><span class="g">S</span>Supervisor</a>
-      <div class="foot">Every write from here logs<br>(Loader, <b>Supervisor</b>) until you swap back.</div>
+    <div class="persona">
+      <div class="av">OP</div>
+      <div class="who">
+        <div class="nm">Operator 3 <span class="rl lead">Lead</span></div>
+        <div class="sc">Rebar Yard Lead &middot; 1st shift &middot; today</div>
+      </div>
+      <a class="apv" href="supervisor-approvals.html">&#9998; 5</a>
     </div>
 
-    <div class="camwrap short" style="opacity:.35;">
-      <div class="retic" style="width:230px;height:100px;"><span class="c2"></span><span class="c3"></span></div>
+    <div class="kpigrid">
+      <div class="kpi warn"><div class="n">3.9k</div><div class="l">cut rate &#9660;12%</div></div>
+      <div class="kpi"><div class="n">6/7</div><div class="l">on shift</div></div>
+      <div class="kpi bad"><div class="n">3</div><div class="l">stuck &gt;45m</div></div>
     </div>
-    <div class="ctxstrip" style="opacity:.35;">
-      <div class="cx"><span class="ck">Where</span><span class="cv">Truck 07 <span class="mut">&middot; bin X8</span></span></div>
-      <div class="cx"><span class="ck">For</span><span class="cv">Aldine Westfield Ph2</span></div>
-      <div class="cx"><span class="ck">By</span><span class="cv">ship 8/07 &middot; <span class="frac">15 of 22 &middot; <span class="pct warn">68%</span></span></span></div>
+
+    <div class="needs">
+      <div class="nh">&#9888; Needs attention <span class="n">2</span></div>
+      <div class="nrow">&#128308; Double Bender stalled 6h <span class="rt">X25.1</span></div>
+      <div class="nrow">&#128993; Prima at 77% of target <span class="rt">1.55k / 2k</span></div>
+    </div>
+
+    <div class="sectlbl">Workcells &mdash; last hour <span class="n">3 cells</span></div>
+
+    <div class="cellgrp open">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Rebar Cutting</span>
+        <span class="cs">6 stations</span><span class="cdot">&#128308;</span></div>
+      <div class="cellbody">
+        <a class="tile grn" href="supervisor-station.html">
+          <div><div class="tn">Shear</div><div class="tvs">vs 4k target &middot; 98%</div></div>
+          <div class="tval"><div class="v">3.9k</div><div class="u">lb/h</div></div>
+          <span class="trend up">&#8593;</span><span class="sdot">&#128994;</span></a>
+        <a class="tile amb" href="supervisor-station.html">
+          <div><div class="tn">Prima</div><div class="tvs">vs 2k target &middot; 77%</div></div>
+          <div class="tval"><div class="v">1.55k</div><div class="u">lb/h</div></div>
+          <span class="trend down">&#8595;</span><span class="sdot">&#128993;</span></a>
+        <a class="tile grn" href="supervisor-station.html">
+          <div><div class="tn">22N</div><div class="tvs">vs 3k target &middot; 97%</div></div>
+          <div class="tval"><div class="v">2.9k</div><div class="u">lb/h</div></div>
+          <span class="trend flat">&#8594;</span><span class="sdot">&#128994;</span></a>
+        <a class="tile red" href="supervisor-station.html">
+          <div><div class="tn">Double Bender</div><div class="tvs">stalled 6h &middot; X25.1</div></div>
+          <div class="tval"><div class="v">0</div><div class="u">lb/h</div></div>
+          <span class="trend down">&#8595;</span><span class="sdot">&#128308;</span></a>
+        <a class="tile grn" href="supervisor-station.html">
+          <div><div class="tn">SSB</div><div class="tvs">vs 2.0k <span class="fallback">7-day avg</span> &middot; 105%</div></div>
+          <div class="tval"><div class="v">2.1k</div><div class="u">lb/h</div></div>
+          <span class="trend up">&#8593;</span><span class="sdot">&#128994;</span></a>
+        <a class="tile gry" href="supervisor-station.html">
+          <div><div class="tn">Radius Bender</div><div class="tvs">&mdash; no target</div></div>
+          <div class="tval"><div class="v">1.4k</div><div class="u">lb/h</div></div>
+          <span class="trend up">&#8593;</span><span class="sdot">&#9898;</span></a>
+      </div>
+    </div>
+
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Bundling</span>
+        <span class="cs">1 station &middot; not scanning</span><span class="cdot">&#9898;</span></div>
+      <div class="cellbody">
+        <a class="tile gry" href="supervisor-station.html#dark">
+          <div><div class="tn">20 Station</div><div class="tvs">&#9888; wire station</div></div>
+          <div class="tval"><div class="v">&mdash;</div></div>
+          <span class="trend flat"></span><span class="sdot">&#9898;</span></a>
+      </div>
+    </div>
+
+    <div class="cellgrp open">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Loading</span>
+        <span class="cs">1 station</span><span class="cdot">&#128994;</span></div>
+      <div class="cellbody">
+        <a class="tile grn" href="loader.html">
+          <div><div class="tn">Loading</div><div class="tvs">on pace</div></div>
+          <div class="tval"><div class="v">14</div><div class="u">loads</div></div>
+          <span class="trend up">&#8593;</span><span class="sdot">&#128994;</span></a>
+      </div>
+    </div>
+
+    <div class="sectlbl">Rerouted into my cells <span class="n">2</span></div>
+    <div class="wrow">
+      <div><div class="nm">FT0431#12</div><div class="sub">#5 &middot; 23-06 &middot; was headed to Shear queue</div></div>
+      <div class="val" style="font-size:10px;">from<br>Big Bender</div>
+    </div>
+    <div class="wrow">
+      <div><div class="nm">FT0429#07</div><div class="sub">#4 &middot; stirrup &middot; confirmed 08:51</div></div>
+      <div class="val" style="font-size:10px;">from<br>22N</div>
     </div>
 
   </div></div>
-  <div class="phcap">A &middot; chip tapped &mdash; no second row</div>
+  <div class="phcap">A &middot; Lead &mdash; own cells, groups expanded</div>
   </div>
 
-  <!-- ===== FRAME B — supervisor view ===== -->
+  <!-- ===== B — SUPERVISOR HOME ===== -->
   <div>
-  <div class="phone"><div class="scr">
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/cells</span></div>
 
-    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/api/load?view=supervise</span></div>
     <div class="topbar">
       <div class="tabs">
-        <a class="roletab" href="index.html">Rebar</a>
-        <a class="roletab on" href="supervisor.html">Loader</a>
-        <a class="roletab" href="#" onclick="return false;">Yard</a>
+        <a class="roletab on" href="supervisor.html">Cells</a>
+        <a class="roletab" href="supervisor-station.html">Stations</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
       </div>
       <div class="xrail">
         <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
         <a class="crosspill" href="#" onclick="return false;"><span class="glyph">&#9881;</span><span class="cnt">2</span></a>
-        <span class="whochip acting" title="Acting as Supervisor — every write is logged with this authority">
-          0421&nbsp;<span class="auth">SUP</span></span>
+        <span class="whochip acting">0119&nbsp;<span class="auth">SUP</span></span>
       </div>
     </div>
 
-    <div class="sectlbl" style="margin-top:2px;">Loads today <span class="n">Aug 6</span></div>
+    <div class="persona">
+      <div class="av">OP</div>
+      <div class="who">
+        <div class="nm">Operator 1 <span class="rl sup">Supervisor</span></div>
+        <div class="sc">Plant-wide &middot; cross-shift</div>
+      </div>
+      <a class="apv" href="supervisor-approvals.html">&#9998; 5</a>
+    </div>
+
+    <div class="hotspot">
+      <div class="hh">&#128293; Hotspot</div>
+      <div class="hb"><b>Rebar Cutting is 12% behind target on 1st shift.</b><br>
+        Shear pacing behind + 3 tags stuck &gt;45m. 6/7 operators in. Lead: Operator 3.</div>
+      <a class="hgo" href="supervisor-station.html">Open Rebar Cutting &rarr;</a>
+    </div>
+
     <div class="kpigrid">
-      <div class="kpi ok"><div class="n">1</div><div class="l">on truck</div></div>
-      <div class="kpi warn"><div class="n">2</div><div class="l">in staging</div></div>
-      <div class="kpi"><div class="n">1</div><div class="l">at machine</div></div>
+      <div class="kpi warn"><div class="n">9.2k</div><div class="l">plant rate &#9660;6%</div></div>
+      <div class="kpi"><div class="n">3/6</div><div class="l">cells ok &middot; 3 dark</div></div>
+      <div class="kpi"><div class="n">5</div><div class="l">reroutes / hr</div></div>
     </div>
 
-    <div class="sectlbl">Team <span class="n">5 on the loader</span></div>
-    <div class="wrow warn">
-      <div><div class="nm">0421 &middot; you</div>
-        <div class="sub">Truck 07 &middot; on truck &middot; 15 of 22 &middot; 2 min ago</div>
-        <div class="pills"><span class="pill warn">Pending backfill</span></div></div>
-      <div class="val warn">68%<span class="u">loaded</span></div>
-    </div>
-    <div class="wrow ok">
-      <div><div class="nm">0203 &middot; Operator 2</div>
-        <div class="sub">Truck 04 &middot; on truck &middot; 22 of 22 &middot; 14 min ago</div></div>
-      <div class="val ok">100%<span class="u">loaded</span></div>
-    </div>
-    <div class="wrow">
-      <div><div class="nm">0378 &middot; Operator 3</div>
-        <div class="sub">Truck 11 &middot; in staging &middot; 0 of 18 &middot; no scans yet</div></div>
-      <div class="val">&mdash;<span class="u">loaded</span></div>
-    </div>
-    <div class="wrow bad">
-      <div><div class="nm">0505 &middot; Operator 4</div>
-        <div class="sub">Truck 09 &middot; at machine &middot; 3 of 26 &middot; 51 min ago</div>
-        <div class="pills"><span class="pill bad">Stalled</span></div></div>
-      <div class="val bad">12%<span class="u">loaded</span></div>
-    </div>
-    <div class="wrow">
-      <div><div class="nm">0611 &middot; Operator 5</div>
-        <div class="sub">Hardware &middot; tag in office &middot; 0 of 4</div></div>
-      <div class="val">&mdash;<span class="u">loaded</span></div>
-    </div>
-
-    <div class="drawer" data-drawer>
-      <div class="dhandle" data-dhandle>
-        <span class="grip"></span>
-        <div>
-          <div class="dt">Needs your sign-off</div>
-          <div class="ds">2 open &middot; oldest 40 min</div>
-        </div>
-        <span class="dn">2</span>
-        <span class="car">&#9652;</span>
+    <div class="sectlbl">On-floor</div>
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Rebar Cutting</span>
+        <span class="cs">3.9k lb/h &#9660;12% &middot; Lead Operator 3</span><span class="cdot">&#128308;</span></div>
+      <div class="cellbody">
+        <a class="tile red" href="supervisor-station.html">
+          <div><div class="tn">Double Bender</div><div class="tvs">stalled 6h &middot; X25.1</div></div>
+          <div class="tval"><div class="v">0</div><div class="u">lb/h</div></div>
+          <span class="trend down">&#8595;</span><span class="sdot">&#128308;</span></a>
+        <a class="tile amb" href="supervisor-station.html">
+          <div><div class="tn">Prima</div><div class="tvs">vs 2k target &middot; 77%</div></div>
+          <div class="tval"><div class="v">1.55k</div><div class="u">lb/h</div></div>
+          <span class="trend down">&#8595;</span><span class="sdot">&#128993;</span></a>
       </div>
-      <div class="dbody">
-        <div class="sectlbl" style="margin-top:2px;">Sign-off queue <span class="n">2 open</span></div>
-        <div class="wrow bad">
-          <div><div class="nm">Truck 07 &middot; depart short</div>
-            <div class="sub">0421 &middot; 7 tags &middot; opened 12 min ago</div>
-            <div class="pills"><span class="pill bad">High</span><span class="pill">Blocks departure</span></div></div>
-          <div class="val bad">68%</div>
-        </div>
-        <div class="wrow warn">
-          <div><div class="nm">Truck 11 &middot; hardware mismatch</div>
-            <div class="sub">0378 &middot; opened 40 min ago</div>
-            <div class="pills"><span class="pill warn">Medium</span><span class="pill">Awaiting purchasing</span></div></div>
-          <div class="val">&mdash;</div>
-        </div>
+    </div>
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Loading</span>
+        <span class="cs">14 loads &middot; on pace</span><span class="cdot">&#128994;</span></div>
+      <div class="cellbody">
+        <a class="tile grn" href="loader.html"><div><div class="tn">Loading</div><div class="tvs">on pace</div></div>
+          <div class="tval"><div class="v">14</div><div class="u">loads</div></div>
+          <span class="trend up">&#8593;</span><span class="sdot">&#128994;</span></a>
+      </div>
+    </div>
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Bundling</span>
+        <span class="cs">&#9888; 20 Station not scanning</span><span class="cdot">&#9898;</span></div>
+      <div class="cellbody">
+        <a class="tile gry" href="supervisor-station.html#dark"><div><div class="tn">20 Station</div>
+          <div class="tvs">&#9888; wire station</div></div>
+          <div class="tval"><div class="v">&mdash;</div></div><span class="trend flat"></span><span class="sdot">&#9898;</span></a>
+      </div>
+    </div>
+
+    <div class="sectlbl">Remote-manage &mdash; off-floor</div>
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Tendon</span>
+        <span class="cs">&#9888; PT Atlas + Hayes not scanning</span><span class="cdot">&#9898;</span></div>
+      <div class="cellbody">
+        <a class="tile gry" href="supervisor-station.html#dark"><div><div class="tn">PT Atlas &middot; Hayes</div>
+          <div class="tvs">&#9888; wire stations</div></div>
+          <div class="tval"><div class="v">&mdash;</div></div><span class="trend flat"></span><span class="sdot">&#9898;</span></a>
+      </div>
+    </div>
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Hardware</span>
+        <span class="cs">1.1k lb/h &middot; 1 scanning &middot; no target</span><span class="cdot">&#128994;</span></div>
+      <div class="cellbody">
+        <a class="tile gry" href="supervisor-station.html"><div><div class="tn">Hardware</div>
+          <div class="tvs">&mdash; no target</div></div>
+          <div class="tval"><div class="v">1.1k</div><div class="u">lb/h</div></div>
+          <span class="trend flat">&#8594;</span><span class="sdot">&#9898;</span></a>
+      </div>
+    </div>
+    <div class="cellgrp">
+      <div class="cellhd"><span class="cg">&#9656;</span><span class="cn">Lumber</span>
+        <span class="cs">&#9888; Lumber station not scanning</span><span class="cdot">&#9898;</span></div>
+      <div class="cellbody">
+        <a class="tile gry" href="supervisor-station.html#dark"><div><div class="tn">Lumber</div>
+          <div class="tvs">&#9888; wire station</div></div>
+          <div class="tval"><div class="v">&mdash;</div></div><span class="trend flat"></span><span class="sdot">&#9898;</span></a>
       </div>
     </div>
 
   </div></div>
-  <div class="phcap">B &middot; supervisor &mdash; person-axis, no camera</div>
+  <div class="phcap">B &middot; Supervisor &mdash; plant-wide, hotspot first, collapsed</div>
   </div>
 
 </div>
 
 <div class="note">
-  <span class="h">What changed from the 2026-08-05 authority-swap page</span>
-  <b>1. The Supervise row is gone.</b> Authority lives in the identity chip that was already in the bar.
-  Chrome for a supervisor drops from three rows to one.<br>
-  <b>2. Severity left the <code>.val</code> slot.</b> The old roster put <code>HIGH</code> / <code>MED</code>
-  in the same right-hand slot that holds <code>68%</code> and <code>100%</code> elsewhere &mdash; three
-  data types in one place, the audit's open question &sect;9.3. Here <code>.val</code> is
-  <b>always the progress percent</b> (with a unit caption under it), and severity is a
-  <code>.pill</code> plus the row's left border. Every list in this set follows that rule.<br>
-  <b>3. One status vocabulary.</b> Roster subs read <i>at machine / in staging / on truck / tag in
-  office</i> &mdash; the 6-stage lifecycle, everywhere, per the audit's &sect;9.4 recommendation. The
-  older <i>ready / loading / not started</i> wording is dropped.<br>
-  <b>4. Presence is dropped.</b> The old page showed <i>"4 of 5 on shift"</i> and <i>"Off shift &middot;
-  no cover assigned"</i>. There is <span class="flag">no clock-in signal</span> in the system, and the
-  locked spec &sect;12.5 records the decision that there is no software OOO handling. The header now reads
-  <i>"5 on the loader"</i> &mdash; an assignment count, which is what <code>primary_shift</code> actually
-  is.<br>
-  <span class="flag">Still unbacked:</span> trucks (G4) &middot; the worker&harr;load link that puts a
-  person on a truck (G3) &middot; the sign-off queue, which needs the unbuilt <code>hpt-approvals</code>
-  primitive (S13) &middot; the <code>0421</code> badge format (G14). Also note that "Supervisor" is not
-  enforced in production today &mdash; <code>PORTAL_ENFORCE_SUPERVISOR_ROLE</code> is unset, so any
-  authenticated principal passes, and <code>authority_level</code> does not exist in the data model yet.
-  Names shown are placeholders, not roster data.
+  <span class="h">What changed from my earlier supervisor page</span>
+  <b>1. The pivot.</b> Person-roster &rarr; <b>workcells and stations</b>. The primary key is the place
+  work happens, not the people. Tap any tile for the station drill-down.<br>
+  <b>2. Lead and Supervisor are separate.</b> Different scope (own cells vs plant-wide), different
+  default (expanded vs collapsed), different home content (rerouted-into-my-cells vs hotspot).
+  My version had one supervisor state.<br>
+  <b>3. Presence is derived from scanning, never claimed as attendance.</b> My earlier page showed
+  <i>"4 of 5 on shift"</i> and <i>"Off shift &middot; no cover assigned"</i> &mdash; an attendance signal
+  that does not exist. There is no clock-in, and the locked spec records the decision that there is no
+  software OOO handling. What the locked design actually does is safer and is kept here: the count comes
+  from <b>who has scanned this shift</b>, so a worker with no scans reads <i>"not in"</i> rather than
+  <i>"absent"</i>. That is derivable from <code>events.actor</code> today. Nothing on this screen claims
+  to know why someone isn&#39;t scanning.<br>
+  <b>4. Target-less stations are honest.</b> Nine stations have no target. They render
+  <b>&quot;&mdash; no target&quot;</b> with a grey dot and no bar. Where a 7-day average stands in for a
+  target, the tile says so in italics rather than passing it off as a target.<br>
+  <b>5. Dark cells are a feature, not a blank.</b> Three cells emit nothing at all. They say so, and the
+  drill-down states exactly why and what the single fix is &mdash; see
+  <a href="supervisor-station.html#dark">Station detail</a>. The locked mockup calls this
+  <i>"the cheapest real improvement in the whole set."</i><br>
+  <span class="flag">Note on the bar:</span> for a supervisor the role tabs are cells/stations rather
+  than job functions, and the authority chip reads <code>SUP</code>. The consolidated bar still costs
+  38&nbsp;px, which is the one thing rev 2 contributes here.
 </div>
 
 <div class="footnav">
-  Prev: <a href="loader-alarm.html">5. Wrong-bin alarm</a> &middot;
-  Next: <a href="bar-anatomy.html">7. Bar anatomy &rarr;</a>
+  Prev: <a href="loader-split.html">Split &amp; carry</a> &middot;
+  Next: <a href="supervisor-station.html">Station detail &rarr;</a>
 </div>
 
 <script src="_shared.js"></script>
