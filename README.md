@@ -25,6 +25,12 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 - [6. Close-out -- green READY TO DEPART, blocked + override form, and the 3-photo truck documentation panel](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/loader-closeout.html)
 - [7. Split, approval, carry-over + the multi-run switcher](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/loader-split.html)
 
+**Workcells drawn from the written spec** -- first visual rendering of role-model sec. 3.4-3.8
+- [8. PT (Post-Tension) -- kit spec sheet, scan-to-consume strand, chair count entry, kit complete](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/pt.html)
+- [9. Hardware -- component scan into kit, low-stock flag + bin roll-up](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/hardware.html)
+- [10. Receiver -- expected receipts, scan-to-receive against PO, discrepancy with reason + photo](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/receiver.html)
+- [11. Yard -- supervisor-pushed task list, ad-hoc lookup. No camera by default; glove-friendly targets](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/yard.html)
+
 **Supervisor + Lead** -- rebuilt against the locked 18-frame persona mockup
 - [8. Workcell tiles -- Lead home (own cells, expanded) and Supervisor home (plant-wide, hotspot first)](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/supervisor.html)
 - [9. Station detail (shift-so-far + 8h sparkline + stalls) and the honest dark cell](https://houstonposttension.github.io/hpt-mockup-previews/role-navigation-scanfirst-2026-08-06/supervisor-station.html)
@@ -52,7 +58,13 @@ act-as-operator credits the supervisor's own identity with no impersonation. **I
 Maintenance interiors are deliberately absent** -- both are owned by separate governed projects with
 their own locked specs, so they appear here only as cross-role pills. Mobile-first 390 px frame, HPT
 dark theme, no live data. Names are placeholders; each page marks inline what is real in production
-today versus what has no data source yet.
+today versus what has no data source yet. **Four more workcells were added 2026-08-08** -- PT, Hardware, Receiver and Yard, drawn from the
+locked written screen spec (role-model-and-navigation-2026-08-05.md sec. 3.4-3.8, READY FOR ENG HANDOFF)
+rather than from any prior mockup, since none existed. PT and Hardware are **kitting** flows (the work
+unit is a kit consumed into, not a tag moving through work centres); Yard is the only screen with **no
+camera by default** and uses glove-friendly targets. The **Extruder** function already has a 9-frame
+mockup set in the private `hpt-mockups` repo; it is not published here pending its owner's go-ahead
+and a name scrub.
 
 ### WIP Role & Navigation Workflow (dated 2026-08-05)
 
