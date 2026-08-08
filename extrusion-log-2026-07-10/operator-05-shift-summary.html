@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · Shift Summary · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --input-bg:#0d0e10;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --warn-tint-bg:rgba(255,176,32,.12); --warn-tint-border:rgba(255,176,32,.40);
+  --bad-tint-bg:rgba(255,59,48,.14); --bad-tint-border:rgba(255,59,48,.35);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px; --touch:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:10px;
+  padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.lang-btn{border:1px solid var(--line);background:var(--panel-2);color:var(--dim);
+  border-radius:10px;font-size:12px;font-weight:700;padding:5px 10px;}
+.back{font-size:13px;color:var(--brand);text-decoration:none;}
+.scroll{padding:14px 14px env(safe-area-inset-bottom,28px);max-width:600px;margin:0 auto;}
+
+/* hero */
+.hero-card{background:var(--panel);border:1px solid var(--ok-tint-border);border-radius:var(--radius-lg);
+  padding:20px 18px;margin-bottom:var(--card-gap);text-align:center;}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--ok);margin-bottom:8px;}
+.hero-ft{font-size:64px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-2px;}
+.hero-label{font-size:14px;color:var(--dim);margin-top:4px;}
+.hero-meta{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;gap:0;margin-top:16px;align-items:center;}
+.hero-meta-item{text-align:center;padding:0 8px;}
+.hero-meta-item .mv{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;}
+.hero-meta-item .mk{font-size:10px;color:var(--dim);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.divider-v{background:var(--line);}
+
+/* alert strip */
+.alert-strip{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--card-gap);}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;
+  border-radius:12px;font-size:13px;}
+.alert-item.warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);}
+.alert-item.bad{background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);}
+.alert-glyph{font-size:16px;flex:none;margin-top:1px;}
+.alert-body .ab-title{font-weight:700;}
+.alert-body .ab-meta{color:var(--dim);margin-top:2px;font-size:12px;}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:var(--card-gap);}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;}
+
+/* run table */
+.run-table{width:100%;border-collapse:collapse;font-size:13px;}
+.run-table th{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--mute);text-align:left;padding:0 8px 8px 0;border-bottom:1px solid var(--line);}
+.run-table th:last-child,.run-table td:last-child{text-align:right;padding-right:0;}
+.run-table td{padding:10px 8px 10px 0;border-bottom:1px solid var(--line);
+  font-variant-numeric:tabular-nums;vertical-align:middle;}
+.run-table tr:last-child td{border-bottom:none;}
+.run-table .product{font-weight:700;}
+.run-table .line-id{font-size:11px;color:var(--dim);}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:10px;}
+.pill.ok{background:var(--ok-tint-bg);border:1px solid var(--ok-tint-border);color:var(--ok);}
+.pill.warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+
+/* stat row */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:var(--card-gap);}
+.stat-mini{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:14px 12px;}
+.stat-mini .sv{font-size:28px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.stat-mini .sk{font-size:11px;color:var(--dim);margin-top:4px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;}
+.stat-mini .trend{font-size:12px;color:var(--dim);margin-top:4px;}
+
+/* CTA */
+.cta{width:100%;min-height:var(--touch);border:none;border-radius:var(--radius-md);
+  font-size:18px;font-weight:700;background:var(--panel-2);color:var(--txt);
+  border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;margin-bottom:8px;}
+
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <a href="operator-01-shift-landing.html" class="back">← Shift / Turno</a>
+  <div class="spacer"></div>
+  <button class="lang-btn">EN&nbsp;/&nbsp;ES</button>
+</div>
+
+<div class="scroll">
+<div class="wf-note">MOCKUP v0 · Shift Summary / Resumen de turno</div>
+
+<!-- Hero: total footage -->
+<div class="hero-card">
+  <div class="hero-eyebrow">Day shift · 06:00–14:00 · Operator 1 · Jul 10</div>
+  <div class="hero-ft">23,150</div>
+  <div class="hero-label">ft extruded this shift · ft extruidos en este turno</div>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <div class="mv" style="color:var(--ok);">5</div>
+      <div class="mk">Runs done</div>
+    </div>
+    <div class="divider-v"></div>
+    <div class="hero-meta-item">
+      <div class="mv" style="color:var(--warn);">5</div>
+      <div class="mk">Scrap pcs</div>
+    </div>
+    <div class="divider-v"></div>
+    <div class="hero-meta-item">
+      <div class="mv" style="color:var(--ok);">2.2%</div>
+      <div class="mk">Scrap %</div>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts -->
+<div class="alert-strip">
+  <div class="alert-item warn">
+    <span class="alert-glyph">⚑</span>
+    <div class="alert-body">
+      <div class="ab-title">EXT-2 · Avg cycle time 52s vs 45s target</div>
+      <div class="ab-meta">CBL-1250-BLK run 12:05–13:47 · Supervisor notified</div>
+    </div>
+  </div>
+  <div class="alert-item warn">
+    <span class="alert-glyph">🌡</span>
+    <div class="alert-body">
+      <div class="ab-title">EXT-2 · Temp spike 186 °C at 12:00</div>
+      <div class="ab-meta">1 scrap piece logged · Within 3 °C auto-alert band</div>
+    </div>
+  </div>
+</div>
+
+<!-- Per-run breakdown -->
+<div class="card">
+  <p class="eyebrow">Runs / Corridas del turno</p>
+  <table class="run-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Cycles</th>
+        <th>ft</th>
+        <th>Scrap</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="product">TN-1000-ORG</div><div class="line-id">EXT-3 · 06:00</div></td>
+        <td>53</td>
+        <td>5,300</td>
+        <td>0</td>
+        <td><span class="pill ok">OK</span></td>
+      </tr>
+      <tr>
+        <td><div class="product">CBL-500-GRN</div><div class="line-id">EXT-1 · 08:30</div></td>
+        <td>42</td>
+        <td>4,200</td>
+        <td>1</td>
+        <td><span class="pill ok">OK</span></td>
+      </tr>
+      <tr>
+        <td><div class="product">CBL-875-RED</div><div class="line-id">EXT-3 · 10:00</div></td>
+        <td>48</td>
+        <td>4,200</td>
+        <td>0</td>
+        <td><span class="pill ok">OK</span></td>
+      </tr>
+      <tr>
+        <td><div class="product">TN-750-YEL</div><div class="line-id">EXT-1 · 12:05</div></td>
+        <td>39</td>
+        <td>4,700</td>
+        <td>1</td>
+        <td><span class="pill ok">OK</span></td>
+      </tr>
+      <tr>
+        <td><div class="product">CBL-1250-BLK</div><div class="line-id">EXT-2 · 12:05</div></td>
+        <td>50</td>
+        <td>4,750</td>
+        <td>3</td>
+        <td><span class="pill warn">⚑ Alert</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Efficiency stats -->
+<div class="stat-row">
+  <div class="stat-mini">
+    <div class="sv" style="color:var(--ok);">47s</div>
+    <div class="sk">Avg cycle time</div>
+    <div class="trend">Target 45s · +2s avg</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv" style="color:var(--ok);">96.4%</div>
+    <div class="sk">Yield rate</div>
+    <div class="trend">Target 97% · −0.6 pts</div>
+  </div>
+</div>
+
+<button class="cta" onclick="location.href='operator-01-shift-landing.html'">
+  ← Back to shift / Volver al turno
+</button>
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">Design notes</summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Hero</b>: total footage is the primary KPI operators care about — big, glanceable.<br>
+    <b>Alert strip</b>: only 2 alerts this shift (cycle drift + temp spike). Collapsed alerts would clutter; shown inline since ≤3 is common.<br>
+    <b>Run table</b>: compact 5-column layout. Scrap 0 = clean run; alerts flagged with pill. Tap row to expand detail (production).<br>
+    <b>Efficiency stats</b>: avg cycle and yield rate vs target — operator self-assessment before shift handoff.<br>
+    Operator sees <i>their own shift only</i> (REQUIREMENTS.md §2 — no history access in operator role).
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 5/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
