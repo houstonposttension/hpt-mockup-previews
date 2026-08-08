@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PT (Post-Tension) — strand kitting · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>8 / 16 &middot; PT (Post-Tension) &mdash; <b>strand kitting</b></h1>
+  <p>Drawn from the locked written spec <b>&sect;3.4</b> (<code>role-model-and-navigation-2026-08-05.md</code>,
+    READY FOR ENG HANDOFF, rev 4). Every control on this screen is named there:
+    <b>kit spec sheet</b>, <b>scan-to-consume strand</b>, <b>chair count entry</b>, <b>kit complete CTA</b>;
+    widgets <i>today&#39;s kits</i>, <i>strand reserved for kit</i>, <i>kit progress</i>; primary CTA
+    <b>&quot;Scan strand into kit&quot;</b>.</p>
+  <p><b>This is a kitting flow, not a tag-at-a-station flow.</b> That is the substantive difference from
+    Rebar and the Loader: the work unit is a <b>kit</b> that gets consumed into, not a tag that moves
+    through work centres. The shared scanner cannot express it &mdash; which is exactly why the spec
+    gives PT its own URL (<code>/pt</code>).</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — KIT IN PROGRESS ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/pt</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="pt.html">PT</a>
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0512&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Scan a strand roll into <b>KIT-4471</b></div>
+    </div>
+
+    <div class="savestrip ok">&#10003; Consumed <span class="tg">SR-0.6-2210</span><span class="n">4 of 6 rolls</span></div>
+    <div class="camrow">
+      <button class="cbtn">&#128247; Can&#39;t scan? Photo &rarr;</button>
+      <button class="cbtn sec">Capture frame</button>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Kit</span><span class="kid">KIT-4471</span>
+        <span class="ktag">2 of 5 today</span></div>
+      <div class="kfor">Aldine Westfield Ph2</div>
+      <div class="ksub">Coil cut + chair assembly &middot; due 2:00 PM</div>
+    </div>
+
+    <div class="prog">
+      <div class="row"><span class="big">4 <span class="small">of 6 components</span></span>
+        <span class="small">67%</span></div>
+      <div class="bar"><i style="width:67%"></i></div>
+    </div>
+
+    <div class="sectlbl">Kit spec sheet <span class="n">strand reserved</span></div>
+    <div class="comprow done">
+      <span class="cic">&#10003;</span>
+      <div><div class="cnm">0.6&quot; 270ksi strand</div><div class="csp">SR-0.6-2210 &middot; 2,210 ft</div></div>
+      <div class="cqty ok">2<span class="of"> / 2 rolls</span></div>
+    </div>
+    <div class="comprow done">
+      <span class="cic">&#10003;</span>
+      <div><div class="cnm">0.5&quot; 270ksi strand</div><div class="csp">SR-0.5-1840 &middot; 1,840 ft</div></div>
+      <div class="cqty ok">2<span class="of"> / 2 rolls</span></div>
+    </div>
+    <div class="comprow pend">
+      <span class="cic">&#9675;</span>
+      <div><div class="cnm">0.6&quot; strand &mdash; coil 3</div><div class="csp">reserved &middot; not yet scanned</div></div>
+      <div class="cqty">0<span class="of"> / 2 rolls</span></div>
+    </div>
+    <div class="comprow pend">
+      <span class="cic">&#9675;</span>
+      <div><div class="cnm">Chairs &mdash; 24&quot;</div><div class="csp">counted by hand, not scanned</div></div>
+      <div class="cqty">0<span class="of"> / 40</span></div>
+    </div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn prim blk big" href="#" onclick="return false;">Scan strand into kit &rarr;</a>
+    </div>
+
+    <div class="drawer" data-drawer>
+      <div class="dhandle" data-dhandle>
+        <span class="grip"></span>
+        <div><div class="dt">Today&#39;s kits</div><div class="ds">5 kits &middot; 2 done</div></div>
+        <span class="dn">5</span><span class="car">&#9652;</span>
+      </div>
+      <div class="dbody">
+        <div class="sectlbl" style="margin-top:2px;">Assigned today</div>
+        <div class="wrow ok"><div><div class="nm">KIT-4469</div>
+          <div class="sub">Katy Plant &middot; complete &middot; 11:04</div></div><div class="val ok">100%</div></div>
+        <div class="wrow ok"><div><div class="nm">KIT-4470</div>
+          <div class="sub">Beltway Substation &middot; complete &middot; 12:38</div></div><div class="val ok">100%</div></div>
+        <div class="wrow warn"><div><div class="nm">KIT-4471 &middot; current</div>
+          <div class="sub">Aldine Westfield Ph2 &middot; due 2:00 PM</div></div><div class="val warn">67%</div></div>
+        <div class="wrow"><div><div class="nm">KIT-4472</div>
+          <div class="sub">Memorial Hospital &middot; not started</div></div><div class="val">&mdash;</div></div>
+        <div class="wrow"><div><div class="nm">KIT-4473</div>
+          <div class="sub">Grand Pkwy 99 &middot; not started</div></div><div class="val">&mdash;</div></div>
+      </div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; scan-to-consume &mdash; the kit is the work unit</div>
+  </div>
+
+  <!-- ===== B — CHAIR COUNT + KIT COMPLETE ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/pt</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="pt.html">PT</a>
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0512&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Kit</span><span class="kid">KIT-4471</span>
+        <span class="ktag">all strand in</span></div>
+      <div class="kfor">Aldine Westfield Ph2</div>
+      <div class="ksub">Coil cut + chair assembly &middot; due 2:00 PM</div>
+    </div>
+
+    <div class="prog">
+      <div class="row"><span class="big">6 <span class="small">of 6 components</span></span>
+        <span class="small">strand complete</span></div>
+      <div class="bar"><i style="width:100%"></i></div>
+    </div>
+
+    <div class="sectlbl">Chair count <span class="n">typed, not scanned</span></div>
+    <div class="qtyrow">
+      <div><div class="ql">Chairs &mdash; 24&quot;</div><div class="qs">kit calls for 40</div></div>
+      <div class="qtystep">
+        <button aria-label="decrease">&minus;</button>
+        <div class="qv">40</div>
+        <button aria-label="increase">+</button>
+      </div>
+    </div>
+    <div class="qtyrow">
+      <div><div class="ql">Chairs &mdash; 12&quot;</div><div class="qs">kit calls for 16</div></div>
+      <div class="qtystep">
+        <button aria-label="decrease">&minus;</button>
+        <div class="qv">16</div>
+        <button aria-label="increase">+</button>
+      </div>
+    </div>
+
+    <div class="sectlbl">Strand consumed vs plan</div>
+    <div class="card">
+      <div class="body">
+        <b>6 rolls</b> consumed against <b>6 reserved</b> &mdash; no variance.<br>
+        0.6&quot; &middot; 4,420 ft &nbsp;|&nbsp; 0.5&quot; &middot; 1,840 ft
+      </div>
+      <div class="pills"><span class="pill ok">On plan</span><span class="pill">Kit yield 100%</span></div>
+    </div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn prim blk big" href="#" onclick="return false;">&#10003; Kit complete</a>
+    </div>
+    <div class="emits">emits a kit-complete event &middot; actor = your pseudonym &middot;
+      feeds the supervisor kit-in-progress board</div>
+
+  </div></div>
+  <div class="phcap">B &middot; chair count entry + kit complete</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Grounding &mdash; and what has no data behind it</span>
+  <b>From the locked spec, verbatim:</b> the kit spec sheet, scan-to-consume strand, the chair count
+  entry (the spec explicitly calls it a <i>count entry</i>, i.e. typed rather than scanned), the kit
+  complete CTA, and all three named widgets. The supervise view the spec asks for &mdash; kit-in-progress
+  board, strand consumption vs plan, kit yield &mdash; is the panel in frame B, surfaced worker-side so
+  the two agree on the numbers.<br>
+  <b>Correction carried forward:</b> &sect;3.4 says PT <i>&quot;partially exists in
+  <code>pt_scan.html</code>&quot;</i>. <span class="flag">That file has never existed</span> &mdash; not
+  on disk, not in git history on any branch. PT is greenfield.<br>
+  <span class="flag">Nothing here is backed by production data.</span> There is no kit entity, no
+  kit&harr;job assignment, no strand-roll inventory, no reservation model and no chair count field
+  anywhere in the schema. The two PT stations (<b>PT Atlas</b>, <b>Hayes</b>) are in the v8 station
+  registry tagged <code>tag_type: strand</code> but are <b>not in the live scanner picker</b>, so they
+  emit zero events today &mdash; the same dark-cell condition the supervisor screen reports.<br>
+  <b>Terminology:</b> the floor word is <b>Tendon</b>, the internal token is <code>strand</code>
+  (locked 2026-07-21). This screen is the strand side; the Loader shows the same material as the
+  <b>Tendon</b> category.
+</div>
+
+<div class="footnav">
+  Prev: <a href="loader-split.html">Split &amp; carry</a> &middot;
+  Next: <a href="hardware.html">Hardware &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>
