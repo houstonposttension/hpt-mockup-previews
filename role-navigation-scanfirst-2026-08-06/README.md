@@ -52,6 +52,27 @@ thing that changed about those screens.
 | 7 | `loader-split.html` | Split request → approval → carry-over, plus the multi-run switcher |
 | — | `loader-drawer.html` | Superseded pointer (was the drawer draft) |
 
+**Workcells drawn from the written spec** — no prior mockup existed for any of these
+
+| # | File | What it shows |
+|---|---|---|
+| 8 | `pt.html` | **PT (Post-Tension)** — kit spec sheet, scan-to-consume strand, chair count entry, kit complete |
+| 9 | `hardware.html` | **Hardware** — component scan into kit, plus the low-stock flag and bin roll-up |
+| 10 | `receiver.html` | **Receiver** — expected receipts, scan-to-receive against PO, discrepancy with reason + photo, put-away |
+| 11 | `yard.html` | **Yard** — supervisor-pushed task list, complete / request-next, ad-hoc lookup. **No camera by default**; glove-friendly ≥ 56 px targets |
+
+These four are drawn **from `role-model-and-navigation-2026-08-05.md` §3.4–3.8** (READY FOR ENG
+HANDOFF, rev 4) — every control on them is named in that spec, including each function's primary CTA
+and its own URL from §5.3. They are the first visual rendering of those sections.
+
+Two structural findings worth carrying into any build:
+
+- **PT and Hardware are kitting flows, not tag-at-a-station flows.** The work unit is a *kit* that gets
+  consumed into, not a tag moving through work centres. The shared scanner cannot express that, which
+  is why the spec gives each its own URL.
+- **Yard is the only screen in the set with no camera.** §3.8 marks scanning *optional — ad-hoc lookup
+  only*, so a viewport would be dead weight above a task list. It opens on demand from the lookup box.
+
 **Supervisor + Lead** — rebuilt against the locked persona mockup
 
 | # | File | What it shows |
@@ -138,6 +159,25 @@ projects that already hold locked specs:
   optional photo → POST. That is a *write* action on the scanner, not a nav destination.
 
 In this set they appear only as **cross-role pills** — links out, with no interior.
+
+### Extruder — mockups exist, in another repo, not published
+
+The **Extruder** function (§3.6) already has a **9-frame mockup set**: 5 operator frames (shift landing
+→ run setup → run in progress → run end → shift summary) plus 3 supervisor frames and an index.
+
+It lives at **`C:\Dev\hpt-mockups\extrusion-log-2026-07-10\`** — the org-wide
+`houstonposttension/hpt-mockups` repo, which is **private and has no Pages site**, so there is currently
+no URL for it. The related project `C:\Dev\Extrusion Log\` is separately governed.
+
+**It has not been copied here, deliberately.** Two things need clearing first:
+
+1. It is another project's artifact, and moving it from a **private** repo to this **public** one is a
+   publishing decision for its owner, not a side effect of a mockup pass.
+2. Two operator surnames appear in `supervisor-01-real-time.html` and `supervisor-03-shift-report.html`.
+   The standing convention (James, 2026-07-26) is that real names are replaced with `Operator N` before
+   anything goes to the public previews repo.
+
+Both are quick to resolve on a go-ahead.
 
 **Icons (2026-08-07):** Maintenance is marked with a **wrench**, at Maintenance's request. This is a
 visual marker only — the interior stays out of scope. Inventory keeps `▦`. Both render monochrome in
