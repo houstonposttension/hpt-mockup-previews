@@ -9,7 +9,7 @@
 <body>
 
 <div class="pgnote">
-  <h1>1 / 12 &middot; Rebar Fabricator &mdash; <b>quiet state</b> (all cross-role badges 0)</h1>
+  <h1>1 / 16 &middot; Rebar Fabricator &mdash; <b>quiet state</b> (all cross-role badges 0)</h1>
   <p><b>Scan owns the screen.</b> Nobody navigates to scan &mdash; it is where every role already is
     (production: <code>/api/scan</code>). The role bar is a <b>38&nbsp;px strip on top of scan</b>, not a
     dashboard in front of it. With Inventory and Maintenance both at zero the two cross-role pills
@@ -24,20 +24,7 @@
     <b>274&nbsp;px below the camera to 51&nbsp;px</b>. The invented <i>"Record scan"</i> button is gone:
     in production a decode <b>records itself</b>, so the thing that belongs under the viewport is the
     result, not a confirm press.</p>
-  <div class="crumbs">
-    <a class="on" href="index.html">Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">Rebar &middot; busy</a>
-    <a href="loader.html">Loader &middot; in progress</a>
-    <a href="loader-punchlist.html">Punch list</a>
-    <a href="loader-alarm.html">Interrupts</a>
-    <a href="loader-closeout.html">Close-out</a>
-    <a href="loader-split.html">Split &amp; carry</a>
-    <a href="supervisor.html">Sup &middot; workcells</a>
-    <a href="supervisor-station.html">Station detail</a>
-    <a href="supervisor-approvals.html">Approvals</a>
-    <a href="supervisor-actas.html">Act-as / Reposition</a>
-    <a href="bar-anatomy.html">Bar anatomy</a>
-  </div>
+  <div class="crumbs" data-crumbs></div>
 </div>
 
 <div class="stage"><div class="phone"><div class="scr">
@@ -175,5 +162,6 @@
 </div>
 
 <script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
 </body>
 </html>
