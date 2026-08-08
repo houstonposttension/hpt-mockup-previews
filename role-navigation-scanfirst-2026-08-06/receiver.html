@@ -21,8 +21,11 @@
   <p><b>This is the only inbound-facing screen in the set.</b> Everything else in WIP Processor tracks
     material moving out; Receiver is the one that books it in and reconciles it against a purchase
     order. The work unit is a <b>PO line</b>, not a tag.</p>
-  <p class="flag">Read the note under the frames before this goes anywhere &mdash; there is an
-    unresolved conflict between this spec section and a decision James made on the station registry.</p>
+  <p><b>Scope locked 2026-08-07 (spec rev 5).</b> Receiving is <b>inbound only</b> &mdash;
+    <b>outbound delivery is the OptimoRoute integration&#39;s</b> (the driver app) and is explicitly out
+    of scope here. It is a <b>single gated function</b> for assigned receivers, reached from the
+    function dropdown: <b>not</b> a cross-role utility, <b>no</b> always-in-nav pill, and <b>no</b>
+    universal &quot;log a delivery&quot; action. See the note under the frames for what that resolves.</p>
   <div class="crumbs" data-crumbs></div>
 </div>
 
@@ -44,6 +47,12 @@
         <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">0</span></a>
         <span class="whochip">0645&nbsp;<span class="auth">W</span></span>
       </div>
+    </div>
+
+    <div class="scopebar">
+      <span class="lk">&#128274; Inbound only</span>
+      <span>assigned receivers</span>
+      <span class="out">outbound &rarr; OptimoRoute</span>
     </div>
 
     <div class="camwrap" style="height:132px;">
@@ -143,6 +152,12 @@
       </div>
     </div>
 
+    <div class="scopebar">
+      <span class="lk">&#128274; Inbound only</span>
+      <span>assigned receivers</span>
+      <span class="out">outbound &rarr; OptimoRoute</span>
+    </div>
+
     <div class="blockhdr" style="background:#2a1414; border-color:#5e2a2a;">
       <div class="bi">&#9888;</div>
       <h2>SHORT RECEIPT</h2>
@@ -198,15 +213,23 @@
 </div>
 
 <div class="note">
-  <span class="h">The conflict to resolve before anyone builds this</span>
-  <b>&sect;3.7 specifies a full Receiver screen.</b> But on <b>2026-07-22</b>, when the station registry
-  was finalised, James <b>dropped Receiving</b> from it with the reasoning: <i>&quot;it is a function
-  (goods-in / put-away), not a scan station.&quot;</i> It was also removed from
-  <code>config.SCAN_STATIONS</code>.<br>
-  <b>Both can be true</b> &mdash; a function with a screen that is not a fabrication scan station, which
-  is exactly what this mockup draws (it scans <i>inbound items against a PO</i>, never a WIP tag at a
-  work centre). But it is worth James confirming that reading rather than assuming it, because the two
-  decisions were made two weeks apart and have not been reconciled in writing.<br>
+  <span class="h">Resolved &mdash; spec rev 5, 2026-08-07</span>
+  <b>The conflict is closed.</b> &sect;3.7 specified a full Receiver screen; on <b>2026-07-22</b> the
+  station registry <b>dropped Receiving</b> as <i>&quot;a function (goods-in, put-away), not a
+  fabrication scan station.&quot;</i> Both hold: Receiver is a <b>function with no scan station</b> —
+  the same tier as <b>Driver</b> (&sect;3.3) and <b>Yard</b> (&sect;3.8). It scans <i>inbound items
+  against a PO</i>, never a WIP tag at a work centre. It therefore <b>stays in
+  <code>config.WORKER_ROLES</code></b> as a primary function assignment: no migration, still seven role
+  values.<br>
+  <b>Two options were considered and rejected.</b> (1) Reclassifying Receiving as an always-in-nav
+  <b>cross-role utility</b> alongside Inventory and Maintenance. (2) <b>Splitting it in two</b> — a
+  universal &quot;a delivery arrived&quot; action anyone could fire, plus a gated booking action.
+  Rejected because booking a PO line is a <b>goods receipt with financial consequences</b>
+  (three-way match, supplier liability), not an anyone-can-do-it action — and because the universal
+  half was solving an <b>outbound</b> problem that <b>OptimoRoute already owns</b>.<br>
+  <b>Outbound is out of scope here, permanently.</b> Delivery, navigation, POD and
+  <code>DELIVERED</code> all belong to the OptimoRoute integration and the driver app. The scope strip
+  at the top of both frames states it so it cannot drift back in.<br>
   <span class="flag">Nothing here is backed by production data.</span> There is no PO entity, no
   expected-receipts feed, no vendor record, no receipt or discrepancy entity, and no put-away location
   model. `Receiving` survives as one of the seven <code>WORKER_ROLES</code> and nothing else.<br>
