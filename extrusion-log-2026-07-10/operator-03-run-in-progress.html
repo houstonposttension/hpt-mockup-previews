@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · Run In Progress · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --input-bg:#0d0e10;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --warn-tint-bg:rgba(255,176,32,.12); --warn-tint-border:rgba(255,176,32,.40);
+  --bad-tint-bg:rgba(255,59,48,.14); --bad-tint-border:rgba(255,59,48,.35);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px; --touch:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:10px;
+  padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.lang-btn{border:1px solid var(--line);background:var(--panel-2);color:var(--dim);
+  border-radius:10px;font-size:12px;font-weight:700;padding:5px 10px;}
+.topbar-info{font-size:12px;color:var(--dim);}
+.topbar-info b{color:var(--txt);}
+.scroll{padding:14px 14px env(safe-area-inset-bottom,100px);max-width:600px;margin:0 auto;}
+
+/* step indicator */
+.steps{display:flex;gap:0;margin-bottom:16px;}
+.step{flex:1;height:4px;border-radius:2px;background:var(--line);}
+.step.active{background:var(--ok);}
+.step.done{background:rgba(22,192,96,.4);}
+.step+.step{margin-left:4px;}
+
+/* hero counter */
+.hero-card{background:var(--panel);border:1px solid var(--ok-tint-border);border-radius:var(--radius-lg);
+  padding:20px 18px;margin-bottom:var(--card-gap);text-align:center;}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--ok);margin-bottom:10px;}
+.hero-count{font-size:80px;font-weight:900;line-height:1;color:var(--txt);
+  font-variant-numeric:tabular-nums;letter-spacing:-3px;}
+.hero-count-label{font-size:14px;color:var(--dim);margin-top:4px;}
+.hero-progress{margin-top:14px;}
+.prog-bar-bg{height:8px;border-radius:4px;background:var(--line);margin-bottom:6px;}
+.prog-bar-fill{height:8px;border-radius:4px;background:var(--ok);width:56%;}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);}
+
+/* stats strip */
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:var(--card-gap);}
+.stat-mini{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:12px 10px;text-align:center;}
+.stat-mini .sv{font-size:22px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.stat-mini .sk{font-size:10px;color:var(--dim);margin-top:3px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;}
+
+/* card */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:var(--card-gap);}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;}
+
+/* temp entry */
+.temp-entry{display:flex;align-items:center;gap:12px;}
+.temp-big{font-size:52px;font-weight:900;font-variant-numeric:tabular-nums;
+  color:var(--ok);line-height:1;}
+.temp-unit{font-size:18px;color:var(--dim);margin-top:10px;}
+.temp-target{font-size:12px;color:var(--dim);margin-top:4px;}
+.temp-right{flex:1;}
+.temp-input-row{display:flex;gap:8px;margin-top:8px;}
+input[type=number]{width:100%;font-size:22px;padding:14px;border-radius:var(--radius-md);
+  border:1px solid var(--line);background:var(--input-bg);color:var(--txt);font-family:inherit;
+  text-align:center;}
+input:focus{outline:none;border-color:var(--ok);box-shadow:0 0 0 4px rgba(22,192,96,.12);}
+.log-temp-btn{min-height:52px;padding:0 18px;border:1px solid var(--ok-tint-border);
+  border-radius:12px;background:var(--ok-tint-bg);color:var(--ok);
+  font-size:14px;font-weight:700;font-family:inherit;white-space:nowrap;}
+.temp-history{margin-top:10px;}
+.temp-row{display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.temp-row:last-child{border-bottom:none;}
+.temp-row .tt{color:var(--dim);}
+.temp-row .tv{font-weight:700;font-variant-numeric:tabular-nums;}
+.tv.ok{color:var(--ok);}
+.tv.warn{color:var(--warn);}
+
+/* scrap counter */
+.scrap-row{display:flex;align-items:center;gap:12px;}
+.scrap-count{font-size:48px;font-weight:900;font-variant-numeric:tabular-nums;min-width:60px;}
+.scrap-btns{display:flex;flex-direction:column;gap:8px;flex:1;}
+.scrap-btn{min-height:52px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel-2);color:var(--txt);font-size:16px;font-weight:700;font-family:inherit;}
+.scrap-btn.add{border-color:var(--bad-tint-border);background:var(--bad-tint-bg);color:var(--bad);}
+
+/* cycle log button */
+.cycle-btn{width:100%;min-height:72px;border:2px solid var(--ok);border-radius:var(--radius-lg);
+  background:var(--ok-tint-bg);color:var(--ok);font-size:22px;font-weight:800;
+  font-family:inherit;letter-spacing:-.3px;margin-bottom:var(--card-gap);}
+
+/* warning banner */
+.banner{border:1px solid var(--warn-tint-border);border-left:4px solid var(--warn);
+  border-radius:var(--radius-md);padding:12px 14px;font-size:13px;font-weight:600;
+  margin-bottom:var(--card-gap);background:var(--warn-tint-bg);}
+
+/* action buttons */
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.action-btn{min-height:var(--touch);border-radius:var(--radius-md);font-size:17px;
+  font-weight:700;font-family:inherit;border:1px solid var(--line);}
+.action-btn.pause{background:var(--warn-tint-bg);border-color:var(--warn-tint-border);color:var(--warn);}
+.action-btn.end{background:var(--ok);border:none;color:#000;}
+.cta-secondary{width:100%;min-height:52px;border:1px solid var(--bad-tint-border);
+  border-radius:var(--radius-md);font-size:15px;font-weight:700;
+  background:transparent;color:var(--bad);font-family:inherit;}
+
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <span class="topbar-info">EXT-2 · <b>CBL-1250-BLK</b></span>
+  <div class="spacer"></div>
+  <button class="lang-btn">EN&nbsp;/&nbsp;ES</button>
+</div>
+
+<div class="scroll">
+<div class="wf-note">MOCKUP v0 · Run In Progress / Corrida en curso</div>
+
+<div class="steps">
+  <div class="step done"></div>
+  <div class="step active"></div>
+  <div class="step"></div>
+</div>
+
+<!-- Hero cycle counter -->
+<div class="hero-card">
+  <div class="hero-eyebrow">● RUNNING · EN CURSO · 01:34:22 elapsed</div>
+  <div class="hero-count">28</div>
+  <div class="hero-count-label">cycles completed · ciclos completados</div>
+  <div class="hero-progress">
+    <div class="prog-bar-bg"><div class="prog-bar-fill"></div></div>
+    <div class="prog-labels">
+      <span>0</span>
+      <span style="color:var(--ok);font-weight:700;">28 / 50 cycles</span>
+      <span>50</span>
+    </div>
+  </div>
+</div>
+
+<!-- Key live metrics -->
+<div class="stat-row">
+  <div class="stat-mini">
+    <div class="sv" style="color:var(--ok)">46s</div>
+    <div class="sk">Last cycle</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv" style="color:var(--dim)">45s</div>
+    <div class="sk">Target</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv" style="color:var(--warn)">52s</div>
+    <div class="sk">Avg (5 cyc)</div>
+  </div>
+</div>
+
+<!-- Cycle log tap (the big operator action) -->
+<button class="cycle-btn">
+  ＋ Log cycle / Registrar ciclo
+</button>
+
+<!-- Avg cycle warning -->
+<div class="banner">
+  ⚠️ <b>Avg cycle time 52s — above 45s target</b>
+  <span style="color:var(--dim);font-weight:400;"> · Promedio 52s, objetivo 45s</span>
+</div>
+
+<!-- Temperature -->
+<div class="card">
+  <p class="eyebrow">Temperature / Temperatura — log every 15 min</p>
+  <div class="temp-entry">
+    <div>
+      <div class="temp-big">181<span class="temp-unit">°C</span></div>
+      <div class="temp-target">Target: 182 °C ±3</div>
+    </div>
+    <div class="temp-right">
+      <div class="temp-input-row">
+        <input type="number" inputmode="decimal" value="181" aria-label="Temperature reading">
+        <button class="log-temp-btn">Log / Registrar</button>
+      </div>
+    </div>
+  </div>
+  <div class="temp-history">
+    <div class="temp-row"><span class="tt">12:30</span><span class="tv ok">181 °C</span></div>
+    <div class="temp-row"><span class="tt">12:15</span><span class="tv ok">182 °C</span></div>
+    <div class="temp-row"><span class="tt">12:00</span><span class="tv warn">186 °C ⚑</span></div>
+    <div class="temp-row"><span class="tt">11:45</span><span class="tv ok">180 °C</span></div>
+  </div>
+</div>
+
+<!-- Scrap counter -->
+<div class="card">
+  <p class="eyebrow">Scrap / Desperdicio</p>
+  <div class="scrap-row">
+    <div class="scrap-count">3</div>
+    <div class="scrap-btns">
+      <button class="scrap-btn add">＋ Add scrap / Agregar desperdicio</button>
+      <button class="scrap-btn">− Remove / Quitar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pause / End -->
+<div class="action-row">
+  <button class="action-btn pause">⏸ Pause / Pausar</button>
+  <button class="action-btn end" onclick="location.href='operator-04-run-end.html'">
+    End run / Terminar →
+  </button>
+</div>
+<button class="cta-secondary">Void run / Cancelar corrida</button>
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">Design notes</summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Hero cycle counter</b>: large numeral + progress bar shows 28/50. Most glanceable element.<br>
+    <b>Cycle log button</b>: the biggest tap target on the screen — operators tap it after each cycle; 72px height exceeds shop-floor minimum (60px).<br>
+    <b>Cycle time warning</b>: surfaces automatically when rolling avg &gt; target. Supervisor also sees this alert on their real-time view.<br>
+    <b>Temperature</b>: manual entry every 15 min; history shows last 4 readings with out-of-spec flag at 12:00 (186 °C vs 182 target).<br>
+    <b>Scrap counter</b>: simple +/− buttons. Each tap auto-timestamps the scrap event.<br>
+    <b>Pause vs End</b>: Pause keeps run open (operator break, material change); End → operator-04 final form.
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 3/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
