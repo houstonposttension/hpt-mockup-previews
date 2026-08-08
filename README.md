@@ -10,6 +10,65 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 > Served natively by GitHub Pages -- no proxy, no interstitial. (Earlier `raw.githack.com` / `rawcdn.githack.com` links are retired; use Pages URLs for anything new.)
 
+## Before you publish anything here — scrub gate
+
+**This repo is PUBLIC and indexable.** Content also survives in git history and caches after a
+delete, so a name that lands here is effectively permanent. Run the gate every time.
+
+```
+python scripts/prepublish_scan.py <folder>        # in the wip-processor repo
+```
+
+Exit 0 = safe to publish. Exit 1 = scrub first.
+
+### Why a pattern sweep, not a keyword list
+
+The old gate was a hand-maintained list of known plant names. **It failed twice on 2026-08-07:**
+
+- the Extruder set was reported as carrying *two* names when it actually carried **six, in 18
+  places across five files** — the four the list had never heard of went straight through;
+- a Receiver mockup reached staging with **four real steel-supplier names** attached to fabricated
+  short-shipment and damaged-in-transit data.
+
+A keyword list can only find names somebody already thought of. The scanner matches **shapes**, so a
+name nobody has seen before still trips it.
+
+### What it flags
+
+| Kind | Example | Severity |
+|---|---|---|
+| `credential` | API keys, tokens | CRITICAL — blocks |
+| `person-initial` | `R. Garza`, `C. Reyes` | HIGH — blocks |
+| `contact-email` / `contact-phone` | any address or number | HIGH — blocks |
+| `vendor` | real supplier names | MEDIUM — blocks |
+| `person-full` | two capitalised words | REVIEW — read it |
+
+`person-full` is deliberately noisy: it also matches *Aldine Westfield* and *Double Bender*. Known-safe
+phrases live in the script's `ALLOW_FULL` set. **Extend the allowlist rather than weakening a
+pattern** — a weaker pattern silently stops finding people.
+
+Vendors that are our own tooling (MaintainX, OptimoRoute, NetSuite, ClickUp, Shear97, and the machine
+makers) are allowed by name. Suppliers whose *performance* is being depicted are not.
+
+### The substitution convention
+
+James, 2026-07-26, extended to vendors 2026-08-07:
+
+- Real operator names → **`Operator 1..N`**
+- Real supplier / customer companies → **`Supplier A..D`**
+- Synthetic `Crew A..E` → leave alone
+- **Change only the identifying token.** Never the numbers, the layout, or the station names.
+
+### Two habits that matter more than the script
+
+1. **Scan the source you are copying, not the copy you remember.** Both 2026-08-07 misses came from
+   trusting an earlier session's summary instead of re-scanning the files.
+2. **Re-scan the published URL afterwards.** The gate proves what you staged; a fetch proves what
+   actually went live.
+
+If a set comes from a **private** repo (e.g. `hpt-mockups`), publishing is also a decision for that
+project's owner — scrub *and* ask, don't scrub and assume.
+
 ## Current mockups
 
 ### Extruder -- Extrusion Log, operator + supervisor (dated 2026-07-10)
