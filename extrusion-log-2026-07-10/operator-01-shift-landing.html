@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · Shift Landing · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --input-bg:#0d0e10;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --warn-tint-bg:rgba(255,176,32,.12); --warn-tint-border:rgba(255,176,32,.40);
+  --bad-tint-bg:rgba(255,59,48,.14); --bad-tint-border:rgba(255,59,48,.35);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px;
+  --touch:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:10px;
+  padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.topbar .ctx{font-size:12px;color:var(--dim);}
+.topbar .ctx b{color:var(--txt);}
+.lang-btn{border:1px solid var(--line);background:var(--panel-2);color:var(--dim);
+  border-radius:10px;font-size:12px;font-weight:700;padding:5px 10px;}
+.scroll{padding:14px 14px env(safe-area-inset-bottom,28px);max-width:600px;margin:0 auto;}
+.action-line{font-size:22px;font-weight:700;margin:4px 2px 4px;letter-spacing:-.3px;}
+.action-sub{font-size:14px;color:var(--dim);margin:0 2px 14px;}
+/* chip */
+.chip{display:flex;align-items:center;gap:8px;background:var(--panel);
+  border:1px solid var(--line);border-radius:13px;padding:10px 14px;
+  font-size:14px;font-weight:600;margin-bottom:var(--card-gap);}
+.chip-check{color:var(--ok);font-weight:800;}
+.chip-edit{margin-left:auto;font-size:12px;color:var(--dim);}
+/* cards */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:var(--card-gap);}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;}
+/* run rows */
+.run-row{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:var(--input-bg);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:8px;text-decoration:none;color:var(--txt);}
+.run-row:last-child{margin-bottom:0;}
+.run-status-dot{width:10px;height:10px;border-radius:50%;flex:none;}
+.dot-running{background:var(--ok);}
+.dot-complete{background:var(--dim);}
+.dot-paused{background:var(--warn);}
+.run-body{flex:1;}
+.run-title{font-size:15px;font-weight:700;}
+.run-meta{font-size:12px;color:var(--dim);margin-top:2px;}
+.run-right{text-align:right;}
+.run-stat{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
+.run-stat-label{font-size:10px;color:var(--mute);}
+/* in-progress badge */
+.in-progress-label{font-size:11px;font-weight:700;letter-spacing:.5px;
+  padding:3px 9px;border-radius:10px;background:var(--ok-tint-bg);
+  border:1px solid var(--ok-tint-border);color:var(--ok);}
+.paused-label{font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;
+  background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+/* banner */
+.banner{border:1px solid var(--warn-tint-border);border-left:4px solid var(--warn);
+  border-radius:var(--radius-md);padding:12px 14px;font-size:14px;font-weight:600;
+  margin-bottom:var(--card-gap);background:var(--warn-tint-bg);color:var(--txt);}
+.banner .b-meta{font-size:12px;color:var(--dim);margin-top:4px;font-weight:400;}
+/* summary strip */
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:var(--card-gap);}
+.stat-mini{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:12px 10px;text-align:center;}
+.stat-mini .sv{font-size:22px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.stat-mini .sk{font-size:10px;color:var(--dim);margin-top:3px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;}
+/* CTA */
+.cta{width:100%;min-height:var(--touch);border:none;border-radius:var(--radius-md);
+  font-size:20px;font-weight:700;background:var(--ok);color:#000;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;margin-bottom:8px;}
+.cta.secondary{background:var(--panel-2);color:var(--txt);border:1px solid var(--line);
+  font-size:16px;min-height:52px;}
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+.num{font-variant-numeric:tabular-nums;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <span class="ctx">Operador · <b>Operator 1</b></span>
+  <div class="spacer"></div>
+  <button class="lang-btn" aria-label="Toggle language">EN&nbsp;/&nbsp;ES</button>
+</div>
+
+<div class="scroll">
+
+<div class="wf-note">MOCKUP v0 · Extrusion Log · Operator Shift Landing</div>
+
+<!-- Identity chip -->
+<div class="chip">
+  <span class="chip-check" aria-hidden="true">✓</span>
+  Logged in as <b>&nbsp;Operator 1</b>&nbsp;·&nbsp;Day Shift
+  <span class="chip-edit">Change / Cambiar</span>
+</div>
+
+<!-- One action per screen -->
+<h1 class="action-line">Your shift<span style="color:var(--dim);font-weight:400"> / Tu turno</span></h1>
+<p class="action-sub">Day shift · 06:00–14:00 · Thu Jul 10 · Turno de día</p>
+
+<!-- Alert banner: paused run -->
+<div class="banner">
+  ⚠️ <b>Run paused — Line EXT-2</b>
+  <div class="b-meta">CBL-1250-BLK · paused 7 min ago · tap to resume · pausado hace 7 min</div>
+</div>
+
+<!-- Shift stats -->
+<div class="stat-row">
+  <div class="stat-mini">
+    <div class="sv num" style="color:var(--ok)">4</div>
+    <div class="sk">Runs done</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv num">18,400</div>
+    <div class="sk">ft extruded</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv num" style="color:var(--warn)">3</div>
+    <div class="sk">Scrap pcs</div>
+  </div>
+</div>
+
+<!-- In-progress runs -->
+<div class="card">
+  <p class="eyebrow">Active &amp; recent runs / Corridas activas y recientes</p>
+
+  <!-- Paused run -->
+  <a href="operator-03-run-in-progress.html" class="run-row" style="border-color:var(--warn-tint-border);">
+    <span class="run-status-dot dot-paused"></span>
+    <div class="run-body">
+      <div class="run-title">EXT-2 · CBL-1250-BLK</div>
+      <div class="run-meta">Started 11:42 · <span class="paused-label">PAUSED</span></div>
+    </div>
+    <div class="run-right">
+      <div class="run-stat num" style="color:var(--warn)">28</div>
+      <div class="run-stat-label">cycles</div>
+    </div>
+  </a>
+
+  <!-- Running -->
+  <a href="operator-03-run-in-progress.html" class="run-row" style="border-color:var(--ok-tint-border);">
+    <span class="run-status-dot dot-running"></span>
+    <div class="run-body">
+      <div class="run-title">EXT-1 · TN-750-YEL</div>
+      <div class="run-meta">Started 12:05 · <span class="in-progress-label">EN CURSO</span></div>
+    </div>
+    <div class="run-right">
+      <div class="run-stat num" style="color:var(--ok)">14</div>
+      <div class="run-stat-label">cycles</div>
+    </div>
+  </a>
+
+  <!-- Completed -->
+  <div class="run-row">
+    <span class="run-status-dot dot-complete"></span>
+    <div class="run-body">
+      <div class="run-title">EXT-1 · CBL-500-GRN</div>
+      <div class="run-meta">08:30 – 10:15 · Completed / Completado</div>
+    </div>
+    <div class="run-right">
+      <div class="run-stat num">42</div>
+      <div class="run-stat-label">cycles</div>
+    </div>
+  </div>
+
+  <div class="run-row">
+    <span class="run-status-dot dot-complete"></span>
+    <div class="run-body">
+      <div class="run-title">EXT-3 · TN-1000-ORG</div>
+      <div class="run-meta">06:00 – 08:20 · Completed / Completado</div>
+    </div>
+    <div class="run-right">
+      <div class="run-stat num">53</div>
+      <div class="run-stat-label">cycles</div>
+    </div>
+  </div>
+</div>
+
+<!-- Primary CTA -->
+<button class="cta" onclick="location.href='operator-02-run-setup.html'">
+  ＋ Start new run / Nueva corrida
+</button>
+<button class="cta secondary" onclick="location.href='operator-05-shift-summary.html'">
+  View shift summary / Ver resumen de turno
+</button>
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">
+    Design notes
+  </summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Resume banner</b> surfaces the paused EXT-2 run immediately — glanceable alert
+    before operator starts a new run.<br>
+    <b>Stat strip</b> shows shift progress: runs done, feet extruded, scrap count.<br>
+    <b>Run list</b> shows today's runs in reverse-chronological order; active runs at top.
+    Tapping a running/paused run navigates to operator-03 (in-progress screen).<br>
+    <b>Primary CTA</b> is the single green button: one action per screen (style guide §7).<br>
+    <b>Bilingual</b>: EN/ES toggle in topbar; key labels shown inline as EN / ES.<br>
+    Production: operator ID from session cookie (Std 16 — no name in DB records).
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 1/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
