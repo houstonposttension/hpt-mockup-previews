@@ -14,7 +14,7 @@
 <body>
 
 <div class="pgnote">
-  <h1>9 / 12 &middot; Supervisor &mdash; station detail + the <b>honest dark cell</b></h1>
+  <h1>13 / 16 &middot; Supervisor &mdash; station detail + the <b>honest dark cell</b></h1>
   <p>Frame A is the tile drill-down. It repeats the tile&#39;s <b>current-hour</b> metric, then adds
     what the tile deliberately withholds: <b>shift-so-far</b> (&quot;how well I did my job&quot;), an
     <b>8-hour sparkline</b>, who is on the station, tags in progress with a <b>stall flag at 4&nbsp;h</b>,
@@ -23,20 +23,7 @@
     Three cells emit zero events. Rather than showing a fabricated number or an empty chart, the pane
     states <b>exactly why it is empty and what the single fix is</b> &mdash; the stations exist in the
     v8 registry but were never added to the live scanner picker, so no worker can select them.</p>
-  <div class="crumbs">
-    <a href="index.html">Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">Rebar &middot; busy</a>
-    <a href="loader.html">Loader &middot; in progress</a>
-    <a href="loader-punchlist.html">Punch list</a>
-    <a href="loader-alarm.html">Interrupts</a>
-    <a href="loader-closeout.html">Close-out</a>
-    <a href="loader-split.html">Split &amp; carry</a>
-    <a href="supervisor.html">Sup &middot; workcells</a>
-    <a class="on" href="supervisor-station.html">Station detail</a>
-    <a href="supervisor-approvals.html">Approvals</a>
-    <a href="supervisor-actas.html">Act-as / Reposition</a>
-    <a href="bar-anatomy.html">Bar anatomy</a>
-  </div>
+  <div class="crumbs" data-crumbs></div>
 </div>
 
 <div class="stage">
@@ -209,5 +196,6 @@
 </div>
 
 <script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
 </body>
 </html>
