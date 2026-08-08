@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · Line Detail · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --input-bg:#0d0e10;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --warn-tint-bg:rgba(255,176,32,.12); --warn-tint-border:rgba(255,176,32,.40);
+  --bad-tint-bg:rgba(255,59,48,.14); --bad-tint-border:rgba(255,59,48,.35);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:12px;
+  padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.back{font-size:13px;color:var(--brand);text-decoration:none;}
+.auth-chip{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  padding:5px 10px;border-radius:10px;border:1px solid var(--ok-tint-border);
+  color:var(--ok);background:var(--ok-tint-bg);}
+.nav-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);padding:0 20px;background:var(--panel);}
+.nav-tab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--dim);
+  border-bottom:2px solid transparent;text-decoration:none;}
+.nav-tab.active{color:var(--txt);border-bottom-color:var(--ok);}
+.scroll{padding:16px 20px env(safe-area-inset-bottom,28px);max-width:1100px;}
+
+/* line hero */
+.line-hero{background:var(--panel);border:1px solid var(--warn-tint-border);border-radius:var(--radius-lg);
+  padding:18px 20px;margin-bottom:var(--card-gap);}
+.lh-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.lh-id{font-size:26px;font-weight:900;}
+.lh-status{font-size:12px;font-weight:700;padding:4px 10px;border-radius:10px;
+  background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+.lh-elapsed{font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;}
+.lh-product{font-size:17px;font-weight:700;margin-bottom:2px;}
+.lh-operator{font-size:13px;color:var(--dim);margin-bottom:14px;}
+.lh-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+@media(max-width:500px){.lh-metrics{grid-template-columns:1fr 1fr;}}
+.lh-metric{background:var(--panel-2);border-radius:10px;padding:12px 10px;text-align:center;}
+.lh-metric .mv{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+.lh-metric .mk{font-size:9px;color:var(--dim);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+
+/* two-col layout on wider screens */
+.detail-layout{display:grid;grid-template-columns:1fr;gap:var(--card-gap);}
+@media(min-width:700px){.detail-layout{grid-template-columns:1fr 1fr;}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:var(--card-gap);}
+.card.span-2{grid-column:1/-1;}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;}
+
+/* hour-by-hour chart (SVG sparkline placeholder) */
+.hour-chart{width:100%;overflow-x:auto;}
+.hour-bars{display:flex;align-items:flex-end;gap:4px;height:80px;padding-bottom:4px;}
+.hbar{flex:1;min-width:18px;border-radius:4px 4px 0 0;position:relative;}
+.hbar-ok{background:var(--ok);opacity:.8;}
+.hbar-warn{background:var(--warn);opacity:.9;}
+.hbar-bad{background:var(--bad);opacity:.9;}
+.hbar-empty{background:var(--line);}
+.hour-labels{display:flex;gap:4px;margin-top:4px;}
+.hlabel{flex:1;min-width:18px;font-size:9px;color:var(--mute);text-align:center;}
+.chart-legend{display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--dim);}
+.legend-dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px;}
+
+/* temp chart */
+.temp-chart{display:flex;flex-direction:column;gap:6px;}
+.temp-entry{display:flex;align-items:center;gap:10px;padding:8px 10px;
+  background:var(--panel-2);border-radius:10px;}
+.temp-time{font-size:11px;color:var(--mute);width:36px;font-variant-numeric:tabular-nums;flex:none;}
+.temp-bar-bg{flex:1;height:6px;border-radius:3px;background:var(--line);}
+.temp-bar-fill{height:6px;border-radius:3px;}
+.temp-val{font-size:13px;font-weight:700;width:54px;text-align:right;font-variant-numeric:tabular-nums;flex:none;}
+.temp-flag{font-size:11px;width:20px;flex:none;}
+
+/* alert timeline */
+.alert-list{display:flex;flex-direction:column;gap:8px;}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  border-radius:10px;font-size:13px;}
+.alert-item.warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);}
+.alert-item.bad{background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);}
+.alert-item.ok{background:var(--ok-tint-bg);border:1px solid var(--ok-tint-border);}
+.alert-time{font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;width:36px;flex:none;margin-top:2px;}
+.alert-body .ab-title{font-weight:700;}
+.alert-body .ab-meta{font-size:11px;color:var(--dim);margin-top:2px;}
+
+/* operator switch log */
+.op-switch{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--panel-2);border-radius:10px;margin-bottom:6px;font-size:13px;}
+.op-switch:last-child{margin-bottom:0;}
+.op-time{font-size:11px;color:var(--mute);width:36px;flex:none;font-variant-numeric:tabular-nums;}
+.op-name{font-weight:700;}
+.op-meta{font-size:11px;color:var(--dim);}
+
+/* scrap log */
+.scrap-log{display:flex;flex-direction:column;gap:6px;}
+.scrap-entry{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);border-radius:10px;font-size:13px;}
+.scrap-time{font-size:11px;color:var(--dim);width:36px;flex:none;font-variant-numeric:tabular-nums;}
+.scrap-reason{flex:1;font-weight:600;}
+.scrap-qty{font-size:13px;font-weight:700;color:var(--bad);}
+
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <a href="supervisor-01-real-time.html" class="back">← All lines</a>
+  <div class="spacer"></div>
+  <div class="auth-chip">✓ Verified</div>
+</div>
+<div class="nav-tabs">
+  <a href="supervisor-01-real-time.html" class="nav-tab">Live / En vivo</a>
+  <a href="supervisor-02-line-detail.html" class="nav-tab active">Line detail</a>
+  <a href="supervisor-03-shift-report.html" class="nav-tab">Shift report</a>
+</div>
+
+<div class="scroll">
+<div class="wf-note">MOCKUP v0 · EXT-2 Line Detail — Supervisor drill-down</div>
+
+<!-- Line hero -->
+<div class="line-hero">
+  <div class="lh-header">
+    <div class="lh-id">EXT-2</div>
+    <span class="lh-status">⚑ 2 ALERTS</span>
+    <div class="spacer"></div>
+    <div class="lh-elapsed">02:19:33 elapsed</div>
+  </div>
+  <div class="lh-product">CBL-1250-BLK · Run #EXT2-20260710-04</div>
+  <div class="lh-operator">Operator: Operator 1 · started 11:23</div>
+  <div class="lh-metrics">
+    <div class="lh-metric">
+      <div class="mv" style="color:var(--ok);">50</div>
+      <div class="mk">Cycles done</div>
+    </div>
+    <div class="lh-metric">
+      <div class="mv" style="color:var(--warn);">52s</div>
+      <div class="mk">Avg cycle</div>
+    </div>
+    <div class="lh-metric">
+      <div class="mv" style="color:var(--warn);">3</div>
+      <div class="mk">Scrap pcs</div>
+    </div>
+    <div class="lh-metric">
+      <div class="mv">181°C</div>
+      <div class="mk">Last temp</div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-layout">
+
+<!-- Hourly cycles chart -->
+<div class="card span-2">
+  <p class="eyebrow">Cycles per hour · today (EXT-2)</p>
+  <div class="hour-chart">
+    <div class="hour-bars">
+      <div class="hbar hbar-empty" style="height:20%;" title="06:00 — idle"></div>
+      <div class="hbar hbar-empty" style="height:20%;" title="07:00 — idle"></div>
+      <div class="hbar hbar-empty" style="height:20%;" title="08:00 — idle"></div>
+      <div class="hbar hbar-ok" style="height:82%;" title="09:00 — 41 cyc"></div>
+      <div class="hbar hbar-ok" style="height:90%;" title="10:00 — 45 cyc"></div>
+      <div class="hbar hbar-warn" style="height:68%;" title="11:00 — 34 cyc (slow start)"></div>
+      <div class="hbar hbar-warn" style="height:60%;" title="12:00 — 30 cyc (temp spike)"></div>
+      <div class="hbar hbar-ok" style="height:86%;" title="13:00 — 43 cyc"></div>
+      <div class="hbar hbar-ok" style="height:40%;" title="14:00 — 20 cyc (partial)"></div>
+    </div>
+    <div class="hour-labels">
+      <div class="hlabel">06</div><div class="hlabel">07</div><div class="hlabel">08</div>
+      <div class="hlabel">09</div><div class="hlabel">10</div><div class="hlabel">11</div>
+      <div class="hlabel">12</div><div class="hlabel">13</div><div class="hlabel">14</div>
+    </div>
+  </div>
+  <div class="chart-legend">
+    <span><span class="legend-dot" style="background:var(--ok);"></span>On target (≥40 cyc/hr)</span>
+    <span><span class="legend-dot" style="background:var(--warn);"></span>Below target</span>
+    <span><span class="legend-dot" style="background:var(--line);"></span>Idle / No run</span>
+  </div>
+</div>
+
+<!-- Temperature log -->
+<div class="card">
+  <p class="eyebrow">Temperature log (°C) · setpoint 182 ±3</p>
+  <div class="temp-chart">
+    <div class="temp-entry">
+      <span class="temp-time">13:30</span>
+      <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:90%;background:var(--ok);"></div></div>
+      <span class="temp-val" style="color:var(--ok);">181 °C</span>
+      <span class="temp-flag"></span>
+    </div>
+    <div class="temp-entry">
+      <span class="temp-time">13:15</span>
+      <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:91%;background:var(--ok);"></div></div>
+      <span class="temp-val" style="color:var(--ok);">182 °C</span>
+      <span class="temp-flag"></span>
+    </div>
+    <div class="temp-entry">
+      <span class="temp-time">13:00</span>
+      <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:90%;background:var(--ok);"></div></div>
+      <span class="temp-val" style="color:var(--ok);">180 °C</span>
+      <span class="temp-flag"></span>
+    </div>
+    <div class="temp-entry" style="border:1px solid var(--warn-tint-border);border-radius:10px;">
+      <span class="temp-time">12:00</span>
+      <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:100%;background:var(--warn);"></div></div>
+      <span class="temp-val" style="color:var(--warn);">186 °C</span>
+      <span class="temp-flag">⚑</span>
+    </div>
+    <div class="temp-entry">
+      <span class="temp-time">11:45</span>
+      <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:89%;background:var(--ok);"></div></div>
+      <span class="temp-val" style="color:var(--ok);">178 °C</span>
+      <span class="temp-flag"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Alert timeline -->
+<div class="card">
+  <p class="eyebrow">Alerts &amp; events · this run</p>
+  <div class="alert-list">
+    <div class="alert-item warn">
+      <span class="alert-time">13:47</span>
+      <div class="alert-body">
+        <div class="ab-title">⚑ Run ending — at target 50 cycles</div>
+        <div class="ab-meta">Operator initiating end-of-run form</div>
+      </div>
+    </div>
+    <div class="alert-item warn">
+      <span class="alert-time">13:22</span>
+      <div class="alert-body">
+        <div class="ab-title">⚑ Avg cycle drift — 52s vs 45s target</div>
+        <div class="ab-meta">Rolling 5-cycle avg exceeded +15% threshold</div>
+      </div>
+    </div>
+    <div class="alert-item bad">
+      <span class="alert-time">12:48</span>
+      <div class="alert-body">
+        <div class="ab-title">🌡 Temp spike 186 °C — +4 °C over setpoint</div>
+        <div class="ab-meta">1 scrap piece logged · within 5 °C auto-alert band</div>
+      </div>
+    </div>
+    <div class="alert-item ok">
+      <span class="alert-time">11:23</span>
+      <div class="alert-body">
+        <div class="ab-title">✓ Run started · EXT2-20260710-04</div>
+        <div class="ab-meta">CBL-1250-BLK · target 50 cycles · Operator 1</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scrap log -->
+<div class="card">
+  <p class="eyebrow">Scrap log · this run (3 pcs)</p>
+  <div class="scrap-log">
+    <div class="scrap-entry">
+      <span class="scrap-time">12:02</span>
+      <span class="scrap-reason">Startup material</span>
+      <span class="scrap-qty">1 pc</span>
+    </div>
+    <div class="scrap-entry">
+      <span class="scrap-time">12:48</span>
+      <span class="scrap-reason">Temp spike 186 °C</span>
+      <span class="scrap-qty">1 pc</span>
+    </div>
+    <div class="scrap-entry">
+      <span class="scrap-time">13:31</span>
+      <span class="scrap-reason">Surface defect</span>
+      <span class="scrap-qty">1 pc</span>
+    </div>
+  </div>
+</div>
+
+<!-- Operator switches -->
+<div class="card">
+  <p class="eyebrow">Operator log · this run</p>
+  <div class="op-switch">
+    <span class="op-time">11:23</span>
+    <div>
+      <div class="op-name">Operator 1</div>
+      <div class="op-meta">Run started</div>
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--mute);padding:8px 0;">No operator switches this run</div>
+</div>
+
+</div><!-- /detail-layout -->
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">Design notes</summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Hourly bar chart</b>: cycles per hour for the current shift on this line. Gaps = idle (no run). Color = on-target vs below. Production: clickable bar → run detail.<br>
+    <b>Temp log</b>: bar-chart style row — length proportional to temp vs setpoint. Out-of-spec row (12:00, 186 °C) gets amber border + flag glyph.<br>
+    <b>Alert timeline</b>: chronological event feed — starts / cycle drift / temp spikes / run end. No separate "notifications" screen needed.<br>
+    <b>Scrap log</b>: timestamped with operator-supplied reason from screen 3 cycle tap or end-of-run form.<br>
+    <b>Operator switches</b>: tracks who was on the line and when — important for ISO 9001 traceability.
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 7/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
