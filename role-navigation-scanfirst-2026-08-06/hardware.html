@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hardware — anchor / chuck kitting + low stock · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>9 / 16 &middot; Hardware &mdash; <b>kitting + low-stock flag</b></h1>
+  <p>From locked spec <b>&sect;3.5</b>: <b>hardware kit spec</b>, <b>component scan</b>,
+    <b>kit complete CTA</b>, <b>low-stock flag</b>; widgets <i>today&#39;s hardware kits</i> and
+    <i>low-stock alerts for hardware bins</i>; primary CTA <b>&quot;Scan component into kit&quot;</b>.
+    Same kitting shape as PT, with one addition that changes the screen: <b>stock awareness</b>.</p>
+  <p><b>Hardware is the furthest along of the non-rebar cells in real life.</b> It is a live emitting
+    scan station, it is one of the seven production worker roles, and there is an active
+    <b>Hardware Team V2 pilot</b> (runbook dated 2026-07-27). So unlike PT, this screen has a real
+    population waiting for it &mdash; they are just using the shared scanner today.</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — KIT BUILD ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/hw</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="hardware.html">Hardware</a>
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">1</span></a>
+        <span class="whochip">0388&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Scan a component into <b>HW-2208</b></div>
+    </div>
+
+    <div class="savestrip ok">&#10003; Added <span class="tg">ANC-58-B</span><span class="n">3 of 5 components</span></div>
+    <div class="camrow">
+      <button class="cbtn">&#128247; Can&#39;t scan? Photo &rarr;</button>
+      <button class="cbtn sec">Capture frame</button>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Kit</span><span class="kid">HW-2208</span>
+        <span class="ktag">3 of 7 today</span></div>
+      <div class="kfor">Kennedy V &middot; Podium deck</div>
+      <div class="ksub">Anchor + chuck assembly &middot; due 3:30 PM</div>
+    </div>
+
+    <div class="prog">
+      <div class="row"><span class="big">3 <span class="small">of 5 components</span></span>
+        <span class="small">60%</span></div>
+      <div class="bar"><i style="width:60%"></i></div>
+    </div>
+
+    <div class="sectlbl">Hardware kit spec</div>
+    <div class="comprow done">
+      <span class="cic">&#10003;</span>
+      <div><div class="cnm">Anchor &mdash; 0.5&quot; barrel</div><div class="csp">ANC-58-B &middot; bin H-12</div></div>
+      <div class="cqty ok">40<span class="of"> / 40</span></div>
+    </div>
+    <div class="comprow done">
+      <span class="cic">&#10003;</span>
+      <div><div class="cnm">Chuck &mdash; 2-piece wedge</div><div class="csp">CHK-2W &middot; bin H-04</div></div>
+      <div class="cqty ok">40<span class="of"> / 40</span></div>
+    </div>
+    <div class="comprow done">
+      <span class="cic">&#10003;</span>
+      <div><div class="cnm">Bearing plate</div><div class="csp">BP-6x6 &middot; bin H-09</div></div>
+      <div class="cqty ok">40<span class="of"> / 40</span></div>
+    </div>
+    <div class="comprow low">
+      <span class="cic">&#9888;</span>
+      <div><div class="cnm">Pocket former</div><div class="csp">PF-STD &middot; bin H-21</div>
+        <span class="lowflag">Low stock &middot; 12 left in bin</span></div>
+      <div class="cqty warn">0<span class="of"> / 40</span></div>
+    </div>
+    <div class="comprow pend">
+      <span class="cic">&#9675;</span>
+      <div><div class="cnm">Grommet / sheathing seal</div><div class="csp">GRM-06 &middot; bin H-17</div></div>
+      <div class="cqty">0<span class="of"> / 40</span></div>
+    </div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn prim blk big" href="#" onclick="return false;">Scan component into kit &rarr;</a>
+    </div>
+
+    <div class="drawer" data-drawer>
+      <div class="dhandle" data-dhandle>
+        <span class="grip"></span>
+        <div><div class="dt">Today&#39;s hardware kits</div><div class="ds">7 kits &middot; 2 done</div></div>
+        <span class="dn">7</span><span class="car">&#9652;</span>
+      </div>
+      <div class="dbody">
+        <div class="sectlbl" style="margin-top:2px;">Assigned today</div>
+        <div class="wrow ok"><div><div class="nm">HW-2206</div>
+          <div class="sub">Grand Pkwy 99 &middot; complete</div></div><div class="val ok">100%</div></div>
+        <div class="wrow ok"><div><div class="nm">HW-2207</div>
+          <div class="sub">Katy Plant &middot; complete</div></div><div class="val ok">100%</div></div>
+        <div class="wrow warn"><div><div class="nm">HW-2208 &middot; current</div>
+          <div class="sub">Kennedy V &middot; blocked on pocket formers</div></div><div class="val warn">60%</div></div>
+        <div class="wrow"><div><div class="nm">HW-2209 &hellip; HW-2212</div>
+          <div class="sub">4 kits &middot; not started</div></div><div class="val">&mdash;</div></div>
+      </div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; component scan, with stock awareness inline</div>
+  </div>
+
+  <!-- ===== B — LOW STOCK ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/hw</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="hardware.html">Hardware</a>
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">1</span></a>
+        <span class="whochip">0388&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="lowbanner">
+      <b>&#9888; Low stock will stop this kit.</b><br>
+      <b>Pocket former (PF-STD)</b> has <b>12 left</b> in bin H-21 and this kit needs <b>40</b>.
+      You can finish the other components and leave the kit short, or pull from another bin.
+      <div class="bins">
+        <span class="bchip">H-21 &middot; 12 left</span>
+        <span class="bchip">H-17 &middot; 9 left</span>
+        <span class="bchip">H-04 &middot; 31 left</span>
+      </div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Kit</span><span class="kid">HW-2208</span>
+        <span class="ktag">short</span></div>
+      <div class="kfor">Kennedy V &middot; Podium deck</div>
+      <div class="ksub">Needs 40 &middot; 12 available &middot; short 28</div>
+    </div>
+
+    <div class="sectlbl">What you can do</div>
+    <div class="wrow warn"><div><div class="nm">Finish short &mdash; 12 of 40</div>
+      <div class="sub">Kit closes with a recorded shortfall</div></div><div class="val warn">28 short</div></div>
+    <div class="wrow"><div><div class="nm">Pull from another bin</div>
+      <div class="sub">Scan the substitute bin to re-source</div></div><div class="val">&mdash;</div></div>
+    <div class="wrow bad"><div><div class="nm">Hold the kit</div>
+      <div class="sub">Flag for restock &middot; nothing ships</div></div><div class="val">&mdash;</div></div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn blk big" href="#" onclick="return false;"
+         style="border-color:var(--warn); color:var(--warn);">Flag bin H-21 for restock</a>
+    </div>
+    <div class="mexist">Low-stock alerts are a named widget in &sect;3.5. Bin-level roll-up is the
+      supervisor half of the same signal.</div>
+
+  </div></div>
+  <div class="phcap">B &middot; low stock &mdash; the one thing PT&#39;s screen does not have</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Grounding &mdash; and what has no data behind it</span>
+  <b>Real today:</b> Hardware is a live scan station (<code>tag_type: hardware</code>,
+  <code>scanning_yet: true</code>) and one of the seven production <code>WORKER_ROLES</code>. It shows
+  on the supervisor home as a real tile (1.1k lb/h) &mdash; with <b>&quot;&mdash; no target&quot;</b>,
+  because no throughput target has been set for it.<br>
+  <span class="flag">Not backed:</span> there is no hardware kit entity, no bill-of-materials, no
+  component&harr;kit link, and <b>no stock-on-hand ledger anywhere in this system</b> &mdash; hardware,
+  lumber and consumables have no representation at all. Every quantity and every bin number on this
+  screen is illustrative.<br>
+  <b>Overlap to settle before build:</b> bin-level stock is arguably <b>Inventory&#39;s</b> data, and
+  Inventory is a separate governed project (HPT-Inventory) with its own locked spec, its own location
+  model and its own NetSuite boundary. The low-stock flag here should almost certainly <i>read</i> from
+  that system rather than grow a second stock ledger inside WIP. Worth a decision before anyone builds
+  it twice.<br>
+  <b>&sect;3.5 says &quot;New page needed (Phase 4)&quot;</b> &mdash; accurate, unlike the same line on
+  the Loader entry.
+</div>
+
+<div class="footnav">
+  Prev: <a href="pt.html">PT</a> &middot;
+  Next: <a href="receiver.html">Receiver &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>
