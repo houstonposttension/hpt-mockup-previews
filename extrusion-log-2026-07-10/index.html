@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>HPT Extrusion Log · Role Picker</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px;
+  --touch:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;
+  background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.scroll{padding:24px 16px env(safe-area-inset-bottom,28px);}
+.hero{text-align:center;padding:32px 0 28px;}
+.hero-title{font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;}
+.hero-sub{font-size:14px;color:var(--dim);}
+.role-grid{display:grid;gap:var(--card-gap);}
+.role-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:20px 18px;text-decoration:none;color:var(--txt);display:flex;align-items:center;gap:16px;}
+.role-card:active{border-color:var(--ok);}
+.role-icon{font-size:36px;flex:none;}
+.role-body .role-name{font-size:19px;font-weight:700;margin-bottom:4px;}
+.role-body .role-desc{font-size:13px;color:var(--dim);}
+.role-chev{margin-left:auto;font-size:22px;color:var(--dim);}
+.role-card.supervisor .role-icon-wrap{
+  width:52px;height:52px;border-radius:14px;background:rgba(59,130,246,.15);
+  border:1px solid rgba(59,130,246,.35);display:flex;align-items:center;justify-content:center;}
+.role-card.operator .role-icon-wrap{
+  width:52px;height:52px;border-radius:14px;background:var(--ok-tint-bg);
+  border:1px solid var(--ok-tint-border);display:flex;align-items:center;justify-content:center;}
+.divider-row{display:flex;align-items:center;gap:10px;margin:4px 0;color:var(--mute);font-size:12px;}
+.divider-row::before,.divider-row::after{content:'';flex:1;height:1px;background:var(--line);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <div class="spacer"></div>
+  <span style="font-size:11px;color:var(--dim);">Extrusion Log</span>
+</div>
+
+<div class="scroll">
+  <div class="hero">
+    <div class="hero-title">Extrusion Log</div>
+    <div class="hero-sub">Select your role to continue<br>Seleccione su rol para continuar</div>
+  </div>
+
+  <div class="role-grid">
+    <a href="operator-01-shift-landing.html" class="role-card operator">
+      <div class="role-icon-wrap"><span style="font-size:26px;">⚙️</span></div>
+      <div class="role-body">
+        <div class="role-name">Operator / Operador</div>
+        <div class="role-desc">Start runs, log temps &amp; scrap · Mobile entry</div>
+      </div>
+      <span class="role-chev">›</span>
+    </a>
+
+    <div class="divider-row">or / o</div>
+
+    <a href="supervisor-01-real-time.html" class="role-card supervisor">
+      <div class="role-icon-wrap"><span style="font-size:26px;">📊</span></div>
+      <div class="role-body">
+        <div class="role-name">Supervisor</div>
+        <div class="role-desc">Real-time view of all lines · Auth required</div>
+      </div>
+      <span class="role-chev">›</span>
+    </a>
+  </div>
+
+  <div class="ver">HPT Extrusion Log · MOCKUP v0 · 2026-07-10</div>
+</div>
+</body>
+</html>
