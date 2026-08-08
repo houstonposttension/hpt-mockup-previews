@@ -10,7 +10,7 @@
 <body>
 
 <div class="pgnote">
-  <h1>3 / 12 &middot; Loader &mdash; in-progress view <b>(reconciled)</b></h1>
+  <h1>3 / 16 &middot; Loader &mdash; in-progress view <b>(reconciled)</b></h1>
   <p>This is the <b>LEAN canonical loader</b> (design note rev 13, &sect;20 &mdash; <i>"what actually
     ships"</i>), brought forward whole, with the new <b>38&nbsp;px consolidated bar</b> sitting on top of
     it. Nothing from the locked design was simplified to make room: the bar replaced the old app-bar +
@@ -20,20 +20,7 @@
     repeated per row. A row is tag&nbsp;# + short spec + the <b>bend-shape thumbnail</b> &mdash; rendered
     by the same <code>shapeSVG()</code> the production loader uses. Everything else is one tap away in
     the row drawer. <b>Tap row #42 or #39</b> to see it.</p>
-  <div class="crumbs">
-    <a href="index.html">Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">Rebar &middot; busy</a>
-    <a class="on" href="loader.html">Loader &middot; in progress</a>
-    <a href="loader-punchlist.html">Punch list</a>
-    <a href="loader-alarm.html">Interrupts</a>
-    <a href="loader-closeout.html">Close-out</a>
-    <a href="loader-split.html">Split &amp; carry</a>
-    <a href="supervisor.html">Sup &middot; workcells</a>
-    <a href="supervisor-station.html">Station detail</a>
-    <a href="supervisor-approvals.html">Approvals</a>
-    <a href="supervisor-actas.html">Act-as / Reposition</a>
-    <a href="bar-anatomy.html">Bar anatomy</a>
-  </div>
+  <div class="crumbs" data-crumbs></div>
 </div>
 
 <div class="stage"><div class="phone"><div class="scr flow">
@@ -222,5 +209,6 @@
 </div>
 
 <script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
 </body>
 </html>
