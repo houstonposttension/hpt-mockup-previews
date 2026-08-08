@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Yard — assigned tasks + ad-hoc lookup · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>11 / 16 &middot; Yard &mdash; <b>assigned tasks</b>, scan optional</h1>
+  <p>From locked spec <b>&sect;3.8</b>: <b>assigned task list</b>, <b>task complete CTA</b>,
+    <b>&quot;request next task&quot; CTA</b>, <b>ad-hoc scan (bundle lookup)</b>; widgets
+    <i>today&#39;s task list (supervisor-pushed)</i> and an <i>ad-hoc lookup search box</i>; primary CTA
+    <b>&quot;Complete current task&quot;</b>.</p>
+  <p><b>This is the one screen in the set with no camera by default.</b> &sect;3.8 marks scanning
+    <b>optional &mdash; ad-hoc lookup only</b>, so the viewport would be dead weight at the top of a
+    task list. It appears on demand from the lookup box (frame B). Yard is also the <b>fallback
+    function</b> for a worker with no other assignment.</p>
+  <p><b>Glove-friendly targets are called out as critical</b> in &sect;3.8 &mdash; yard workers are
+    outdoors with gloves on all shift. Every row and button here is <b>&ge;&nbsp;56&nbsp;px</b>, against
+    the set&#39;s usual 38&ndash;44.</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — TASK LIST ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/yard</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="yard.html">Yard</a>
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0771&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Today</span><span class="kid" style="font-size:20px;">6 tasks</span>
+        <span class="ktag">2 done</span></div>
+      <div class="kfor">Assigned by Operator 3 (lead)</div>
+      <div class="ksub">1st shift &middot; last pushed 09:14</div>
+    </div>
+
+    <div class="prog">
+      <div class="row"><span class="big">2 <span class="small">of 6 complete</span></span>
+        <span class="small">33%</span></div>
+      <div class="bar"><i style="width:33%"></i></div>
+    </div>
+
+    <div class="sectlbl">Current task</div>
+    <div class="taskrow now">
+      <div class="tnum">3</div>
+      <div><div class="tnm">Stage bin X8 at dock 2</div>
+        <div class="tsb">Load prep &middot; for Truck 07 &middot; pushed 09:14</div></div>
+      <div class="twhen">now</div>
+    </div>
+
+    <div class="ctarow" style="margin-top:8px;">
+      <a class="btn prim blk glove" href="#" onclick="return false;">&#10003; Complete current task</a>
+    </div>
+    <div class="ctarow">
+      <a class="btn ghost blk glove" href="#" onclick="return false;">Request next task</a>
+    </div>
+    <div class="gnote">Targets are &ge; 56 px &mdash; glove-friendly, per &sect;3.8.</div>
+
+    <div class="sectlbl">Rest of today <span class="n">3 queued</span></div>
+    <div class="taskrow">
+      <div class="tnum">4</div>
+      <div><div class="tnm">Move strand cage to bay 3</div>
+        <div class="tsb">Movement &middot; pushed 09:14</div></div>
+      <div class="twhen">next</div>
+    </div>
+    <div class="taskrow">
+      <div class="tnum">5</div>
+      <div><div class="tnm">Sweep + clear cutting area</div>
+        <div class="tsb">Housekeeping &middot; end of shift</div></div>
+      <div class="twhen">+1</div>
+    </div>
+    <div class="taskrow">
+      <div class="tnum">6</div>
+      <div><div class="tnm">Break down empty pallets</div>
+        <div class="tsb">Housekeeping &middot; low priority</div></div>
+      <div class="twhen">+2</div>
+    </div>
+
+    <div class="sectlbl">Done <span class="n">2</span></div>
+    <div class="taskrow done">
+      <div class="tnum">1</div>
+      <div><div class="tnm">Stage bin X4 at dock 1</div>
+        <div class="tsb">Completed 08:31</div></div>
+      <div class="twhen">&#10003;</div>
+    </div>
+    <div class="taskrow done">
+      <div class="tnum">2</div>
+      <div><div class="tnm">Restock tie wire at 22N</div>
+        <div class="tsb">Completed 08:58</div></div>
+      <div class="twhen">&#10003;</div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; task list first &mdash; no camera taking the top of the screen</div>
+  </div>
+
+  <!-- ===== B — AD-HOC LOOKUP ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/yard?find=1</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="yard.html">Yard</a>
+        <a class="roletab" href="index.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0771&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="sectlbl">Ad-hoc lookup <span class="n">scan or type</span></div>
+    <div class="lookup">
+      <span class="lic">&#128269;</span>
+      <span class="lph">Tag, bin, order or customer&hellip;</span>
+      <span class="lscan">&#9776; Scan</span>
+    </div>
+
+    <div class="camwrap short">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:220px;height:96px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Camera opens only for a lookup</div>
+    </div>
+
+    <div class="savestrip ok">&#10003; Found <span class="tg">FT052926-001#3</span><span class="n">read-only</span></div>
+
+    <div class="sectlbl">What is this?</div>
+    <div class="card" style="margin-top:0;">
+      <div class="kick">Bin X8 &middot; Aldine Westfield Ph2</div>
+      <h2>FT052926-001#3</h2>
+      <div class="body">
+        <b>#5</b> &middot; bend <b>T2</b> &middot; 14&#8242;&#8209;6&#8243; &middot; qty <b>18</b><br>
+        Ships <b>8/07</b> &middot; sub-order 10827
+      </div>
+      <div class="pills">
+        <span class="pill acc">At machine</span>
+        <span class="pill">Bay 2</span>
+      </div>
+    </div>
+
+    <div class="sectlbl">Where it has been</div>
+    <div class="wrow ok"><div><div class="nm">Printed</div>
+      <div class="sub">Shear97 &middot; 8/05 06:12</div></div><div class="val">&mdash;</div></div>
+    <div class="wrow ok"><div><div class="nm">Finished at Shear</div>
+      <div class="sub">8/06 09:41</div></div><div class="val">&mdash;</div></div>
+    <div class="wrow warn"><div><div class="nm">In fab at Bender</div>
+      <div class="sub">since 8/07 07:20</div></div><div class="val warn">3 h</div></div>
+
+    <div class="mexist">No operator names on this view &mdash; worker tier. See the note below.</div>
+
+    <div class="ctarow" style="margin-top:8px;">
+      <a class="btn ghost blk glove" href="yard.html">&larr; Back to my tasks</a>
+    </div>
+
+  </div></div>
+  <div class="phcap">B &middot; ad-hoc lookup &mdash; the one thing here that is nearly free</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Grounding &mdash; the split here is unusually sharp</span>
+  <b>Frame B is nearly free.</b> The requirements audit&#39;s <b>Y4</b> found that
+  <i>&quot;scan or type anything, tell me what it is and where it&#39;s at&quot;</i> &mdash; the single
+  most useful thing a yard worker could have &mdash; <b>is already built and working</b>:
+  <code>/api/portal-tag-find</code> (multi-field search) and <code>/api/portal-tag-history</code>
+  (summary + full audit trail). They sit behind <code>require_portal_auth</code> and the
+  <code>WIP_TAG_HISTORY_V1</code> flag. Opening them to the worker tier is a <b>permissions decision,
+  not a build</b>.<br>
+  <b>One constraint on doing that:</b> <code>portal-tag-history</code> resolves <code>actor</code> to a
+  worker <b>name</b>, and names are tenant-only PII. A worker-facing variant must drop or pseudonymise
+  that column &mdash; which is why frame B shows the movement history with <b>no operator names</b>.<br>
+  <span class="flag">Frame A is the opposite &mdash; nothing behind it.</span> Audit <b>Y1&ndash;Y3</b>:
+  there is <b>no task entity, no assignment model and no push mechanism</b> anywhere in the system. A
+  supervisor-pushed task list is a new data model, not a new view. &sect;3.8&#39;s supervise side
+  (task pool, worker assignment board, drag-to-assign) is the same gap seen from above. <b>Y5</b>:
+  &quot;find where a bin physically is&quot; also has no location field.<br>
+  <b>Naming overload worth knowing:</b> in production code <b>&quot;yard&quot; means the plant IP
+  geo-fence</b> and the non-SSO worker posture (<code>_ip_allowed</code>), not a job. <code>Yard</code>
+  is <b>not</b> in <code>WORKER_ROLES</code> and has no scan station. Shipping a role called Yard
+  overloads a term that already means something else in the codebase.
+</div>
+
+<div class="footnav">
+  Prev: <a href="receiver.html">Receiver</a> &middot;
+  Next: <a href="supervisor.html">Supervisor &middot; workcells &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>
