@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · Shift Report · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --warn-tint-bg:rgba(255,176,32,.12); --warn-tint-border:rgba(255,176,32,.40);
+  --bad-tint-bg:rgba(255,59,48,.14); --bad-tint-border:rgba(255,59,48,.35);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:12px;
+  padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.back{font-size:13px;color:var(--brand);text-decoration:none;}
+.auth-chip{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  padding:5px 10px;border-radius:10px;border:1px solid var(--ok-tint-border);
+  color:var(--ok);background:var(--ok-tint-bg);}
+.nav-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);padding:0 20px;background:var(--panel);}
+.nav-tab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--dim);
+  border-bottom:2px solid transparent;text-decoration:none;}
+.nav-tab.active{color:var(--txt);border-bottom-color:var(--ok);}
+.scroll{padding:16px 20px env(safe-area-inset-bottom,28px);}
+
+/* shift selector */
+.shift-selector{display:flex;gap:8px;margin-bottom:var(--card-gap);}
+.shift-btn{flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);color:var(--dim);font-size:13px;font-weight:700;font-family:inherit;text-align:center;}
+.shift-btn.active{border-color:var(--ok-tint-border);background:var(--ok-tint-bg);color:var(--ok);}
+
+/* hero KPI band */
+.kpi-band{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:var(--card-gap);}
+@media(min-width:600px){.kpi-band{grid-template-columns:1fr 1fr 1fr 1fr;}}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px 14px;text-align:center;}
+.kpi .kv{font-size:28px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.kpi .kk{font-size:10px;color:var(--dim);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.kpi .kt{font-size:11px;margin-top:4px;font-weight:600;}
+.kt.ok{color:var(--ok);}
+.kt.warn{color:var(--warn);}
+.kt.bad{color:var(--bad);}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:var(--card-gap);}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;}
+
+/* per-line summary table */
+.line-table{width:100%;border-collapse:collapse;font-size:13px;}
+.line-table th{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--mute);text-align:left;padding:0 10px 8px 0;border-bottom:1px solid var(--line);}
+.line-table th:first-child{padding-left:0;}
+.line-table td{padding:11px 10px 11px 0;border-bottom:1px solid var(--line);
+  font-variant-numeric:tabular-nums;vertical-align:middle;}
+.line-table tr:last-child td{border-bottom:none;}
+.line-table td:first-child{padding-left:0;}
+.line-id-cell{font-size:15px;font-weight:800;}
+.line-op-cell{font-size:11px;color:var(--dim);}
+.pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:10px;}
+.pill.ok{background:var(--ok-tint-bg);border:1px solid var(--ok-tint-border);color:var(--ok);}
+.pill.warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+.pill.idle{background:var(--panel-2);border:1px solid var(--line);color:var(--mute);}
+
+/* alert summary */
+.alert-list{display:flex;flex-direction:column;gap:8px;}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;}
+.alert-item.warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);}
+.alert-item.bad{background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);}
+.alert-time{font-size:11px;color:var(--dim);width:36px;flex:none;font-variant-numeric:tabular-nums;margin-top:2px;}
+.alert-body .ab-title{font-weight:700;}
+.alert-body .ab-meta{font-size:11px;color:var(--dim);margin-top:2px;}
+
+/* product breakdown */
+.prod-breakdown{display:flex;flex-direction:column;gap:6px;}
+.prod-row{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--panel-2);border-radius:10px;}
+.prod-code{font-size:13px;font-weight:700;flex:1;}
+.prod-bar-bg{width:100px;height:6px;border-radius:3px;background:var(--line);flex:none;}
+@media(max-width:500px){.prod-bar-bg{width:60px;}}
+.prod-bar-fill{height:6px;border-radius:3px;background:var(--ok);}
+.prod-ft{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;width:60px;text-align:right;flex:none;}
+
+/* sign-off card */
+.signoff-card{background:var(--panel);border:2px solid var(--ok-tint-border);
+  border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:var(--card-gap);}
+.signoff-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+.signoff-sub{font-size:13px;color:var(--dim);margin-bottom:14px;}
+.signoff-checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.signoff-item{display:flex;align-items:center;gap:10px;font-size:14px;}
+.signoff-item input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok);flex:none;}
+.signoff-cta{width:100%;min-height:56px;border:none;border-radius:var(--radius-md);
+  background:var(--ok);color:#000;font-size:17px;font-weight:700;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;}
+
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <a href="supervisor-01-real-time.html" class="back">← Live view</a>
+  <div class="spacer"></div>
+  <div class="auth-chip">✓ Verified</div>
+</div>
+<div class="nav-tabs">
+  <a href="supervisor-01-real-time.html" class="nav-tab">Live / En vivo</a>
+  <a href="supervisor-02-line-detail.html" class="nav-tab">Line detail</a>
+  <a href="supervisor-03-shift-report.html" class="nav-tab active">Shift report</a>
+</div>
+
+<div class="scroll">
+<div class="wf-note">MOCKUP v0 · Supervisor Shift Report — Tablet / Desktop primary</div>
+
+<!-- Shift selector -->
+<div class="shift-selector">
+  <button class="shift-btn active">Day shift · 06:00–14:00 · Jul 10</button>
+  <button class="shift-btn">Night shift · 14:00–22:00</button>
+</div>
+
+<!-- KPI band -->
+<div class="kpi-band">
+  <div class="kpi">
+    <div class="kv">34,550</div>
+    <div class="kk">ft extruded</div>
+    <div class="kt warn">▼ 2,450 vs target</div>
+  </div>
+  <div class="kpi">
+    <div class="kv" style="color:var(--ok);">8</div>
+    <div class="kk">Runs completed</div>
+    <div class="kt ok">Target 8 ✓</div>
+  </div>
+  <div class="kpi">
+    <div class="kv" style="color:var(--warn);">7</div>
+    <div class="kk">Scrap pieces</div>
+    <div class="kt warn">2.0% of output</div>
+  </div>
+  <div class="kpi">
+    <div class="kv" style="color:var(--warn);">2</div>
+    <div class="kk">Open alerts</div>
+    <div class="kt warn">Review before close</div>
+  </div>
+</div>
+
+<!-- Per-line breakdown table -->
+<div class="card">
+  <p class="eyebrow">Line summary · Day shift</p>
+  <table class="line-table">
+    <thead>
+      <tr>
+        <th>Line</th>
+        <th>Operator</th>
+        <th>Runs</th>
+        <th>ft out</th>
+        <th>Avg cyc</th>
+        <th>Scrap</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="line-id-cell">EXT-1</div></td>
+        <td><div class="line-op-cell">Operator 1<br>Operator 5</div></td>
+        <td>3</td>
+        <td>12,900</td>
+        <td style="color:var(--ok);">44s</td>
+        <td>1</td>
+        <td><span class="pill ok">OK</span></td>
+      </tr>
+      <tr>
+        <td><div class="line-id-cell">EXT-2</div></td>
+        <td><div class="line-op-cell">Operator 1</div></td>
+        <td>2</td>
+        <td>9,450</td>
+        <td style="color:var(--warn);">52s</td>
+        <td>4</td>
+        <td><span class="pill warn">⚑ Alert</span></td>
+      </tr>
+      <tr>
+        <td><div class="line-id-cell">EXT-3</div></td>
+        <td><div class="line-op-cell">Operator 3<br>Operator 2</div></td>
+        <td>2</td>
+        <td>9,500</td>
+        <td style="color:var(--ok);">45s</td>
+        <td>2</td>
+        <td><span class="pill ok">OK</span></td>
+      </tr>
+      <tr>
+        <td><div class="line-id-cell">EXT-4</div></td>
+        <td><div class="line-op-cell">Operator 6</div></td>
+        <td>1</td>
+        <td>2,700</td>
+        <td style="color:var(--dim);">—</td>
+        <td>0</td>
+        <td><span class="pill idle">Idle since 08:20</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Product breakdown -->
+<div class="card">
+  <p class="eyebrow">Output by product · all lines</p>
+  <div class="prod-breakdown">
+    <div class="prod-row">
+      <span class="prod-code">CBL-1250-BLK</span>
+      <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:82%"></div></div>
+      <span class="prod-ft">11,200 ft</span>
+    </div>
+    <div class="prod-row">
+      <span class="prod-code">TN-750-YEL</span>
+      <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:70%"></div></div>
+      <span class="prod-ft">9,600 ft</span>
+    </div>
+    <div class="prod-row">
+      <span class="prod-code">TN-1000-ORG</span>
+      <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:60%"></div></div>
+      <span class="prod-ft">8,200 ft</span>
+    </div>
+    <div class="prod-row">
+      <span class="prod-code">CBL-500-GRN</span>
+      <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:40%"></div></div>
+      <span class="prod-ft">5,550 ft</span>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts requiring review -->
+<div class="card">
+  <p class="eyebrow">Alerts requiring review · 2 open</p>
+  <div class="alert-list">
+    <div class="alert-item warn">
+      <span class="alert-time">13:22</span>
+      <div class="alert-body">
+        <div class="ab-title">EXT-2 · Cycle time drift — 52s avg vs 45s target</div>
+        <div class="ab-meta">CBL-1250-BLK run · operator Operator 1 · 4 scrap pieces this run</div>
+      </div>
+    </div>
+    <div class="alert-item warn">
+      <span class="alert-time">12:48</span>
+      <div class="alert-body">
+        <div class="ab-title">EXT-2 · Temp spike 186 °C at 12:00</div>
+        <div class="ab-meta">+4 °C over 182 setpoint · 1 scrap piece attributed · now stable</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sign-off block -->
+<div class="signoff-card">
+  <div class="signoff-title">Shift sign-off · Cierre de turno</div>
+  <div class="signoff-sub">Review and confirm before handing off to night shift.</div>
+  <div class="signoff-checklist">
+    <label class="signoff-item">
+      <input type="checkbox" checked>
+      All runs submitted by operators
+    </label>
+    <label class="signoff-item">
+      <input type="checkbox" checked>
+      Scrap logged and binned on floor
+    </label>
+    <label class="signoff-item">
+      <input type="checkbox">
+      EXT-2 cycle time alert reviewed with operator
+    </label>
+    <label class="signoff-item">
+      <input type="checkbox">
+      EXT-4 idle time documented (reason: scheduled PM)
+    </label>
+  </div>
+  <button class="signoff-cta">Sign off shift / Cerrar turno ✓</button>
+</div>
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">Design notes</summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Shift selector</b>: toggle between day/night shift — supervisor can review prior shift before sign-off.<br>
+    <b>KPI band</b>: 4 numbers + delta vs target. ft extruded is ▼ 2,450 vs target (warn); runs and scrap also visible.<br>
+    <b>Line table</b>: cross-line comparison — who worked EXT-4 the least? Which line had the worst avg cycle? EXT-2 alert immediately visible.<br>
+    <b>Product breakdown</b>: bar chart shows output mix — useful for production planning comparison.<br>
+    <b>Sign-off checklist</b>: audit trail that the supervisor reviewed alerts before handoff. Green CTA is only primary action on this screen.<br>
+    Production: sign-off writes a signed record to SharePoint (supervisor opaque ID + timestamp), locks the shift from further edits.
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 8/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
