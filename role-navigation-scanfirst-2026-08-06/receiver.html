@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Receiver — scan-to-receive against PO · 2026-08-07</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>10 / 16 &middot; Receiver &mdash; <b>scan-to-receive against PO</b></h1>
+  <p>From locked spec <b>&sect;3.7</b>: <b>expected receipts today</b>, <b>scan-to-receive against PO</b>,
+    <b>discrepancy CTA</b>, <b>put-away location entry</b>; widgets <i>today&#39;s expected receipts</i>,
+    <i>open discrepancies</i>, <i>put-away queue</i>; primary CTA <b>&quot;Scan inbound item&quot;</b>.</p>
+  <p><b>This is the only inbound-facing screen in the set.</b> Everything else in WIP Processor tracks
+    material moving out; Receiver is the one that books it in and reconciles it against a purchase
+    order. The work unit is a <b>PO line</b>, not a tag.</p>
+  <p class="flag">Read the note under the frames before this goes anywhere &mdash; there is an
+    unresolved conflict between this spec section and a decision James made on the station registry.</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — EXPECTED RECEIPTS + SCAN TO RECEIVE ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/receive</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="receiver.html">Receive</a>
+        <a class="roletab" href="yard.html">Yard</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">0</span></a>
+        <span class="whochip">0645&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Scan an inbound item</div>
+    </div>
+
+    <div class="savestrip ok">&#10003; Received <span class="tg">PO-88431 &middot; line 2</span><span class="n">3 of 6 lines</span></div>
+    <div class="camrow">
+      <button class="cbtn">&#128247; Can&#39;t scan? Photo &rarr;</button>
+      <button class="cbtn sec">Capture frame</button>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">PO</span><span class="kid">88431</span>
+        <span class="ktag">2 of 4 today</span></div>
+      <div class="kfor">Supplier A &mdash; rebar stock</div>
+      <div class="ksub">Expected 10:00 AM &middot; arrived 10:42 &middot; dock 2</div>
+    </div>
+
+    <div class="prog">
+      <div class="row"><span class="big">3 <span class="small">of 6 lines received</span></span>
+        <span class="small">50%</span></div>
+      <div class="bar"><i style="width:50%"></i></div>
+    </div>
+
+    <div class="sectlbl">Line just scanned <span class="n">expected vs received</span></div>
+    <div class="porow">
+      <div><div class="pnm">#5 rebar &middot; 40&#8242;</div><div class="psp">PO-88431 line 2 &middot; Supplier A</div></div>
+      <div><div class="ph">Exp</div><div class="pv">120</div></div>
+      <div><div class="ph">Recv</div><div class="pv ok">120</div></div>
+      <div><div class="ph">Var</div><div class="pv ok">0</div></div>
+    </div>
+
+    <div class="putaway">
+      <span class="pl">Put away to</span>
+      <span class="pin">RACK B-04</span>
+    </div>
+
+    <div class="sectlbl">Remaining on this PO <span class="n">3 lines</span></div>
+    <div class="comprow pend"><span class="cic">&#9675;</span>
+      <div><div class="cnm">#4 rebar &middot; 20&#8242;</div><div class="csp">line 3</div></div>
+      <div class="cqty">0<span class="of"> / 80</span></div></div>
+    <div class="comprow pend"><span class="cic">&#9675;</span>
+      <div><div class="cnm">#6 rebar &middot; 40&#8242;</div><div class="csp">line 4</div></div>
+      <div class="cqty">0<span class="of"> / 60</span></div></div>
+    <div class="comprow pend"><span class="cic">&#9675;</span>
+      <div><div class="cnm">Tie wire &middot; 16ga</div><div class="csp">line 5 &middot; 20 coils</div></div>
+      <div class="cqty">0<span class="of"> / 20</span></div></div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn prim blk big" href="#" onclick="return false;">Scan inbound item &rarr;</a>
+    </div>
+
+    <div class="drawer" data-drawer>
+      <div class="dhandle" data-dhandle>
+        <span class="grip"></span>
+        <div><div class="dt">Expected receipts today</div><div class="ds">4 POs &middot; 1 discrepancy</div></div>
+        <span class="dn">4</span><span class="car">&#9652;</span>
+      </div>
+      <div class="dbody">
+        <div class="sectlbl" style="margin-top:2px;">Today at the dock</div>
+        <div class="wrow ok"><div><div class="nm">PO-88429 &middot; Supplier B</div>
+          <div class="sub">Received 08:12 &middot; put away</div></div><div class="val ok">100%</div></div>
+        <div class="wrow warn"><div><div class="nm">PO-88431 &middot; Supplier A &middot; current</div>
+          <div class="sub">Dock 2 &middot; 3 of 6 lines</div></div><div class="val warn">50%</div></div>
+        <div class="wrow bad"><div><div class="nm">PO-88430 &middot; Supplier C</div>
+          <div class="sub">Short 4 coils &middot; discrepancy open</div>
+          <div class="pills"><span class="pill bad">Open discrepancy</span></div></div><div class="val bad">83%</div></div>
+        <div class="wrow"><div><div class="nm">PO-88433 &middot; Supplier D</div>
+          <div class="sub">Expected 2:00 PM &middot; not arrived</div></div><div class="val">&mdash;</div></div>
+      </div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; PO reconciliation at the dock</div>
+  </div>
+
+  <!-- ===== B — DISCREPANCY ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/receive</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="receiver.html">Receive</a>
+        <a class="roletab" href="yard.html">Yard</a>
+        <a class="roletab more" href="#" onclick="return false;">+1&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">0</span></a>
+        <span class="whochip">0645&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="blockhdr" style="background:#2a1414; border-color:#5e2a2a;">
+      <div class="bi">&#9888;</div>
+      <h2>SHORT RECEIPT</h2>
+      <div class="bs"><b>4 coils short on PO-88430.</b><br>Booking this in leaves a variance against the PO.</div>
+    </div>
+
+    <div class="porow" style="margin-top:0;">
+      <div><div class="pnm">Strand coil &middot; 0.6&quot;</div><div class="psp">PO-88430 line 3 &middot; Supplier C</div></div>
+      <div><div class="ph">Exp</div><div class="pv">24</div></div>
+      <div><div class="ph">Recv</div><div class="pv bad">20</div></div>
+      <div><div class="ph">Var</div><div class="pv bad">&minus;4</div></div>
+    </div>
+
+    <div class="qtyrow">
+      <div><div class="ql">Received count</div><div class="qs">correct it if the scan under-read</div></div>
+      <div class="qtystep">
+        <button aria-label="decrease">&minus;</button>
+        <div class="qv">20</div>
+        <button aria-label="increase">+</button>
+      </div>
+    </div>
+
+    <div class="sectlbl">Reason &mdash; required</div>
+    <div class="reasons">
+      <span class="rchip on">Short shipped</span>
+      <span class="rchip">Damaged in transit</span>
+      <span class="rchip">Wrong item</span>
+      <span class="rchip">Over shipped</span>
+      <span class="rchip">Other</span>
+    </div>
+    <textarea class="ta">Pallet arrived with 20 coils, packing slip says 24. Driver noted it and signed.</textarea>
+    <div class="charc">88 / 300</div>
+
+    <div class="req"><span class="dot"></span>Photo of the pallet &amp; packing slip</div>
+    <button class="photobtn">&#10003; Photo captured &mdash; tap to retake</button>
+
+    <div class="putaway" style="margin-top:10px;">
+      <span class="pl">Put away to</span>
+      <span class="pin">CAGE C-01</span>
+    </div>
+
+    <div class="ctarow" style="margin-top:10px;">
+      <a class="btn blk big" href="#" onclick="return false;"
+         style="border-color:var(--bad); color:var(--bad);">Receive 20 &amp; open discrepancy</a>
+    </div>
+    <div class="emits">discrepancy goes to the receiving-dock board for resolution &middot;
+      on-time receipt % is the supervisor metric &sect;3.7 names</div>
+
+  </div></div>
+  <div class="phcap">B &middot; discrepancy &mdash; reason + photo, same discipline as the loader override</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">The conflict to resolve before anyone builds this</span>
+  <b>&sect;3.7 specifies a full Receiver screen.</b> But on <b>2026-07-22</b>, when the station registry
+  was finalised, James <b>dropped Receiving</b> from it with the reasoning: <i>&quot;it is a function
+  (goods-in / put-away), not a scan station.&quot;</i> It was also removed from
+  <code>config.SCAN_STATIONS</code>.<br>
+  <b>Both can be true</b> &mdash; a function with a screen that is not a fabrication scan station, which
+  is exactly what this mockup draws (it scans <i>inbound items against a PO</i>, never a WIP tag at a
+  work centre). But it is worth James confirming that reading rather than assuming it, because the two
+  decisions were made two weeks apart and have not been reconciled in writing.<br>
+  <span class="flag">Nothing here is backed by production data.</span> There is no PO entity, no
+  expected-receipts feed, no vendor record, no receipt or discrepancy entity, and no put-away location
+  model. `Receiving` survives as one of the seven <code>WORKER_ROLES</code> and nothing else.<br>
+  <b>Adjacent-system question:</b> POs and vendor receipts are ordinarily <b>NetSuite&#39;s</b> domain,
+  and the Inventory project already owns a locked NetSuite integration boundary (its ADR-002). If
+  Receiver is built, it should almost certainly read POs across that seam rather than model them here.
+</div>
+
+<div class="footnav">
+  Prev: <a href="hardware.html">Hardware</a> &middot;
+  Next: <a href="yard.html">Yard &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>
