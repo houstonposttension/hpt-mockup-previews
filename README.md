@@ -12,6 +12,30 @@ Prefix any file path with `https://houstonposttension.github.io/hpt-mockup-previ
 
 ## Current mockups
 
+### Extruder -- Extrusion Log, operator + supervisor (dated 2026-07-10)
+
+- [Role picker -- entry point for the 9 frames](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/index.html)
+- [Operator 1 -- shift landing](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/operator-01-shift-landing.html)
+- [Operator 2 -- run setup](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/operator-02-run-setup.html)
+- [Operator 3 -- run in progress](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/operator-03-run-in-progress.html)
+- [Operator 4 -- run end](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/operator-04-run-end.html)
+- [Operator 5 -- shift summary](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/operator-05-shift-summary.html)
+- [Supervisor 1 -- real-time line status](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/supervisor-01-real-time.html)
+- [Supervisor 2 -- line detail](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/supervisor-02-line-detail.html)
+- [Supervisor 3 -- shift report](https://houstonposttension.github.io/hpt-mockup-previews/extrusion-log-2026-07-10/supervisor-03-shift-report.html)
+
+The **Extruder** function (role-model spec sec. 3.6) -- operating the extrusion line for PT strand
+sheathing: run spec (colour, mil, size), scan-to-start-run, spool complete, mil-thickness spot-check,
+downtime timer; supervisor side gets the run board, yield %, downtime causes and the mil trend.
+Five operator frames follow one shift end to end; three supervisor frames sit above them.
+
+**Provenance.** These originate in the private `houstonposttension/hpt-mockups` repo at
+`extrusion-log-2026-07-10/`, and relate to the separately governed `Extrusion Log` project rather than
+WIP Processor -- Extrusion was deliberately de-listed from the WIP scanner picker (GA-WIP-192) because
+it runs in its own system. Published here on James's approval so the workcell mockups can be reviewed
+in one place. **Operator names were replaced with `Operator 1..6`** before publishing, per the
+public-repo convention; the private original is unchanged, so the two copies differ by those names.
+
 ### WIP Role & Navigation -- rev 2b, reconciled (dated 2026-08-07)
 
 **Rebar** -- the consolidated-bar argument
