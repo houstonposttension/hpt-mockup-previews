@@ -14,7 +14,7 @@
 <body>
 
 <div class="pgnote">
-  <h1>7 / 12 &middot; Loader &mdash; <b>split, approval, carry-over</b> + run switch</h1>
+  <h1>7 / 16 &middot; Loader &mdash; <b>split, approval, carry-over</b> + run switch</h1>
   <p>The largest thing missing from last night&#39;s draft. When a truck ships short, the loader taps
     <b>Confirm</b> and is done &mdash; no code, no waiting at the truck. The request drops into a
     <b>plant-wide approvals queue</b> and the truck can stay parked or start reloading. On approval the
@@ -22,20 +22,7 @@
   <p><b>The scan is the assignment.</b> Whatever is loaded ships; whatever isn&#39;t stays in the bin for
     the next truck. The next truck simply reopens the run at <b>15 of 22</b> with the 7 remaining marked
     <b>&#8617; carry</b>. No new operation, nothing for the loader to learn.</p>
-  <div class="crumbs">
-    <a href="index.html">Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">Rebar &middot; busy</a>
-    <a href="loader.html">Loader &middot; in progress</a>
-    <a href="loader-punchlist.html">Punch list</a>
-    <a href="loader-alarm.html">Interrupts</a>
-    <a href="loader-closeout.html">Close-out</a>
-    <a class="on" href="loader-split.html">Split &amp; carry</a>
-    <a href="supervisor.html">Sup &middot; workcells</a>
-    <a href="supervisor-station.html">Station detail</a>
-    <a href="supervisor-approvals.html">Approvals</a>
-    <a href="supervisor-actas.html">Act-as / Reposition</a>
-    <a href="bar-anatomy.html">Bar anatomy</a>
-  </div>
+  <div class="crumbs" data-crumbs></div>
 </div>
 
 <div class="stage">
@@ -228,5 +215,6 @@
 </div>
 
 <script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
 </body>
 </html>
