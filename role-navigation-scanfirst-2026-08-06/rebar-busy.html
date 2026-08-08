@@ -18,7 +18,7 @@
 <body>
 
 <div class="pgnote">
-  <h1>2 / 12 &middot; Rebar Fabricator &mdash; <b>busy state</b> (cross-role badges live)</h1>
+  <h1>2 / 16 &middot; Rebar Fabricator &mdash; <b>busy state</b> (cross-role badges live)</h1>
   <p>Identical screen to page 1. The only difference is that Inventory now has <b>3</b> waiting counts and
     Maintenance has <b>1</b> work order that <b>blocks this worker's station</b> &mdash; so the two
     <code>.crosspill</code>s expand inline, on the same row as the role tabs. <b>Still one bar, still
@@ -26,20 +26,7 @@
   <p>The Maintenance count renders <b>red rather than amber</b> when the WO blocks the station you are
     scanning at &mdash; that is the one cross-role signal a fabricator has to see before walking to a
     machine (audit &sect;6, M3). Everything else about the screen is unchanged: scan still owns it.</p>
-  <div class="crumbs">
-    <a href="index.html">Rebar &middot; quiet</a>
-    <a class="on" href="rebar-busy.html">Rebar &middot; busy</a>
-    <a href="loader.html">Loader &middot; in progress</a>
-    <a href="loader-punchlist.html">Punch list</a>
-    <a href="loader-alarm.html">Interrupts</a>
-    <a href="loader-closeout.html">Close-out</a>
-    <a href="loader-split.html">Split &amp; carry</a>
-    <a href="supervisor.html">Sup &middot; workcells</a>
-    <a href="supervisor-station.html">Station detail</a>
-    <a href="supervisor-approvals.html">Approvals</a>
-    <a href="supervisor-actas.html">Act-as / Reposition</a>
-    <a href="bar-anatomy.html">Bar anatomy</a>
-  </div>
+  <div class="crumbs" data-crumbs></div>
 </div>
 
 <div class="demobar">
@@ -174,5 +161,6 @@
 </div>
 
 <script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
 </body>
 </html>
