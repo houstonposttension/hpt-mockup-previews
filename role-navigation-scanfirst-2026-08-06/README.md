@@ -73,6 +73,29 @@ Two structural findings worth carrying into any build:
 - **Yard is the only screen in the set with no camera.** §3.8 marks scanning *optional — ad-hoc lookup
   only*, so a viewport would be dead weight above a task list. It opens on demand from the lookup box.
 
+### Receiver scope — locked 2026-08-07 (spec rev 5)
+
+A standing conflict is now closed. §3.7 specified a Receiver screen; the station registry had **dropped
+Receiving** on 2026-07-22 as *"a function (goods-in, put-away), not a fabrication scan station."*
+
+Both hold. **Receiver is a function with no scan station** — the same tier as Driver (§3.3) and Yard
+(§3.8). It scans *inbound items against a PO*, never a WIP tag at a work centre, so it **stays in
+`config.WORKER_ROLES`** as a primary function assignment. No migration; still seven role values.
+
+Two alternatives were **considered and rejected**:
+
+1. Reclassifying Receiving as an always-in-nav **cross-role utility** beside Inventory and Maintenance.
+2. **Splitting it in two** — a universal "a delivery arrived" action anyone could fire, plus a gated
+   booking action.
+
+Rejected because booking a PO line is a **goods receipt with financial consequences** (three-way match,
+supplier liability), not an anyone-can-do-it action — and because the universal half was solving an
+**outbound** problem that **OptimoRoute already owns**.
+
+**Receiving is inbound only, permanently.** Outbound delivery, navigation, POD and `DELIVERED` all
+belong to the OptimoRoute integration and the driver app. A scope strip on both frames states it so it
+cannot drift back in. The screen stays a **role tab**, not a cross-role pill.
+
 **Supervisor + Lead** — rebuilt against the locked persona mockup
 
 | # | File | What it shows |
