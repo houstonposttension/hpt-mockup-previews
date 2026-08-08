@@ -14,7 +14,7 @@
 <body>
 
 <div class="pgnote">
-  <h1>6 / 12 &middot; Loader &mdash; <b>close-out gate</b> + the 3-photo truck panel</h1>
+  <h1>6 / 16 &middot; Loader &mdash; <b>close-out gate</b> + the 3-photo truck panel</h1>
   <p>This is the ROI item the whole loader feature exists for: <b>stop the second delivery run.</b>
     Today a partially loaded truck gets <b>no gate at all</b> &mdash; <code>renderDocPanel()</code> only
     renders when every tag is loaded, so a short truck simply leaves. Frames A and B are the gate.</p>
@@ -22,20 +22,7 @@
     draft entirely. It is live in production and it is the evidence chain for shipping disputes:
     a <b>rig-type toggle</b> that swaps a truck diagram, <b>camera positions with sight-lines</b> so the
     loader knows where to stand, and three buttons that turn green as each shot lands.</p>
-  <div class="crumbs">
-    <a href="index.html">Rebar &middot; quiet</a>
-    <a href="rebar-busy.html">Rebar &middot; busy</a>
-    <a href="loader.html">Loader &middot; in progress</a>
-    <a href="loader-punchlist.html">Punch list</a>
-    <a href="loader-alarm.html">Interrupts</a>
-    <a class="on" href="loader-closeout.html">Close-out</a>
-    <a href="loader-split.html">Split &amp; carry</a>
-    <a href="supervisor.html">Sup &middot; workcells</a>
-    <a href="supervisor-station.html">Station detail</a>
-    <a href="supervisor-approvals.html">Approvals</a>
-    <a href="supervisor-actas.html">Act-as / Reposition</a>
-    <a href="bar-anatomy.html">Bar anatomy</a>
-  </div>
+  <div class="crumbs" data-crumbs></div>
 </div>
 
 <div class="stage">
@@ -158,5 +145,6 @@
 </div>
 
 <script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
 </body>
 </html>
