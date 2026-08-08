@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · New Run Setup · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --input-bg:#0d0e10;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px; --touch:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:10px;
+  padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.back{font-size:13px;color:var(--brand);text-decoration:none;padding:4px 0;}
+.lang-btn{border:1px solid var(--line);background:var(--panel-2);color:var(--dim);
+  border-radius:10px;font-size:12px;font-weight:700;padding:5px 10px;}
+.scroll{padding:14px 14px env(safe-area-inset-bottom,28px);max-width:600px;margin:0 auto;}
+.action-line{font-size:22px;font-weight:700;margin:4px 2px 4px;letter-spacing:-.3px;}
+.action-sub{font-size:14px;color:var(--dim);margin:0 2px 14px;}
+
+/* step indicator */
+.steps{display:flex;gap:0;margin-bottom:16px;}
+.step{flex:1;height:4px;border-radius:2px;background:var(--line);}
+.step.active{background:var(--ok);}
+.step.done{background:rgba(22,192,96,.4);}
+.step+.step{margin-left:4px;}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:var(--card-gap);}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--dim);margin-bottom:12px;}
+
+/* line picker */
+.line-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.line-btn{background:var(--input-bg);border:2px solid var(--line);border-radius:12px;
+  padding:14px 8px;text-align:center;color:var(--txt);font-family:inherit;}
+.line-btn.selected{border-color:var(--ok);background:var(--ok-tint-bg);}
+.line-btn .line-id{font-size:18px;font-weight:800;}
+.line-btn .line-meta{font-size:10px;color:var(--dim);margin-top:4px;}
+.line-btn.selected .line-id{color:var(--ok);}
+
+/* field + select */
+.field{margin-bottom:14px;}
+.field:last-child{margin-bottom:0;}
+label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px;}
+label .req{color:var(--bad);}
+select,input{width:100%;font-size:17px;padding:14px;border-radius:var(--radius-md);
+  border:1px solid var(--line);background:var(--input-bg);color:var(--txt);font-family:inherit;}
+select:focus,input:focus{outline:none;border-color:var(--ok);
+  box-shadow:0 0 0 4px rgba(22,192,96,.12);}
+input::placeholder{color:var(--mute);}
+.hint{font-size:12px;color:var(--mute);margin-top:5px;}
+
+/* product detail preview */
+.prod-preview{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;margin-top:10px;}
+.prod-preview .prow{display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;padding:4px 0;border-bottom:1px solid var(--line);}
+.prod-preview .prow:last-child{border-bottom:none;}
+.prod-preview .pkey{color:var(--dim);}
+.prod-preview .pval{font-weight:700;}
+
+/* CTA */
+.cta{width:100%;min-height:var(--touch);border:none;border-radius:var(--radius-md);
+  font-size:20px;font-weight:700;background:var(--ok);color:#000;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;margin-bottom:8px;}
+.cta:disabled{background:var(--panel-2);color:var(--mute);border:1px solid var(--line);}
+.cta.secondary{background:var(--panel-2);color:var(--txt);border:1px solid var(--line);
+  font-size:16px;min-height:52px;}
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <a href="operator-01-shift-landing.html" class="back">← Back / Atrás</a>
+  <div class="spacer"></div>
+  <button class="lang-btn">EN&nbsp;/&nbsp;ES</button>
+</div>
+
+<div class="scroll">
+<div class="wf-note">MOCKUP v0 · New Run Setup / Configurar nueva corrida</div>
+
+<!-- Step bar: 3 steps — Setup → Run → End -->
+<div class="steps">
+  <div class="step active"></div>
+  <div class="step"></div>
+  <div class="step"></div>
+</div>
+
+<h1 class="action-line">New run<span style="color:var(--dim);font-weight:400"> / Nueva corrida</span></h1>
+<p class="action-sub">Step 1 of 3 · Select line, product, and target · Paso 1 de 3</p>
+
+<!-- Extruder line selection -->
+<div class="card">
+  <p class="eyebrow">Extruder line / Línea extrusora <span style="color:var(--bad)">*</span></p>
+  <div class="line-grid">
+    <button class="line-btn">
+      <div class="line-id">EXT-1</div>
+      <div class="line-meta" style="color:var(--ok);">● Running</div>
+    </button>
+    <button class="line-btn selected">
+      <div class="line-id">EXT-2</div>
+      <div class="line-meta" style="color:var(--warn);">⚑ Paused</div>
+    </button>
+    <button class="line-btn">
+      <div class="line-id">EXT-3</div>
+      <div class="line-meta">○ Idle</div>
+    </button>
+  </div>
+</div>
+
+<!-- Product selection -->
+<div class="card">
+  <p class="eyebrow">Product / Producto <span style="color:var(--bad)">*</span></p>
+  <div class="field">
+    <label for="prod">Select product code / Seleccionar producto <span class="req">*</span></label>
+    <select id="prod">
+      <option value="">— choose —</option>
+      <option value="CBL-1250-BLK" selected>CBL-1250-BLK · Black jacket 1,250 ft</option>
+      <option value="TN-750-YEL">TN-750-YEL · Yellow tendon 750 ft</option>
+      <option value="CBL-500-GRN">CBL-500-GRN · Green jacket 500 ft</option>
+      <option value="TN-1000-ORG">TN-1000-ORG · Orange tendon 1,000 ft</option>
+      <option value="CBL-875-RED">CBL-875-RED · Red jacket 875 ft</option>
+    </select>
+  </div>
+
+  <!-- Product detail preview (shown once selected) -->
+  <div class="prod-preview">
+    <div class="prow">
+      <span class="pkey">Die size / Tamaño del dado</span>
+      <span class="pval">0.625 in</span>
+    </div>
+    <div class="prow">
+      <span class="pkey">Target cycle time / Tiempo ciclo objetivo</span>
+      <span class="pval">45 sec</span>
+    </div>
+    <div class="prow">
+      <span class="pkey">Temp setpoint / Punto ajuste temp.</span>
+      <span class="pval">182 °C</span>
+    </div>
+    <div class="prow">
+      <span class="pkey">Jacket color / Color cubierta</span>
+      <span class="pval">Black / Negro</span>
+    </div>
+  </div>
+</div>
+
+<!-- Target run length -->
+<div class="card">
+  <p class="eyebrow">Target run / Objetivo de corrida</p>
+  <div class="field">
+    <label for="target-cycles">Target cycles / Ciclos objetivo <span class="req">*</span></label>
+    <input id="target-cycles" type="number" inputmode="numeric" placeholder="e.g. 50" value="50">
+    <div class="hint">Each cycle ≈ 45 sec · Cada ciclo ≈ 45 seg · Est. duration: <b>~37 min</b></div>
+  </div>
+  <div class="field">
+    <label for="target-ft">Expected footage / Metraje esperado</label>
+    <input id="target-ft" type="number" inputmode="numeric" placeholder="auto-calculated" value="4,800" readonly
+      style="color:var(--dim);cursor:default;">
+    <div class="hint">Auto-filled from cycle × product length factor · Calculado automáticamente</div>
+  </div>
+</div>
+
+<!-- Notes / shift context -->
+<div class="card">
+  <p class="eyebrow">Start notes / Notas de inicio</p>
+  <div class="field">
+    <label for="start-notes">Optional notes / Notas opcionales</label>
+    <textarea id="start-notes" rows="3" placeholder="Material lot, setup issues, etc. / Lote de material, problemas de configuración, etc."
+      style="font-size:15px;padding:12px;border-radius:12px;border:1px solid var(--line);
+      background:var(--input-bg);color:var(--txt);font-family:inherit;resize:none;width:100%;"></textarea>
+  </div>
+</div>
+
+<button class="cta" onclick="location.href='operator-03-run-in-progress.html'">
+  Start run / Iniciar corrida →
+</button>
+<button class="cta secondary" onclick="location.href='operator-01-shift-landing.html'">
+  Cancel / Cancelar
+</button>
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">Design notes</summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Step bar</b>: 3 steps — Setup → In Progress → End Run. Step 1 active.<br>
+    <b>Line grid</b>: big tap targets, real-time line status (Running/Paused/Idle). EXT-2 pre-selected.<br>
+    <b>Product preview</b>: shows die size, target cycle, temp setpoint from master data once a product is chosen — confirms operator picked the right config before starting.<br>
+    <b>Target cycles</b>: operator sets goal; footage auto-calculates. Gives supervisor a completion estimate on the real-time view.<br>
+    <b>Start notes</b>: free-text for lot numbers / setup issues; carries into run record.
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 2/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
