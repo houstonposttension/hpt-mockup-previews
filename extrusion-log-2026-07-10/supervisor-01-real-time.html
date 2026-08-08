@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Extrusion Log · Supervisor Real-Time · MOCKUP</title>
+<meta name="theme-color" content="#0b0d10">
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel-2:#1c2128; --line:#2a3038;
+  --input-bg:#0d0e10;
+  --txt:#f2f4f7; --dim:#9aa4b0; --mute:#6b7280;
+  --ok:#16c060; --warn:#ffb020; --bad:#ff3b30; --brand:#3b82f6;
+  --ok-tint-bg:rgba(22,192,96,.10); --ok-tint-border:rgba(22,192,96,.40);
+  --warn-tint-bg:rgba(255,176,32,.12); --warn-tint-border:rgba(255,176,32,.40);
+  --bad-tint-bg:rgba(255,59,48,.14); --bad-tint-border:rgba(255,59,48,.35);
+  --card-gap:13px; --radius-md:14px; --radius-lg:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.4;}
+.statusbar{height:env(safe-area-inset-top,0px);background:var(--panel);}
+.topbar{position:sticky;top:0;z-index:10;height:52px;display:flex;align-items:center;gap:12px;
+  padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line);}
+.logo{font-weight:800;letter-spacing:2px;font-size:17px;}
+.logo b{color:var(--ok);}
+.spacer{flex:1;}
+.topbar .ctx{font-size:12px;color:var(--dim);}
+.topbar .ctx b{color:var(--txt);}
+.topbar .auth-chip{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  padding:5px 10px;border-radius:10px;border:1px solid var(--ok-tint-border);
+  color:var(--ok);background:var(--ok-tint-bg);}
+.nav-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);padding:0 20px;
+  background:var(--panel);}
+.nav-tab{padding:10px 16px;font-size:13px;font-weight:600;color:var(--dim);
+  border-bottom:2px solid transparent;text-decoration:none;}
+.nav-tab.active{color:var(--txt);border-bottom-color:var(--ok);}
+.scroll{padding:16px 20px env(safe-area-inset-bottom,28px);}
+
+/* plant header strip */
+.plant-strip{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:var(--card-gap);}
+.pstat{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:12px 10px;text-align:center;}
+.pstat .pv{font-size:26px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
+.pstat .pk{font-size:10px;color:var(--dim);margin-top:3px;text-transform:uppercase;
+  letter-spacing:.5px;font-weight:600;}
+
+/* live time */
+.live-label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim);
+  margin-bottom:12px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);
+  animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* line cards — 2-col on tablet+ */
+.line-grid{display:grid;grid-template-columns:1fr;gap:var(--card-gap);}
+@media(min-width:600px){.line-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:960px){.line-grid{grid-template-columns:1fr 1fr 1fr;}}
+
+.line-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:18px;text-decoration:none;color:var(--txt);display:block;}
+.line-card.running{border-color:var(--ok-tint-border);}
+.line-card.warn{border-color:var(--warn-tint-border);}
+.line-card.paused{border-color:var(--warn-tint-border);}
+.line-card.idle{opacity:.65;}
+
+.lc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.lc-id{font-size:20px;font-weight:900;letter-spacing:-.5px;}
+.lc-status{font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;}
+.status-running{background:var(--ok-tint-bg);border:1px solid var(--ok-tint-border);color:var(--ok);}
+.status-warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+.status-paused{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+.status-idle{background:var(--panel-2);border:1px solid var(--line);color:var(--mute);}
+.lc-spacer{flex:1;}
+.lc-elapsed{font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;}
+
+.lc-product{font-size:15px;font-weight:700;margin-bottom:2px;}
+.lc-operator{font-size:12px;color:var(--dim);margin-bottom:14px;}
+
+.lc-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.lc-metric{background:var(--panel-2);border-radius:10px;padding:10px 8px;text-align:center;}
+.lc-metric .mv{font-size:18px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;}
+.lc-metric .mk{font-size:9px;color:var(--dim);margin-top:3px;text-transform:uppercase;
+  letter-spacing:.5px;font-weight:600;}
+
+.lc-progress{margin-top:12px;}
+.prog-bar-bg{height:6px;border-radius:3px;background:var(--line);}
+.prog-bar-fill{height:6px;border-radius:3px;}
+.fill-ok{background:var(--ok);}
+.fill-warn{background:var(--warn);}
+.prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--mute);margin-top:4px;}
+
+/* alert tag on card */
+.lc-alert{display:flex;align-items:center;gap:6px;margin-top:10px;padding:8px 10px;
+  border-radius:10px;font-size:12px;font-weight:600;}
+.lc-alert.warn{background:var(--warn-tint-bg);border:1px solid var(--warn-tint-border);color:var(--warn);}
+.lc-alert.bad{background:var(--bad-tint-bg);border:1px solid var(--bad-tint-border);color:var(--bad);}
+
+/* idle card content */
+.idle-msg{font-size:14px;color:var(--mute);padding:8px 0;}
+
+.wf-note{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;
+  padding:8px 12px;font-size:11px;color:var(--mute);text-align:center;margin-bottom:var(--card-gap);}
+.ver{font-size:11px;color:var(--mute);text-align:center;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="statusbar"></div>
+<div class="topbar">
+  <div class="logo">H<b>P</b>T</div>
+  <span class="ctx">Supervisor · <b>Operator 4</b></span>
+  <div class="spacer"></div>
+  <div class="auth-chip">✓ Verified</div>
+</div>
+<div class="nav-tabs">
+  <a href="supervisor-01-real-time.html" class="nav-tab active">Live / En vivo</a>
+  <a href="supervisor-02-line-detail.html" class="nav-tab">Line detail</a>
+  <a href="supervisor-03-shift-report.html" class="nav-tab">Shift report</a>
+</div>
+
+<div class="scroll">
+<div class="wf-note">MOCKUP v0 · Supervisor Real-Time Dashboard · Tablet / Desktop primary</div>
+
+<!-- Plant summary strip -->
+<div class="plant-strip">
+  <div class="pstat">
+    <div class="pv" style="color:var(--ok);">2</div>
+    <div class="pk">Running</div>
+  </div>
+  <div class="pstat">
+    <div class="pv" style="color:var(--warn);">1</div>
+    <div class="pk">Paused</div>
+  </div>
+  <div class="pstat">
+    <div class="pv">1</div>
+    <div class="pk">Idle</div>
+  </div>
+  <div class="pstat">
+    <div class="pv" style="color:var(--warn);">2</div>
+    <div class="pk">Alerts</div>
+  </div>
+</div>
+
+<div class="live-label">
+  <span class="live-dot"></span>
+  Live · updated 12 sec ago · 13:42 local
+</div>
+
+<!-- Line cards -->
+<div class="line-grid">
+
+  <!-- EXT-1: running, on target -->
+  <a href="supervisor-02-line-detail.html" class="line-card running">
+    <div class="lc-header">
+      <div class="lc-id">EXT-1</div>
+      <span class="lc-status status-running">● RUNNING</span>
+      <div class="lc-spacer"></div>
+      <div class="lc-elapsed">01:37:04</div>
+    </div>
+    <div class="lc-product">TN-750-YEL</div>
+    <div class="lc-operator">Operator 1 · started 12:05</div>
+    <div class="lc-metrics">
+      <div class="lc-metric">
+        <div class="mv" style="color:var(--ok);">39</div>
+        <div class="mk">Cycles</div>
+      </div>
+      <div class="lc-metric">
+        <div class="mv" style="color:var(--ok);">44s</div>
+        <div class="mk">Avg cycle</div>
+      </div>
+      <div class="lc-metric">
+        <div class="mv">1</div>
+        <div class="mk">Scrap</div>
+      </div>
+    </div>
+    <div class="lc-progress">
+      <div class="prog-bar-bg"><div class="prog-bar-fill fill-ok" style="width:78%"></div></div>
+      <div class="prog-labels"><span>0</span><span>39 / 50 cycles</span><span>50</span></div>
+    </div>
+  </a>
+
+  <!-- EXT-2: running, WARN cycle time -->
+  <a href="supervisor-02-line-detail.html" class="line-card warn">
+    <div class="lc-header">
+      <div class="lc-id">EXT-2</div>
+      <span class="lc-status status-warn">⚑ ALERT</span>
+      <div class="lc-spacer"></div>
+      <div class="lc-elapsed">02:18:55</div>
+    </div>
+    <div class="lc-product">CBL-1250-BLK</div>
+    <div class="lc-operator">Operator 1 · started 11:23</div>
+    <div class="lc-metrics">
+      <div class="lc-metric">
+        <div class="mv" style="color:var(--ok);">50</div>
+        <div class="mk">Cycles</div>
+      </div>
+      <div class="lc-metric">
+        <div class="mv" style="color:var(--warn);">52s</div>
+        <div class="mk">Avg cycle</div>
+      </div>
+      <div class="lc-metric">
+        <div class="mv" style="color:var(--warn);">3</div>
+        <div class="mk">Scrap</div>
+      </div>
+    </div>
+    <div class="lc-progress">
+      <div class="prog-bar-bg"><div class="prog-bar-fill fill-warn" style="width:100%"></div></div>
+      <div class="prog-labels"><span>0</span><span>50 / 50 · Run ending</span><span>50</span></div>
+    </div>
+    <div class="lc-alert warn">⚑ Avg cycle 52s vs 45s target · Temp spike 12:00</div>
+  </a>
+
+  <!-- EXT-3: paused -->
+  <a href="supervisor-02-line-detail.html" class="line-card paused">
+    <div class="lc-header">
+      <div class="lc-id">EXT-3</div>
+      <span class="lc-status status-paused">⏸ PAUSED</span>
+      <div class="lc-spacer"></div>
+      <div class="lc-elapsed">00:45:12</div>
+    </div>
+    <div class="lc-product">CBL-875-RED</div>
+    <div class="lc-operator">Operator 3 · paused 13:31</div>
+    <div class="lc-metrics">
+      <div class="lc-metric">
+        <div class="mv">22</div>
+        <div class="mk">Cycles</div>
+      </div>
+      <div class="lc-metric">
+        <div class="mv" style="color:var(--ok);">46s</div>
+        <div class="mk">Avg cycle</div>
+      </div>
+      <div class="lc-metric">
+        <div class="mv">0</div>
+        <div class="mk">Scrap</div>
+      </div>
+    </div>
+    <div class="lc-progress">
+      <div class="prog-bar-bg"><div class="prog-bar-fill fill-warn" style="width:44%"></div></div>
+      <div class="prog-labels"><span>0</span><span>22 / 50 cycles · Paused</span><span>50</span></div>
+    </div>
+    <div class="lc-alert warn">⏸ Paused 11 min — material change in progress</div>
+  </a>
+
+  <!-- EXT-4: idle -->
+  <div class="line-card idle">
+    <div class="lc-header">
+      <div class="lc-id">EXT-4</div>
+      <span class="lc-status status-idle">○ IDLE</span>
+    </div>
+    <div class="idle-msg">No active run · Sin corrida activa</div>
+    <div style="font-size:12px;color:var(--mute);margin-top:4px;">Last run: 08:20 · TN-1000-ORG · Operator 2</div>
+  </div>
+
+</div>
+
+<details style="margin-top:var(--card-gap);">
+  <summary style="font-size:12px;color:var(--dim);cursor:pointer;padding:8px 0;">Design notes</summary>
+  <div style="font-size:12px;color:var(--mute);padding:10px 0;line-height:1.7;">
+    <b>Plant strip</b>: 4 counts at a glance — Running / Paused / Idle / Alerts. Supervisor sees the whole floor in one number row.<br>
+    <b>Live dot</b>: animated pulse; "updated N sec ago" timestamp — makes staleness visible.<br>
+    <b>Line cards</b>: responsive grid — 1-col mobile, 2-col tablet, 3-col desktop. Each card taps to supervisor-02 (line detail).<br>
+    <b>Alert card (EXT-2)</b>: border and inline alert tag — cycle time drift + temp spike surfaced without supervisor having to drill in.<br>
+    <b>Paused card (EXT-3)</b>: pause reason shown (material change); supervisor knows at a glance it's intentional vs abandoned.<br>
+    <b>Supervisor auth</b>: Twilio Verify (per 6/21 Q3 answer B) — "✓ Verified" chip in topbar.
+  </div>
+</details>
+
+<div class="ver">HPT Extrusion Log · MOCKUP v0 · screen 6/9 · 2026-07-10</div>
+</div>
+</body>
+</html>
