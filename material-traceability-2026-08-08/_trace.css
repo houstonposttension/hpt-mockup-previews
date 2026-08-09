@@ -1,0 +1,225 @@
+/* ============================================================================
+   _trace.css — material-traceability capture kit
+   Additive to _shared.css + _cells_kit.css. Adds ONLY what heat/lot capture
+   needs; every colour, radius and weight is inherited from _shared.css :root.
+   Set: material-traceability-2026-08-08  ·  spec: SPEC-WIP-material-traceability-2026-08-08
+   ========================================================================= */
+
+/* ---------- the hard stop ----------
+   A named reason, shown BEFORE the tap — never an error after it (spec §8.1). */
+.tracegate{ display:flex; gap:9px; align-items:flex-start;
+  background:var(--bad-dim); border:1px solid rgba(255,59,48,.45); border-left:3px solid var(--bad);
+  border-radius:12px; padding:10px 12px; margin:0 0 8px; }
+.tracegate .gi{ font-size:15px; line-height:1.15; flex:0 0 auto; }
+.tracegate .gt{ font-size:12.5px; font-weight:900; color:#ffd9d6; line-height:1.3; }
+.tracegate .gs{ font-size:11px; font-weight:700; color:var(--dim); line-height:1.45; margin-top:3px; }
+.tracegate .gs code{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#ffb0ab; }
+/* amber variant — a consequence to understand, not a block (pt-heat.html frame C) */
+.tracegate.soft{ background:var(--warn-dim); border-color:rgba(255,176,32,.45);
+  border-left-color:var(--warn); }
+.tracegate.soft .gt{ color:#ffe6b8; }
+.tracegate.soft .gs code{ color:#ffd9a0; }
+
+/* disabled CTA — visibly a button, unmistakably not pressable */
+.btn.off{ background:#12161b; border-color:var(--line); color:#59626d; cursor:not-allowed; }
+.btn.off:hover{ background:#12161b; }
+.ctahint{ text-align:center; font-size:10px; font-weight:800; letter-spacing:.3px;
+  color:var(--faint); margin:-4px 0 8px; }
+
+/* ---------- capture sheet ---------- */
+.idsheet{ background:var(--panel); border:1px solid var(--line); border-radius:14px;
+  padding:11px 11px 12px; margin:0 0 8px; }
+.idsheet .ih{ display:flex; align-items:baseline; gap:7px; margin:0 0 9px; }
+.idsheet .ihl{ font-size:12.5px; font-weight:900; color:var(--txt); }
+.idsheet .ihm{ margin-left:auto; font-size:9.5px; font-weight:900; letter-spacing:.6px;
+  text-transform:uppercase; color:var(--faint); }
+
+/* the three capture methods — reuse-last is deliberately NOT the small one (§3.4) */
+.capmethods{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.capmethods .cm{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; min-height:60px; padding:9px 8px; border-radius:12px; cursor:pointer;
+  border:1px solid var(--line2); background:#0e1217; color:var(--bright);
+  font-size:12px; font-weight:800; text-align:center; }
+.capmethods .cm .g{ font-size:17px; line-height:1; }
+.capmethods .cm .s{ font-size:9.5px; font-weight:700; color:var(--faint); }
+.capmethods .cm.prim{ border-color:var(--acc-line); background:var(--acc-dim); color:var(--acc); }
+.capmethods .cm.prim .s{ color:rgba(92,224,144,.72); }
+.capmethods .cm.wide{ grid-column:1 / -1; min-height:56px; }
+
+/* typed entry */
+.idinput{ display:flex; align-items:center; gap:8px; margin:7px 0 0;
+  border:1px solid var(--line2); border-radius:12px; background:#0e1217; padding:11px 12px; }
+.idinput .cap{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:16px; font-weight:800;
+  letter-spacing:1px; color:var(--txt); }
+.idinput .car{ width:2px; height:17px; background:var(--acc); animation:tbl 1.05s steps(1) infinite; }
+@keyframes tbl{ 50%{ opacity:0; } }
+.idinput .kb{ margin-left:auto; font-size:9.5px; font-weight:800; color:var(--faint); }
+
+.idsheet.done{ opacity:.55; }
+.idsheet.done .idinput{ border-style:dashed; }
+.idsheet.done .idinput .car{ display:none; }
+
+/* ---------- echo: the captured value at full size, before the CTA re-enables ---------- */
+.idecho{ display:flex; align-items:center; gap:10px; margin:0 0 8px;
+  background:var(--acc-dim); border:1px solid var(--acc-line); border-radius:12px; padding:10px 12px; }
+.idecho .el{ font-size:9.5px; font-weight:900; letter-spacing:.6px; text-transform:uppercase;
+  color:rgba(92,224,144,.85); }
+.idecho .ev{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:20px; font-weight:800;
+  letter-spacing:1.4px; color:#eafff1; line-height:1.1; }
+.idecho .ex{ margin-left:auto; display:inline-flex; align-items:center; min-height:56px;
+  padding:8px 14px; border-radius:11px; font-size:12.5px; font-weight:800;
+  color:var(--acc-soft); border:1px solid var(--acc-line); background:#0e1217; cursor:pointer; }
+
+/* ---------- either/or — the HEAT_OR_BATCH sentinel, made visible ---------- */
+.eitheror{ display:flex; align-items:stretch; gap:0; margin:0 0 7px;
+  border:1px solid var(--line2); border-radius:12px; overflow:hidden; }
+.eitheror .eo{ flex:1; min-height:56px; display:flex; flex-direction:column;
+  justify-content:center; padding:9px 10px; background:#0e1217; cursor:pointer; text-align:center; }
+.eitheror .eo .t{ font-size:12px; font-weight:900; color:var(--dim); }
+.eitheror .eo .s{ font-size:9.5px; font-weight:700; color:var(--faint); margin-top:2px; }
+.eitheror .eo.on{ background:var(--acc-dim); }
+.eitheror .eo.on .t{ color:var(--acc); }
+.eitheror .eo.on .s{ color:rgba(92,224,144,.7); }
+.eitheror .or{ flex:0 0 auto; display:flex; align-items:center; padding:0 9px;
+  background:#0b0d10; font-size:9.5px; font-weight:900; letter-spacing:.7px; color:var(--faint); }
+.eitheror.locked .eo{ cursor:default; }
+.eitheror.locked .eo.na{ background:#0b0d10; opacity:.5; }
+
+/* ---------- captured-identifier list (PT: heat AND serial; multi-roll kits) ---------- */
+.idrow{ display:flex; align-items:center; gap:9px; padding:9px 11px; margin:0 0 5px;
+  background:var(--panel); border:1px solid var(--line); border-radius:11px; }
+.idrow .ic{ flex:0 0 auto; width:19px; text-align:center; font-size:12px; color:var(--faint); }
+.idrow.done .ic{ color:var(--acc); }
+.idrow .nm{ font-size:12px; font-weight:800; color:var(--txt); }
+.idrow .sb{ font-size:10px; font-weight:700; color:var(--faint); margin-top:1px; }
+.idrow .vv{ margin-left:auto; font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12.5px; font-weight:800; color:var(--bright); letter-spacing:.5px; }
+.idrow.pend{ border-style:dashed; }
+.idrow.pend .vv{ color:var(--faint); font-style:italic; letter-spacing:0; font-family:inherit;
+  font-size:11px; }
+.idrow.done{ border-color:var(--acc-line); }
+.idrow.done .vv{ color:var(--acc-soft); }
+
+/* ---------- inherited (downstream steps: display, never re-capture — §4.3) ---------- */
+.inherit{ display:flex; align-items:center; gap:9px; margin:0 0 8px; padding:9px 11px;
+  background:#0e1217; border:1px dashed var(--line2); border-radius:12px; }
+.inherit .il{ font-size:9.5px; font-weight:900; letter-spacing:.6px; text-transform:uppercase;
+  color:var(--faint); }
+.inherit .iv{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:14px; font-weight:800;
+  color:var(--bright); letter-spacing:1px; }
+.inherit .flagbtn{ flex:0 0 auto; display:inline-flex; align-items:center; min-height:56px;
+  font-size:11.5px; font-weight:800; color:var(--warn); text-align:center;
+  border:1px solid rgba(255,176,32,.4); border-radius:11px; padding:8px 12px; cursor:pointer;
+  background:var(--warn-dim); }
+
+/* ---------- verification status (async — never blocks the floor, §3.3) ---------- */
+.vstat{ display:inline-flex; align-items:center; gap:5px; font-size:9.5px; font-weight:900;
+  letter-spacing:.5px; text-transform:uppercase; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line); background:#0e1217; color:var(--faint); }
+.vstat .d{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+.vstat.pending{ color:var(--blue-soft); border-color:rgba(125,162,201,.35); }
+.vstat.verified{ color:var(--acc); border-color:var(--acc-line); background:var(--acc-dim); }
+.vstat.unmatched{ color:var(--warn); border-color:rgba(255,176,32,.4); background:var(--warn-dim); }
+
+/* ---------- ownership banner — this screen is NOT a WIP screen (§5.4) ---------- */
+.propbanner{ background:#1a1206; border:1px solid rgba(255,176,32,.5); border-left:3px solid var(--warn);
+  border-radius:12px; padding:9px 11px; margin:0 0 8px; }
+.propbanner .pt{ font-size:9.5px; font-weight:900; letter-spacing:.7px; text-transform:uppercase;
+  color:var(--warn); }
+.propbanner .ps{ font-size:11px; font-weight:700; color:var(--dim); line-height:1.45; margin-top:3px; }
+.propbanner code{ font-family:ui-monospace,Menlo,Consolas,monospace; color:#ffd9a0; }
+
+.note .flag{ color:var(--warn); font-weight:700; }
+
+/* ---------- index page ---------- */
+.setgrid{ max-width:860px; margin:0 auto; display:grid; gap:9px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); }
+.setcard{ display:block; background:var(--panel); border:1px solid var(--line); border-radius:13px;
+  padding:12px 13px; color:var(--txt); }
+.setcard:hover{ border-color:var(--acc-line); }
+.setcard .t{ font-size:13.5px; font-weight:900; color:var(--txt); }
+.setcard .s{ font-size:11px; font-weight:700; color:var(--dim); line-height:1.5; margin-top:4px; }
+.setcard .f{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:var(--faint);
+  margin-top:7px; }
+.setcard.ext{ border-left:3px solid var(--warn); }
+
+.rtable{ max-width:860px; margin:0 auto; width:100%; border-collapse:collapse; font-size:11.5px; }
+.rtable th{ text-align:left; font-size:9.5px; font-weight:900; letter-spacing:.6px;
+  text-transform:uppercase; color:var(--faint); padding:7px 9px; border-bottom:1px solid var(--line); }
+.rtable td{ padding:8px 9px; border-bottom:1px solid var(--line); color:var(--dim);
+  vertical-align:top; line-height:1.5; }
+.rtable td b{ color:var(--bright); }
+.rtable code{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; color:var(--acc-soft); }
+.rtable .hard{ color:var(--bad); font-weight:900; }
+.rtable tr.ext td{ opacity:.72; }
+
+/* ---------- carried over from _supervisor_kit.css so this set is self-contained ---------- */
+.emits{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:9.5px; color:#5f6a76;
+  line-height:1.6; margin-top:9px; text-align:center; }
+
+/* ============================================================================
+   PT shift-scoped material state — uncovered-work-cells-2026-08-07.md §3.3
+   Photo + vision extraction, NOT scan-or-type. ADR §3.3.1 rejects per-piece entry.
+   ========================================================================= */
+
+/* three photo slots: strand / anchor / wedge */
+.photoslot{ display:flex; gap:10px; align-items:flex-start; padding:10px 11px; margin:0 0 6px;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px; }
+.photoslot .thumb{ flex:0 0 auto; width:58px; height:58px; border-radius:10px; background:#0b0d10;
+  border:1px solid var(--line2); display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:var(--faint); }
+.photoslot.got .thumb{ border-color:var(--acc-line);
+  background:linear-gradient(135deg,#14301f 0%,#0e1217 70%); color:var(--acc); }
+.photoslot .pmain{ flex:1 1 auto; min-width:0; }
+.photoslot .pnm{ font-size:12px; font-weight:900; color:var(--txt); }
+.photoslot .pval{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:15px; font-weight:800;
+  color:var(--bright); letter-spacing:.8px; margin-top:3px; }
+.photoslot.got .pval{ color:var(--acc-soft); }
+.photoslot .pmiss{ font-size:12px; font-weight:800; color:var(--warn); margin-top:3px; }
+.photoslot .pact{ display:flex; gap:5px; margin-top:7px; flex-wrap:wrap; }
+.photoslot .pbtn{ display:inline-flex; align-items:center; min-height:56px; padding:7px 13px;
+  border-radius:10px; font-size:11.5px; font-weight:800; cursor:pointer;
+  border:1px solid var(--line2); background:#0e1217; color:var(--bright); }
+.photoslot .pbtn.go{ border-color:var(--acc-line); background:var(--acc-dim); color:var(--acc); }
+
+/* extraction confidence */
+.conf{ display:inline-flex; align-items:center; gap:5px; font-size:9.5px; font-weight:900;
+  letter-spacing:.5px; text-transform:uppercase; padding:2px 7px; border-radius:20px; margin-top:5px;
+  border:1px solid var(--line); background:#0e1217; color:var(--faint); }
+.conf.hi{ color:var(--acc); border-color:var(--acc-line); background:var(--acc-dim); }
+.conf.lo{ color:var(--warn); border-color:rgba(255,176,32,.4); background:var(--warn-dim); }
+
+/* the always-visible active material-state banner */
+.matbar{ background:linear-gradient(180deg,#132a1c 0%,#101a14 100%);
+  border:1px solid var(--acc-line); border-radius:13px; padding:9px 11px; margin:0 0 8px; }
+.matbar.stale{ background:linear-gradient(180deg,#2a2109 0%,#1a160e 100%);
+  border-color:rgba(255,176,32,.5); }
+.matbar .mh{ display:flex; align-items:baseline; gap:7px; }
+.matbar .mt{ font-size:9.5px; font-weight:900; letter-spacing:.7px; text-transform:uppercase;
+  color:var(--acc); }
+.matbar.stale .mt{ color:var(--warn); }
+.matbar .msince{ margin-left:auto; font-size:9.5px; font-weight:700; color:var(--dim); }
+.matbar .mgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:7px; }
+.matbar .mcell .ml{ font-size:9px; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
+  color:var(--faint); }
+.matbar .mcell .mv{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px;
+  font-weight:800; color:#eafff1; letter-spacing:.4px; margin-top:1px; }
+
+/* position marker — "I was on tag X of Y in order Z" */
+.posmark{ background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  padding:10px 11px; margin:0 0 7px; }
+.posmark .pq{ font-size:12px; font-weight:800; color:var(--txt); line-height:1.4; }
+.posmark .prow{ display:flex; align-items:center; gap:7px; margin-top:8px; flex-wrap:wrap; }
+.posmark .pfield{ display:inline-flex; align-items:center; min-height:56px; padding:8px 14px;
+  border-radius:10px; border:1px solid var(--line2); background:#0e1217;
+  font-family:ui-monospace,Menlo,Consolas,monospace; font-size:14px; font-weight:800; color:var(--txt); }
+.posmark .psep{ font-size:11px; font-weight:800; color:var(--faint); }
+
+/* which-material picker on a lot change */
+.matpick{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:0 0 8px; }
+.matpick .mp{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  min-height:64px; padding:9px 6px; border-radius:12px; cursor:pointer; text-align:center;
+  border:1px solid var(--line2); background:#0e1217; color:var(--bright);
+  font-size:11.5px; font-weight:800; }
+.matpick .mp .g{ font-size:16px; line-height:1; }
+.matpick .mp.on{ border-color:var(--warn); background:var(--warn-dim); color:#ffe6b8; }

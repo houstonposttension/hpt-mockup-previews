@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PT (Post-Tension) — shift material state · 2026-08-08</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<link rel="stylesheet" href="_trace.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>4 / 5 &middot; PT (Post-Tension) &mdash; <b>shift material state, not per-piece capture</b></h1>
+  <p><b class="flag">Redrawn 2026-08-08 after independent review.</b> The first draft of this page drew
+    per-roll scan/type capture, the same shape as Rebar and Hardware. That is <b>the design
+    <code>uncovered-work-cells-2026-08-07.md</code> ADR &sect;3.3.1 formally rejected</b> one day
+    earlier, and this set should not have competed with it:</p>
+  <p style="border-left:2px solid var(--warn); padding-left:11px;"><i>&ldquo;<b>Rejected alternative:</b>
+    per-piece heat entry. At 30&ndash;50 orders a shift with multiple pieces each, that is hundreds of
+    entries per operator for information identical across all of them until a box runs out. <b>It would
+    be skipped &mdash; and skipped traceability is worse than none, because it looks
+    complete.</b>&rdquo;</i></p>
+  <p>So PT captures material <b>once per shift</b> as an <i>active material state</i>,
+    <b>inherited</b> by every order run under it, and re-captured only at a <b>lot change</b>. The
+    identifier <i>requirement</i> is still this spec&#39;s; the <i>mechanism</i> below is the other
+    spec&#39;s, which our &sect;3.6 delegates to. Capture is by <b>photo + vision extraction</b>, not
+    by scan or typing.</p>
+  <p><b class="flag">Identifier types updated 2026-08-08 (James).</b> This screen captures
+    <b>three materials of two different types</b>: <b>Coil &rarr; Serial</b> (which links to the
+    heat), <b>Anchor &rarr; Date Code</b>, <b>Wedge &rarr; Date Code</b>. Earlier drafts showed all
+    three as heats.</p>
+  <p><code>Coil</code> is not a CertProcessor <code>MaterialType</code> &mdash; it is the physical
+    form of <code>Tendon</code>, whose cert rule needs <code>HeatNumber</code> <b>and</b>
+    <code>SerialNumbers</code> (<code>_System/enforce_completeness_gate.py:59-62</code>). The heat
+    arrives by <b>resolution from the serial</b>, not by a second prompt on the floor
+    (spec &sect;2.4, &sect;2.5, <b>Q13</b>).</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — SHIFT START: SET THE MATERIAL STATE ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/pt</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="pt-heat.html">PT</a>
+        <a class="roletab" href="rebar-heat.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0512&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Shift start</span><span class="kid">PT Atlas</span>
+        <span class="ktag">once per shift</span></div>
+      <div class="kfor">Thu 08/08 &middot; day shift</div>
+      <div class="ksub">Set the material state &mdash; everything today inherits it</div>
+    </div>
+
+    <div class="tracegate">
+      <span class="gi">&#9940;</span>
+      <div>
+        <div class="gt">Material state must be set before the first order</div>
+        <div class="gs">Photograph the three tags. Vision pulls the heats out; you confirm or correct
+          them. <b>You will not be asked again</b> until a box runs out.</div>
+      </div>
+    </div>
+
+    <div class="sectlbl">Material photos <span class="n">2 of 3 extracted</span></div>
+
+    <div class="photoslot got">
+      <div class="thumb">&#128247;</div>
+      <div class="pmain">
+        <div class="pnm">Strand pack &mdash; coil serial</div>
+        <div class="pval">T240718-4</div>
+        <span class="conf hi">&#10003; extracted &middot; high</span>
+        <div class="pact">
+          <span class="pbtn">Retake</span>
+          <span class="pbtn">Edit</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="photoslot got">
+      <div class="thumb">&#128247;</div>
+      <div class="pmain">
+        <div class="pnm">Anchor box &mdash; date code</div>
+        <div class="pval">0724-A</div>
+        <span class="conf lo">&#9888; extracted &middot; low &mdash; check it</span>
+        <div class="pact">
+          <span class="pbtn go">Confirm</span>
+          <span class="pbtn">Retake</span>
+          <span class="pbtn">Type instead</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="photoslot">
+      <div class="thumb">&#43;</div>
+      <div class="pmain">
+        <div class="pnm">Wedge box &mdash; date code</div>
+        <div class="pmiss">No photo yet &mdash; required</div>
+        <div class="pact">
+          <span class="pbtn go">&#128247; Photograph tag</span>
+          <span class="pbtn">Type instead</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove off" href="#" onclick="return false;" aria-disabled="true">Set material state &rarr;</a>
+    </div>
+    <div class="ctahint">blocked &middot; wedge box not captured</div>
+
+    <div class="sectlbl">Crew on shift <span class="n">operator required</span></div>
+    <div class="idrow done">
+      <span class="ic">&#10003;</span>
+      <div><div class="nm">Operator</div><div class="sb">required</div></div>
+      <span class="vv">0512</span>
+    </div>
+    <div class="idrow pend">
+      <span class="ic">&#9675;</span>
+      <div><div class="nm">2nd bucket &middot; 3rd bucket &middot; dead ender &middot; bundler</div>
+        <div class="sb">optional</div></div>
+      <span class="vv">add</span>
+    </div>
+
+    <div class="gnote">Photo capture is the one reusable piece here:
+      <code>POST /api/photo-upload</code> (<code>function_app.py:1327</code>) already stores a photo and
+      links a <code>PHOTO</code> event, fail-closed (GA-WIP-025). The <b>vision extraction</b> and the
+      <b>material-state entity</b> are both gaps.</div>
+
+  </div></div>
+  <div class="phcap">A &middot; shift start &mdash; photo + vision, confirm or correct</div>
+  </div>
+
+  <!-- ===== B — RUN: INHERITED, NO PER-TAG ENTRY ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/pt</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="pt-heat.html">PT</a>
+        <a class="roletab" href="rebar-heat.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0512&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="matbar">
+      <div class="mh">
+        <span class="mt">&#9679; Active material state</span>
+        <span class="msince">since 06:12 &middot; 23 orders</span>
+      </div>
+      <div class="mgrid">
+        <div class="mcell"><div class="ml">Coil serial</div><div class="mv">T240718-4</div></div>
+        <div class="mcell"><div class="ml">Anchor</div><div class="mv">0724-A</div></div>
+        <div class="mcell"><div class="ml">Wedge</div><div class="mv">0722-C</div></div>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Scan the <b>order tag</b> QR</div>
+    </div>
+
+    <div class="savestrip ok">&#10003; Order <span class="tg">HPT-33418</span><span class="n">24 of 41 today</span></div>
+
+    <div class="ctxstrip">
+      <div class="cx"><span class="ck">Order</span>
+        <span class="cv">HPT-33418 <span class="mut">&middot; 18 cables &middot; 0.6&quot;</span></span></div>
+      <div class="cx"><span class="ck">For</span>
+        <span class="cv">Aldine Westfield Ph2 <span class="mut">&middot; due 2:00 PM</span></span></div>
+      <div class="cx"><span class="ck">Heats</span>
+        <span class="cv">inherited <span class="mut">&middot; no entry needed</span></span></div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove" href="#" onclick="return false;">&#10003; Complete order</a>
+    </div>
+    <div class="ctarow">
+      <a class="btn blk hold glove" href="#" onclick="return false;">&#9888; Lot change &mdash; a box ran out</a>
+    </div>
+
+    <div class="sectlbl">Why nothing is asked here <span class="n">ADR &sect;3.3.1</span></div>
+    <div class="card">
+      <div class="body">
+        All 18 cables in this order inherit the three heats in the banner above. <b>The banner is the
+        entry point</b> &mdash; if it is wrong, everything under it is wrong, which is why it never
+        leaves the screen. <b>Lot change</b> is always one tap away.
+      </div>
+      <div class="pills">
+        <span class="pill acc">no per-tag entry</span>
+        <span class="vstat pending"><span class="d"></span>coil serial pending</span>
+        <span class="vstat unmatched"><span class="d"></span>2 date codes unverifiable</span>
+      </div>
+    </div>
+    <div class="emits">order-complete inherits the active material state &middot;
+      verification is asynchronous</div>
+
+  </div></div>
+  <div class="phcap">B &middot; the 95% case &mdash; inherited, banner always visible</div>
+  </div>
+
+  <!-- ===== C — LOT CHANGE: THE POSITION MARKER ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/pt</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="pt-heat.html">PT</a>
+        <a class="roletab" href="rebar-heat.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">2</span></a>
+        <span class="whochip">0512&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="matbar stale">
+      <div class="mh">
+        <span class="mt">&#9888; Material state changing</span>
+        <span class="msince">was set 06:12</span>
+      </div>
+      <div class="mgrid">
+        <div class="mcell"><div class="ml">Coil serial</div><div class="mv">T240718-4</div></div>
+        <div class="mcell"><div class="ml">Anchor</div><div class="mv">0724-A</div></div>
+        <div class="mcell"><div class="ml">Wedge</div><div class="mv">0722-C</div></div>
+      </div>
+    </div>
+
+    <div class="sectlbl">1 &middot; Which material ran out?</div>
+    <div class="matpick">
+      <div class="mp on"><span class="g">&#127890;</span>Strand</div>
+      <div class="mp"><span class="g">&#9875;</span>Anchor</div>
+      <div class="mp"><span class="g">&#9099;</span>Wedge</div>
+    </div>
+
+    <div class="sectlbl">2 &middot; Photograph the new tag</div>
+    <div class="photoslot got">
+      <div class="thumb">&#128247;</div>
+      <div class="pmain">
+        <div class="pnm">New strand pack &mdash; coil serial</div>
+        <div class="pval">T240722-1</div>
+        <span class="conf hi">&#10003; extracted &middot; high</span>
+        <div class="pact"><span class="pbtn">Retake</span><span class="pbtn">Edit</span></div>
+      </div>
+    </div>
+
+    <div class="sectlbl">3 &middot; Where were you when it changed?</div>
+    <div class="posmark">
+      <div class="pq">I was on tag&hellip;</div>
+      <div class="prow">
+        <span class="pfield">7</span>
+        <span class="psep">of</span>
+        <span class="pfield">18</span>
+        <span class="psep">in order</span>
+        <span class="pfield">HPT-33418</span>
+      </div>
+    </div>
+
+    <div class="tracegate soft">
+      <span class="gi">&#9888;</span>
+      <div>
+        <div class="gt">This order will carry two material states</div>
+        <div class="gs">Tags 1&ndash;6 keep <code>T240718-4</code>. Tags 7&ndash;18 get <code>T240722-1</code>.
+          Boxes rarely run out on an order boundary, so this split is the normal case &mdash; not an
+          exception.</div>
+      </div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove" href="#" onclick="return false;">&#10003; Apply lot change</a>
+    </div>
+
+    <div class="sectlbl">Audit trail</div>
+    <div class="idrow done">
+      <span class="ic">&#10003;</span>
+      <div><div class="nm">06:12 &mdash; shift start</div><div class="sb">coil T240718-4 &middot; orders 1&ndash;23</div></div>
+      <span class="vv">T240718-4</span>
+    </div>
+    <div class="idrow done">
+      <span class="ic">&#9679;</span>
+      <div><div class="nm">now &mdash; lot change</div><div class="sb">from tag 7 of order HPT-33418</div></div>
+      <span class="vv">T240722-1</span>
+    </div>
+    <div class="emits">append-only &middot; nothing updates in place &middot;
+      supervisor corrections carry actor + ts + reason</div>
+
+  </div></div>
+  <div class="phcap">C &middot; lot change &mdash; the position marker that makes inheritance correct</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Grounding &mdash; and what has no data behind it</span>
+  <b>This page renders someone else&#39;s locked design, not a new one.</b> Every control comes from
+  <code>uncovered-work-cells-2026-08-07.md</code> &sect;3.3: the three photo slots with extraction
+  result and confidence per slot and a manual fallback (&sect;7 screen inventory), the crew roster
+  (operator required plus four optional roles), the always-visible active material-state banner, the
+  order-tag QR as primary CTA with <b>lot change always reachable</b> as secondary, and the position
+  marker &mdash; <i>&ldquo;I was on tag X of Y in order Z&rdquo;</i> (ADR &sect;3.3.2, which also
+  supplies frame C&#39;s &ldquo;an order can carry two material states&rdquo;).<br>
+  <b>Identifier types, James 2026-08-08:</b> Coil &rarr; <b>Serial</b> (links to heat), Anchor and
+  Wedge &rarr; <b>Date Code</b>. So this one screen captures <b>two</b> types, and only the coil
+  serial can be verified today &mdash; <code>Date Code</code> is not a type the Cert Identifier Index
+  models (spec &sect;6.5.1), hence the <code>unverifiable</code> pill in frame B.
+  <b>From CertProcessor (cert completeness):</b>
+  <code>"Tendon": {"required": [..., "HeatNumber", "SerialNumbers"]}</code> (<code>:59-62</code>) —
+  the heat arrives via &sect;2.4 resolution, not a second prompt.<br>
+  <b>Not drawn, deliberately:</b> <b>remnant-cable provenance</b> (ADR &sect;3.3.3 &mdash; multi-hop
+  <code>source_cable_ref</code> chains off a handwritten, unscannable tag) sits behind its own flag in
+  that spec and needs its own frame.<br>
+  <span class="flag">Nothing here is backed by production data.</span> There is no
+  <code>pt_material_state</code> entity, no crew entity, no vision extraction and no order resolver.
+  Both PT stations (<b>PT Atlas</b>, <b>Hayes</b>) are in the v8 registry but <b>absent from
+  <code>config.SCAN_STATIONS</code></b> (<code>config.py:70</code>), so they emit zero events, and the
+  <code>/pt</code> page does not exist. <b>PT capture cannot ship before PT scanning does</b> &mdash;
+  our spec &sect;13 lists PT as a separate track that is not schedulable from this doc. Every heat,
+  order number, count and timestamp on these frames is invented.<br>
+  <b>Open (our spec &sect;12):</b> <b>Q10</b> &mdash; <code>pt_material_state</code> is shift-scoped and
+  append-only, <code>tag_cert_link</code> is per-operation; one has to learn to read the other.
+  <b>Q11</b> &mdash; this screen captures <i>anchor</i> and <i>wedge</i> heats, the same physical items
+  the Hardware cell kits. One capture or two?
+</div>
+
+<div class="footnav">
+  Prev: <a href="hardware-heat.html">Hardware</a> &middot;
+  Next: <a href="extrusion-heat.html">Extrusion (proposal) &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>

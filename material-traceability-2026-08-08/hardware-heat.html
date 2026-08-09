@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hardware — date code capture · 2026-08-08</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<link rel="stylesheet" href="_trace.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>3 / 5 &middot; Hardware &mdash; <b>date code, both item types</b></h1>
+  <p><b class="flag">Rewritten 2026-08-08 &mdash; James supplied the real mapping.</b> Earlier drafts of
+    this page drew an <i>either/or</i> for <code>Anchor</code> (heat <b>or</b> batch) taken from
+    CertProcessor&#39;s <code>HEAT_OR_BATCH</code> sentinel. <b>On the floor there is no either/or:</b>
+    both hardware item types are captured by <b>Date Code</b>.</p>
+  <p><b>Anchor &rarr; Date Code. Wedges &rarr; Date Code.</b> One type, one control, no picker &mdash;
+    which makes this the simplest capture screen in the set. The either/or has moved to
+    <a href="rebar-heat.html">Rebar</a>, where it is real (Serial <i>or</i> Heat).</p>
+  <p><b class="flag">This is also the page where capture and cert-completeness genuinely disagree.</b>
+    CertProcessor requires <code>HEAT_OR_BATCH</code> for <code>Anchor</code> and
+    <code>Batch_x002f_Lot_x002f_Date_x002f</code> for <code>Wedges</code>; <code>DateCode</code> is a
+    real column but is <b>warn-only</b> on Anchor and <b>not even listed</b> for Wedges. So a correctly
+    captured date code satisfies the floor gate and <i>does not</i> satisfy the cert rule. Frame B
+    draws that honestly &mdash; spec &sect;2.3.</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — ANCHOR: DATE CODE ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/hw</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="hardware-heat.html">Hardware</a>
+        <a class="roletab" href="rebar-heat.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">1</span></a>
+        <span class="whochip">0388&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> <b>ANC-58-B</b> read &middot; into HW-2208</div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Kit</span><span class="kid">HW-2208</span>
+        <span class="ktag">3 of 7 today</span></div>
+      <div class="kfor">Kennedy V &middot; Podium deck</div>
+      <div class="ksub">Anchor + chuck assembly &middot; due 3:30 PM</div>
+    </div>
+
+    <div class="tracegate">
+      <span class="gi">&#9940;</span>
+      <div>
+        <div class="gt">This anchor needs its date code before it goes in the kit</div>
+        <div class="gs">Anchors are traced by <b>date code</b> &mdash; stamped on the casting or printed
+          on the carton. Not a heat, not a lot.</div>
+      </div>
+    </div>
+
+    <div class="idsheet">
+      <div class="ih">
+        <span class="ihl">ANC-58-B &mdash; 5/8&quot; anchor</span>
+        <span class="ihm">Anchor &middot; Date Code</span>
+      </div>
+      <div class="capmethods">
+        <div class="cm wide prim">
+          <span class="g">&#128290;</span>
+          <span>Reuse last &mdash; <b>0724-A</b></span>
+          <span class="s">same carton &middot; 2 kits ago &middot; this shift</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#128247;</span>
+          <span>Scan carton</span>
+          <span class="s">barcode or QR</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#9000;</span>
+          <span>Type it</span>
+          <span class="s">stamp only</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove off" href="#" onclick="return false;" aria-disabled="true">Add to kit</a>
+    </div>
+    <div class="ctahint">blocked &middot; no date code captured</div>
+
+    <div class="sectlbl">Kit components <span class="n">2 of 5 traced</span></div>
+    <div class="idrow done">
+      <span class="ic">&#10003;</span>
+      <div><div class="nm">CHK-58 &mdash; chuck</div><div class="sb">Anchor? &middot; date code &middot; 13:02</div></div>
+      <span class="vv">0724-A</span>
+    </div>
+    <div class="idrow done">
+      <span class="ic">&#10003;</span>
+      <div><div class="nm">WDG-58 &mdash; wedge set</div><div class="sb">Wedges? &middot; date code &middot; 13:04</div></div>
+      <span class="vv">0722-C</span>
+    </div>
+    <div class="idrow pend">
+      <span class="ic">&#9675;</span>
+      <div><div class="nm">ANC-58-B &mdash; anchor</div><div class="sb">Anchor? &middot; scanning now</div></div>
+      <span class="vv">needs date code</span>
+    </div>
+    <div class="idrow pend">
+      <span class="ic">&#9675;</span>
+      <div><div class="nm">ANC-50-B &mdash; anchor</div><div class="sb">Anchor? &middot; not yet scanned</div></div>
+      <span class="vv">&mdash;</span>
+    </div>
+    <div class="idrow pend">
+      <span class="ic">&#9675;</span>
+      <div><div class="nm">GRT-CAP &mdash; grout cap</div><div class="sb">assumed untraced &mdash; unverified</div></div>
+      <span class="vv">not required</span>
+    </div>
+
+    <div class="gnote">The <code>?</code> on each item type is deliberate. <b>Nothing in WIP maps a
+      scanned component to its <code>MaterialType</code></b> &mdash; there is one
+      <code>"Hardware"</code> station and no per-component routing. Until that exists the gate cannot
+      know which rule to apply. Spec &sect;12 <b>Q7</b>.</div>
+
+  </div></div>
+  <div class="phcap">A &middot; Anchor &mdash; one type, one control, no picker</div>
+  </div>
+
+  <!-- ===== B — WEDGES + THE DIVERGENCE ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/hw</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="hardware-heat.html">Hardware</a>
+        <a class="roletab" href="rebar-heat.html">Rebar</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">1</span></a>
+        <span class="whochip">0388&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Kit</span><span class="kid">HW-2208</span>
+        <span class="ktag">wedge set</span></div>
+      <div class="kfor">Kennedy V &middot; Podium deck</div>
+      <div class="ksub">Anchor + chuck assembly &middot; due 3:30 PM</div>
+    </div>
+
+    <div class="idsheet done">
+      <div class="ih">
+        <span class="ihl">WDG-58 &mdash; 5/8&quot; wedge set</span>
+        <span class="ihm">Wedges &middot; Date Code</span>
+      </div>
+      <div class="idinput">
+        <span class="cap">0722-C</span>
+        <span class="kb">A&ndash;Z 0&ndash;9 &middot; done</span>
+      </div>
+    </div>
+
+    <div class="idecho">
+      <div>
+        <div class="el">Date code captured</div>
+        <div class="ev">0722-C</div>
+      </div>
+      <span class="ex">Change</span>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove" href="#" onclick="return false;">&#10003; Add to kit</a>
+    </div>
+
+    <div class="sectlbl">Rules on this screen <span class="n">&sect;2.2</span></div>
+    <div class="card">
+      <div class="body">
+        <b>Anchor</b> &mdash; Date Code.<br>
+        <b>Wedges</b> &mdash; Date Code.<br>
+        Both <b>hard</b>. Everything else in a hardware kit is untraced and is not asked about.
+      </div>
+      <div class="pills">
+        <span class="pill bad">Anchor &middot; hard</span>
+        <span class="pill bad">Wedges &middot; hard</span>
+        <span class="pill">grout cap &middot; none</span>
+      </div>
+    </div>
+
+    <div class="sectlbl">Verification &mdash; what actually happens next</div>
+    <div class="tracegate soft">
+      <span class="gi">&#9888;</span>
+      <div>
+        <div class="gt">Date codes cannot be checked against a cert yet</div>
+        <div class="gs">The Cert Identifier Index models three types &mdash;
+          <code>Heat</code>, <code>Serial</code>, <code>Lot</code>. <b>Date Code is not one of
+          them</b>, so the sweep skips the lookup rather than guessing. Recorded as
+          <code>unverifiable_type</code>, <i>not</i> as a missing cert &mdash; so the number below
+          measures a schema gap, not the floor&#39;s work.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="body">
+        Both hardware item types are Date Code, so <b>today nothing this cell captures can reach
+        <code>verified</code>.</b> These rows flip to <code>pending</code> automatically the moment the
+        index gains the type.
+      </div>
+      <div class="pills">
+        <span class="vstat unmatched"><span class="d"></span>2 unverifiable type</span>
+        <span class="vstat pending"><span class="d"></span>0 pending</span>
+        <span class="vstat verified"><span class="d"></span>0 verified</span>
+      </div>
+    </div>
+    <div class="emits">emits kit-component event + tag_cert_link &middot; identifier_type = Date Code</div>
+
+  </div></div>
+  <div class="phcap">B &middot; Wedges &mdash; captured, and honestly unverifiable</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Grounding &mdash; and what has no data behind it</span>
+  <b>From James, 2026-08-08 (authoritative for capture):</b> Wedge &rarr; Date Code, Anchor &rarr; Date
+  Code. That is what is physically on the material and what the worker is asked for.<br>
+  <b>From CertProcessor (authoritative for cert completeness) &mdash; and it disagrees:</b>
+  <code>"Anchor": {"required": [..., "HEAT_OR_BATCH"]}</code> (<code>:67-70</code>) and
+  <code>"Wedges": {"required": [..., "Batch_x002f_Lot_x002f_Date_x002f"]}</code> (<code>:79-82</code>).
+  <code>DateCode</code> <b>is</b> a real column &mdash; <code>FIELD_LABELS["DateCode"] = "Date Code"</code>
+  (<code>:126</code>) &mdash; but it is <b>warn-only</b> on Anchor (<code>:69</code>) and <b>absent from
+  Wedges&#39; warn list entirely</b>. <span class="flag">Neither side is wrong; they answer different
+  questions.</span> The gate enforces capture, the sweep evaluates cert completeness, and spec
+  &sect;2.3 records the four rows where they differ instead of smoothing it over.<br>
+  <b>Why <code>unverifiable_type</code> is a distinct status:</b> lumping it into
+  <code>unmatched</code> would report a SharePoint schema limitation as a missing mill cert, and the
+  &sect;11 target of <code>&lt;3% unmatched</code> would read as a floor-discipline failure. Spec
+  &sect;6.5.1.<br>
+  <span class="flag">Nothing here is backed by production data.</span> Hardware kits have no schema
+  &mdash; no kit entity, no component list, no per-component item-type mapping.
+  <code>Hardware</code> is a live scan station (<code>config.SCAN_STATIONS</code>) and a live
+  <code>config.WORKER_ROLES</code> value, but the kitting model on these frames comes from
+  <code>role-model-and-navigation-2026-08-05.md</code> &sect;3.5, not from code. Every part number,
+  date code and kit ID is invented.
+</div>
+
+<div class="footnav">
+  Prev: <a href="rebar-heat.html">Rebar</a> &middot;
+  Next: <a href="pt-heat.html">PT &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>

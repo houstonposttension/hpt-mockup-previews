@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Material Traceability — heat capture screens · 2026-08-08</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_trace.css">
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>Material Traceability &mdash; <b>capture screens</b></h1>
+  <p><b>Date:</b> 2026-08-08 &nbsp;&middot;&nbsp; <b>Status:</b> IDEATION MOCKUP. No production code.
+    Awaiting James&#39;s sign-off. &nbsp;&middot;&nbsp; <b>Governance:</b> GA-WIP-515 (PROPOSED)</p>
+  <p><b>Companion spec:</b> <code>docs/spec/material-traceability-requirements-2026-08-08.md</code> &mdash;
+    a cross-cutting rules doc, deliberately not embedded in any one work-cell spec.<br>
+    <b>Kit:</b> <code>role-navigation-scanfirst-2026-08-06</code>
+    (<code>_shared.css</code> + <code>_cells_kit.css</code>), plus <code>_trace.css</code> for the
+    capture components. Same 38 px scan-first bar, same phone frame.</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="setgrid">
+  <a class="setcard" href="rebar-heat.html">
+    <div class="t">Rebar Fabrication &mdash; 3 frames</div>
+    <div class="s"><b>A</b> hard stop at <code>seq 1</code>, with the <b>Serial / Heat</b> either-or
+      &middot; <b>B</b> capture &rarr; echo &rarr; unblock, plus the heat pending resolution from the
+      serial &middot; <b>C</b> <code>seq 2</code> showing the inherited value read-only. Gated at the
+      <b>first sequence step only</b>.</div>
+    <div class="f">Rebar &rarr; Serial <i>or</i> Heat &middot; serial links to heat &middot; HARD</div>
+  </a>
+  <a class="setcard" href="hardware-heat.html">
+    <div class="t">Hardware &mdash; 2 frames</div>
+    <div class="s"><b>A</b> anchor date code &mdash; one type, one control, <b>no picker</b> &middot;
+      <b>B</b> wedges, plus the honest consequence: <b>neither hardware type can be verified today</b>,
+      because the index does not model <code>Date Code</code>.</div>
+    <div class="f">Anchor &rarr; Date Code &middot; Wedges &rarr; Date Code &middot; HARD</div>
+  </a>
+  <a class="setcard" href="pt-heat.html">
+    <div class="t">PT (Post-Tension) &mdash; 3 frames</div>
+    <div class="s"><b>A</b> shift-start material state: 3 photo slots + vision extraction &middot;
+      <b>B</b> the 95% run case, inherited, no per-tag entry &middot; <b>C</b> lot change with the
+      position marker. <b>Redrawn</b> &mdash; per-piece entry is rejected by ADR &sect;3.3.1.</div>
+    <div class="f">Coil &rarr; Serial (links to heat) &middot; Anchor / Wedge &rarr; Date Code &middot; HARD</div>
+  </a>
+  <a class="setcard ext" href="extrusion-heat.html">
+    <div class="t">Extrusion &mdash; 1 frame &middot; <span style="color:var(--warn)">proposal</span></div>
+    <div class="s">Run-setup material lots. <b>Not a WIP screen</b> &mdash; belongs to the Extrusion Log
+      project. Drawn because the verification found a real gap; see below.</div>
+    <div class="f">Resin &rarr; Lot &middot; Grease &rarr; Batch &middot; Colorant &rarr; Lot &middot; HARD</div>
+  </a>
+</div>
+
+<div class="pgnote" style="margin-top:22px;">
+  <h1>The rule table</h1>
+  <p><b>Locked by James, 2026-08-08.</b> The <b>captured identifier</b> is what is physically printed
+    on the material and what the worker is asked for. It is <i>not</i> the same question as
+    CertProcessor&#39;s cert-completeness rule, and for four rows the two genuinely differ &mdash;
+    flagged &#9888; below and recorded in spec &sect;2.3. Item type still uses CertProcessor&#39;s
+    <code>MaterialType</code> vocabulary, because that is the join key to the cert data.</p>
+  <p><b>Five identifier types are in play:</b> <code>Heat</code>, <code>Serial</code>,
+    <code>Lot</code>, <code>Batch</code>, <code>Date Code</code>. <b class="flag">The Cert Identifier
+    Index models only the first three</b> &mdash; adding <code>Batch</code> and <code>Date Code</code>
+    is a cross-project change request with 9 sites, 3 of them structural (spec &sect;6.5.1).</p>
+</div>
+
+<table class="rtable">
+  <thead>
+    <tr><th>Work cell</th><th>Item type</th><th>Captured identifier</th><th>Enforce</th><th>Note</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Rebar Fab</b><br>first sequence step only</td>
+      <td><code>Rebar</code></td>
+      <td><b>Serial</b> <i>or</i> <b>Heat</b></td>
+      <td class="hard">HARD</td>
+      <td>serial <b>links to heat</b> (&sect;2.4); <code>seq 1</code> = <code>SHEAR</code>; steps 2..n inherit</td>
+    </tr>
+    <tr>
+      <td><b>Hardware</b></td>
+      <td><code>Anchor</code></td>
+      <td><b>Date Code</b></td>
+      <td class="hard">HARD</td>
+      <td>&#9888; cert rule says <code>HEAT_OR_BATCH</code> &mdash; diverges (&sect;2.3)</td>
+    </tr>
+    <tr>
+      <td><b>Hardware</b></td>
+      <td><code>Wedges</code></td>
+      <td><b>Date Code</b></td>
+      <td class="hard">HARD</td>
+      <td>&#9888; cert rule says <code>Batch/Lot/Date</code> &mdash; diverges (&sect;2.3)</td>
+    </tr>
+    <tr>
+      <td><b>PT</b></td>
+      <td><code>Coil</code> &rarr; <code>Tendon</code></td>
+      <td><b>Serial</b></td>
+      <td class="hard">HARD</td>
+      <td>serial <b>links to heat</b>. <code>Coil</code> is not a <code>MaterialType</code> (&sect;2.5, Q13). Mechanism delegated to <code>uncovered-work-cells</code> &sect;3.3</td>
+    </tr>
+    <tr class="ext">
+      <td><b>Extrusion</b></td>
+      <td><code>Resin</code></td>
+      <td><b>Lot</b></td>
+      <td class="hard">HARD</td>
+      <td>&#10003; agrees with the cert rule. Owned by Extrusion Log</td>
+    </tr>
+    <tr class="ext">
+      <td><b>Extrusion</b></td>
+      <td><code>Grease</code></td>
+      <td><b>Batch</b></td>
+      <td class="hard">HARD</td>
+      <td>owned by Extrusion Log</td>
+    </tr>
+    <tr class="ext">
+      <td><b>Extrusion</b></td>
+      <td><code>Colorant</code></td>
+      <td><b>Lot</b></td>
+      <td class="hard">HARD</td>
+      <td>&#9888; narrows the conflated <code>Batch/Lot/Date</code> column. Owned by Extrusion Log</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="h">Three corrections the code forced on the brief</span>
+  <b>1 &mdash; it is not &ldquo;a heat number&rdquo;, and there are five types, not three.</b> James&#39;s
+  mapping (2026-08-08): Wedge and Anchor &rarr; <b>Date Code</b>; Resin and Colorant &rarr; <b>Lot</b>;
+  Grease &rarr; <b>Batch</b>; Coil &rarr; <b>Serial</b>; Rebar &rarr; <b>Serial or Heat</b>. Only two
+  of the seven in-scope types involve a heat at all, and both reach it <i>indirectly</i>, through a
+  serial. <code>Batch</code> is a distinct type, <b>not</b> an alias for <code>Lot</code>.<br>
+  <b>2 &mdash; a WIP tag has no PO.</b> The <code>tags</code> upsert
+  (<code>tagstore.py:1084-1088</code>) writes <code>order_num</code>, an HPT Cloud <i>sales</i> order.
+  CertProcessor&#39;s <code>PO + HeatNumber</code> filter cannot be reused as-is, so lookups scope by
+  <code>IdentifierType + MaterialType</code> only &mdash; which per the Cert Identifier Index contract
+  returns a <b>set</b>, not a row.<br>
+  <b>3 &mdash; the gate must not call CertProcessor inline.</b> Both existing systems verify
+  asynchronously: CertProcessor&#39;s own gate is a <b>batch sweep</b> that resets rows after the fact
+  (<code>enforce_completeness_gate.py</code>), and Extrusion stores cert keys
+  <code>reconcile_status DEFAULT 'pending'</code>. Binding a floor hard-stop to a Graph round trip
+  makes SharePoint&#39;s availability the floor&#39;s availability. <b>Capture is hard and local;
+  verification is asynchronous.</b>
+</div>
+
+<div class="note" style="border-left-color:var(--acc);">
+  <span class="h" style="color:var(--acc);">The two questions this set was built to answer</span>
+  <b>Extrusion &mdash; already covered?</b> <b>Half.</b> The <i>data model</i> covers it thoroughly and
+  predates this work by roughly seven weeks (<code>extrusion.run_cert_link</code>, cert-key types
+  <code>heat/serial/lot/batch</code>, reconcile status, M:N &mdash;
+  <code>sql/001_extrusion_schema.sql:166-180</code>). The <i>operator mockup (5 operator frames) captures no
+  identifier at all</i> &mdash; lots live in a free-text Start-notes box. And Extrusion is a
+  <b>different app</b>: <code>config.py:64-68</code> removed it from
+  <code>SCAN_STATIONS</code> because &ldquo;emitting here would create orphan events&rdquo;. So: rule
+  stated here, implementation filed to Extrusion Log.<br><br>
+  <b>Identifier types &mdash; how many?</b> <b>Five.</b> James supplied the real mapping 2026-08-08:
+  <code>Heat</code>, <code>Serial</code>, <code>Lot</code>, <code>Batch</code>, <code>Date Code</code>.
+  <code>Batch</code> is <b>distinct from</b> <code>Lot</code>, and <code>Date Code</code> was never
+  modelled at all. The Cert Identifier Index knows three
+  (<code>identifier_parser.py:26</code>), so <b>every wedge, anchor and grease capture is
+  unverifiable until CertProcessor widens it</b> &mdash; a 9-site change, 3 sites structural, plus a
+  live SharePoint choice-column edit. Worse, the source column
+  <code>Batch_x002f_Lot_x002f_Date_x002f</code> <b>conflates the three types the mapping
+  separates</b>, so the parser cannot mechanically emit the right one. Spec &sect;6.5.1, Q9a/Q9b.<br><br>
+  <b>PT &mdash; whose design?</b> <b>Not this one&#39;s.</b>
+  <code>uncovered-work-cells-2026-08-07.md</code> ADR &sect;3.3.1 already ratified shift-scoped material
+  state with inheritance, and explicitly <b>rejected</b> the per-piece capture this set first drew.
+  The rule stays here; the mechanism is delegated (spec &sect;3.6) and <code>pt-heat.html</code> was
+  redrawn to match.<br><br>
+  <b>CertProcessor integration &mdash; how?</b> <b>Read the Cert Identifier Index.</b> Not the parent
+  list&#39;s <code>PO + HeatNumber</code> filter (non-indexed, runs only under a
+  <code>HonorNonIndexedQueriesWarningMayFailRandomly</code> header, and CertProcessor itself calls it
+  &ldquo;the wrong long-term pattern&rdquo;); not <code>hpt_server.py</code>&#39;s
+  <code>heat_lookup</code> (a LAN-only desk-workstation process, unreachable from Azure, and it
+  searches by Insteel test-report number, not by heat). The index is built
+  (<code>_System/cert_identifier_index.py</code> + backfill + reconciler + smoke + tests), its
+  <code>IdentifierValue</code> column is <b>indexed</b>, and Extrusion Log is already consumer #1 under
+  a ratified contract. WIP reads it &mdash; <b>never writes</b>, per the write-ownership standing rule
+  (James, 2026-06-12).
+</div>
+
+<div class="footnav">
+  Start: <a href="rebar-heat.html">Rebar &mdash; first sequence step &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>

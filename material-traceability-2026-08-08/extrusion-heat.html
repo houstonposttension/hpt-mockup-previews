@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Extrusion — material lot capture · PROPOSAL to Extrusion Log · 2026-08-08</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<link rel="stylesheet" href="_trace.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>5 / 5 &middot; Extrusion &mdash; <b>material lot capture at run setup</b>
+    &nbsp;<span class="flag">&mdash; PROPOSAL TO ANOTHER PROJECT</span></h1>
+  <p><b class="flag">This is not a WIP Processor screen and must not be built in WIP Processor.</b>
+    It is drawn in this kit for visual consistency with the other three, and belongs to
+    <code>C:\Dev\Extrusion Log\</code>. See <code>material-traceability-requirements-2026-08-08.md</code>
+    &sect;5.4.</p>
+  <p><b>What was verified.</b> James believed the existing Extrusion spec may already cover heat
+    traceability. It half does, and the half that does is the better half:</p>
+  <p>&#10003; <b>The data model covers it thoroughly.</b>
+    <code>extrusion.run_cert_link</code> stores <code>cert_key_type</code> in
+    <code>'heat','serial','lot','batch'</code> with <code>reconcile_status</code>, M:N against the run,
+    per the Cert Identifier Index contract (<code>sql/001_extrusion_schema.sql:166-180</code>), plus
+    <code>run_material.lot_no</code> (<code>:149</code>) and five pages of consumer obligations in
+    <code>REQUIREMENTS.md</code> &sect;3.3. This is a <i>more complete</i> traceability model than the
+    one this spec proposes for WIP.<br>
+    &#10007; <b class="flag">The operator mockup captures no identifier at all.</b> All 9 files &mdash; <b>5 operator frames</b>, 3 supervisor frames, an index &mdash;
+    of <code>hpt-mockups/extrusion-log-2026-07-10/</code> were read. The only place a lot could land is
+    <code>operator-02-run-setup.html</code>&#39;s <b>Start notes</b>, whose own design note reads
+    <i>&ldquo;free-text for lot numbers / setup issues&rdquo;</i>. A notes box cannot be validated,
+    indexed, or written to <code>cert_key_value</code>. So <code>run_cert_link</code> is a well-designed
+    table with <b>no operator-facing writer</b>.</p>
+  <p>The frame below is what closes that gap: <b>step 1 of the existing 3-step run setup, with the
+    material lots promoted out of the notes box into captured fields.</b></p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — RUN SETUP: MATERIAL LOTS ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;extrusion.hpt.local<span class="path">/run/setup</span></div>
+
+    <div class="propbanner">
+      <div class="pt">&#9873; Proposal &mdash; Extrusion Log project, not WIP Processor</div>
+      <div class="ps">Owner: <code>C:\Dev\Extrusion Log\GOVERNANCE_ACTIONS.md</code>. WIP has no
+        <code>Extrusion</code> scan station by decision GA-WIP-192 &mdash; emitting here would create
+        orphan events.</div>
+    </div>
+
+    <div class="kitbar">
+      <div class="krow"><span class="klbl">Run</span><span class="kid">EXT-2</span>
+        <span class="ktag">step 1 of 3</span></div>
+      <div class="kfor">CBL-1250-BLK &middot; Black jacket 1,250 ft</div>
+      <div class="ksub">Die 0.625 in &middot; 45 s cycle &middot; setpoint 182 &deg;C</div>
+    </div>
+
+    <div class="tracegate">
+      <span class="gi">&#9940;</span>
+      <div>
+        <div class="gt">Material lots required before the run can start</div>
+        <div class="gs">Resin and colorant are certified by <b>lot</b>, grease by <b>batch</b> &mdash; distinct types, not interchangeable. Captured here,
+          they write to <code>run_cert_link</code> &mdash; the table that already exists and has
+          nothing writing to it.</div>
+      </div>
+    </div>
+
+    <div class="sectlbl">Material lots <span class="n">3 required &middot; 1 captured</span></div>
+
+    <div class="idsheet">
+      <div class="ih">
+        <span class="ihl">Resin</span>
+        <span class="ihm">Lot</span>
+      </div>
+      <div class="idecho" style="margin:0;">
+        <div>
+          <div class="el">Lot captured</div>
+          <div class="ev">RS-4471-B</div>
+        </div>
+        <span class="ex">Change</span>
+      </div>
+    </div>
+
+    <div class="idsheet">
+      <div class="ih">
+        <span class="ihl">Grease</span>
+        <span class="ihm">Batch</span>
+      </div>
+      <div class="capmethods">
+        <div class="cm wide prim">
+          <span class="g">&#128290;</span>
+          <span>Reuse last &mdash; <b>GR-0729-4</b></span>
+          <span class="s">same drum &middot; previous run on EXT-2</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#128247;</span>
+          <span>Scan drum</span>
+          <span class="s">label barcode</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#9000;</span>
+          <span>Type it</span>
+          <span class="s">stencilled only</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="idsheet">
+      <div class="ih">
+        <span class="ihl">Colorant &mdash; black</span>
+        <span class="ihm">Lot</span>
+      </div>
+      <div class="capmethods">
+        <div class="cm wide prim">
+          <span class="g">&#128290;</span>
+          <span>Reuse last &mdash; <b>CB-2214</b></span>
+          <span class="s">same sack &middot; previous black run</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#128247;</span>
+          <span>Scan sack</span>
+          <span class="s">label barcode</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#9000;</span>
+          <span>Type it</span>
+          <span class="s">printed only</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove off" href="#" onclick="return false;" aria-disabled="true">Start run &rarr;</a>
+    </div>
+    <div class="ctahint">blocked &middot; 2 of 3 material lots missing</div>
+
+    <div class="sectlbl">Start notes <span class="n">no longer carries lots</span></div>
+    <div class="card">
+      <div class="body">
+        Free text for setup issues and observations, as before. <b>Lot numbers move out of here</b>
+        into the three fields above &mdash; that is the whole change.
+      </div>
+      <div class="pills"><span class="pill">optional</span><span class="pill acc">unchanged otherwise</span></div>
+    </div>
+
+    <div class="emits">writes extrusion.run_cert_link &middot; cert_key_type = Lot | Batch &middot;
+      reconcile_status = pending</div>
+
+  </div></div>
+  <div class="phcap">A &middot; run setup step 1 &mdash; lots promoted out of the notes box</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Why this is a proposal and not a WIP screen</span>
+  <b>WIP&#39;s own config says so, as a James-approved decision.</b>
+  <code>config.py:64-68</code> &mdash; <i>&ldquo;GA-WIP-192 (James, 2026-07-23): the scanner picker
+  lists ONLY stations that emit WIP events today. Removed: <b>Extrusion</b>: lives in its own separate
+  system (<code>C:\Dev\Extrusion Log\</code>), not WIP-integrated &mdash; emitting here would create
+  orphan events.&rdquo;</i> <b>Quoted in full &mdash; the second half qualifies the first:</b> the same comment continues
+  <i>&ldquo;It stays VISIBLE on the Hourly page as a <code>scanning_yet: false</code> &lsquo;coming
+  soon&rsquo; station via the <code>scan_stations</code> registry&hellip; This list gates
+  <b>emission</b>; the registry gates <b>display</b>.&rdquo;</i> So Extrusion <b>is</b> still a
+  registered, displayed station, and <b>is</b> a <code>config.WORKER_ROLES</code> value whose page
+  <code>role-model-and-navigation-2026-08-05.md</code> &sect;3.6 marks
+  <i>&ldquo;New page needed (Phase 4)&rdquo;</i> (saying nothing about traceability). What it is
+  <b>not</b> is in <code>config.SCAN_STATIONS</code> &mdash; so it <b>emits no WIP events</b>, and a
+  gate that hangs off <code>OP_FINISHED</code> has nothing to hang on.<br>
+  Building this in WIP would emit exactly the orphan events GA-WIP-192 removed the station to prevent,
+  and would put a second writer in front of a table WIP does not own.<br>
+  <b>What should happen instead:</b> file the &sect;5.2 gap as a row in
+  <code>C:\Dev\Extrusion Log\GOVERNANCE_ACTIONS.md</code>. A WIP session must not create it &mdash;
+  spec &sect;12 <b>Q6</b>.<br>
+  <span class="flag">Nothing on the frame is backed by production data.</span> EXT-2,
+  CBL-1250-BLK, RS-4471-B, GR-0729-4, CB-2214, die 0.625 in and 182 &deg;C are all invented, and
+  &ldquo;required for this product code&rdquo; implies a product&rarr;required-lots rule that exists in
+  neither project. The <b>only</b> verified facts here are the three item-type rules and the
+  <code>run_cert_link</code> table they would write to.<br>
+  <b>The rule itself still lives in the cross-cutting spec.</b> &sect;2 carries <code>Resin</code> &rarr;
+  <code>LotNumber</code>, <code>Grease</code> and <code>Colorant</code> &rarr;
+  <code>Batch_x002f_Lot_x002f_Date_x002f</code>, all <b>hard</b>, marked as Extrusion-Log-owned. That is
+  the point of a cross-cutting rules doc: the rule is stated once, wherever the implementation lands.
+</div>
+
+<div class="footnav">
+  Prev: <a href="pt-heat.html">PT</a> &middot;
+  Next: <a href="index.html">Set index &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>

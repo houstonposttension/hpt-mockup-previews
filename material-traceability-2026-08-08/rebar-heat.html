@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rebar Fab — serial or heat at the first sequence step · 2026-08-08</title>
+<link rel="stylesheet" href="_shared.css">
+<link rel="stylesheet" href="_cells_kit.css">
+<link rel="stylesheet" href="_loader_kit.css">
+<link rel="stylesheet" href="_trace.css">
+<style>
+  .stage{ align-items:flex-start; }
+  @media (max-width:900px){ .stage .phone + .phone{ margin-top:26px; } }
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>2 / 5 &middot; Rebar Fabrication &mdash; <b>serial <i>or</i> heat, at the first sequence step</b></h1>
+  <p>Drawn from <code>material-traceability-requirements-2026-08-08.md</code> &sect;2, &sect;3, &sect;4.
+    Item type <code>Rebar</code>, enforcement <b class="flag">HARD</b>. <b>Updated 2026-08-08:</b>
+    James&#39;s mapping accepts <b>Serial <i>or</i> direct Heat</b> &mdash; a rebar bundle may be
+    tagged either way, and <b>the serial links to the heat</b>. Earlier drafts demanded a heat only,
+    following CertProcessor&#39;s cert-completeness rule
+    (<code>_System/enforce_completeness_gate.py:63-66</code>), which answers a different question
+    (spec &sect;2.1).</p>
+  <p><b>Either one satisfies the gate.</b> A captured serial is resolved to its heat later, at
+    verification &mdash; index row &rarr; <code>ParentItemId</code> &rarr; the parent cert&#39;s
+    <code>HeatNumber</code> (spec &sect;2.4). The worker is never asked for both.</p>
+  <p><b>Only the first sequence step is gated.</b> <code>tagstore.py:32</code> defines
+    <code>operations&nbsp;PK = (tag_id, seq)</code> as &ldquo;a tag&#39;s fab routing&rdquo;, and
+    <code>derive_operations()</code> makes <code>seq&nbsp;1&nbsp;=&nbsp;SHEAR</code> for every tag
+    (<code>tagstore.py:1055-1069</code>). Frame <b>C</b> is the same tag at <code>seq&nbsp;2</code>:
+    the heat is <i>shown</i>, never re-asked (&sect;4.3).</p>
+  <div class="crumbs" data-crumbs></div>
+</div>
+
+<div class="stage">
+
+  <!-- ===== A — BLOCKED AT SEQ 1 ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/scan</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="rebar-heat.html">Rebar</a>
+        <a class="roletab" href="pt-heat.html">PT</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">1</span></a>
+        <span class="whochip">0417&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Tag <b>T-40118</b> read &middot; Shear</div>
+    </div>
+
+    <div class="ctxstrip">
+      <div class="cx"><span class="ck">Where</span>
+        <span class="cv">Shear <span class="mut">&middot; seq 1 of 2</span></span></div>
+      <div class="cx"><span class="ck">Tag</span>
+        <span class="cv">T-40118 <span class="mut">&middot; #5 &times; 14&#39;-6&quot; &middot; bend 5R07 &middot; qty 40</span></span></div>
+      <div class="cx"><span class="ck">For</span>
+        <span class="cv">Kennedy V <span class="mut">&middot; Podium deck &middot; ship 08/12</span></span></div>
+    </div>
+
+    <div class="tracegate">
+      <span class="gi">&#9940;</span>
+      <div>
+        <div class="gt">Serial or heat required before this bar can finish</div>
+        <div class="gs">This is the tag&#39;s <b>first fabrication step</b>, so the material is recorded here
+          and carried to every step after it. Scan the <b>bundle serial</b> or enter the <b>heat</b>
+          &mdash; <b>either one is enough</b>.</div>
+      </div>
+    </div>
+
+    <div class="idsheet">
+      <div class="ih">
+        <span class="ihl">Capture the bundle identifier</span>
+        <span class="ihm">Rebar &middot; either</span>
+      </div>
+
+      <div class="eitheror">
+        <div class="eo on"><div class="t">Serial</div><div class="s">on the bundle tag &middot; links to heat</div></div>
+        <div class="or">OR</div>
+        <div class="eo"><div class="t">Heat</div><div class="s">stamped on the mill tag</div></div>
+      </div>
+
+      <div class="capmethods">
+        <div class="cm wide prim">
+          <span class="g">&#128290;</span>
+          <span>Reuse last &mdash; <b>N240718-3</b></span>
+          <span class="s">serial &middot; bundle scanned 11:04 at Shear &middot; this shift</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#128247;</span>
+          <span>Scan bundle tag</span>
+          <span class="s">barcode or QR</span>
+        </div>
+        <div class="cm">
+          <span class="g">&#9000;</span>
+          <span>Type it</span>
+          <span class="s">mill tag not barcoded</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove off" href="#" onclick="return false;" aria-disabled="true">Finish at Shear</a>
+    </div>
+    <div class="ctahint">blocked &middot; no heat captured</div>
+
+    <div class="sectlbl">Why you are seeing this <span class="n">&sect;4.1</span></div>
+    <div class="card">
+      <div class="body">
+        T-40118 routes <b>Shear &rarr; Bender</b>. You are at <b>seq 1</b>, and no operation has
+        finished on this tag yet &mdash; so this scan is the one that records the material.
+      </div>
+      <div class="pills"><span class="pill acc">seq 1 &middot; SHEAR</span><span class="pill">seq 2 &middot; BENDER &mdash; not gated</span></div>
+    </div>
+
+    <div class="drawer" data-drawer>
+      <div class="dhandle" data-dhandle>
+        <span class="grip"></span>
+        <div><div class="dt">This shift</div><div class="ds">38 finished &middot; 2 bundles used</div></div>
+        <span class="dn">38</span><span class="car">&#9652;</span>
+      </div>
+      <div class="dbody">
+        <div class="sectlbl" style="margin-top:2px;">Bundles used at Shear today</div>
+        <div class="wrow ok"><div><div class="nm">N240718-3</div>
+          <div class="sub">serial &middot; 26 bars &middot; since 11:04</div></div><div class="val ok">26</div></div>
+        <div class="wrow ok"><div><div class="nm">N240718-1</div>
+          <div class="sub">serial &middot; 12 bars &middot; 06:12&ndash;10:58</div></div><div class="val ok">12</div></div>
+      </div>
+    </div>
+
+  </div></div>
+  <div class="phcap">A &middot; hard stop &mdash; the CTA is disabled with a named reason</div>
+  </div>
+
+  <!-- ===== B — CAPTURED, ECHOED, UNBLOCKED ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/scan</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="rebar-heat.html">Rebar</a>
+        <a class="roletab" href="pt-heat.html">PT</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">1</span></a>
+        <span class="whochip">0417&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="idsheet done">
+      <div class="ih">
+        <span class="ihl">Type the identifier</span>
+        <span class="ihm">serial or heat</span>
+      </div>
+      <div class="idinput">
+        <span class="cap">N240718-3</span>
+        <span class="kb">A&ndash;Z 0&ndash;9 &middot; done</span>
+      </div>
+      <div class="gnote" style="margin-top:7px;">Entered exactly as printed. Nothing is split,
+        reformatted or shortened &mdash; compound identifiers are parsed later by the one shared
+        parser, never here (&sect;3.5).</div>
+    </div>
+
+    <div class="idecho">
+      <div>
+        <div class="el">Serial captured</div>
+        <div class="ev">N240718-3</div>
+      </div>
+      <span class="ex">Change</span>
+    </div>
+
+    <div class="ctxstrip">
+      <div class="cx"><span class="ck">Where</span>
+        <span class="cv">Shear <span class="mut">&middot; seq 1 of 2</span></span></div>
+      <div class="cx"><span class="ck">Tag</span>
+        <span class="cv">T-40118 <span class="mut">&middot; #5 &times; 14&#39;-6&quot; &middot; bend 5R07 &middot; qty 40</span></span></div>
+      <div class="cx"><span class="ck">For</span>
+        <span class="cv">Kennedy V <span class="mut">&middot; Podium deck &middot; ship 08/12</span></span></div>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove" href="#" onclick="return false;">&#10003; Finish at Shear</a>
+    </div>
+
+    <div class="sectlbl">What gets recorded</div>
+    <div class="idrow done">
+      <span class="ic">&#10003;</span>
+      <div><div class="nm">Serial</div><div class="sb">material type <b>Rebar</b> &middot; typed</div></div>
+      <span class="vv">N240718-3</span>
+    </div>
+    <div class="idrow pend">
+      <span class="ic">&#8594;</span>
+      <div><div class="nm">Heat</div><div class="sb">resolved from the serial at verification (&sect;2.4)</div></div>
+      <span class="vv">pending lookup</span>
+    </div>
+    <div class="card" style="margin-top:6px;">
+      <div class="body">
+        Stored on the operation as a cert key. The sweep follows the serial to its cert row and
+        reads the <b>heat</b> off it, so a recall keyed on heat still finds this bar. That happens
+        <b>later, in the hourly sweep</b> &mdash; it never holds up your scan.
+      </div>
+      <div class="pills"><span class="vstat pending"><span class="d"></span>pending check</span></div>
+    </div>
+    <div class="emits">emits OP_FINISHED + tag_cert_link &middot; actor = your pseudonym &middot;
+      raw value and normkey both stored</div>
+
+  </div></div>
+  <div class="phcap">B &middot; captured &rarr; echoed at full size &rarr; CTA re-enabled</div>
+  </div>
+
+  <!-- ===== C — SEQ 2: INHERITED, NOT RE-ASKED ===== -->
+  <div>
+  <div class="phone"><div class="scr flow">
+    <div class="urlbar"><span class="lock">&#128274;</span>&nbsp;wip.hpt.local<span class="path">/scan</span></div>
+
+    <div class="topbar">
+      <div class="tabs">
+        <a class="roletab on" href="rebar-heat.html">Rebar</a>
+        <a class="roletab" href="pt-heat.html">PT</a>
+        <a class="roletab more" href="#" onclick="return false;">+2&nbsp;&#9662;</a>
+      </div>
+      <div class="xrail">
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph">&#9638;</span><span class="cnt">0</span></a>
+        <a class="crosspill zero" href="#" onclick="return false;"><span class="glyph wrench" role="img" aria-label="Maintenance">&#128295;</span><span class="cnt">0</span></a>
+        <span class="whochip">0655&nbsp;<span class="auth">W</span></span>
+      </div>
+    </div>
+
+    <div class="camwrap" style="height:132px;">
+      <div class="syncchip"><span class="dot"></span>Synced</div>
+      <div class="camtools"><span class="camtool" title="Torch">&#9788;</span><span class="camtool" title="EN/ES">ES</span></div>
+      <div class="retic" style="width:186px;height:64px;"><span class="c2"></span><span class="c3"></span></div>
+      <div class="scanline"></div>
+      <div class="camhint"><span class="live">&#9679;</span> Tag <b>T-40118</b> read &middot; 22N</div>
+    </div>
+
+    <div class="ctxstrip">
+      <div class="cx"><span class="ck">Where</span>
+        <span class="cv">22N <span class="mut">&middot; seq 2 of 2</span></span></div>
+      <div class="cx"><span class="ck">Tag</span>
+        <span class="cv">T-40118 <span class="mut">&middot; #5 &times; 14&#39;-6&quot; &middot; bend 5R07 &middot; qty 40</span></span></div>
+      <div class="cx"><span class="ck">For</span>
+        <span class="cv">Kennedy V <span class="mut">&middot; Podium deck &middot; ship 08/12</span></span></div>
+    </div>
+
+    <div class="inherit">
+      <div>
+        <div class="il">Serial &mdash; carried from Shear</div>
+        <div class="iv">N240718-3</div>
+      </div>
+      <span class="flagbtn">&#9873; Doesn&#39;t match</span>
+    </div>
+
+    <div class="ctarow">
+      <a class="btn prim blk big glove" href="#" onclick="return false;">&#10003; Finish at 22N</a>
+    </div>
+    <div class="ctahint">not gated &middot; heat already on the tag</div>
+
+    <div class="sectlbl">Why you are not asked again <span class="n">&sect;4.3</span></div>
+    <div class="card">
+      <div class="body">
+        The bar is the same bar. Re-typing the identifier here would add a second chance to mistype it and
+        create a question with no good answer &mdash; <i>which of the two is right?</i> So it is shown
+        read-only. If the bundle in front of you says something else, <b>flag it</b>; do not overwrite it.
+      </div>
+      <div class="pills"><span class="pill">display only</span><span class="pill acc">captured at seq 1 &middot; 11:41</span></div>
+    </div>
+
+    <div class="sectlbl">Chain so far</div>
+    <div class="idrow done">
+      <span class="ic">&#10003;</span>
+      <div><div class="nm">Shear &middot; seq 1</div><div class="sb">0417 &middot; 11:41 &middot; captured</div></div>
+      <span class="vv">N240718-3</span>
+    </div>
+    <div class="idrow">
+      <span class="ic">&#9673;</span>
+      <div><div class="nm">22N &middot; seq 2</div><div class="sb">0655 &middot; now &middot; inherits</div></div>
+      <span class="vv">N240718-3</span>
+    </div>
+
+  </div></div>
+  <div class="phcap">C &middot; downstream step &mdash; inherited, read-only, flaggable</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <span class="h">Grounding &mdash; and what has no data behind it</span>
+  <b>Real, in code today:</b> the <code>operations (tag_id, seq)</code> routing model
+  (<code>tagstore.py:32</code>), <code>derive_operations()</code> returning
+  <code>seq 1 = SHEAR</code> and <code>seq 2 = BENDER</code> (<code>tagstore.py:1055-1069</code>),
+  <code>get_operations()</code> ordered by seq (<code>tagstore.py:2602</code>),
+  <code>work_center_for()</code> resolving the picker&#39;s station string to a work centre
+  (<code>scan_events.py:70-86</code>), and the <code>OP_FINISHED</code> per-station dedup block the
+  gate rides along on (<code>function_app.py:1462-1511</code>) &mdash; which <b>already fetches</b> the
+  tag&#39;s prior events, so the gate costs no extra query.<br>
+  <b>From James, 2026-08-08 (authoritative for capture):</b> Rebar &rarr; <b>Serial (links to heat)
+  OR direct Heat</b>. <b>From CertProcessor (cert completeness):</b> <code>Rebar</code> requires
+  <code>HeatNumber</code> (<code>:63-66</code>), and <code>SERIAL_REQUIRED</code> does <b>not</b>
+  include Rebar (<code>pipeline_constants.py:79-82</code>) &mdash; so a serial-only capture meets the
+  cert rule <b>only</b> through the &sect;2.4 resolution. That indirection needs no new data: index
+  rows already carry <code>ParentItemId</code>. A serial resolving to no parent, or to a parent with
+  an empty <code>HeatNumber</code>, is <code>unmatched</code> &mdash; the chain is genuinely broken
+  there.<br>
+  <span class="flag">No heat, lot or batch field exists anywhere in WIP Processor today.</span> There
+  is no <code>tag_cert_link</code> table, no capture UI, and no integration of any kind with
+  CertProcessor. Every value on these frames is invented.<br>
+  <b>&ldquo;Reuse last&rdquo; is drawn as the biggest target on purpose.</b> A worker cutting 40 bars
+  from one bundle will not retype a heat 40 times &mdash; if reuse is small, the gate gets defeated by
+  mistyping instead. <code>capture_method</code> is recorded so a station running 95% reused is
+  visible before an auditor finds it (&sect;7.1).
+</div>
+
+<div class="footnav">
+  Prev: <a href="index.html">Set index</a> &middot;
+  Next: <a href="hardware-heat.html">Hardware &rarr;</a>
+</div>
+
+<script src="_shared.js"></script>
+<script src="_crumbs.js"></script>
+</body>
+</html>
