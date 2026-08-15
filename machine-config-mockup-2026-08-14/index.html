@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Machine Configuration — Admin (Wave 0a Mockup)</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#161a1f; --panel2:#1c2128; --panel3:#232932;
+  --line:#2a3038; --line2:#39424e;
+  --txt:#f2f4f7; --dim:#9aa4b0; --faint:#6b7280; --bright:#cfe0f5;
+  --acc:#16c060; --acc-soft:#5ce090; --acc-dim:rgba(22,192,96,.15); --acc-line:rgba(22,192,96,.42);
+  --ok:#16c060; --ok-dim:rgba(22,192,96,.14); --ok-ink:#04150a;
+  --warn:#ffb020; --warn-dim:rgba(255,176,32,.14);
+  --bad:#ff3b30; --bad-dim:rgba(255,59,48,.14);
+  --blue-soft:#7da2c9; --purple:#c9a2ff; --purple-dim:rgba(201,162,255,.14);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; background:#0e1116; color:var(--txt); font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;}
+body{padding:20px 24px 60px;}
+a{color:var(--acc-soft); text-decoration:none;}
+
+/* ---- page note / wave marker ---- */
+.pgnote{max-width:1400px; margin:0 auto 16px; font-size:12px; color:var(--dim); line-height:1.6;}
+.pgnote h1{font-size:19px; font-weight:800; color:var(--txt); margin:0 0 4px; display:flex; align-items:center; gap:10px;}
+.wavebadge{font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.6px; color:var(--purple);
+  background:var(--purple-dim); border:1px solid rgba(201,162,255,.4); border-radius:20px; padding:3px 9px;}
+.pgnote b{color:var(--bright);}
+.pgnote code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.92em; color:var(--acc-soft);
+  background:#0e1217; border:1px solid var(--line); border-radius:5px; padding:1px 6px;}
+
+.wrap{max-width:1400px; margin:0 auto;}
+
+/* ---- KPI strip ---- */
+.kpirow{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:0 0 16px;}
+.kpi{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+.kpi .n{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:28px; font-weight:900; color:var(--bright);}
+.kpi .l{font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--faint); margin-top:4px;}
+.kpi.ok .n{color:var(--ok);} .kpi.warn .n{color:var(--warn);} .kpi.bad .n{color:var(--bad);}
+
+/* ---- conflict panel ---- */
+.conflictpanel{background:#1a1214; border:1px solid #6b2a2a; border-radius:13px; padding:14px 16px; margin:0 0 16px;}
+.conflictpanel .ch{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:900; text-transform:uppercase;
+  letter-spacing:.6px; color:#ff8f85; margin-bottom:10px;}
+.conflictpanel .ch .n{margin-left:auto; font-weight:800; color:var(--faint); text-transform:none; letter-spacing:0; font-size:11px;}
+.cgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:10px;}
+.ccard{background:#141a20; border:1px solid #3a2226; border-left:3px solid var(--bad); border-radius:10px; padding:10px 12px; cursor:pointer;}
+.ccard:hover{border-color:#5a2f33; background:#181014;}
+.ccard.warncard{border-left-color:var(--warn);}
+.ccard .ct{font-size:12.5px; font-weight:800; color:var(--bright); margin-bottom:4px;}
+.ccard .cb{font-size:11.5px; color:var(--dim); line-height:1.55;}
+.ccard .cb b{color:var(--bright);}
+.ccard .csrc{margin-top:7px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:9.5px; color:#8a99a8;}
+
+/* ---- toolbar ---- */
+.toolbar{display:flex; align-items:center; gap:10px; margin:0 0 12px; flex-wrap:wrap;}
+.search{flex:1; min-width:220px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:9px 12px; color:var(--txt); font-size:13px;}
+.search:focus{outline:none; border-color:var(--acc-line);}
+.filterset{display:flex; gap:5px;}
+.filterbtn{font-size:11.5px; font-weight:800; color:var(--dim); background:var(--panel); border:1px solid var(--line);
+  border-radius:8px; padding:7px 11px; cursor:pointer;}
+.filterbtn.on{background:var(--acc-dim); border-color:var(--acc-line); color:var(--acc);}
+.btn{display:inline-flex; align-items:center; gap:6px; padding:9px 15px; border-radius:10px; font-size:13px;
+  font-weight:800; border:1px solid var(--line); background:#0e1217; color:var(--txt); cursor:pointer;}
+.btn.prim{background:var(--acc); color:var(--ok-ink); border-color:var(--acc);}
+.btn.prim:hover{background:var(--acc-soft);}
+.btn.danger{background:var(--bad); border-color:var(--bad); color:#fff;}
+.btn.ghost{background:transparent;}
+.btn.small{padding:5px 9px; font-size:11.5px; border-radius:7px;}
+
+/* ---- table ---- */
+.tablewrap{background:var(--panel); border:1px solid var(--line); border-radius:13px; overflow:hidden;}
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+thead th{text-align:left; font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+  color:var(--faint); background:#12161c; padding:10px 12px; border-bottom:1px solid var(--line); white-space:nowrap;}
+tbody td{padding:10px 12px; border-bottom:1px solid #1c2128; vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#12161c;}
+tbody tr.rowflash{animation:flash 1.4s ease;}
+@keyframes flash{0%{background:var(--warn-dim);} 100%{background:transparent;}}
+.mname{font-weight:800; color:var(--bright); font-size:13px;}
+.mkey{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10px; color:var(--faint); margin-top:1px;}
+.eqid{font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:700; color:var(--blue-soft);}
+.eqid.missing{color:var(--faint); font-style:italic; font-family:inherit; font-weight:600;}
+.cap{font-family:ui-monospace,Menlo,Consolas,monospace; font-weight:800;}
+.cap.missing{color:var(--faint); font-style:italic; font-family:inherit; font-weight:600;}
+.barrange{font-family:ui-monospace,Menlo,Consolas,monospace;}
+.ce-yes{color:var(--ok); font-weight:800;} .ce-no{color:var(--faint);} .ce-na{color:var(--faint); font-style:italic;}
+.srcpills{display:flex; flex-wrap:wrap; gap:3px; max-width:190px;}
+.srcpill{font-size:8.5px; font-weight:800; padding:2px 6px; border-radius:10px; border:1px solid var(--line);
+  color:var(--dim); background:#0e1217; font-family:ui-monospace,Menlo,Consolas,monospace;}
+.srcpill.present{color:var(--acc); border-color:var(--acc-line); background:var(--acc-dim);}
+.srcpill.absent{opacity:.4; border-style:dashed;}
+.statuspill{display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; padding:3px 9px;
+  border-radius:20px; border:1px solid var(--line);}
+.statuspill.confirmed{color:var(--ok); border-color:rgba(22,192,96,.4); background:var(--ok-dim);}
+.statuspill.unconfirmed{color:var(--warn); border-color:rgba(255,176,32,.4); background:var(--warn-dim);}
+.statuspill.conflict{color:var(--bad); border-color:rgba(255,59,48,.45); background:var(--bad-dim);}
+.rowactions{display:flex; gap:5px; white-space:nowrap;}
+.iconbtn{width:26px; height:26px; border-radius:7px; background:#0e1217; border:1px solid var(--line);
+  color:var(--dim); font-size:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+.iconbtn:hover{color:var(--bright); border-color:var(--line2);}
+.iconbtn.del:hover{color:var(--bad); border-color:rgba(255,59,48,.45);}
+.notecell{max-width:280px; font-size:11px; color:var(--dim); line-height:1.5;}
+
+/* ---- inline confirm-remove bar ---- */
+.confirmbar{background:#1a1214; border-top:1px solid #3a2226;}
+.confirmbar td{padding:9px 12px; display:flex; align-items:center; gap:10px; font-size:12px; color:#ffb2ac;}
+.confirmbar .n{margin-left:auto; display:flex; gap:6px;}
+
+/* ---- modal ---- */
+.overlay{position:fixed; inset:0; background:rgba(4,6,9,.7); display:none; align-items:flex-start;
+  justify-content:center; padding:40px 20px; z-index:80; overflow-y:auto;}
+.overlay.open{display:flex;}
+.modal{background:var(--panel2); border:1px solid var(--line2); border-radius:16px; width:100%; max-width:640px;
+  padding:22px 24px; box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.modal h2{font-size:16px; font-weight:800; margin:0 0 3px; color:var(--txt);}
+.modal .sub{font-size:11.5px; color:var(--faint); margin-bottom:16px;}
+.field{margin-bottom:13px;}
+.field label{display:block; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--faint); margin-bottom:5px;}
+.field input[type=text], .field input[type=number], .field textarea{
+  width:100%; background:#0e1217; border:1px solid var(--line); border-radius:9px; padding:9px 11px;
+  color:var(--txt); font-size:13px; font-family:inherit;}
+.field input:focus, .field textarea:focus{outline:none; border-color:var(--acc-line);}
+.field textarea{min-height:64px; resize:vertical;}
+.fieldrow{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.field .hint{font-size:10.5px; color:var(--faint); margin-top:4px; line-height:1.4;}
+.radiorow{display:flex; gap:8px;}
+.radiobtn{flex:1; text-align:center; padding:9px; border-radius:9px; border:1px solid var(--line); background:#0e1217;
+  font-size:11.5px; font-weight:800; color:var(--dim); cursor:pointer;}
+.radiobtn.pick-confirmed.on{color:var(--ok); border-color:rgba(22,192,96,.4); background:var(--ok-dim);}
+.radiobtn.pick-unconfirmed.on{color:var(--warn); border-color:rgba(255,176,32,.4); background:var(--warn-dim);}
+.radiobtn.pick-conflict.on{color:var(--bad); border-color:rgba(255,59,48,.45); background:var(--bad-dim);}
+.checkrow{display:flex; flex-wrap:wrap; gap:8px;}
+.checkitem{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--dim);
+  background:#0e1217; border:1px solid var(--line); border-radius:8px; padding:6px 10px; cursor:pointer;}
+.checkitem input{accent-color:var(--acc);}
+.togglerow{display:flex; align-items:center; justify-content:space-between; background:#0e1217; border:1px solid var(--line);
+  border-radius:9px; padding:9px 12px;}
+.togglerow .tl{font-size:12.5px; font-weight:700; color:var(--bright);}
+.togglerow .ts{font-size:10.5px; color:var(--faint); margin-top:1px;}
+.switch{position:relative; width:38px; height:22px; flex:0 0 auto;}
+.switch input{opacity:0; width:0; height:0;}
+.slider{position:absolute; inset:0; background:#2a3038; border-radius:22px; cursor:pointer; transition:.15s;}
+.slider::before{content:""; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.15s;}
+.switch input:checked + .slider{background:var(--acc);}
+.switch input:checked + .slider::before{transform:translateX(16px);}
+.modalfoot{display:flex; justify-content:flex-end; gap:8px; margin-top:18px; padding-top:16px; border-top:1px solid var(--line);}
+
+/* ---- toast ---- */
+.toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel3);
+  border:1px solid var(--line2); border-radius:11px; padding:11px 18px; font-size:12.5px; font-weight:700;
+  color:var(--bright); box-shadow:0 12px 30px rgba(0,0,0,.5); opacity:0; pointer-events:none; transition:.22s; z-index:100;}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.toast b{color:var(--warn);}
+
+.footnote{max-width:1400px; margin:22px auto 0; font-size:11px; color:var(--faint); border-top:1px solid var(--line);
+  padding-top:14px; line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="pgnote">
+  <h1>Machine Configuration <span class="wavebadge">Wave 0a — mockup</span></h1>
+  Draft for shape validation only — no real data is read or written here. Sample rows below are reconstructed
+  from <code>config.py</code>, <code>docs/reference/machine-capability-matrix-v8.yaml</code>, and
+  <code>config/machine_specs.json</code> as of 2026-08-14. This mockup exists to validate the <b>shape</b> before
+  Wave 0b (PRD / tech-stack / repo-structure / wave-plan / open-questions / GA-draft) is written.
+</div>
+
+<div class="wrap">
+
+  <div class="kpirow">
+    <div class="kpi"><div class="n" id="kpiTotal">–</div><div class="l">Machines tracked</div></div>
+    <div class="kpi ok"><div class="n" id="kpiConfirmed">–</div><div class="l">Confirmed</div></div>
+    <div class="kpi warn"><div class="n" id="kpiUnconfirmed">–</div><div class="l">Unconfirmed</div></div>
+    <div class="kpi bad"><div class="n" id="kpiConflict">–</div><div class="l">Conflicts</div></div>
+  </div>
+
+  <div class="conflictpanel">
+    <div class="ch">⚠ Mapping conflicts found across the 3 source files <span class="n">tap a card to jump to the row</span></div>
+    <div class="cgrid" id="conflictGrid"></div>
+  </div>
+
+  <div class="toolbar">
+    <input class="search" id="searchBox" type="text" placeholder="Search machine name or equipment ID…">
+    <div class="filterset" id="filterSet">
+      <button class="filterbtn on" data-filter="all">All</button>
+      <button class="filterbtn" data-filter="confirmed">Confirmed</button>
+      <button class="filterbtn" data-filter="unconfirmed">Unconfirmed</button>
+      <button class="filterbtn" data-filter="conflict">Conflict</button>
+    </div>
+    <button class="btn prim" id="addBtn">+ New machine</button>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Machine</th>
+          <th>Equipment ID</th>
+          <th>Capacity (lbs/day)</th>
+          <th>Bar range</th>
+          <th>Cutting engine</th>
+          <th>Sources</th>
+          <th>Status</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footnote">
+    Not shown: <b>20 Station</b> (rebar-category, non-cutting, <code>scanning_yet: false</code>) and the non-rebar
+    stations (PT Atlas, Hayes, Lumber, Hardware, Loading, Extrusion) — out of scope for this pass since they don't
+    carry bar-size routing. Say the word and a follow-up mockup can bring them in.
+    &nbsp;·&nbsp; Published under <code>hpt-mockup-previews/machine-config-mockup-2026-08-14/</code>.
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">New machine</h2>
+    <div class="sub" id="modalSub">Mockup only — nothing here is saved to a real file.</div>
+
+    <div class="field">
+      <label>Internal / routing name</label>
+      <input type="text" id="fName" placeholder="e.g. Double Bender">
+    </div>
+
+    <div class="fieldrow">
+      <div class="field">
+        <label>Real-world equipment ID</label>
+        <input type="text" id="fEquip" placeholder="e.g. Hyd #11">
+        <div class="hint">Only 3 of 10 machines currently have one on file.</div>
+      </div>
+      <div class="field">
+        <label>Capacity (lbs/day)</label>
+        <input type="number" id="fCapacity" placeholder="e.g. 40000">
+      </div>
+    </div>
+
+    <div class="fieldrow">
+      <div class="field">
+        <label>Bar range — min</label>
+        <input type="text" id="fBarMin" placeholder="#3">
+      </div>
+      <div class="field">
+        <label>Bar range — max</label>
+        <input type="text" id="fBarMax" placeholder="#14">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="togglerow">
+        <div>
+          <div class="tl">Routes through cutting engine</div>
+          <div class="ts">Rebar routing/machine_selector.py evaluates this machine as a candidate</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="fCutting"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Defined in</label>
+      <div class="checkrow">
+        <label class="checkitem"><input type="checkbox" id="fSrcConfig"> config.py</label>
+        <label class="checkitem"><input type="checkbox" id="fSrcRouting"> matrix: machines:</label>
+        <label class="checkitem"><input type="checkbox" id="fSrcScan"> matrix: scan_stations:</label>
+        <label class="checkitem"><input type="checkbox" id="fSrcVendor"> machine_specs.json</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Status</label>
+      <div class="radiorow">
+        <div class="radiobtn pick-confirmed" data-status="confirmed">Confirmed</div>
+        <div class="radiobtn pick-unconfirmed" data-status="unconfirmed">Unconfirmed</div>
+        <div class="radiobtn pick-conflict" data-status="conflict">Conflict</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Notes — what's confirmed, what isn't, and why</label>
+      <textarea id="fNotes" placeholder="e.g. Vendor spec ambiguous between two candidates; not yet verified against nameplate."></textarea>
+    </div>
+
+    <div class="modalfoot">
+      <button class="btn ghost" id="cancelBtn">Cancel</button>
+      <button class="btn prim" id="saveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const initialMachines = [
+  {
+    id:"shear", name:"Shear", equipmentId:"", capacity:140000, barMin:"#3", barMax:"#18",
+    cuttingEngine:true, status:"confirmed",
+    sources:{config:true, routing:true, scan:true, vendor:true},
+    notes:"Fully reconciled: same name, same #3–#18 range, and a matching vendor spec (KRB Shear 4002) across all four sources."
+  },
+  {
+    id:"double_bender", name:"Double Bender", equipmentId:"", capacity:40000, barMin:"#3", barMax:"#14",
+    cuttingEngine:true, status:"conflict",
+    sources:{config:true, routing:true, scan:true, vendor:false},
+    notes:"Bar max #14 is inferred (not one of James's 8 locked decisions). Two unresolved vendor candidates: schnell_rm60_15 (model not found in current Schnell catalog) and krb_14m_bender (max size inferred from product name only, not a spec table). Neither is confirmed as the actual floor machine."
+  },
+  {
+    id:"prima", name:"Prima", equipmentId:"", capacity:15000, barMin:"#3", barMax:"#4",
+    cuttingEngine:true, status:"unconfirmed",
+    sources:{config:true, routing:true, scan:true, vendor:true},
+    notes:"Vendor spec lists 4.2–13mm coil gauge; Schnell's own “#3–#4” label doesn't cleanly map to ASTM sizes (4.2mm is below ASTM #3 = 9.5mm). Optional 3D head presence also unconfirmed at the machine."
+  },
+  {
+    id:"22n", name:"22N", equipmentId:"", capacity:12000, barMin:"#3", barMax:"#7",
+    cuttingEngine:true, status:"conflict",
+    sources:{config:true, routing:true, scan:true, vendor:true},
+    notes:"The routing matrix's own comment says “22N has no vendor spec doc” — but machine_specs.json has a schnell_22n entry with a matching #3–#7 range. That comment is stale. Feed method is still flagged unknown in the matrix."
+  },
+  {
+    id:"hyd_11", name:"Hyd #11", equipmentId:"Hyd #11", capacity:null, barMin:"#3", barMax:"#11",
+    cuttingEngine:true, status:"conflict",
+    sources:{config:false, routing:true, scan:false, vendor:true},
+    notes:"Live in the routing engine but absent from config.py's capacity table AND the scan_stations registry — no daily capacity target, and the Hourly Throughput view has no way to classify a scan from this machine today."
+  },
+  {
+    id:"mech_18", name:"Mech #18", equipmentId:"Mech #18", capacity:null, barMin:"#3", barMax:"#18",
+    cuttingEngine:true, status:"conflict",
+    sources:{config:false, routing:true, scan:false, vendor:false},
+    notes:"Same gap as Hyd #11 (missing capacity + missing scan-station entry) — plus no vendor_specs.json entry clearly matches an #18-capacity mechanical bender."
+  },
+  {
+    id:"big_single", name:"Big Single Bender", equipmentId:"", capacity:40000, barMin:"—", barMax:"—",
+    cuttingEngine:false, status:"conflict",
+    sources:{config:true, routing:false, scan:true, vendor:false},
+    notes:"Has a capacity target and can be scanned, but is absent from the routing engine (GA-WIP-096 gap). James confirmed 2026-07-22 this is a physically different machine from Mech #18 — not a duplicate entry. No vendor spec on file."
+  },
+  {
+    id:"small_single", name:"Small Single Bender", equipmentId:"", capacity:25000, barMin:"—", barMax:"—",
+    cuttingEngine:false, status:"conflict",
+    sources:{config:true, routing:false, scan:true, vendor:false},
+    notes:"Same gap pattern as Big Single Bender — capacity + scan station, but no routing-engine entry and no vendor spec."
+  },
+  {
+    id:"radius_routing", name:"Radius", equipmentId:"", capacity:null, barMin:"#3", barMax:"#11",
+    cuttingEngine:false, status:"unconfirmed",
+    sources:{config:false, routing:true, scan:false, vendor:true},
+    notes:"Routing-only entry, radius shapes exclusively (shape_code 9). Outside James's 8 locked decisions (in_v8_locked_scope: false). Vendor spec (CRS Radialform 35) unverifiable — vendor site was unreachable at time of research."
+  },
+  {
+    id:"radius_bender_scan", name:"Radius Bender", equipmentId:"", capacity:15000, barMin:"—", barMax:"—",
+    cuttingEngine:false, status:"conflict",
+    sources:{config:true, routing:false, scan:true, vendor:false},
+    notes:"NOT the same machine as “Radius” above, despite the near-identical name — James confirmed 2026-07-22 these are two different physical machines. Has a capacity target and scan station, but no routing-engine entry of its own."
+  },
+];
+
+const conflictNarratives = [
+  {
+    title:"“Radius” vs “Radius Bender” — naming collision, not a duplicate",
+    body:"James confirmed <b>2026-07-22</b> these are two different physical machines. The near-identical names are exactly the kind of thing that gets silently merged by a future script.",
+    warn:true, jump:"radius_routing"
+  },
+  {
+    title:"Hyd #11 / Mech #18 — no capacity target, invisible to Hourly view",
+    body:"Both are in the routing engine but missing from <code>config.py</code>'s capacity table and the <code>scan_stations:</code> registry. A scan on either machine today can't be classified by the Hourly Throughput page.",
+    jump:"hyd_11"
+  },
+  {
+    title:"Big / Small Single Bender — scannable, but not routable",
+    body:"Both have a capacity target and a scan station, but neither is in the routing engine's <code>machines:</code> list (documented GA-WIP-096 gap). The auto-routing engine will never suggest them.",
+    jump:"big_single"
+  },
+  {
+    title:"22N — stale comment in the matrix itself",
+    body:"The YAML's own note says <b>no vendor spec doc exists</b> for 22N. <code>machine_specs.json</code> has one (schnell_22n) with a matching bar range. The comment needs updating, not the data.",
+    jump:"22n"
+  },
+  {
+    title:"Double Bender — two unconfirmed vendor candidates",
+    body:"Both <code>schnell_rm60_15</code> and <code>krb_14m_bender</code> plausibly describe this machine. Neither has been confirmed against the actual nameplate.",
+    jump:"double_bender"
+  },
+];
+
+let machines = JSON.parse(JSON.stringify(initialMachines));
+let filterState = "all";
+let searchState = "";
+let editingId = null;
+let confirmRemoveId = null;
+
+const $ = (sel) => document.querySelector(sel);
+const tbody = $("#tbody");
+
+function srcPill(label, present){
+  return `<span class="srcpill ${present ? "present" : "absent"}">${label}</span>`;
+}
+
+function renderConflicts(){
+  $("#conflictGrid").innerHTML = conflictNarratives.map(c => `
+    <div class="ccard ${c.warn ? "warncard" : ""}" data-jump="${c.jump}">
+      <div class="ct">${c.title}</div>
+      <div class="cb">${c.body}</div>
+    </div>
+  `).join("");
+  document.querySelectorAll(".ccard").forEach(card => {
+    card.addEventListener("click", () => jumpToRow(card.dataset.jump));
+  });
+}
+
+function jumpToRow(id){
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  if(!row) return;
+  row.scrollIntoView({behavior:"smooth", block:"center"});
+  row.classList.remove("rowflash");
+  void row.offsetWidth;
+  row.classList.add("rowflash");
+}
+
+function fmtCapacity(v){
+  if(v === null || v === undefined) return `<span class="cap missing">not on file</span>`;
+  return `<span class="cap">${v.toLocaleString()}</span>`;
+}
+
+function fmtEquip(v){
+  if(!v) return `<span class="eqid missing">not assigned</span>`;
+  return `<span class="eqid">${v}</span>`;
+}
+
+function fmtCutting(m){
+  if(m.status === "conflict" && !m.cuttingEngine && m.sources.routing === false && (m.id === "big_single" || m.id === "small_single" || m.id === "radius_bender_scan")){
+    return `<span class="ce-no">No (not in routing engine)</span>`;
+  }
+  if(m.id === "radius_routing") return `<span class="ce-na">n/a — routing-only</span>`;
+  return m.cuttingEngine ? `<span class="ce-yes">Yes</span>` : `<span class="ce-no">No</span>`;
+}
+
+function render(){
+  const q = searchState.trim().toLowerCase();
+  const rows = machines.filter(m => {
+    if(filterState !== "all" && m.status !== filterState) return false;
+    if(q && !(m.name.toLowerCase().includes(q) || (m.equipmentId||"").toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  tbody.innerHTML = rows.map(m => {
+    const removing = confirmRemoveId === m.id;
+    return `
+      <tr data-id="${m.id}">
+        <td>
+          <div class="mname">${m.name}</div>
+          <div class="mkey">key: ${m.id}</div>
+        </td>
+        <td>${fmtEquip(m.equipmentId)}</td>
+        <td>${fmtCapacity(m.capacity)}</td>
+        <td class="barrange">${m.barMin} – ${m.barMax}</td>
+        <td>${fmtCutting(m)}</td>
+        <td>
+          <div class="srcpills">
+            ${srcPill("config.py", m.sources.config)}
+            ${srcPill("routing", m.sources.routing)}
+            ${srcPill("scan_st", m.sources.scan)}
+            ${srcPill("vendor", m.sources.vendor)}
+          </div>
+        </td>
+        <td><span class="statuspill ${m.status}">${m.status}</span></td>
+        <td class="notecell">${m.notes}</td>
+        <td>
+          <div class="rowactions">
+            <div class="iconbtn edit" data-id="${m.id}" title="Edit">✎</div>
+            <div class="iconbtn del" data-id="${m.id}" title="Remove">✕</div>
+          </div>
+        </td>
+      </tr>
+      ${removing ? `
+      <tr class="confirmbar"><td colspan="9">
+        Remove <b>&nbsp;${m.name}&nbsp;</b> from this mockup? Nothing is deleted from config.py, the YAML matrix, or machine_specs.json.
+        <div class="n">
+          <button class="btn small danger" data-confirm-del="${m.id}">Remove</button>
+          <button class="btn small ghost" data-cancel-del="${m.id}">Cancel</button>
+        </div>
+      </td></tr>` : ""}
+    `;
+  }).join("");
+
+  document.querySelectorAll(".iconbtn.edit").forEach(b => b.addEventListener("click", () => openModal(b.dataset.id)));
+  document.querySelectorAll(".iconbtn.del").forEach(b => b.addEventListener("click", () => {
+    confirmRemoveId = b.dataset.id; render();
+  }));
+  document.querySelectorAll("[data-confirm-del]").forEach(b => b.addEventListener("click", () => {
+    const id = b.dataset.confirmDel;
+    const m = machines.find(x => x.id === id);
+    machines = machines.filter(x => x.id !== id);
+    confirmRemoveId = null;
+    render(); renderKpis();
+    showToast(`${m.name} removed — mockup only, not written to any real file.`);
+  }));
+  document.querySelectorAll("[data-cancel-del]").forEach(b => b.addEventListener("click", () => {
+    confirmRemoveId = null; render();
+  }));
+}
+
+function renderKpis(){
+  $("#kpiTotal").textContent = machines.length;
+  $("#kpiConfirmed").textContent = machines.filter(m => m.status === "confirmed").length;
+  $("#kpiUnconfirmed").textContent = machines.filter(m => m.status === "unconfirmed").length;
+  $("#kpiConflict").textContent = machines.filter(m => m.status === "conflict").length;
+}
+
+/* ---- modal ---- */
+function openModal(id){
+  editingId = id || null;
+  const m = id ? machines.find(x => x.id === id) : null;
+  $("#modalTitle").textContent = m ? `Edit ${m.name}` : "New machine";
+  $("#modalSub").textContent = m
+    ? "Mockup only — changes here don't touch config.py, the YAML matrix, or machine_specs.json."
+    : "Mockup only — nothing here is saved to a real file.";
+
+  $("#fName").value = m ? m.name : "";
+  $("#fEquip").value = m ? m.equipmentId : "";
+  $("#fCapacity").value = m && m.capacity !== null ? m.capacity : "";
+  $("#fBarMin").value = m ? m.barMin : "";
+  $("#fBarMax").value = m ? m.barMax : "";
+  $("#fCutting").checked = m ? !!m.cuttingEngine : false;
+  $("#fSrcConfig").checked = m ? !!m.sources.config : false;
+  $("#fSrcRouting").checked = m ? !!m.sources.routing : false;
+  $("#fSrcScan").checked = m ? !!m.sources.scan : false;
+  $("#fSrcVendor").checked = m ? !!m.sources.vendor : false;
+  $("#fNotes").value = m ? m.notes : "";
+
+  setStatusPick(m ? m.status : "unconfirmed");
+  $("#overlay").classList.add("open");
+  $("#fName").focus();
+}
+
+function setStatusPick(status){
+  document.querySelectorAll(".radiobtn").forEach(b => {
+    b.classList.toggle("on", b.dataset.status === status);
+  });
+  $("#overlay").dataset.status = status;
+}
+
+function closeModal(){
+  $("#overlay").classList.remove("open");
+  editingId = null;
+}
+
+function saveMachine(){
+  const name = $("#fName").value.trim();
+  if(!name){ $("#fName").focus(); return; }
+  const capRaw = $("#fCapacity").value;
+  const data = {
+    name,
+    equipmentId: $("#fEquip").value.trim(),
+    capacity: capRaw === "" ? null : Number(capRaw),
+    barMin: $("#fBarMin").value.trim() || "—",
+    barMax: $("#fBarMax").value.trim() || "—",
+    cuttingEngine: $("#fCutting").checked,
+    sources:{
+      config: $("#fSrcConfig").checked,
+      routing: $("#fSrcRouting").checked,
+      scan: $("#fSrcScan").checked,
+      vendor: $("#fSrcVendor").checked,
+    },
+    status: $("#overlay").dataset.status || "unconfirmed",
+    notes: $("#fNotes").value.trim() || "No notes yet.",
+  };
+
+  if(editingId){
+    const idx = machines.findIndex(x => x.id === editingId);
+    machines[idx] = {...machines[idx], ...data};
+    showToast(`${name} updated — mockup only, not written to any real file.`);
+  } else {
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || `machine_${Date.now()}`;
+    machines.push({id, ...data});
+    showToast(`${name} added — mockup only, not written to any real file.`);
+  }
+  closeModal();
+  render(); renderKpis();
+}
+
+let toastTimer = null;
+function showToast(msg){
+  const t = $("#toast");
+  t.innerHTML = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+/* ---- wire up ---- */
+$("#addBtn").addEventListener("click", () => openModal(null));
+$("#cancelBtn").addEventListener("click", closeModal);
+$("#saveBtn").addEventListener("click", saveMachine);
+$("#overlay").addEventListener("click", (e) => { if(e.target.id === "overlay") closeModal(); });
+document.querySelectorAll(".radiobtn").forEach(b => b.addEventListener("click", () => setStatusPick(b.dataset.status)));
+$("#searchBox").addEventListener("input", (e) => { searchState = e.target.value; render(); });
+document.querySelectorAll(".filterbtn").forEach(b => b.addEventListener("click", () => {
+  filterState = b.dataset.filter;
+  document.querySelectorAll(".filterbtn").forEach(x => x.classList.toggle("on", x === b));
+  render();
+}));
+document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeModal(); });
+
+renderConflicts();
+render();
+renderKpis();
+</script>
+</body>
+</html>
